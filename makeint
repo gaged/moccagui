@@ -1,0 +1,4 @@
+g++ -c -I/home/gtom/emc2-dev/src/emc/nml_intf -I/home/gtom/emc2-dev/src/emc/usr_intf -I/home/gtom/emc2-dev/src/libnml/nml -I/home/gtom/emc2-dev/src/libnml/inifile -I/home/gtom/emc2-dev/src/libnml/posemath -I/home/gtom/emc2-dev/src/libnml/cms -I/home/gtom/emc2-dev/src/libnml/rcs -I/home/gtom/emc2-dev/src/libnml/os_intf -I/home/gtom/emc2-dev/src/emc/rs274ngc -I/home/gtom/emc2-dev/src -I/home/gtom/emc2-dev/src/emc/motion emcpas.cc
+
+
+
