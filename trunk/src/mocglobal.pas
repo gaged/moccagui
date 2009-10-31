@@ -11,62 +11,95 @@ uses
 const
   MaxAxes = 5;                  // maimum number of axes, default 5 XYZCB
 
-   TaskModeManual = 1;
-   TaskModeAuto   = 2;
-   TaskModeMDI    = 3;
+type
+  EVars = record
 
+    ProgramPrefix: string;        // program_prefix from ini
+    Machine: string;              // the machine as defined in inifile
+    PostGuiHalfile: string;
+    ToolTblFile: string;
+    ParamFile: string;
+    Extensions: string;
+    Geometry: string;
+
+    NumAxes: Integer;             // number of axes in ini
+    CoordNames: string;           // the given coordinates (XYZ...)
+
+    CycleTime: Double;            // as defined in [DISPLAY], in seconds
+    CycleDelay: Longint;          // cycletime/1000 in msec
+
+    MaxFeedOverride: integer;     // maximum feed override
+    MaxSpindleOverride: integer;  // maximum spindle override
+
+    LinearJogSpeed: double;
+    AngularJogSpeed: double;
+    
+    MaxLinearVel: double;
+    MaxAngularVel: double;
+    
+    IsMetric: Boolean;            // metric, default true **FIXME
+
+    UnitVelStr: string;           // linear velocitystr i.e. "inch/min"
+    UnitStr: string;              // linear units i.e. inch "in","mm"
+
+    // position display
+    ShowActual: Boolean;          // actual or cmd position
+    ShowRelative: Boolean;        // relative or absolute position
+
+    HomingOrderDefined: Boolean;  // check if can do a "home all"
+  end;
+  
 var
-  NumAxes: Integer;             // number of axes in ini
-  CoordNames: string;           // the given coordinates (XYZ...)
 
-  CycleTime: Double;            // as defined in [DISPLAY], in seconds
-  CycleDelay: Longint;          // cycletime/1000 in msec
-
-  TaskMode: Integer;            // current taskmode
-  LastError: string[255];
-  UpdateLock: Boolean;          // used to prevent controls to be updated
-  Machine: string;              // the machine as defined in inifile
-
-  PostGuiHalfile: string;
-  ToolTblFile: string;
-  ParamFile: string;
-
-  MaxSpindleOverride,
-  SpindleOverride: Integer;
-
-  MaxFeedOverride,
-  FeedOverride: Integer;
-
-  MaxJogSpeed: Integer;         // linear max jogspeed
-  JogSpeed,                     // linear actual jogspeed
-  AngularJogSpeed: Integer;     // angular actal jogspeed
-
-  IsMetric: Boolean;            // metric, default true **FIXME
-
-  UnitVelStr: string;           // linear velocitystr i.e. "inch/min"
-  UnitStr: string;              // linear units i.e. inch "in","mm"
-
-  // position display
-  ShowActual: Boolean;          // actual or cmd position
-  ShowRelative: Boolean;        // relative or absolute position
-
+  E: EVars;
   EStopped: Boolean;
   MachineOn,
   FloodOn,
   MistOn,
   BrakeOn: Boolean;
+
+  LastError: string[255];       // updated by checkerror
+  UpdateLock: Boolean;          // used to prevent controls to be updated
+
+  ActTaskMode: Integer;         // current taskmode, used in (update)
+
+  MaxMaxVelocity: Integer;
+  ActMaxVelocity: Integer;
+  OldMaxVelocity: integer;
+
+  ActFeedOride: Integer;
+  OldFeedOride: integer;
+  ActSpindleOride: Integer;
+  OldSpindleORide: integer;
+
+  ActJogSpeed: integer;
+  OldJogSpeed: integer;
+
+  ActAngJogSpeed: integer;
+  OldAngJogSpeed: integer;
   
+  MaxJogSpeed: Integer;         // linear max jogspeed
+  MinJogSpeed: integer;
+  MaxAngJogSpeed: Integer;      // angular max jogspeed
+  MinAngJogSpeed: integer;
+
+  ProgramFile: PChar;           // a long string;
+
 type
   TJointDef = record
-    Id: Integer;
-    Designator: Char;
-    Jogging: Boolean;
+    Id: Integer;                // the joint id
+    Designator: Char;           // the joints axis designator
+    Inverted: Boolean;          // invert jog- direction
+    Jogging: Boolean;           // is jogging called by "dojog"
+    JogTimer: Longint;          // timer for smootjog- feature
+    JogSmoothStart: Integer;    // Initial velocity for smooth-jog
+    JogAccel: integer;          // acceleration for smoothjog
+    Homed: Boolean;
   end;
   
 type
   TJoints = Array[0..MaxAxes-1] of TJointDef;
   
-
 type
   TJogIncs = record
     Txt: string;
@@ -91,6 +124,18 @@ implementation
 uses
   emc2pas;
   
+function CheckError: Boolean;
+begin
+  if ErrorStr[0] <> #0 then
+    begin
+      LastError:= PChar(ErrorStr);
+      ErrorStr[0]:= #0;
+      Result:= true;
+    end
+  else
+    Result:= False;
+end;
+  
 function PosToString(Value: Double): string;
 var
   s: string;
@@ -104,7 +149,7 @@ function AxisId(Axis: Char): integer;
 var
   i: integer;
 begin
-  i:= Pos(Axis,CoordNames);
+  i:= Pos(Axis,E.CoordNames);
   if i > 0 then
     Result:= i-1
   else
@@ -113,10 +158,10 @@ end;
 
 function AxisChar(Axis: Integer): Char;
 begin
-  if (Axis < 0) or (Axis > Length(CoordNames) - 1) then
+  if (Axis < 0) or (Axis > Length(E.CoordNames) - 1) then
     Result:= #0
   else
-    Result:= CoordNames[Axis-1];
+    Result:= E.CoordNames[Axis-1];
 end;
 
 function StripBlank(var S: string): Boolean;
@@ -134,68 +179,57 @@ begin
   Result:= Length(S) > 0;
 end;
 
-function GetCoordNames: Boolean;
-begin
-  Result:= False;
-  if (NumAxes < 1) or (NumAxes > 9) then
-    begin
-      writeln('wrong Value for defined numer of joints.');
-      writeln('there are ' + IntToStr(NumAxes) + ' defined.');
-      exit;
-    end;
-  if StripBlank(CoordNames) then
-    if Length(CoordNames) <> NumAxes then
-    begin
-      writeln('missmatch in number of joints and coord names');
-      Exit;
-    end;
-  Result:= True;
-end;
-
-function CheckError: Boolean;
-var
-  Buffer: Array[0..LINELEN-1] of Char;
-begin
-  Result:= geterror(PChar(Buffer));
-  if Result then
-    LastError:= PChar(Buffer)
-end;
-  
-function GetIniStr(secstr,varstr: string): string;
+function GetIniStr(secstr,varstr: string; var s: string): Boolean;
 var
   Buffer: Array[0..LINELEN-1] of Char;
 begin
   if (iniGet(PChar(secstr),PChar(varstr),PChar(Buffer)) = 0) then
-    Result:= PChar(Buffer)
+    begin
+      s:= PChar(Buffer);
+      Result:= True;
+    end
   else
-    Result:= '';
+    begin
+      s:= '';
+      Result:= False;
+    end;
 end;
 
-function GetIniDouble(secstr,varstr: string): double;
+function GetIniDouble(secstr,varstr: string; var d: double): Boolean;
 var
   s: string;
 begin
-  Result:= 0;
-  s:= GetIniStr(secstr,varstr);
+  Result:= False;
+  if not GetIniStr(secstr,varstr,s) then
+    Exit;
   if s <> '' then
-    result:= StrToFloat(s);
+    begin
+      d:= StrToFloat(s);
+      Result:= True;
+    end
+  else
+    d:= 0;
 end;
 
-function GetIniInt(secstr,varstr: string): longint;
+function GetIniInt(secstr,varstr: string; var i: integer): Boolean;
 var
   s: string;
 begin
-  Result:= 0;
-  s:= GetIniStr(secstr,varstr);
+  Result:= False;
+  if not GetIniStr(secstr,varstr,s) then
+    Exit;
   if s <> '' then
-    result:= StrToInt(s);
+    begin
+      i:= StrToInt(s);
+      Result:= true;
+    end;
 end;
 
 procedure GetJogIncrements;
 var
   tmp: string;
 begin
-  tmp:= GetIniStr('DISPLAY','INCREMENTS');
+  GetIniStr('DISPLAY','INCREMENTS',tmp);
   // Fixme
   JogInc[0].Txt:= 'continous';
   JogInc[0].Val:= 0;
@@ -216,103 +250,130 @@ function LoadSetupFromIni: Boolean;
 var
   d: Double;
   tmp: string;
+  i: integer;
 begin
   Result:= false;
-  ToolTblFile:= 'emc.tbl';
-  ParamFile:= 'emc.var';
-  Machine:= GetIniStr('EMC','MACHINE');
-  PostguiHalfile:= GetIniStr('HAL','POSTGUI_HALFILE');
-  d:= GetIniDouble('DISPLAY', 'MAX_FEED_OVERRIDE') * 100;
-  if d < 100 then
-    d:= 100;  // Default 100%
-  MaxFeedOverride:= Round(d);
-  d:= GetIniDouble('DISPLAY','MAX_SPINDLE_OVERRIDE') * 100;
-  if d < 100 then
-    d:= 100;  // Default 100%
-  MaxSpindleOverride:= Round(d);
+  
+  E.ToolTblFile:= 'emc.tbl';
+  E.ParamFile:= 'emc.var';
 
-  d:= GetIniDouble('DISPLAY','DEFAULT_LINEAR_VELOCITY');
-  if d = 0 then
-    d:= GetIniDouble('TRAJ', 'DEFAULT_LINEAR_VELOCITY');
-  if d = 0 then
-    d:= GetIniDouble('TRAJ', 'DEFAULT_VELOCITY');
-  if d = 0 then
-    d:= 1.0; // Default 1.0, no Settings found
+  GetIniStr('DISPLAY','PROGRAM_PREXIX',E.ProgramPrefix);
+  GetIniStr('EMC','MACHINE',E.Machine);
+  GetIniStr('FILTER','PROGRAM_EXTENSION', E.Extensions);
+  GetIniStr('HAL','POSTGUI_HALFILE',E.PostguiHalfile);
+  
+  if not GetIniDouble('DISPLAY','MAX_FEED_OVERRIDE',d) then
+    d:= 1;
+  E.MaxFeedOverride:= Round(d * 100);
 
-  jogSpeed:= Round(d);
-  MaxJogSpeed:= jogSpeed * 2;   // Fixme!
+  if not GetIniDouble('DISPLAY','MAX_SPINDLE_OVERRIDE',d) then
+    d:= 1;
+  E.MaxSpindleOverride:= Round(d * 100);
 
-  d:= GetIniDouble('DISPLAY', 'DEFAULT_ANGULAR_VELOCITY');
-  if d = 0 then
-    d:= GetIniDouble('TRAJ', 'DEFAULT_ANGULAR_VELOCITY');
-  if d = 0 then
-    d:= GetIniDouble('TRAJ', 'DEFAULT_VELOCITY');
+  if not GetIniStr('DISPLAY','GEOMETRY',tmp) then
+    tmp:= 'XYZBC';
+  if Length(tmp) < 1 then Exit;  // no geometry
+  E.Geometry:= tmp;
 
-   if d < 1 then
-     AngularJogSpeed:= JogSpeed // Fixme!
-   else
-     AngularJogSpeed:= Round(d);
+  if not GetIniDouble('DISPLAY','DEFAULT_LINEAR_VELOCITY',d) then
+    if not GetIniDouble('TRAJ', 'DEFAULT_LINEAR_VELOCITY',d) then
+     if not GetIniDouble('TRAJ', 'DEFAULT_VELOCITY',d) then
+       d:= 1.0; // Default 1.0, no Settings found
+
+  E.LinearJogSpeed:= d * 60;
+
+  if not GetIniDouble('DISPLAY','DEFAULT_ANGULAR_VELOCITY',d) then
+    if not GetIniDouble('TRAJ', 'DEFAULT_ANGULAR_VELOCITY',d) then
+      if not GetIniDouble('TRAJ', 'DEFAULT_VELOCITY',d) then
+        d:= 1.0;
+        
+  E.AngularJogSpeed:= d * 60;
      
-  Tmp:= GetIniStr('TRAJ','LINEAR_UNITS');
+  if not GetIniDouble('DISPLAY','MAX_LINEAR_VELOCITY',d) then
+    if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d) then
+      if not GetIniDouble('TRAJ','MAX_VELOCITY',d) then
+        d:= 1.0;
+  E.MaxLinearVel:= d * 60;
+
+  if not GetIniDouble('DISPLAY','MAX_ANGULAR_VELOCITY',d) then
+    if not GetIniDouble('TRAJ','MAX_ANGULAR_VELOCITY',d) then
+      if not GetIniDouble('TRAJ','MAX_VELOCITY',d) then
+        d:= 1.0;
+  E.MaxAngularVel:= d * 60;
+
+
+  GetIniStr('TRAJ','LINEAR_UNITS',tmp);
    if Tmp = '' then
-     IsMetric:= True
+     E.IsMetric:= True
    else
-     begin
        // Fixme
-       IsMetric:= True;
-     end;
-  if IsMetric then
+     E.IsMetric:= True;
+  if E.IsMetric then
     begin
-      UnitVelStr:= 'mm/min';
-      UnitStr:= 'mm';
+      E.UnitVelStr:= 'mm/min';
+      E.UnitStr:= 'mm';
     end
   else
     begin
-      UnitVelStr:= 'in/min';
-      UnitStr:= 'in';
+      E.UnitVelStr:= 'in/min';
+      E.UnitStr:= 'in';
     end;
     
-  NumAxes:= GetIniInt('TRAJ','AXES');
-  if NumAxes < 1 then
+  if not GetIniInt('TRAJ','AXES',i) then
+    i:= 0;
+  if (i < 1) or (i > 5) then
     begin
       writeln('Number of Axes not defined or zero.');
       Exit;
     end;
-  if NumAxes > 5 then
-    begin
-      writeln('More than 5 Axes are not allowed');
-      Exit;
-    end;
-  CoordNames:= GetIniStr('TRAJ','COORDINATES');
-  if Length(CoordNames) < 1 then
-    begin
-      writeln('no given coordinates in "TRAJ"- Section.');
-      Exit;
-    end;
-  CycleTime:= GetIniDouble('DISPLAY','CYCLE_TIME');
-  if CycleTime = 0 then
-    CycleTime:= 0.2;
-  CycleDelay:= Round(CycleTime/1000);
-  if (CycleDelay > 500) then CycleDelay:= 500;
-  if (CycleDelay < 50) then CycleDelay:= 50;
-  ToolTblFile:= GetIniStr('EMCIO','TOOL_TABLE');
-  ParamFile:= GetIniStr('RS274NGC','PARAMETER_FILE');
+  E.NumAxes:= i;
 
-  if not GetCoordNames then
-    Exit;
+  if GetIniStr('TRAJ','COORDINATES',tmp) then
+    begin
+      if not StripBlank(tmp) then tmp:= '';
+      if Length(tmp) <> E.NumAxes then
+        begin
+          writeln('missmatch in number of joints and coord names');
+          Exit;
+        end;
+    end;
+  E.CoordNames:= tmp;
+
+  if not GetIniDouble('DISPLAY','CYCLE_TIME',d) then
+    d:= 0.2; // default cycletime
+  i:= Round(d/1000);
+  if (i > 500) then i:= 500;
+  if (i < 50) then i := 50;
+  E.CycleDelay:= i;
+  
+  GetIniStr('EMCIO','TOOL_TABLE',E.ToolTblFile);
+  GetIniStr('RS274NGC','PARAMETER_FILE',E.ParamFile);
 
   GetJogIncrements;
-    
+
+  E.HomingOrderDefined:= GetIniStr('AXIS_0','HOME_SEQUENCE',tmp);
+
+  if E.LinearJogSpeed > E.MaxLinearVel then
+    E.LinearJogSpeed:= E.MaxLinearVel;
+
+  MaxJogSpeed:= Round(E.MaxLinearVel);
+  MinJogSpeed:= Round(0);  // Fixme, should be minlinearvelocity
+  ActJogSpeed:= Round(E.LinearJogSpeed);
+  OldJogSpeed:= ActJogSpeed;
+
+  MaxMaxVelocity:= Round(E.MaxLinearVel);
+  ActMaxVelocity:= MaxMaxVelocity;
+  
   Result:= True;
 end;
 
 begin
-  NumAxes:= 0;
-  CoordNames:= '';
-  CycleTime:= 0.02;
-  CycleDelay:= 100;
-  ToolTblFile:= '';
-  ParamFile:= '';
-  TaskMode:= -1;
+  E.NumAxes:= 0;
+  E.CoordNames:= '';
+  E.CycleTime:= 0.02;
+  E.CycleDelay:= 100;
+  E.ToolTblFile:= '';
+  E.ParamFile:= '';
+  ActTaskMode:= -1;
 end.
 

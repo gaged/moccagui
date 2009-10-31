@@ -12,7 +12,7 @@ uses
   mocca_main,
   emc2pas,
   SysUtils,
-  mocglobal;
+  mocglobal, StatusDlg, HomeDlg;
   
 
 function InitEmc: integer;
@@ -59,6 +59,8 @@ begin
     Halt(1);
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TStatusDlgForm, StatusDlgForm);
+  Application.CreateForm(THomeDlgForm, HomeDlgForm);
   Application.Run;
   if QuitEmc <> 0 then
     Halt(2);
