@@ -12,7 +12,6 @@ enum LINEAR_UNIT_CONVERSION {
     LINEAR_UNITS_INCH,
     LINEAR_UNITS_CM
 };
-extern LINEAR_UNIT_CONVERSION linearUnitConversion;
 
 enum ANGULAR_UNIT_CONVERSION {
     ANGULAR_UNITS_CUSTOM = 1,
@@ -21,7 +20,6 @@ enum ANGULAR_UNIT_CONVERSION {
     ANGULAR_UNITS_RAD,
     ANGULAR_UNITS_GRAD
 };
-extern ANGULAR_UNIT_CONVERSION angularUnitConversion;
 
 enum EMC_WAIT_TYPE {
     EMC_WAIT_NONE = 1,
@@ -30,87 +28,196 @@ enum EMC_WAIT_TYPE {
 };
 
 extern EMC_WAIT_TYPE emcWaitType;
+extern LINEAR_UNIT_CONVERSION linearUnitConversion;
+extern ANGULAR_UNIT_CONVERSION angularUnitConversion;
 
 LINEAR_UNIT_CONVERSION linearUnitConversion ;
 ANGULAR_UNIT_CONVERSION angularUnitConversion ;
+EMC_STAT *emcStatus;
+EMC_WAIT_TYPE emcWaitType;
 
 static int emcCommandSerialNumber;
-static int saveEmcCommandSerialNumber;
+static int emcSavedCommandSerialNumber;
 
 // the NML channels to the EMC task
 static RCS_CMD_CHANNEL *emcCommandBuffer;
 static RCS_STAT_CHANNEL *emcStatusBuffer;
 
-EMC_STAT *emcStatus;
-
 // the NML channel for errors
 static NML *emcErrorBuffer;
 static IniFile inifile;
 
-char error_string[NML_ERROR_LEN];
-char operator_text_string[NML_TEXT_LEN];
-char operator_display_string[NML_DISPLAY_LEN];
-char active_g_codes_string[MDI_LINELEN] = "";
-char active_m_codes_string[MDI_LINELEN] = "";
+char errorString[NML_ERROR_LEN];
+char operatorTextStr[NML_TEXT_LEN];
+char operatorDisplayStr[NML_DISPLAY_LEN];
 
-// char defaultPath[80] = DEFAULT_PATH;
+char activeGCodes[MDI_LINELEN] = "";
+char activeMCodes[MDI_LINELEN] = "";
+char activeFWords[MDI_LINELEN] = "";
+char activeSWords[MDI_LINELEN] = "";
+
 double emcTimeout;
-int programStartLine;
-
-EMC_WAIT_TYPE emcWaitType;
+double emcSpindleDefaultSpeed = 500;
 
 // polarities for axis jogging, from ini file
-int jogPol[EMC_AXIS_MAX];
+static int jogPol[EMC_AXIS_MAX];
+ 
+// these are the axis status items, maybe well need them later...
+/*    
+    minFerror = 1.0;
+    maxFerror = 1.0;
+    ferrorCurrent = 0.0;
+    ferrorHighMark = 0.0;
+    output = 0.0;
+    input = 0.0;
+    inpos = 1;
+*/
 
-    
-extern "C" int getFeedOverride()
-{
-  return (int) (emcStatus->motion.traj.scale * 100.0 + 0.5);
-}
+extern "C" int AxisAxisType(int joint) { return emcStatus->motion.axis[joint].axisType; }
+extern "C" double AxisUnits(int joint) { return emcStatus->motion.axis[joint].units; }
+extern "C" double AxisBacklash(int joint) { return emcStatus->motion.axis[joint].backlash; }
+extern "C" double AxisMinPositionLimit(int joint) { return emcStatus->motion.axis[joint].minPositionLimit; }
+extern "C" double AxisMaxPositionLimit(int joint) { return emcStatus->motion.axis[joint].maxPositionLimit; }
+extern "C" double AxisVelocity(int joint) { return emcStatus->motion.axis[joint].velocity; }
+extern "C" bool AxisHoming(int joint) { return emcStatus->motion.axis[joint].homing; }
+extern "C" bool AxisHomed(int joint) { return emcStatus->motion.axis[joint].homed; }
+extern "C" bool AxisEnabled(int joint) { return emcStatus->motion.axis[joint].enabled; }
+extern "C" bool AxisFault(int joint) { return emcStatus->motion.axis[joint].fault; }
+extern "C" double AxisMinSoftLimit(int joint) { return emcStatus->motion.axis[joint].minSoftLimit; }
+extern "C" double AxisMaxSoftLimit(int joint) { return emcStatus->motion.axis[joint].maxSoftLimit; }
+extern "C" double AxisMinHardLimit(int joint) { return emcStatus->motion.axis[joint].minHardLimit; }
+extern "C" double AxisMaxHardLimit(int joint) { return emcStatus->motion.axis[joint].maxHardLimit; }
+extern "C" bool AxisOverrideLimits(int joint) { return emcStatus->motion.axis[joint].overrideLimits; }
 
 
-extern "C" void getActiveGCodes()
+// these are the traj status items, maybe well need them later...
+/*
+    cycleTime = 0.0;
+    axes = 1;
+    axis_mask = 1;
+    enabled = OFF;
+    inpos = ON;
+    queue = 0;
+    activeQueue = 0;
+    queueFull = OFF;
+    id = 0;
+    paused = OFF;
+    ZERO_EMC_POSE(position);
+    ZERO_EMC_POSE(actualPosition);
+    maxAcceleration = 1.0;
+    ZERO_EMC_POSE(probedPosition);
+    probeval = 0;
+    ZERO_EMC_POSE(dtg);
+    kinematics_type = 0;
+    motion_type = 0;
+ */
+// trajstate read functions
+
+extern "C" int trajMode() { return emcStatus->motion.traj.scale; }
+extern "C" double trajlinearUnits() { return emcStatus->motion.traj.linearUnits; }
+extern "C" double trajangularUnits() { return emcStatus->motion.traj.angularUnits; }
+extern "C" double trajScale() { return emcStatus->motion.traj.scale; }
+extern "C" double trajSpindleScale() { return emcStatus->motion.traj.spindle_scale; }
+extern "C" double trajVel() { return emcStatus->motion.traj.velocity; }
+extern "C" double trajAcceleration() { return emcStatus->motion.traj.acceleration; }
+extern "C" double trajMaxVel() { return emcStatus->motion.traj.maxVelocity; }
+extern "C" double trajDtg() { return emcStatus->motion.traj.distance_to_go; }
+extern "C" double trajCurrentVel() { return emcStatus->motion.traj.current_vel; }
+extern "C" bool trajFeedORideEnabled() { return emcStatus->motion.traj.feed_override_enabled; }
+extern "C" bool trajSpindleORideEnabled() { return emcStatus->motion.traj.spindle_override_enabled; }
+extern "C" bool trajAdaptiveFeedEnabled() { return emcStatus->motion.traj.adaptive_feed_enabled; }
+extern "C" bool trajFeedHoldEnabled() { return emcStatus->motion.traj.feed_hold_enabled; }
+extern "C" bool trajProbing() { return emcStatus->motion.traj.probing; }
+extern "C" bool trajProbeTripped() { return emcStatus->motion.traj.probe_tripped; }
+
+// these are the TASK_STAT items, maybe well need them later...
+/*
+    execState = EMC_TASK_EXEC_DONE;
+    input_timeout = OFF;
+    file[0] = 0;
+    command[0] = 0;
+    ZERO_EMC_POSE(origin);
+    ZERO_EMC_POSE(toolOffset);
+*/
+
+// taskstate read functions
+extern "C" int taskMode() { return emcStatus->task.mode; }
+extern "C" int taskState() { return emcStatus->task.state; }
+extern "C" int taskInterpState() { return emcStatus->task.interpState; }
+extern "C" int taskMotionline() { return emcStatus->task.motionLine; }
+extern "C" int taskCurrentLine() { return emcStatus->task.currentLine; }
+extern "C" int taskReadLine() { return emcStatus->task.readLine; }
+extern "C" double taskRotationXY() { return emcStatus->task.rotation_xy; }
+extern "C" bool taskTloIsAlongW() { return emcStatus->task.tloIsAlongW; }
+extern "C" int taskProgramUnits() { return emcStatus->task.programUnits; }
+extern "C" int taskInterpErrorCode() { return emcStatus->task.interpreter_errcode; }
+extern "C" double taskDelayLeft() { return emcStatus->task.delayLeft; }
+extern "C" bool taskBlockDelete() { return emcStatus->task.block_delete_state; }
+extern "C" bool taskOptStop() { return emcStatus->task.optional_stop_state; }
+
+
+// spindlestat read functions
+extern "C" double spindleSpeed() { return emcStatus->motion.spindle.speed; }
+extern "C" int spindleDirection() { return emcStatus->motion.spindle.direction; }
+extern "C" int spindleBrake() { return emcStatus->motion.spindle.brake; }
+extern "C" int spindleIncreasing() { return emcStatus->motion.spindle.increasing; }
+extern "C" int spindleEnabled() { return emcStatus->motion.spindle.enabled; }
+
+// coolantstat read functions
+extern "C" bool coolantMist() { return emcStatus->io.coolant.mist != 0; }
+extern "C" bool coolantFlood() { return emcStatus->io.coolant.flood != 0; }
+
+// Lubestat read functions
+extern "C" bool lubeOn() { return emcStatus->io.lube.on != 0; }
+extern "C" int lubeLevel() { return emcStatus->io.lube.level; }
+
+// this is a one call -do all function to get the m,g codes and settings
+extern "C" void taskActiveCodes()
 {
   int t;
   int code; 
   char string[256];  
-  active_g_codes_string[0] = 0;
+
+  // fill in the active G codes
+  activeGCodes[0] = 0;
   for (t = 1; t < ACTIVE_G_CODES; t++) {
     code = emcStatus->task.activeGCodes[t];
-    if (code == -1) {
-      continue;
-    }
+    if (code == -1) { continue; }
     if (code % 10) {
       sprintf(string, "G%.1f ", (double) code / 10.0);
     }
     else {
       sprintf(string, "G%d ", code / 10);
     }
-    strcat(active_g_codes_string, string);
+    strcat(activeGCodes, string);
   }
-}
 
-extern "C" void getActiveMCodes()
-{
-  int t;
-  int code; 
-  char string[256];   
-  active_m_codes_string[0] = 0;
+  // fill in the active M codes, settings too
+  activeMCodes[0] = 0;
   for (t = 1; t < ACTIVE_M_CODES; t++) {
     code = emcStatus->task.activeMCodes[t];
     if (code == -1) {
       continue;
     }
     sprintf(string, "M%d ", code);
-    strcat(active_m_codes_string, string);
+    strcat(activeMCodes, string);
   }
+
+  // fill in F and S codes also
+  activeFWords[0] = 0;  
+  sprintf(string, " F%.0f", emcStatus->task.activeSettings[1]);
+  strcat(activeFWords, string);
+  
+  activeSWords[0] = 0;
+  sprintf(string, " S%.0f", emcStatus->task.activeSettings[2]);
+  strcat(activeSWords, string);  
 }
 
 extern "C" bool geterror(char *msg)
 {
-  if (error_string[0] != 0) {
-    strcpy(msg,error_string);
-    error_string[0] = 0;
+  if (errorString[0] != 0) {
+    strcpy(msg,errorString);
+    errorString[0] = 0;
     return true;
   }
   return false;
@@ -124,15 +231,12 @@ extern "C" int updateStatus()
 	return -1;
     }
     switch (type = emcStatusBuffer->peek()) {
-    case -1:
-	// error on CMS channel
+    case -1:  // error on CMS channel
 	return -1;
 	break;
-    case 0:			// no new data
+    case 0:  // no new data
     case EMC_STAT_TYPE:	// new data
-	// new data
 	break;
-
     default:
 	return -1;
 	break;
@@ -203,7 +307,6 @@ extern "C" double convertLinearUnits(double u)
 	    break;
 	}
 	break;
-
     case LINEAR_UNITS_CUSTOM:
 	return u;
 	break;
@@ -315,7 +418,7 @@ extern "C" void emcNmlQuit()
 	emcCommandWaitReceived(emcCommandSerialNumber);
     }
     if (0 != emcCommandBuffer) {
-	emc_null_msg.serial_number = saveEmcCommandSerialNumber;
+	emc_null_msg.serial_number = emcSavedCommandSerialNumber;
 	emcCommandBuffer->write(emc_null_msg);
     }
     if (emcErrorBuffer != 0) {
@@ -542,51 +645,51 @@ extern "C" int updateError()
 	break;
 
     case EMC_OPERATOR_ERROR_TYPE:
-	strncpy(error_string,
+	strncpy(errorString,
 		((EMC_OPERATOR_ERROR *) (emcErrorBuffer->get_address()))->
 		error, LINELEN - 1);
-	error_string[NML_ERROR_LEN - 1] = 0;
+	errorString[NML_ERROR_LEN - 1] = 0;
 	break;
 
     case EMC_OPERATOR_TEXT_TYPE:
-	strncpy(operator_text_string,
+	strncpy(operatorTextStr,
 		((EMC_OPERATOR_TEXT *) (emcErrorBuffer->get_address()))->
 		text, LINELEN - 1);
-	operator_text_string[NML_TEXT_LEN - 1] = 0;
+	operatorTextStr[NML_TEXT_LEN - 1] = 0;
 	break;
 
     case EMC_OPERATOR_DISPLAY_TYPE:
-	strncpy(operator_display_string,
+	strncpy(operatorDisplayStr,
 		((EMC_OPERATOR_DISPLAY *) (emcErrorBuffer->
 					   get_address()))->display,
 		LINELEN - 1);
-	operator_display_string[NML_DISPLAY_LEN - 1] = 0;
+	operatorDisplayStr[NML_DISPLAY_LEN - 1] = 0;
 	break;
 
     case NML_ERROR_TYPE:
-	strncpy(error_string,
+	strncpy(errorString,
 		((NML_ERROR *) (emcErrorBuffer->get_address()))->error,
 		NML_ERROR_LEN - 1);
-	error_string[NML_ERROR_LEN - 1] = 0;
+	errorString[NML_ERROR_LEN - 1] = 0;
 	break;
 
     case NML_TEXT_TYPE:
-	strncpy(operator_text_string,
+	strncpy(operatorTextStr,
 		((NML_TEXT *) (emcErrorBuffer->get_address()))->text,
 		NML_TEXT_LEN - 1);
-	operator_text_string[NML_TEXT_LEN - 1] = 0;
+	operatorTextStr[NML_TEXT_LEN - 1] = 0;
 	break;
 
     case NML_DISPLAY_TYPE:
-	strncpy(operator_display_string,
+	strncpy(operatorDisplayStr,
 		((NML_DISPLAY *) (emcErrorBuffer->get_address()))->display,
 		NML_DISPLAY_LEN - 1);
-	operator_display_string[NML_DISPLAY_LEN - 1] = 0;
+	operatorDisplayStr[NML_DISPLAY_LEN - 1] = 0;
 	break;
 
     default:
 	// if not recognized, set the error string
-	sprintf(error_string, "unrecognized error %ld", type);
+	sprintf(errorString, "unrecognized error %ld", type);
 	return -1;
 	break;
     }
@@ -717,11 +820,6 @@ extern "C" int sendMdi()
     return 0;
 }
 
-extern "C" int getTaskMode()
-{
-  return emcStatus->task.mode;
-}
-
 extern "C" int sendOverrideLimits(int axis)
 {
     EMC_AXIS_OVERRIDE_LIMITS lim_msg;
@@ -735,8 +833,6 @@ extern "C" int sendOverrideLimits(int axis)
     }
     return 0;
 }
-
-static int axisJogging = -1;
 
 extern "C" int sendJogStop(int axis)
 {
@@ -752,7 +848,6 @@ extern "C" int sendJogStop(int axis)
    } else if (emcWaitType == EMC_WAIT_DONE) {
      return emcCommandWaitDone(emcCommandSerialNumber);
    }
-  axisJogging = -1;
   return 0;
 }
 
@@ -769,7 +864,6 @@ extern "C" int sendJogCont(int axis, double speed)
     emc_axis_jog_msg.axis = axis;
     emc_axis_jog_msg.vel = speed / 60.0;
     emcCommandBuffer->write(emc_axis_jog_msg);
-    axisJogging = axis;
     if (emcWaitType == EMC_WAIT_RECEIVED) {
 	return emcCommandWaitReceived(emcCommandSerialNumber);
     } else if (emcWaitType == EMC_WAIT_DONE) {
@@ -797,7 +891,6 @@ extern "C" int sendJogIncr(int axis, double speed, double incr)
     } else if (emcWaitType == EMC_WAIT_DONE) {
 	return emcCommandWaitDone(emcCommandSerialNumber);
     }
-    axisJogging = -1;
     return 0;
 }
 
@@ -826,15 +919,6 @@ extern "C" int sendMistOff()
     }
     return 0;
 }
-
-extern "C" int getMistOnOff()
-{
-  if (emcStatus->io.coolant.mist == 1) {
-    return 1;
-  } else {
-    return 0;
-  }
-} 
  
 extern "C" int sendFloodOn()
 {
@@ -860,11 +944,6 @@ extern "C" int sendFloodOff()
 	return emcCommandWaitDone(emcCommandSerialNumber);
     }
     return 0;
-}
-
-extern "C" bool getFloodOn()
-{
-  return (emcStatus->io.coolant.flood == 1);
 }
 
 extern "C" int sendLubeOn()
@@ -893,18 +972,13 @@ extern "C" int sendLubeOff()
     return 0;
 }
 
-extern "C" bool getLubeOn()
-{
-  return emcStatus->io.lube.on;
-} 
-
 extern "C" int sendSpindleForward()
 {
     EMC_SPINDLE_ON emc_spindle_on_msg;
     if (emcStatus->task.activeSettings[2] != 0) {
 	emc_spindle_on_msg.speed = fabs(emcStatus->task.activeSettings[2]);
     } else {
-	emc_spindle_on_msg.speed = +500;
+	emc_spindle_on_msg.speed = +emcSpindleDefaultSpeed;
     }
     emc_spindle_on_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_on_msg);
@@ -923,7 +997,7 @@ extern "C" int sendSpindleReverse()
 	emc_spindle_on_msg.speed =
 	    -1 * fabs(emcStatus->task.activeSettings[2]);
     } else {
-	emc_spindle_on_msg.speed = -500;
+	emc_spindle_on_msg.speed = -emcSpindleDefaultSpeed;
     }
     emc_spindle_on_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_on_msg);
@@ -986,16 +1060,6 @@ extern "C" int sendSpindleConstant()
     }
     return 0;
 }
-
-extern "C" int getSpindle()
-{
-  int retval;
-  retval = emcStatus->motion.spindle.increasing;
-  if (retval == 0) {
-    retval = emcStatus->motion.spindle.direction;
-  }
-  return retval;
-}
     
 extern "C" int sendBrakeEngage()
 {
@@ -1021,11 +1085,6 @@ extern "C" int sendBrakeRelease()
 	return emcCommandWaitDone(emcCommandSerialNumber);
     }
     return 0;
-}
-
-extern "C" bool getBrakeOn()
-{
-  return emcStatus->motion.spindle.brake;
 }
 
 extern "C" int sendAbort()
@@ -1069,16 +1128,11 @@ extern "C" int sendUnHome(int axis)
     return 0;
 }
 
-extern "C" bool getJointHomed(int joint)
-{
-  return emcStatus->motion.axis[joint].homed;
-}
-
 extern "C" int sendFeedOverride(double override)
 {
     EMC_TRAJ_SET_SCALE emc_traj_set_scale_msg;
     if (override < 0.0) {
-	override = 0.0;
+      override = 0.0;
     }
     emc_traj_set_scale_msg.serial_number = ++emcCommandSerialNumber;
     emc_traj_set_scale_msg.scale = override;
@@ -1091,11 +1145,24 @@ extern "C" int sendFeedOverride(double override)
     return 0;
 }
 
+extern "C" int sendMaxVelocity(double velocity)
+{
+    EMC_TRAJ_SET_MAX_VELOCITY mv;
+    if (velocity < 0.0) {
+        velocity = 0.0;
+    }
+    mv.serial_number = ++emcCommandSerialNumber;
+    mv.velocity = velocity;
+    emcCommandBuffer->write(mv);
+    return emcCommandWaitReceived(emcCommandSerialNumber);
+}
+
+
 extern "C" int sendSpindleOverride(double override)
 {
     EMC_TRAJ_SET_SPINDLE_SCALE emc_traj_set_spindle_scale_msg;
     if (override < 0.0) {
-	override = 0.0;
+      override = 0.0;
     }
     emc_traj_set_spindle_scale_msg.serial_number = ++emcCommandSerialNumber;
     emc_traj_set_spindle_scale_msg.scale = override;
@@ -1121,14 +1188,9 @@ extern "C" int sendTaskPlanInit()
     return 0;
 }
 
-// saved value of last program opened
-static char lastProgramFile[LINELEN] = "";
-
 extern "C" int sendProgramOpen(char *program)
 {
     EMC_TASK_PLAN_OPEN emc_task_plan_open_msg;
-    // save this to run again
-    strcpy(lastProgramFile, program);
     emc_task_plan_open_msg.serial_number = ++emcCommandSerialNumber;
     strcpy(emc_task_plan_open_msg.file, program);
     emcCommandBuffer->write(emc_task_plan_open_msg);
@@ -1143,10 +1205,6 @@ extern "C" int sendProgramOpen(char *program)
 extern "C" int sendProgramRun(int line)
 {
     EMC_TASK_PLAN_RUN emc_task_plan_run_msg;
-    if (0 == emcStatus->task.file[0]) {
-	sendProgramOpen(lastProgramFile);
-    }
-    programStartLine = line;
     emc_task_plan_run_msg.serial_number = ++emcCommandSerialNumber;
     emc_task_plan_run_msg.line = line;
     emcCommandBuffer->write(emc_task_plan_run_msg);
@@ -1198,12 +1256,9 @@ extern "C" int sendSetOptionalStop(bool state)
     return 0;
 }
 
-
 extern "C" int sendProgramStep()
 {
     EMC_TASK_PLAN_STEP emc_task_plan_step_msg;
-    // clear out start line, if we had a verify before it would be -1
-    programStartLine = 0;
     emc_task_plan_step_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_task_plan_step_msg);
     if (emcWaitType == EMC_WAIT_RECEIVED) {
@@ -1448,7 +1503,6 @@ extern "C" int iniOpen(const char *filename)
     } else {
 	// not found, leave default alone
     }
-
     // close it
     return 0;
 }
