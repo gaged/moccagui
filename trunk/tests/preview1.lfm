@@ -1,0 +1,101 @@
+object Form1: TForm1
+  Left = 389
+  Height = 770
+  Top = 189
+  Width = 798
+  HorzScrollBar.Page = 797
+  VertScrollBar.Page = 769
+  ActiveControl = BtnOpen
+  Caption = 'Form1'
+  ClientHeight = 770
+  ClientWidth = 798
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object Label1: TLabel
+    Left = 103
+    Height = 20
+    Top = 52
+    Width = 43
+    Caption = 'Label1'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 104
+    Height = 20
+    Top = 72
+    Width = 43
+    Caption = 'Label2'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 104
+    Height = 20
+    Top = 88
+    Width = 43
+    Caption = 'Label3'
+    ParentColor = False
+  end
+  object BtnOpen: TButton
+    Left = 10
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Open...'
+    OnClick = BtnOpenClick
+    TabOrder = 0
+  end
+  object ogl: TOpenGLControl
+    Left = 96
+    Height = 600
+    Top = 120
+    Width = 652
+    OnMouseWheelDown = oglMouseWheelDown
+    OnMouseWheelUp = oglMouseWheelUp
+    OnPaint = oglPaint
+    OnResize = oglResize
+  end
+  object sbZ: TScrollBar
+    Left = 96
+    Height = 15
+    Top = 736
+    Width = 648
+    Max = 180
+    Min = -180
+    TabOrder = 1
+    OnChange = sbZChange
+  end
+  object sbY: TScrollBar
+    Left = 768
+    Height = 600
+    Top = 120
+    Width = 15
+    Kind = sbVertical
+    Max = 90
+    Min = -90
+    TabOrder = 2
+    OnChange = sbYChange
+  end
+  object Button1: TButton
+    Left = 128
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Resetview'
+    TabOrder = 3
+  end
+  object Button2: TButton
+    Left = 240
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Button2'
+    OnClick = Button2Click
+    TabOrder = 4
+  end
+  object OpenDialog: TOpenDialog
+    Title = 'Vorhandene Datei öffnen'
+    InitialDir = '/home/gtom/emc/nc_files'
+    left = 114
+    top = 20
+  end
+end

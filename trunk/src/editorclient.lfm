@@ -1,0 +1,12 @@
+object EditorClientForm: TEditorClientForm
+  Left = 670
+  Height = 300
+  Top = 319
+  Width = 400
+  HorzScrollBar.Page = 399
+  VertScrollBar.Page = 299
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'EditorClientForm'
+  Visible = True
+end
