@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<CONFIG>
-  <Compiler Value="/usr/bin/ppc386" Date="1207051037"/>
-  <Params Value=" -S2cgi -OG1 -TLinux -gl -vewnhi -l -Fu/usr/lib/lazarus/lcl/units/i386-linux/ -Fu/usr/lib/lazarus/lcl/units/i386-linux/gtk/ -Fu/usr/lib/lazarus/packager/units/i386-linux/ -Fu. -FUlib/i386-linux/ -dLCL -dLCLgtk emcintf.pas"/>
-</CONFIG>
