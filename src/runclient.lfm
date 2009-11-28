@@ -1,0 +1,63 @@
+object RunClientForm: TRunClientForm
+  Left = 343
+  Height = 424
+  Top = 284
+  Width = 616
+  HorzScrollBar.Page = 615
+  VertScrollBar.Page = 423
+  ActiveControl = LB
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'RunClientForm'
+  ClientHeight = 424
+  ClientWidth = 616
+  OnCreate = FormCreate
+  object LabelInterpState: TLabel
+    AnchorSideTop.Control = LabelCaption
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = LB
+    AnchorSideRight.Side = asrBottom
+    Left = 293
+    Height = 20
+    Top = 11
+    Width = 107
+    Anchors = [akTop, akRight]
+    Caption = 'LabelInterpState'
+    ParentColor = False
+  end
+  object LabelCaption: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 4
+    Height = 34
+    Top = 4
+    Width = 115
+    BorderSpacing.Around = 4
+    Caption = 'Satzlauf'
+    Font.Height = -28
+    Font.Pitch = fpFixed
+    ParentColor = False
+  end
+  object LB: TListBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = LabelCaption
+    AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 4
+    Height = 378
+    Top = 42
+    Width = 396
+    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Around = 4
+    TabOrder = 0
+    TopIndex = -1
+  end
+  object OpenDialog: TOpenDialog
+    Title = 'Vorhandene Datei öffnen'
+    DefaultExt = '.*.ngc'
+    Filter = 'nc-files|*.ngc|gcode|*.nc'
+    left = 24
+    top = 16
+  end
+end
