@@ -1,0 +1,61 @@
+object SimClientForm: TSimClientForm
+  Left = 508
+  Height = 335
+  Top = 290
+  Width = 453
+  HorzScrollBar.Page = 452
+  VertScrollBar.Page = 334
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'SimClientForm'
+  ClientHeight = 335
+  ClientWidth = 453
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object sbH: TScrollBar
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = sbV
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 4
+    Height = 15
+    Top = 316
+    Width = 430
+    Anchors = [akLeft, akRight, akBottom]
+    BorderSpacing.Left = 4
+    BorderSpacing.Bottom = 4
+    Max = 90
+    Min = -90
+    TabOrder = 0
+    OnChange = sbHChange
+  end
+  object sbV: TScrollBar
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = sbH
+    Left = 434
+    Height = 312
+    Top = 4
+    Width = 15
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Top = 4
+    BorderSpacing.Right = 4
+    Kind = sbVertical
+    Max = 90
+    Min = -90
+    TabOrder = 1
+    OnChange = sbVChange
+  end
+  object Panel: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = sbV
+    AnchorSideBottom.Control = sbH
+    Height = 316
+    Width = 434
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabOrder = 2
+    OnResize = BevelResize
+  end
+end
