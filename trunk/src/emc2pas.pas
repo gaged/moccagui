@@ -1,13 +1,14 @@
 unit emc2pas;
 
 {$link emcpas.o}
+{$link libemc.a}
 {$linklib libemcini.so}
 {$linklib libnml.so}
-{$link /home/gtom/emc/lib/libemc.a}
+{$linklib c}
+
+
 
 interface
-
-uses CTypes;
 
 {$H+}
 
@@ -62,11 +63,8 @@ var
   ActiveFWords: Array[0..MDI_LINELEN-1] of Char; external name 'activeFWords';
   ActiveSWords: Array[0..MDI_LINELEN-1] of Char; external name 'activeSWords';
 
-  LinearUnitConversion: Byte; external name 'linearUnitConversion';
-  AngularUnitConversion: Byte; external name 'angularUnitConversion';
-
-// internal functions
-function wait_complete: integer;
+  LinearUnitConversion: integer; external name 'linearUnitConversion';
+  AngularUnitConversion: integer; external name 'angularUnitConversion';
 
 // axis related functions
 function AxisAxisType(Joint: integer): integer cdecl; external; { motion.axis.*.axisType; }
@@ -178,9 +176,9 @@ function  sendMdi: Longint; cdecl; external;
 
 function  sendOverrideLimits(axis: integer): Longint; cdecl; external;
 
-function  sendJogStop(axis: integer): Longint; cdecl; external;
-function  sendJogCont(axis: integer; Speed: Double): Longint; cdecl; external;
-function  sendJogIncr(axis: integer; Speed,Increment: Double): Longint; cdecl; external;
+function  sendJogStop(axis: integer): longint; cdecl; external;
+function  sendJogCont(axis: integer; Speed: Double): longint; cdecl; external;
+function  sendJogIncr(axis: integer; Speed,Increment: Double): longint; cdecl; external;
 
 function  sendMistOn: Longint; cdecl; external;
 function  sendMistOff: Longint; cdecl; external;
@@ -220,6 +218,7 @@ function  sendProgramResume: Longint; cdecl; external;
 function  sendProgramStep: Longint; cdecl; external;
 
 function  sendSetOptionalStop(State: Boolean): Longint; cdecl; external;
+function  sendSetBlockDelete(State: Boolean): Longint; cdecl; external;
 
 function  sendMdiCmd(const cmd: PChar): Longint; cdecl; external;
 
@@ -247,10 +246,5 @@ function  getSpindle: Longint; cdecl; external;
 function  getBrakeOn: Boolean; cdecl; external;
 
 implementation
-
-function wait_complete: integer;
-begin
-  result:= emcCommandWaitDone(emcCommandSerialNumber)
-end;
 
 end.

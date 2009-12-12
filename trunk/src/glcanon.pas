@@ -6,9 +6,8 @@ unit glcanon;
 {$define DEBUG_SIM}
 
 {$link simcanon.o}
-{$link /home/gtom/emc/lib/libemcini.so.0}
-{$link /home/gtom/emc/lib/librs274.so.0}
-{$linklib stdc++}
+{$link libemcini.so.0}
+{$link librs274.so.0}
 
 {$define PRINT_CANON}
 
@@ -21,13 +20,43 @@ const
   INTP_ENDFILE = 3;
   INTP_FILE_NOT_OPEN = 4;
 
+// from rs274ngc.hh
+const
+  ACTIVE_G_CODES_MAX = 16;
+  ACTIVE_M_CODES_MAX = 10;
+  ACTIVE_SETTINGS_MAX = 3;
+
 var
-  Metric: boolean; external name 'metric';
+  glMetric: boolean; external name 'metric';
+
+type
+  TGotoParams = record
+    UseMetric: Boolean;
+    FileName: string;
+    InitCode: string;
+    UnitCode: string;
+    GCode: string;
+    MCode: string;
+    Settings: string;
+  end;
 
 function ParseGCode(FileName: string; UseMetric: Boolean): integer;
+
+function interpreter_init: longint; cdecl; external;
+function interpreter_reset: longint; cdecl; external;
+function interpreter_exec(const Command: PChar): longint; cdecl; external;
+function interpreter_synch: longint; cdecl; external;
+procedure interpreter_codes; cdecl; external;
+
 function GetGCodeError(code: integer): string;
 
 function ToInternalUnits(Value: Double): Double;
+
+
+function GCodeToStr(i: integer): string;
+function MCodeToStr(i: integer): string;
+function GetActiveFeed: Double;
+function GetActiveSpindle: Double;
 
 implementation
 
@@ -62,19 +91,75 @@ var
   lineno: integer;
 
 var
+  last_selected_tool: integer;
+
+var
   Plane: integer; external name 'plane';
   last_sequence_number: integer; external name 'last_sequence_number';
   maxerror: integer; external name 'maxerror';
   savedError: array[0..LINELEN] of char; external name 'savedError';
   dummy_tool: TTool; external name 'dummy_tool';
+  ParameterFileName: array[0..LINELEN] of Char; external name '_parameter_file_name';
+
+  glSettings: array[0..ACTIVE_SETTINGS_MAX-1] of double; external name 'settings';
+  glGCodes: array[0..ACTIVE_G_CODES_MAX-1] of integer; external name 'gcodes';
+  glMCodes: array[0..ACTIVE_M_CODES_MAX-1] of integer; external name 'mcodes';
 
 procedure initgcode; cdecl; external;
 function parsefile(filename,unitcode,initcode: PChar): integer; cdecl; external;
 function converterror(Err: integer): integer; cdecl; external;
+function goto_line(line_no: integer; filename,unitcode,initcode: PChar): integer; cdecl; external;
+
+function GCodeToStr(i: integer): string;
+var
+  V,V1,V2: integer;
+  S: string;
+begin
+  Result:= '';
+  S:= '';
+  if (i > 0) and (i < ACTIVE_G_CODES_MAX) then
+    begin
+      v:= glGCodes[i];
+      if V > 100 then
+        begin
+          V1:= Trunc(V/10);
+          V2:= V - (V1 * 10);
+          S:= 'G' + IntToStr(V1);
+          if V2 > 0 then
+            S:= S + '.' + IntToStr(V2);
+        end;
+    end;
+  Result:= S;
+end;
+
+function MCodeToStr(i: integer): string;
+var
+  V: integer;
+  S: string;
+begin
+  Result:= '';
+  S:= '';
+  if (i > 0) and (i < ACTIVE_M_CODES_MAX) then
+    begin
+      V:= glMCodes[i];
+      if V > 0 then S:= 'M' + IntToStr(V);
+    end;
+  Result:= S;
+end;
+
+function GetActiveFeed: Double;
+begin
+  Result:= glSettings[1];
+end;
+
+function GetActiveSpindle: Double;
+begin
+  Result:= glSettings[2];
+end;
 
 function ToInternalUnits(Value: Double): Double;
 begin
-  if True then
+  if linearUnitConversion = LINEAR_UNITS_MM then
     Result:= Value / 25.4
   else
     Result:= Value;
@@ -91,8 +176,6 @@ end;
 procedure Init;
 begin
   FeedRate:= 1;
-  //MinExtents:= (0,0,0);
-  //MaxExtents:= [0,0,0];
   FirstMove:= True;
   xo:= 0;
   zo:= 0;
@@ -102,7 +185,9 @@ begin
   inArc:= False;
   lineno:= 0;
   Plane:= 1;
-  Metric:= False;
+  glMetric:= False;
+  ParameterFileName:= PChar('/home/gtom/moc.var');
+  last_selected_tool:= 0;
 end;
 
 function ParseGCode(FileName: string; UseMetric: Boolean): integer;
@@ -142,9 +227,9 @@ end;
 
 procedure AppendArcFeed(l: tlo);
 begin
- {$ifdef PRINT_CANON}
-  writeln(Format('%s %n %n %n',['Arcfeed ',l.x,l.y,l.z]));
- {$endif}
+ //{$ifdef PRINT_CANON}
+ // writeln(Format('%s %n %n %n',['Arcfeed ',l.x,l.y,l.z]));
+ //{$endif}
   if Assigned(MyGlList) then
     MyGlList.AddArcFeed(lineno,lo,l);
 end;
@@ -169,7 +254,10 @@ begin
 end;
 
 procedure tooloffset(zt, xt, wt: double); cdecl; export;
-begin        
+begin
+  {$ifdef PRINT_CANON}
+  writeln(Format('%s %n %n %n',['Tooloffset: ',zt,xt,wt]));
+  {$endif}
   FirstMove:= True;
   lo.x:= lo.x - xt + xo;
   lo.z:= lo.z - zt + zo;
@@ -195,22 +283,36 @@ end;
 
 procedure changetool(Tool: integer); cdecl; export;
 begin
+  {$ifdef PRINT_CANON}
+  writeln('changetool: ' + inttoStr(Tool));
+  {$endif}
   FirstMove:= True;
 end;
 
 function gettool(Tool: integer): integer; cdecl; export;
 begin
+  {$ifdef PRINT_CANON}
+  writeln('gettool: ' + intToStr(Tool));
+  {$endif}
   with dummy_tool do
     begin
       id:= Tool;
       zoffset:= 0.75;
       xoffset:= 0.0625;
-      diameter:= 0.5;
+      diameter:= 0.3;
       frontangle:= 0;
       backangle:= 0;
       orientation:= 0;
     end;
   Result:= 1;
+end;
+
+procedure selecttool(tool: integer); cdecl; export;
+begin
+  {$ifdef PRINT_CANON}
+  writeln('selecttool: ' + intToStr(Tool));
+  {$endif}
+  last_selected_tool:= tool;
 end;
 
 procedure setspindlerate(rate: double); cdecl; export;

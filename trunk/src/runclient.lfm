@@ -1,7 +1,7 @@
 object RunClientForm: TRunClientForm
-  Left = 343
+  Left = 418
   Height = 424
-  Top = 284
+  Top = 304
   Width = 616
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
@@ -11,16 +11,18 @@ object RunClientForm: TRunClientForm
   Caption = 'RunClientForm'
   ClientHeight = 424
   ClientWidth = 616
+  Font.Style = [fsBold]
   OnCreate = FormCreate
+  LCLVersion = '0.9.28.2'
   object LabelInterpState: TLabel
     AnchorSideTop.Control = LabelCaption
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = LB
     AnchorSideRight.Side = asrBottom
-    Left = 293
-    Height = 20
-    Top = 11
-    Width = 107
+    Left = 488
+    Height = 18
+    Top = 12
+    Width = 124
     Anchors = [akTop, akRight]
     Caption = 'LabelInterpState'
     ParentColor = False
@@ -37,24 +39,32 @@ object RunClientForm: TRunClientForm
     Font.Height = -28
     Font.Pitch = fpFixed
     ParentColor = False
+    ParentFont = False
   end
   object LB: TListBox
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = LabelCaption
     AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 4
     Height = 378
     Top = 42
-    Width = 396
-    Anchors = [akTop, akLeft, akBottom]
+    Width = 608
+    Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 4
+    Font.Height = -21
+    Font.Name = 'Courier 10 Pitch'
+    Font.Style = [fsBold]
+    IntegralHeight = True
+    ItemHeight = 0
+    ParentFont = False
     TabOrder = 0
     TopIndex = -1
   end
   object OpenDialog: TOpenDialog
-    Title = 'Vorhandene Datei öffnen'
     DefaultExt = '.*.ngc'
     Filter = 'nc-files|*.ngc|gcode|*.nc'
     left = 24

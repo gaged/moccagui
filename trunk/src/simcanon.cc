@@ -5,7 +5,9 @@
 #include <string.h>		// strcmp
 #include <sys/time.h>
 
-        
+
+Interp interp_new;
+
 #define active_settings  interp_new.active_settings
 #define active_g_codes   interp_new.active_g_codes
 #define active_m_codes   interp_new.active_m_codes
@@ -14,6 +16,9 @@
 #define interp_close     interp_new.close
 #define interp_read	 interp_new.read
 #define interp_execute	 interp_new.execute
+#define interp_synch     interp_new.synch
+#define interp_exit      interp_new.exit
+#define interp_reset     interp_new.reset
 
 #define iserror(x) ((x) < 0 || (x) >= RS274NGC_MIN_ERROR)
 
@@ -32,7 +37,6 @@ bool metric;
 double _pos_x, _pos_y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w;
 double tool_xoffset, tool_zoffset, tool_woffset;
 
-Interp interp_new;
 
 extern "C" void nextline();
 extern "C" void arcfeed(double first_end, double second_end, double first_axis, 
@@ -58,12 +62,32 @@ extern "C" void straightprobe(double x,double y,double z,double a,double b,doubl
 
 extern "C" void rigidtap(double x,double y,double z);
 extern "C" int gettool(int tool);
+extern "C" void selecttool(int tool);
 extern "C" int toolalongw();
 extern "C" bool checkabort();
 
 extern "C" void userdefinedfunction(int num, double arg1, double arg2);
 extern "C" void setmessage(char *msg);
 extern "C" void setcomment(char *msg);
+
+
+extern "C" int interpreter_init() { return interp_init(); }
+extern "C" int interpreter_reset() { return interp_reset(); }
+
+extern "C" void interpreter_codes()
+{
+  active_settings(settings);
+  active_g_codes(gcodes);
+  active_m_codes(mcodes);
+}
+
+extern "C" int interpreter_exec(char *command)
+{
+  return interp_execute(command);
+}
+
+extern "C" int interpreter_synch() { return interp_synch(); }
+
 
 void maybe_new_line(int line_number) {
     if(interp_error) return;
@@ -230,7 +254,9 @@ void PROGRAM_STOP() {}
 void PROGRAM_END() {}
 void FINISH() {}
 void PALLET_SHUTTLE() {}
-void SELECT_TOOL(int tool) {}
+
+void SELECT_TOOL(int tool) { selecttool(tool); }
+
 void OPTIONAL_PROGRAM_STOP() {}
 
 extern bool GET_BLOCK_DELETE(void) { 
@@ -296,10 +322,19 @@ double GET_EXTERNAL_POSITION_U() { return _pos_u; }
 double GET_EXTERNAL_POSITION_V() { return _pos_v; }
 double GET_EXTERNAL_POSITION_W() { return _pos_w; }
 void INIT_CANON() {}
+
 void GET_EXTERNAL_PARAMETER_FILE_NAME(char *name, int max_size) 
-{ 
-  // fixme
+{
+   if (0 == name)
+	return;
+    if (max_size < 0)
+	return;
+  if (strlen(_parameter_file_name) < (unsigned int)max_size)
+    strcpy(name, _parameter_file_name);
+  else
+    name[0] = 0;
 }
+
 int GET_EXTERNAL_LENGTH_UNIT_TYPE() { return CANON_UNITS_INCHES; }
 
 CANON_TOOL_TABLE GET_EXTERNAL_TOOL_TABLE(int tool) {
@@ -442,6 +477,9 @@ extern "C" int parsefile(char *filename, char *unitcode, char *initcode)
         result = interp_execute();
     }
 out_error:
+   interp_close();
+   interp_exit();
+   maybe_new_line();
    return result;
 }
 

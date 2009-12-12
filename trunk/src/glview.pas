@@ -14,7 +14,7 @@ type
 type
   TGlView = class
     constructor Create(AParent,AOwner: TWinControl);
-    destructor Destroy;
+    destructor Destroy; override;
     procedure Paint(Sender: TObject);
     procedure Resize(Sender: TObject);
     procedure MouseWheel(Sender: TObject; Shift: TShiftState;
@@ -55,7 +55,7 @@ type
 
     AreaInitialized: Boolean;
 
-    L, ML, CL: TExtents;  // L= limits  ML= machine limits  CL= gcode limits
+    L, ML, DL: TExtents;  // L= limits  ML= machine limits  DL= drawing limits
 
     ConeL: integer;
     LimitsL: integer;
@@ -81,6 +81,11 @@ type
   
 var
   MyGlView: TGlView;
+  
+const
+  InitialRotX = -60;
+  InitialRotY = 0;
+  InitialRotZ = 0;
 
 implementation
 
@@ -93,7 +98,7 @@ begin
   ogl:= TOpenGlControl.Create(AOwner);
   ogl.Parent:= AParent;
   ogl.SetBounds(0,0,500,500);
-  ogl.DoubleBuffered:= False;
+  ogl.DoubleBuffered:= True;
   ogl.AutoResizeViewPort:= False;
   ogl.OnPaint:= @self.Paint;
   ogl.OnResize:= @self.Resize;
@@ -105,8 +110,9 @@ end;
 
 destructor TGlView.Destroy;
 begin
+  writeln('glview destroy');
   if Assigned(ogl) then ogl.Free;
-  ogl:= nil;
+  inherited;
 end;
 
 procedure TglView.RotateZ(Angle: integer);
@@ -192,26 +198,34 @@ begin
   Moving:= False;
   MouseX:= 0;
   MouseY:= 0;
+  CenterX:= CenterX + PanX;
+  CenterY:= CenterY + PanY;
+  EyeX:= EyeX + PanX;
+  EyeY:= EyeY + PanY;
+  PanX:= 0;
+  PanY:= 0;
 end;
 
 procedure TGlView.DrawCone;
-var
-  x,y,z: Double;
 begin
-  x:= ToInternalUnits(ConeX);
-  y:= ToInternalUnits(ConeY);
-  z:= ToInternalUnits(ConeZ);
   glPushMatrix;
-  glTranslatef(x,y,z);
+  glTranslatef(ConeX,ConeY,ConeZ);
   glCallList(ConeL);
   glPopMatrix;
 end;
 
 procedure TGlView.MoveCone(x,y,z: Double);
+var
+  cx,cy,cz: Double;
 begin
-  if (x = ConeX) and (y = ConeY) and (z = ConeZ) then Exit;
-  ConeX:= x; ConeY:= y; ConeZ:= z;
-  ogl.Invalidate
+  cx:= ToInternalUnits(x);
+  cy:= ToInternalUnits(y);
+  cz:= ToInternalUnits(z);
+  if (cx <> ConeX) or (cy <> ConeY) or (cz <> ConeZ) then
+    begin
+      ConeX:= cx; ConeY:= cy; ConeZ:= cz;
+      ogl.Invalidate;
+    end;
 end;
 
 procedure TGlView.SetBounds(X,Y,W,H: Integer);
@@ -233,6 +247,8 @@ begin
 end;
 
 procedure TGlView.UpdateView;
+var
+  DW,DH,DD: Double;
 begin
   with L do
     begin
@@ -240,25 +256,43 @@ begin
       MinY:= 0; MaxY:= 0;
       MinZ:= 0; MaxZ:= 0;
     end;
-  if Assigned(MyGlList) then
-    MyGlList.GetExtents(CL)
-  else
-    CL:= ML;
 
-  if CL.MaxX > ML.MaxX then L.MaxX:= CL.MaxX else L.MaxX:= ML.MaxX;
-  if CL.MinX < ML.MinX then L.MinX:= CL.MinX else L.MinX:= ML.MinX;
-  if CL.MaxY > ML.MaxY then L.MaxY:= CL.MaxY else L.MaxY:= ML.MaxY;
-  if CL.MinY < ML.MinY then L.MinY:= CL.MinY else L.MinY:= ML.MinY;
-  if CL.MaxZ > ML.MaxZ then L.MaxZ:= CL.MaxZ else L.MaxZ:= ML.MaxZ;
-  if CL.MinZ < ML.MinZ then L.MinZ:= CL.MinZ else L.MinZ:= ML.MinZ;
+  with DL do
+    begin
+      MinX:= 0; MaxX:= 0;
+      MinY:= 0; MaxY:= 0;
+      MinZ:= 0; MaxZ:= 0;
+    end;
+    
+  if Assigned(MyGlList) then
+    MyGlList.GetExtents(DL);
+
+  DW:= (DL.maxX - DL.minX);
+  DH:= (DL.maxY - DL.minY);
+  DD:= (DL.maxZ - DL.minZ);
+
+  if (DW <> 0) and (DH <> 0) and (DD <> 0) then
+    begin
+      L:= DL;
+    end
+  else
+    begin
+      if DL.MaxX > ML.MaxX then L.MaxX:= DL.MaxX else L.MaxX:= ML.MaxX;
+      if DL.MinX < ML.MinX then L.MinX:= DL.MinX else L.MinX:= ML.MinX;
+      if DL.MaxY > ML.MaxY then L.MaxY:= DL.MaxY else L.MaxY:= ML.MaxY;
+      if DL.MinY < ML.MinY then L.MinY:= DL.MinY else L.MinY:= ML.MinY;
+      if DL.MaxZ > ML.MaxZ then L.MaxZ:= DL.MaxZ else L.MaxZ:= ML.MaxZ;
+      if DL.MinZ < ML.MinZ then L.MinZ:= DL.MinZ else L.MinZ:= ML.MinZ;
+    end;
 
   LimW:= (L.maxX - L.minX);
   LimH:= (L.maxY - L.minY);
   LimD:= (L.maxZ - L.minZ);
 
   ResetView;
+  
+  Resize(nil);
 
-  AreaInitialized:= False;
   ogl.MakeCurrent;
   if Assigned(MyGlList) then
     MakeList;
@@ -267,6 +301,7 @@ end;
 
 procedure TGlView.ResetView;
 begin
+
   Centerx:= L.maxX - (limW / 2);
   Centery:= L.maxY - (limH / 2);
   Centerz:= L.maxZ - (limD / 2);
@@ -278,14 +313,14 @@ begin
   EyeX:= CenterX;
   EyeY:= CenterY;
   
-  RotationX:= 0;
-  RotationY:= 0;
-  RotationZ:= 0;
+  RotationX:= InitialRotX;
+  RotationY:= InitialRotY;
+  RotationZ:= InitialRotZ;
 
   if limW < limH then
-    EyeZ := CenterZ + (LimH * 4)
+    EyeZ:= CenterZ + LimH
   else
-    EyeZ:= CenterZ + (LimW * 4);
+    EyeZ:= CenterZ + LimW;
   AreaInitialized:= False;
 end;
 
@@ -309,13 +344,10 @@ begin
       while (P <> nil) do
         begin
           glBegin(GL_LINES);
-          if P^.ltype = ltFeed then
+          if (P^.ltype = ltFeed) or (P^.ltype = ltArcFeed) then
             glColor3f(1,1,1)
           else
-          if P^.ltype = ltArcFeed then
-            glColor3f(1,0,1)
-          else
-            glColor3f(0.2,0.2,0.3);
+            glColor3f(0.5,0.5,0.5);
           glVertex3f(P^.l1.x,P^.l1.y,P^.l1.z);
           glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
           glEnd;
@@ -348,30 +380,24 @@ begin
   if not AreaInitialized then
     begin
       InitGL;
-      glMatrixMode (GL_PROJECTION);    { prepare for and then }
-      glLoadIdentity;                  { define the projection }
-      gluPerspective(60,1,0.1,LimD * 100);
-      // SA:= sqrt(sqr(ogl.Width/2)) + sqr(ogl.Height /2));
-      glMatrixMode (GL_MODELVIEW);  { back to modelview matrix }
-      glViewport (0,0,ogl.Width,ogl.Height); { define the viewport }
+      glMatrixMode (GL_PROJECTION);
+      glLoadIdentity;
+      gluPerspective(60,ogl.Width/ogl.Height,0.1,LimD * 100);
+      glMatrixMode (GL_MODELVIEW);
+      glViewport (0,0,ogl.Width,ogl.Height);
       AreaInitialized:=true;
     end;
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-  glLoadIdentity;             { clear the matrix }
+  glLoadIdentity;
 
-  //glPushMatrix;
   gluLookAt(EyeX+PanX,EyeY+PanY,EyeZ+centerZ+PanZ,centerX+PanX,centerY+PanY,centerZ+PanZ,0,1,0);
   glRotatef(RotationX,1.0,0.0,0.0);
   glRotatef(RotationY,0.0,1.0,0.0);
   glRotatef(RotationZ,0.0,0.0,1.0);
-  // glPopMatrix;
-  {glRotatef(RotationX,1.0,0.0,0.0);
-  glRotatef(RotationY,0.0,1.0,0.0);
-  glRotatef(RotationZ,0.0,0.0,1.0);}
 
    //glPushMatrix;
-  // glTranslatef (-centerx + PanX,-centery + PanY ,-centerz + PanZ);
-  //glPopMatrix;
+   // glTranslatef (-centerx + PanX,-centery + PanY ,-centerz + PanZ);
+   //glPopMatrix;
 
   DrawCone;
   glCallList(CoordsL);
@@ -398,7 +424,7 @@ end;
 procedure TGlView.Resize(Sender: TObject);
 begin
  if (AreaInitialized) and ogl.MakeCurrent then
-    glViewport(0,0,ogl.Width,ogl.Height);
+   glViewport(0,0,ogl.Width,ogl.Height);
 end;
 
 procedure TGlView.MakeCone;
@@ -408,7 +434,7 @@ begin
   q := gluNewQuadric();
   ConeL:= glGenLists(1);
   glNewList(ConeL, GL_COMPILE);
-  glColor3f(0,1,1);
+  glColor3f(1,0.1,0.1);
   // gluPartialDisk(q, 1, 2, 12, 4, 0, 310);
   gluCylinder(q, 0,0.2,0.5,12,1);
   glEndList;
@@ -454,20 +480,22 @@ begin
     glVertex3f(ML.minX,ML.maxY,ML.minZ);
     glVertex3f(ML.minX,ML.minY,ML.minZ);
     glVertex3f(ML.minX,ML.minY,ML.maxZ);
-    glVertex3f(ML.maxX,ML.minY,ML.maxZ);
-    glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
     glVertex3f(ML.minX,ML.maxY,ML.maxZ);
-    glVertex3f(ML.minX,ML.minY,ML.maxZ);
-    glVertex3f(ML.minX,ML.minY,ML.minZ);
-  glEnd;
-  glBegin(GL_LINES);
-    glVertex3f(ML.minX,ML.maxY,ML.maxZ);
-    glVertex3f(ML.minX,ML.maxY,ML.minZ);
     glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
-    glVertex3f(ML.maxX,ML.maxY,ML.minZ);
     glVertex3f(ML.maxX,ML.minY,ML.maxZ);
     glVertex3f(ML.maxX,ML.minY,ML.minZ);
   glEnd;
+  glBegin(GL_LINES);
+    glVertex3f(ML.minX,ML.maxY,ML.minZ);
+    glVertex3f(ML.minX,ML.maxY,ML.maxZ);
+  glEnd;
+  glBegin(GL_LINES);
+    glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
+    glVertex3f(ML.maxX,ML.maxY,ML.minZ);
+  glEnd;
+    //glVertex3f(ML.minX,ML.maxY,ML.maxZ);
+    //glVertex3f(ML.maxX,ML.minY,ML.maxZ);
+    //glVertex3f(ML.minX,ML.minY,ML.maxZ);
   glDisable(GL_LINE_STIPPLE);
   glEndList;
 end;

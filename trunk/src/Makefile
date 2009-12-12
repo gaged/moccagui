@@ -1,37 +1,46 @@
-COMPILE = g++ -c -v -g
+
+WM=gtk2
+
+COMPILE = gcc -c -v -g
 COMPILEPAS = fpc
-LINK = g++ -v
+COMPILEMOC = fpc -S2cghi -CX -O1 -TLinux -XX -vewnhi -l -dLCL -dLCL$(WM)
+LINK = gcc -v
 
-INCLUDES = -I/home/gtom/emc/include
-INCLUDES += -I/home/gtom/emc/src
-INCLUDES += -I/home/gtom/emc/lib
-INCLUDES += -I/home/gtom/emc/bin
-INCLUDES += -I/home/gtom/emc/src/emc/ini
-INCLUDES += -I/home/gtom/emc/src/emc/iotask
-INCLUDES += -I/home/gtom/emc/src/emc/kinematics
-INCLUDES += -I/home/gtom/emc/src/emc/motion
-INCLUDES += -I/home/gtom/emc/src/emc/nml_intf
-INCLUDES += -I/home/gtom/emc/src/emc/usr_intf
-INCLUDES += -I/home/gtom/emc/src/emc/rs274ngc
-INCLUDES += -I/home/gtom/emc/src/emc/task
-INCLUDES += -I/home/gtom/emc/src/libnml/posemath
-INCLUDES += -I/home/gtom/emc/src/libnml/inifile
-INCLUDES += -I/home/gtom/emc/src/libnml/os_intf
-INCLUDES += -I/home/gtom/emc/src/libnml/nml
-INCLUDES += -I/home/gtom/emc/src/libnml/cms
-INCLUDES += -I/home/gtom/emc/src/libnml/rcs
+EMCDIR = /home/gtom/emc
+LAZDIR = /usr/lib/lazarus/0.9.28.2
 
-simcanon.o: simcanon.cc
-	$(COMPILE) $(INCLUDES) -o simcanon.o simcanon.cc
+INCLUDES = -I$(EMCDIR)/include
+INCLUDES += -I$(EMCDIR)/src
+INCLUDES += -I$(EMCDIR)/lib
+INCLUDES += -I$(EMCDIR)/bin
+INCLUDES += -I$(EMCDIR)/src/emc/ini
+INCLUDES += -I/usr/lib
+INCLUDES += -I/lib
+
+LCL = -Fu.
+LCL += -Fu$(LAZDIR)/lcl/units/i386-linux
+LCL += -Fu$(LAZDIR)/lcl/units/i386-linux/$(WM)
+LCL += -Fu$(LAZDIR)/components/custom
+LCL += -Fu$(LAZDIR)/components/codetools/units/i386-linux
+LCL += -Fu$(LAZDIR)/components/opengl/lib/i386-linux/$(WM)
+LCL += -Fu$(LAZDIR)/packager/units/i386-linux
+
+LIBDIR = $(EMCDIR)/lib
 
 emcpas.o: emcpas.cc
-	$(COMPILE) $(INCLUDES) -o emcpas.o emcpas.cc
+	$(COMPILE) $(INCLUDES) -o../lib/emcpas.o -l/usr/lib emcpas.cc
+
+simcanon.o: simcanon.cc
+	$(COMPILE) $(INCLUDES) -o../lib/simcanon.o simcanon.cc
 
 glcanon.o: glcanon.pas
-	$(COMPILEPAS) glcanon.pas
-	
-all: simcanon.o emcpas.o glcanon.o
-	
+	$(COMPILEPAS) -FU../lib -o../lib/glcanon.o glcanon.pas
 
-# $(LINK) $(INCLUDES) -o mocgcode.o ~/emc/lib/librs274.so ~/emc/lib/libemcini.so simmodule.o sim.o -lm
+mocca.o: mocca.lpr
+	$(COMPILEMOC) $(LCL) -Fl$(LIBDIR) -Fl../lib -Fu../lib -FU../lib -o../lib/mocca mocca.lpr
+	
+all: simcanon.o emcpas.o mocca.o
+
+
+          
 
