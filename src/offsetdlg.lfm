@@ -1,0 +1,52 @@
+object OffsetsDlg: TOffsetsDlg
+  Left = 342
+  Height = 346
+  Top = 305
+  Width = 589
+  ActiveControl = Grid
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'OffsetsDlg'
+  ClientHeight = 346
+  ClientWidth = 589
+  Font.Height = -16
+  Font.Name = 'Courier 10 Pitch'
+  Font.Pitch = fpFixed
+  Font.Style = [fsBold]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
+  LCLVersion = '0.9.28.2'
+  object Grid: TStringGrid
+    Left = 8
+    Height = 288
+    Top = 8
+    Width = 480
+    DefaultColWidth = 80
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goAlwaysShowEditor, goSmoothScroll]
+    TabOrder = 0
+    TitleFont.Height = -16
+    TitleFont.Name = 'Courier 10 Pitch'
+    TitleFont.Pitch = fpFixed
+    TitleFont.Style = [fsBold]
+  end
+  object BtnOk: TButton
+    Left = 12
+    Height = 33
+    Top = 312
+    Width = 100
+    Caption = 'Ok'
+    ModalResult = 1
+    TabOrder = 1
+  end
+  object BtnCancel: TButton
+    Left = 128
+    Height = 34
+    Top = 312
+    Width = 102
+    Cancel = True
+    Caption = 'Abbruch'
+    ModalResult = 2
+    TabOrder = 2
+  end
+end

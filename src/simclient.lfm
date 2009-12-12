@@ -1,10 +1,11 @@
 object SimClientForm: TSimClientForm
-  Left = 508
+  Left = 367
   Height = 335
-  Top = 290
+  Top = 244
   Width = 453
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
+  ActiveControl = Panel
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'SimClientForm'
@@ -12,6 +13,7 @@ object SimClientForm: TSimClientForm
   ClientWidth = 453
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  LCLVersion = '0.9.28.2'
   object sbH: TScrollBar
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = sbV
@@ -24,8 +26,10 @@ object SimClientForm: TSimClientForm
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 4
     BorderSpacing.Bottom = 4
+    LargeChange = 10
     Max = 90
     Min = -90
+    PageSize = 10
     TabOrder = 0
     OnChange = sbHChange
   end
@@ -42,8 +46,10 @@ object SimClientForm: TSimClientForm
     BorderSpacing.Top = 4
     BorderSpacing.Right = 4
     Kind = sbVertical
+    LargeChange = 10
     Max = 90
     Min = -90
+    PageSize = 10
     TabOrder = 1
     OnChange = sbVChange
   end
@@ -52,7 +58,9 @@ object SimClientForm: TSimClientForm
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = sbV
     AnchorSideBottom.Control = sbH
+    Left = 0
     Height = 316
+    Top = 0
     Width = 434
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabOrder = 2

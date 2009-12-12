@@ -12,14 +12,18 @@ uses
   mocemc;
   
 const
-  MaxAxes = 5;                  // maimum number of axes, default 5 XYZCB
-  MaxJogIncs = 10;              // numer of joc-increments
+  MaxAxes = 5;                   // maimum number of axes, default 5 XYZCB
+  MaxJogIncs = 10;               // numer of joc-increments
 
-  NumSoftButtons = 10;           // the buttons of the "bottom" panel
-  NumMainButtons  = 10;         // the buttons of the "right" or "left" panel
+  NumSoftButtons  = 10;          // the buttons of the "bottom" panel
+  NumSideButtons  = 10;          // the buttons of the "right" or "left" panel
 
-  GlobalButtonSize = 64;
-  GlobalButtonSpace = 4;
+  NumTotalButtons = NumSideButtons + NumSoftButtons;
+
+  GlobalButtonSize: integer = 72;
+  GlobalButtonSpace: integer = 2;
+
+  DroFontSize: integer = 48;
 
 // these are the Buttons in the same order as defined in the
 // ImageList of TMainForm. Maybe those will be replaced by a
@@ -48,18 +52,6 @@ const
   //bmSPBRAKE = 9;
   //bmMIST    = 11;
 
-const
-  caESTOP   = 'Notaus';
-  caMACHINE = 'Maschine';
-  caJOG     = 'Hand';
-  caAUTO    = 'Satzlauf';
-  caMDI     = 'Satzeingabe';
-  caSPMINUS = 'langsamer';
-  caSPPLUS  = 'schneller';
-  caFLOOD   = 'Kühlung';
-  caTOOL    = 'Werkzg';
-  caREFACT  = 'Ref. Achse';
-  
 
 // these are the commands send by Buttonclick or Keyboard
 // values > 100 define the button as a std button
@@ -67,71 +59,133 @@ const
 // they are used in TSpeedButton.Tag
 
 const
-  cmESTOP   = 0;
+  cmESTOP     = 0;
+  cmMACHINE   = 1;
 
-  cmMACHINE = 1;
-  cmJOG     = 2;
-  cmAUTO    = 3;
-  cmMDI     = 4;
+  cmJOG       = 10;
+  cmAUTO      = 11;
+  cmMDI       = 12;
 
-  cmSPMINUS = 10;
-  cmSPPLUS  = 11;
-  cmSPCW    = 12;
-  cmSPCCW   = 13;
-  cmSPBRAKE = 14;
+  cmSPMINUS   = 21;
+  cmSPPLUS    = 22;
+  cmSPCW      = 23;
+  cmSPCCW     = 24;
+  cmSPBRAKE   = 25;
 
-  cmFLOOD   = 21;
-  cmMIST    = 22;
+  cmFLOOD     = 30;
+  cmMIST      = 31;
 
-  cmTOOL    = 130;
+  cmCHTOOL    = 40;
 
-  cmREFACT  = 101;
-  cmREFALL  = 102;
-  cmOFFS1   = 104;
+  cmREFACT    = 50;
+  cmREFALL    = 51;
 
-  cmNCOPEN  = 110;
-  cmNCOPTM1 = 30;
-  cmNCPAUSE = 31;
-  cmNCRUN   = 32;
-  cmNCSTOP  = 33;
+  cmSHOWMM    = 60;
+  cmSHOWINCH  = 61;
 
-  cmMDIEXEC = 120;
-  cmMDIHIST = 121;
-  
+  cmOFFSALL   = 70;
+  cmOFFSACT   = 71;
+  cmOFFSDLG   = 72;
+
+  cmLIMITS    = 80;
+
+  cmOPEN      = 90;
+  cmRUN       = 91;
+  cmSTOP      = 92;
+  cmSTEP      = 93;
+  cmPAUSE     = 94;
+  cmDRYRUN    = 95;
+  cmGOTO      = 96;
+  cmOPTSTOP   = 98;
+  cmBLOCKDEL  = 99;
+
+  cmMDIEXEC   = 101;
+  cmMDIHIST   = 102;
+
+  cmEDITOR    = 110;
+
+  cmReturn  = 1001;
+  cmExit    = 1002;
+  cmCancel  = 1003;
+  cmClose   = 1004;
+
+type
+  TButtonDef = record
+    T: integer;
+    G: integer;
+    S: string;
+  end;
+
+type
+  PButtonArray = ^TButtonArray;
+  TButtonArray = Array[0..NumTotalButtons - 1] of TButtonDef;
 
 const
-  // the main glyphs are the glyphs for the bottom- bottons
-  cmdMainGlyphs: Array[0..NumMainButtons-1] of integer =
-    (bmESTOP,
-     bmMACHINE,bmJOG,bmAUTO,bmMDI,
-     bmSPMINUS,bmSPCW,bmSPCCW,bmSPPLUS,
-     bmFLOOD);
+  BtnDefJog: TButtonArray =
+     ((T:cmESTOP;    G:-1;    S:'Notaus'),
+      (T:cmMACHINE;  G:-1;    S:'Maschine'),
+      (T:-1;         G:-1;    S:'Manuell'),
+      (T:cmAUTO;     G:-1;    S:'Satzlauf'),
+      (T:cmMDI;      G:-1;    S:'MDI'),
+      (T:cmSPMINUS;  G:-1;    S:'langsamer'),
+      (T:cmSPCW;     G:-1;    S:'Spindel rechts'),
+      (T:cmSPCCW;    G:-1;    S:'Spindel links'),
+      (T:cmSPPLUS;   G:-1;    S:'schneller'),
+      (T:cmFLOOD;    G:-1;    S:'Kühlung'),
+      (T:cmREFACT;   G:-1;    S:'Referenzfahrt'),
+      (T:cmREFALL;   G:-1;    S:'Referenzf. (Alle)'),
+      (T:cmOFFSACT;  G:-1;    S:'Aktive Null'),
+      (T:cmOFFSALL;  G:-1;    S:'Alle Null'),
+      (T:cmOFFSDLG;  G:-1;    S:'Bearbeiten...'),
+      (T:cmCHTOOL;  G:-1;     S:'Wkzg wechseln'),
+      (T:cmLIMITS;   G:-1;    S:'Limits'),
+      (T:cmSHOWMM;   G:-1;    S:'Anzeige MM'),
+      (T:cmSHOWINCH; G:-1;    S:'Anzeige Inch'),
+      (T:-1;         G:-1;    S:''));
 
-  // the main tags are the tags for the bottom- bottons
-  cmdMainTags: Array[0..NumMainButtons-1] of integer =
-    (cmESTOP,
-     cmMACHINE,cmJOG,cmAUTO,cmMDI,
-     cmSPMINUS,cmSPCW,cmSPCCW,cmSPPLUS,
-     cmFLOOD);
+  BtnDefMDI: TButtonArray =
+     ((T:cmESTOP;    G:-1;   S:'Notaus'),
+      (T:cmMACHINE;  G:-1;   S:'Maschine'),
+      (T:cmJOG;      G:-1;   S:'Manuell'),
+      (T:cmAUTO;     G:-1;   S:'Satzlauf'),
+      (T:-1;         G:-1;   S:'MDI'),
+      (T:-1;         G:-1;   S:'langsamer'),
+      (T:-1;          G:-1;   S:'Spindel rechts'),
+      (T:-1;          G:-1;   S:'Spindel links'),
+      (T:-1;          G:-1;   S:'schneller'),
+      (T:-1;          G:-1;   S:'Kühlung'),
+      (T:cmMDIEXEC; G:-1;       S:'Ausführen'),
+      (T:-1;        G:-1;       S:''),
+      (T:-1;        G:-1;       S:''),
+      (T:-1;        G:-1;       S:''),
+      (T:-1;        G:-1;       S:''),
+      (T:-1;        G:-1;       S:''),
+      (T:-1;        G:-1;       S:''),
+      (T:-1;        G:-1;       S:''),
+      (T:-1;        G:-1;       S:''),
+      (T:-1;        G:-1;       S:''));
 
-  // the jog-glyphs are the glyphs for the left and right softbuttons
-  cmdJogGlyphs: Array[0..NumSoftButtons - 1] of integer =
-    (bmREFACT,bmREFALL,-1,bmOFFS1,-1,-1,-1,-1,-1,-1);
-
-  cmdJogTags: Array[0..NumSoftButtons - 1] of integer =
-    (cmREFACT,cmREFALL,-1,cmOFFS1,-1,-1,-1,-1,-1,-1);
-
-  cmdMDIGlyphs: Array[0..NumSoftButtons - 1] of integer =
-    (-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-
-  cmdMDITags: Array[0..NumSoftButtons - 1] of integer =
-    (cmMDIEXEC,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-
-  cmdRunGlyphs: Array[0..NumSoftButtons - 1] of integer =
-    (bmNCOPEN,bmNCRUN,bmNCSTOP,bmNCPAUSE,-1,-1,-1,-1,-1,-1);
-
-  cmdRunTags: Array[0..NumSoftButtons - 1] of integer =
-    (cmNCOPEN,cmNCRUN,cmNCSTOP,cmNCPAUSE,-1,-1,-1,-1,-1,-1);
+  BtnDefRun: TButtonArray =
+     ((T:cmESTOP;    G:-1;   S:'Notaus'),
+      (T:cmMACHINE;  G:-1;   S:'Maschine'),
+      (T:cmJOG;      G:-1;   S:'Manuell'),
+      (T:-1;         G:-1;   S:'Satzlauf'),
+      (T:cmMDI;      G:-1;   S:'MDI'),
+      (T:-1;         G:-1;   S:''),
+      (T:cmOPEN;     G:-1;   S:'Datei laden'),
+      (T:cmEditor;   G:-1;   S:'Editor'),
+      (T:-1;         G:-1;   S:''),
+      (T:-1;         G:-1;   S:''),
+      (T:cmRUN;      G:-1;   S:'Start'),
+      (T:cmSTOP;     G:-1;   S:'Stop'),
+      (T:cmPAUSE;    G:-1;   S:'Pause'),
+      (T:cmSTEP;     G:-1;   S:'Schritt'),
+      (T:cmDRYRUN;   G:-1;   S:'Vorlauf'),
+      (T:cmGOTO;     G:-1;   S:'GOTO'),
+      (T:-1;         G:-1;   S:''),
+      (T:-1;         G:-1;   S:''),
+      (T:cmOPTSTOP;  G:-1;   S:'Opt. Pause'),
+      (T:cmBLOCKDEL; G:-1;   S:'"/" Blöcke'));
 
 type
   TJogIncrement = record
@@ -168,15 +222,16 @@ type
     ShowRelative: Boolean;        // relative or absolute position
     HomingOrderDefined: Boolean;  // check if can do a "home all"
     JogPolarity: Array[0..MaxAxes] of integer;
-    JogIncrements: Array[0..MAXJOGINCS] of TJogIncrement;
+    JogIncrements: Array[0..MAXJOGINCS] of TJogIncrement; // 0 = continous
     JogIncMax: integer;
     JogIncrement: Double;
+    JogContinous: Boolean;
     ActiveAxis: integer;
     StartFromLine: integer;
   end;
 
 type
-  TEMCState = record
+  TEmcState = record
     TaskMode: Integer;         // current taskmode, used in (update)
     EStop,
     Machine: Boolean;
@@ -201,6 +256,8 @@ type
     CurrentLn: integer;
     ProgUnits: integer;
 
+    ORideLimits: Boolean;
+
     ActVel: Integer;
     ActFeed: Integer;
     ActSpindleOride: Integer;
@@ -223,38 +280,70 @@ var
 
   Emc: TEMC;                    // the base class of the emc interface
 
-  SoftBtns: Array[0..NumSoftButtons - 1] of TSpeedButton; // the soft buttons
-  MainBtns: Array[0..NumMainButtons - 1] of TSpeedButton;  // the main buttons
-
+  MocBtns: Array[0..NumTotalButtons - 1] of TSpeedButton; // the soft buttons
   GlobalImageList: TImageList;
-  
-procedure EnableMainBtn(ACmd: integer; Enable: Boolean);
-procedure SetSoftBtn(ACmd: integer; SetDown: Boolean);
+
+const
+  G5Systems: Array[1..9] of string = ('G54','G55','G56','G57','G58','G59','G59.1','G59.2','G59.3');
+  G5SysMax = 9;
+
+  G54Variable = 5221;
+  G54Inc = 20;
+
+type
+  TOnClick = procedure(Sender: TObject) of object;
+
+procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
+procedure SetButtonDown(ACmd: integer; SetDown: Boolean);
+procedure SetButtonMap(B: PButtonArray; ObjClick: TOnClick);
 
 implementation
 
-procedure EnableMainBtn(ACmd: integer; Enable: Boolean);
+procedure SetButtonMap(B: PButtonArray; ObjClick: TOnClick);
+var
+  i: Integer;
+  Form: TForm;
+begin
+  if B = nil then Exit;
+  for i:= 0 to NumTotalButtons - 1 do
+  begin
+    if B^[i].T < 0 then
+      MocBtns[i].OnClick:= nil
+    else
+      MocBtns[i].OnClick:= ObjClick;
+    if B^[i].G < 0 then
+      MocBtns[i].Glyph:= nil
+    else
+      GlobalImageList.GetBitmap(B^[i].G,MocBtns[i].Glyph);
+    MocBtns[i].Tag:= B^[i].T;
+    MocBtns[i].Caption:= B^[i].S;
+    MocBtns[i].Enabled:= not (B^[i].T < 0);
+    MocBtns[i].Down:= False;
+  end;
+end;
+
+procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
 var
   i: integer;
 begin
-  for i:= 0 to NumMainButtons - 1 do
-    if Assigned(MainBtns[i]) then
-      if MainBtns[i].Tag = ACmd then
+  for i:= 0 to NumTotalButtons - 1 do
+    if Assigned(MocBtns[i]) then
+      if MocBtns[i].Tag = ACmd then
         begin
-          MainBtns[i].Enabled:= Enable;
+          MocBtns[i].Enabled:= Enable;
           Break;
         end;
 end;
 
-procedure SetSoftBtn(ACmd: integer; SetDown: Boolean);
+procedure SetButtonDown(ACmd: integer; SetDown: Boolean);
 var
   i: integer;
 begin
-  for i:= 0 to NumSoftButtons - 1 do
-    if Assigned(SoftBtns[i]) then
-      if SoftBtns[i].Tag = ACmd then
+  for i:= 0 to NumTotalButtons - 1 do
+    if Assigned(MocBtns[i]) then
+      if MocBtns[i].Tag = ACmd then
         begin
-          SoftBtns[i].Down:= SetDown;
+          MocBtns[i].Down:= SetDown;
           Break;
         end;
 end;

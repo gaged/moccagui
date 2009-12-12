@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<CONFIG>
-  <Compiler Value="/usr/bin/ppc386" Date="1207051037"/>
-  <Params Value=" -S2ah -TLinux -vewup -Fi../../emc/lib/ -Fl../../emc/lib/ -Fu../../emc/lib/ -Fu/usr/lib/lazarus/components/opengl/lib/i386-linux/gtk2/ -Fu/usr/lib/lazarus/lcl/units/i386-linux/ -Fu/usr/lib/lazarus/lcl/units/i386-linux/gtk2/ -Fu/usr/lib/lazarus/packager/units/i386-linux/ -Fu. -opreview -dLCL -dLCLgtk2 preview.lpr"/>
-</CONFIG>

@@ -5,8 +5,8 @@ unit simclient;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, Buttons, ExtCtrls;
+  Classes, OpenGLContext, SysUtils, LResources, Forms, Controls, Graphics,
+  Dialogs, StdCtrls, Buttons, ExtCtrls;
 
 type
 
@@ -21,9 +21,12 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure sbHChange(Sender: TObject);
     procedure sbVChange(Sender: TObject);
+  private
+    FShowLivePlot: Boolean;
   public
     procedure LoadPreview(FileName: string);
-    procedure Update;
+    procedure UpdateSelf;
+    property ShowLivePlot: Boolean read FShowLivePlot write FShowLivePlot;
   end;
   
 var
@@ -48,31 +51,30 @@ begin
   if (not Assigned(MyGlList)) or (not Assigned(MyGlView)) then
     Exit;
   Error:= ParseGCode(FileName,True);
-  //if (Error >= INTP_OK) and (Error < INTP_FILE_NOT_OPEN) then
-  //  begin
-      //Label1.Caption:= MyGlList.GetInfo;
-       MyGlView.UpdateView;
-       MyGlView.Invalidate;
-       MyGlView.GetLimits(E)
- //   end;
+  if Error <> 0 then
+    LastError:= GetGCodeError(Error);
+  MyGlView.UpdateView;
+  MyGlView.GetLimits(E);
+  MyGlView.Invalidate;
 end;
 
-procedure TSimClientForm.Update;
+procedure TSimClientForm.UpdateSelf;
 var
   ix,iy,iz: integer;
   X,Y,Z: double;
 begin
-  if Assigned(Joints) then
-    if Assigned(MyGlView) then
-      begin
-        ix:= Joints.AxisByChar('X');
-        iy:= Joints.AxisByChar('Y');
-        iz:= Joints.AxisByChar('Z');
-        if ix >= 0 then X:= GetRelPos(ix) else Exit;
-        if iy >= 0 then Y:= GetRelPos(iy) else Exit;
-        if iz >= 0 then Z:= GetRelPos(iz) else Exit;
-        MyGlView.MoveCone(x,y,z);
-      end;
+  if FShowLivePlot then
+    if Assigned(Joints) then
+      if Assigned(MyGlView) then
+        begin
+          ix:= Joints.AxisByChar('X');
+          iy:= Joints.AxisByChar('Y');
+          iz:= Joints.AxisByChar('Z');
+          if ix >= 0 then X:= GetRelPos(ix) else Exit;
+          if iy >= 0 then Y:= GetRelPos(iy) else Exit;
+          if iz >= 0 then Z:= GetRelPos(iz) else Exit;
+          MyGlView.MoveCone(x,y,z);
+        end;
 end;
 
 procedure TSimClientForm.sbHChange(Sender: TObject);
@@ -93,8 +95,12 @@ begin
   if not Assigned(MyGlList) then
     MyGlList:= TGlList.Create;
   if not Assigned(MyGlView) then
-    MyGlView:= TGlView.Create(Self,Self);
+    MyGlView:= TGlView.Create(Panel,Panel);
   MyGlView.SetMachineLimits(E);
+  MyGlView.ResetView;
+  sbV.setParams(InitialRotX,-90,90);
+  sbH.SetParams(InitialRotZ,-90,90);
+  FShowLivePlot:= True;
 end;
 
 procedure TSimClientForm.BevelResize(Sender: TObject);

@@ -1,0 +1,96 @@
+object JogClientForm: TJogClientForm
+  Left = 604
+  Height = 362
+  Top = 329
+  Width = 477
+  HorzScrollBar.Page = 476
+  VertScrollBar.Page = 361
+  ActiveControl = rgJogInc.RadioButton0
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'JogClientForm'
+  ClientHeight = 362
+  ClientWidth = 477
+  KeyPreview = True
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnKeyUp = FormKeyUp
+  ParentFont = True
+  ShowInTaskBar = stNever
+  LCLVersion = '0.9.28.2'
+  object Label1: TLabel
+    Left = 16
+    Height = 18
+    Top = 64
+    Width = 120
+    Caption = 'Joggeschwindigkeit'
+    ParentColor = False
+  end
+  object LabelJogVel: TLabel
+    Left = 368
+    Height = 18
+    Top = 64
+    Width = 35
+    Caption = 'Label'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 16
+    Height = 18
+    Top = 96
+    Width = 76
+    Caption = 'Schrittweite'
+    ParentColor = False
+  end
+  object LabelCaption: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 4
+    Height = 34
+    Top = 4
+    Width = 251
+    BorderSpacing.Around = 4
+    Caption = 'Manueller Betrieb'
+    Font.Height = -28
+    Font.Pitch = fpFixed
+    ParentColor = False
+    ParentFont = False
+  end
+  object sbJogVel: TScrollBar
+    Left = 152
+    Height = 15
+    Top = 65
+    Width = 200
+    PageSize = 0
+    TabOrder = 0
+    OnChange = sbJogVelChange
+  end
+  object rgJogInc: TRadioGroup
+    Left = 152
+    Height = 140
+    Top = 96
+    Width = 200
+    Anchors = []
+    AutoFill = True
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.TopBottomSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 136
+    ClientWidth = 196
+    Items.Strings = (
+      'Continous'
+      '0.001'
+      '0.01'
+      '0.1'
+      '1'
+      '10'
+    )
+    OnClick = rgJogIncClick
+    TabOrder = 1
+  end
+end

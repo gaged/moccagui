@@ -16,12 +16,12 @@ uses
   mocmain,
   mocemc,
   mocjoints, mocglb, mocini, jogclient,
-  runclient, mdiclient, simclient, gllist, glview, glcanon;
+  runclient, mdiclient, simclient, gllist, glview, glcanon, editordlg, 
+  offsetdlg;
   
 function InitEmc: Boolean;
 var
   s: string;
-  i: integer;
 begin
   Result:= False;
   if (ParamCount < 2) then
