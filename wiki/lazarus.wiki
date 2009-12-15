@@ -1,4 +1,4 @@
-#lazarus installieren und konfigurieren
+#summary lazarus installieren und konfigurieren
 
 = Ubuntu Paketquelle =
 
