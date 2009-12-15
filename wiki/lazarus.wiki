@@ -1,0 +1,29 @@
+#lazarus installieren und konfigurieren
+
+= Ubuntu Paketquelle =
+
+Type: binary
+Addresse: http://www.hu.freepascal.org/lazarus/
+Distribution: lazarus-stable
+Komponente: universe
+
+
+= Installieren =
+
+lazarus 0.9.28.2-0
+freepascal
+
+= Konfigurieren =
+
+LazOpenGLContext 0.01 als package hinzufügen, kompilieren
+
+gtk:
+  libgtk1.2, 
+  libglib1.2ldbl, 
+  libldk_pixbuf 
+installieren, alles inkl -dev
+LCL kompilieren
+
+gtk2:
+LCL kompilieren
+
