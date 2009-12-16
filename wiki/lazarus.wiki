@@ -14,6 +14,7 @@ Komponente: universe
 = Installieren =
 
 *lazarus 0.9.28.2-0
+
 *freepascal
 
 = Konfigurieren =
@@ -22,7 +23,9 @@ LazOpenGLContext 0.01 als package hinzufügen, kompilieren
 
 gtk:
 *libgtk1.2, 
+
 *libglib1.2ldbl, 
+
 *libldk_pixbuf 
 
 installieren, alles inkl -dev
