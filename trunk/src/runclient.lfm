@@ -63,7 +63,7 @@ object RunClientForm: TRunClientForm
     Width = 508
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 4
-    Font.Height = -21
+    Font.Height = -16
     Font.Name = 'Courier 10 Pitch'
     Font.Style = [fsBold]
     IntegralHeight = True
