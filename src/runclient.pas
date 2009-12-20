@@ -5,13 +5,15 @@ unit runclient;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  ComCtrls;
 
 type
 
   { TRunClientForm }
 
   TRunClientForm = class(TForm)
+    Label1: TLabel;
     LabelCaption: TLabel;
     LabelInterpState: TLabel;
     LB: TListBox;
@@ -24,9 +26,8 @@ type
     OldRunning: Boolean;
     OldBlockDel: Boolean;
     OldOptStop: Boolean;
-
-    OldDryRunSet: Boolean;
-    DryRunSet: Boolean;
+    OldHasFile: Boolean;
+    HasFile: Boolean;
 
     function  HandleCommand(Cmd: integer): Boolean;
   public
@@ -39,8 +40,7 @@ type
     procedure UpdateLine;
     // vorlauf
     procedure SetCodes;
-    procedure DryRunToLine;
-    procedure GotoLine;
+    procedure GotoLine(LineNo: integer);
   end;
   
 var
@@ -50,33 +50,52 @@ implementation
 
 uses
   buttons,
-  mocglb,mocjoints,
+  mocglb,mocemc,mocjoints,
   emc2pas,
   simclient,
   glcanon,gllist;
 
-procedure TRunClientForm.SetCodes();
+
+procedure TRunClientForm.SetCodes;
+var
+  C,S: string;
+  i: integer;
+
+  procedure SetGCode;
+  var n: integer;
+  begin
+    S:= '';
+    for n:= 0 to CoordSysMax do
+      if C = CoordSys[n] then
+        S:= S + C;
+    if C[2] = '2' then
+      S:= S + C;
+    if C[2] = '9' then
+      S:= S + C;
+    Emc.Execute(S);
+    Emc.WaitDone;
+    S:= '';
+  end;
+
 begin
-
-
+  for i:= 1 to ACTIVE_G_CODES_MAX - 1 do
+    begin
+      C:= GCodeToStr(i);
+      if C <> '' then SetGCode;
+    end;
 end;
 
 procedure TRunClientForm.FormCreate(Sender: TObject);
 begin
+  OpenDialog.InitialDir:= Vars.ProgramPrefix;
   Self.Tag:= TASKMODEAUTO;
   OldInterpState:= 0;
   OldActiveLn:= -1;
   OldRunning:= True;
-  OldDryRunSet:= True;
-  DryRunSet:= False;
+  HasFile:= False;
 end;
 
-procedure TRunClientForm.GotoLine;
-begin
-  emcVars.StartFromLine:= LB.ItemIndex;
-end;
-
-procedure TRunClientForm.DryRunToLine;
+procedure TRunClientForm.GotoLine(LineNo: integer);
 var
   CurrentLine: integer;
   StartLine,EndLine: integer;
@@ -106,13 +125,13 @@ begin
         else
           begin
             interpreter_codes;  // update the gcode,mcodes & settings
-            emcVars.StartFromLine:= CurrentLine;
+            Vars.StartLine:= CurrentLine;
           end;
       finally
         MyGlList:= SaveGlList;
       end;
-      DryRunSet:= True;
-    end;
+    SetCodes;
+  end;
 end;
 
 function TRunClientForm.HandleCommand(Cmd: integer): Boolean;
@@ -123,36 +142,31 @@ begin
       OpenFile;
 
     cmPAUSE:
-      if emcState.InterpState = INTERP_PAUSED then
+      if State.InterpState = INTERP_PAUSED then
         Emc.TaskResume
       else
         Emc.TaskPause;
 
-    cmRUN:
-      begin
-        // emcVars.StartFromLine:= 0;
-        Emc.TaskRun;
-      end;
+    cmRUN: Emc.TaskRun;
 
-    cmDRYRUN:
-      if emcState.InterpState = INTERP_IDLE then
-        if DryRunSet then    // clear the dry run
-          begin
-            emcVars.StartFromLine:= 0;
-            DryRunSet:= False;
-          end
-        else
-          if LB.ItemIndex > 0 then
-            DryRunToLine;
+    cmRUNLINE :
+      if LB.ItemIndex > 0 then
+        begin
+          // emcVars.StartFromLine:= LB.ItemIndex + 2;
+          // Emc.TaskRun;
+          // TEST
+          // Emc.TaskGoto(LB.ItemIndex + 2);
+          GotoLine(0);
+        end;
 
     cmSTOP:
       Emc.TaskStop;
 
     cmOPTSTOP:
-      sendSetOptionalStop(not emcState.OptStop);
+      sendSetOptionalStop(not State.OptStop);
 
     cmBLOCKDEL:
-      sendSetBlockDelete(not emcState.BlockDel);
+      sendSetBlockDelete(not State.BlockDel);
 
   else
     Result:= False;
@@ -161,7 +175,7 @@ end;
 
 procedure TRunClientForm.ActivateSelf;
 begin
-  if emcState.TaskMode <> TASKMODEAUTO then Exit;
+  if State.TaskMode <> TASKMODEAUTO then Exit;
   if not Visible then
     Visible:= true;
   MapButtons;
@@ -173,7 +187,19 @@ var
   Running: Boolean;
 begin
   UpdateLine;
-  with emcState do
+
+  if OldHasFile <> HasFile then
+    begin
+      SetButtonEnabled(cmSTOP,HasFile);
+      SetButtonEnabled(cmSTEP,HasFile);
+      SetButtonEnabled(cmRUN,HasFile);
+      SetButtonEnabled(cmPAUSE,HasFile);
+      SetButtonEnabled(cmRUN,HasFile);
+      SetButtonEnabled(cmRUNLINE,HasFile);
+      OldHasFile:= HasFile;
+    end;
+
+  with State do
     begin
       if OldBlockDel <> BlockDel then
         begin
@@ -187,25 +213,24 @@ begin
           OldOptStop:= OptStop;
         end;
 
-      if OldDryRunSet <> DryRunSet then
-        begin
-          SetButtonDown(cmDRYRUN,DryRunSet);
-          OldDryRunSet:= DryRunSet;
-        end;
-
-      if OldInterpState <> emcState.InterpState then
+      if OldInterpState <> State.InterpState then
         begin
           Running:= InterpState <> INTERP_IDLE;
          // set buttons according to the interpreter state
           SetButtonDown(cmSTOP,not Running);
           SetButtonDown(cmPAUSE,InterpState = INTERP_PAUSED);
           SetButtonDown(cmRUN,Running);
+          // LB.Enabled:= not Running;  // looks nice in gtk2
+          if not Running then
+            LB.ItemIndex:= -1;
 
         // disable the taskmode- buttons if not idle
           if OldRunning <> Running then
             begin
               SetButtonEnabled(cmMDI,not Running);
               SetButtonEnabled(cmJOG,not Running);
+              SetButtonEnabled(cmOPEN,not Running);
+              SetButtonEnabled(cmEDITOR,not Running);
               OldRunning:= Running;
             end;
 
@@ -231,12 +256,14 @@ end;
 
 procedure TRunClientForm.InitControls;
 begin
-  OldBlockDel:= emcState.BlockDel;
+  OldBlockDel:= State.BlockDel;
   OldRunning:= False;
-  SetButtonDown(cmStop,True);
-  SetButtonDown(cmOPTSTOP,emcState.OptStop);
-  SetButtonDown(cmBLOCKDEL,emcState.BlockDel);
+  OldHasFile:= not HasFile;
   SetButtonDown(cmAUTO,True);
+  SetButtonDown(cmStop,True);
+  SetButtonDown(cmOPTSTOP,State.OptStop);
+  SetButtonDown(cmBLOCKDEL,State.BlockDel);
+
 end;
 
 procedure TRunClientForm.OpenFile;
@@ -252,13 +279,21 @@ begin
       FileName:= OpenDialog.FileName;
       if Length(FileName) > 0 then
         begin
+          Vars.ProgramFile:= '';
           LB.Items.LoadFromFile(FileName);
           clSim.LoadPreview(FileName);
           if sendProgramOpen(PChar(FileName)) = 0 then
-            emcVars.ProgramFile:= FileName
+            begin
+              Emc.WaitDone;
+              Vars.StartLine:= -1; // verify
+              Vars.ProgramFile:= FileName;
+              Emc.TaskRun;
+              Vars.StartLine:= 1;
+              HasFile:= true;
+            end
           else
             begin
-              emcVars.ProgramFile:= '';
+              Vars.ProgramFile:= '';
               LastError:= 'Error opening file: ' + FileName;
             end;
         end;
@@ -267,29 +302,22 @@ end;
 
 procedure TRunClientForm.UpdateLine;
 var
-  CurrentLn,MotionLn,ActiveLn: integer;
+  ActiveLn: integer;
 begin
-  with emcState do
+  with State do
   if InterpState <> INTERP_IDLE then
     begin
-      CurrentLn:= taskCurrentLine;
-      if (CurrentLn > 0) then
-         begin
-           MotionLn:= taskMotionLine;
-           if (MotionLn > 0) and (MotionLn < CurrentLn) then
-             ActiveLn:= MotionLn - 1
-           else
-             ActiveLn:= CurrentLn - 1;
-         end
-      else
-        ActiveLn:= -1;
+      ActiveLn:= taskMotionLine - 1;
+      if ActiveLn < 0 then Exit;
+      Label1.Caption:= Inttostr(ActiveLn) + ',' + inttostr(taskcurrentline);
       if ActiveLn <> OldActiveLn then
         begin
           if ActiveLn < LB.Items.Count then
-            LB.ItemIndex:= ActiveLn;
-          if (ActiveLn >= 0) then
-            if not LB.ItemFullyVisible(ActiveLn) then
-              LB.MakeCurrentVisible;
+            begin
+              LB.ItemIndex:= ActiveLn;
+              if (ActiveLn > 0) then  //if not LB.ItemFullyVisible(ActiveLn) then
+                LB.MakeCurrentVisible;
+            end;
           OldActiveLn:= ActiveLn;
         end;
     end;

@@ -80,8 +80,7 @@ const
   cmREFACT    = 50;
   cmREFALL    = 51;
 
-  cmSHOWMM    = 60;
-  cmSHOWINCH  = 61;
+  cmUNITS     = 60;
 
   cmOFFSALL   = 70;
   cmOFFSACT   = 71;
@@ -91,13 +90,12 @@ const
 
   cmOPEN      = 90;
   cmRUN       = 91;
-  cmSTOP      = 92;
-  cmSTEP      = 93;
-  cmPAUSE     = 94;
-  cmDRYRUN    = 95;
-  cmGOTO      = 96;
-  cmOPTSTOP   = 98;
-  cmBLOCKDEL  = 99;
+  cmRUNLINE   = 92;
+  cmSTOP      = 93;
+  cmSTEP      = 94;
+  cmPAUSE     = 95;
+  cmOPTSTOP   = 96;
+  cmBLOCKDEL  = 97;
 
   cmMDIEXEC   = 101;
   cmMDIHIST   = 102;
@@ -137,10 +135,10 @@ const
       (T:cmOFFSACT;  G:-1;    S:'Aktive Null'),
       (T:cmOFFSALL;  G:-1;    S:'Alle Null'),
       (T:cmOFFSDLG;  G:-1;    S:'Bearbeiten...'),
-      (T:cmCHTOOL;  G:-1;     S:'Wkzg wechseln'),
+      (T:cmCHTOOL;   G:-1;    S:'Wkzg wechseln'),
       (T:cmLIMITS;   G:-1;    S:'Limits'),
-      (T:cmSHOWMM;   G:-1;    S:'Anzeige MM'),
-      (T:cmSHOWINCH; G:-1;    S:'Anzeige Inch'),
+      (T:-1;         G:-1;    S:''),
+      (T:cmUNITS;    G:-1;    S:'mm/inch'),
       (T:-1;         G:-1;    S:''));
 
   BtnDefMDI: TButtonArray =
@@ -172,20 +170,20 @@ const
       (T:-1;         G:-1;   S:'Satzlauf'),
       (T:cmMDI;      G:-1;   S:'MDI'),
       (T:-1;         G:-1;   S:''),
-      (T:cmOPEN;     G:-1;   S:'Datei laden'),
-      (T:cmEditor;   G:-1;   S:'Editor'),
-      (T:-1;         G:-1;   S:''),
-      (T:-1;         G:-1;   S:''),
-      (T:cmRUN;      G:-1;   S:'Start'),
-      (T:cmSTOP;     G:-1;   S:'Stop'),
-      (T:cmPAUSE;    G:-1;   S:'Pause'),
-      (T:cmSTEP;     G:-1;   S:'Schritt'),
-      (T:cmDRYRUN;   G:-1;   S:'Vorlauf'),
-      (T:cmGOTO;     G:-1;   S:'GOTO'),
-      (T:-1;         G:-1;   S:''),
-      (T:-1;         G:-1;   S:''),
-      (T:cmOPTSTOP;  G:-1;   S:'Opt. Pause'),
-      (T:cmBLOCKDEL; G:-1;   S:'"/" Blöcke'));
+      (T:-1;          G:-1;   S:''),
+      (T:-1;          G:-1;   S:''),
+      (T:-1;          G:-1;   S:''),
+      (T:-1;          G:-1;   S:''),
+     (T:cmOPEN;  G:-1;      S:'Öffnen'),
+      (T:cmRUN;   G:-1;       S:'Start'),
+      (T:cmSTOP;  G:-1;      S:'Stop'),
+      (T:cmPAUSE; G:-1;     S:'Pause'),
+      (T:cmSTEP;  G:-1;            S:'Schritt'),
+      (T:cmRUNLINE;  G:-1;            S:'Start Zeile'),
+      (T:cmOPTSTOP ;        G:-1;            S:'Opt. Pause'),
+      (T:cmBLOCKDEL;        G:-1;            S:'"/" Blöcke'),
+      (T:-1;        G:-1;            S:''),
+      (T:cmEDITOR;  G:-1;            S:'NC-Editor'));
 
 type
   TJogIncrement = record
@@ -196,6 +194,7 @@ type
 type
   TEmcVars = record
     IniFile: string;              // inifile set by paramstr(1)
+    IniPath: string;
     NMLFile: string;              // the NML-file read from ini
     ProgramPrefix: string;        // program_prefix from ini
     ProgramFile: string;
@@ -215,7 +214,7 @@ type
     AngularJogSpeed: double;
     MaxLinearVel: double;
     MaxAngularVel: double;
-    IsMetric: Boolean;            // metric, default true **FIXME
+    Metric: Boolean;            // metric, default true **FIXME
     UnitVelStr: string;           // linear velocitystr i.e. "inch/min"
     UnitStr: string;              // linear units i.e. inch "in","mm"
     ShowActual: Boolean;          // actual or cmd position
@@ -227,13 +226,13 @@ type
     JogIncrement: Double;
     JogContinous: Boolean;
     ActiveAxis: integer;
-    StartFromLine: integer;
+    StartLine: integer;
   end;
 
 type
   TEmcState = record
     TaskMode: Integer;         // current taskmode, used in (update)
-    EStop,
+    EStop: Boolean;
     Machine: Boolean;
     SpDir: integer;
     SpInc: integer;
@@ -243,52 +242,52 @@ type
     Flood: Boolean;
     Mist: Boolean;
     Lube: Boolean;
-    LubeLvl: integer;
-    Dtg: Double;
-    Vel: Double;
-    Acc: Double;
+    LubeLevel: integer;
     Probing: Boolean;
-
     InterpState: integer;
     OptStop: Boolean;
     BlockDel: Boolean;
     ReadLn: integer;
     CurrentLn: integer;
+    MotionLn: integer;
     ProgUnits: integer;
-
+    DisplayUnits: integer;
     ORideLimits: Boolean;
+    //FeedORide: integer;
+    SpindleOverride: integer;
+    Dtg: double;
+    Vel: double;
+    Acc: double;
 
     ActVel: Integer;
-    ActFeed: Integer;
-    ActSpindleOride: Integer;
-    ActJogVel: integer;
-    ActAngJogVel: integer;
-
     MaxVel: integer;
-    MaxJogVel: Integer;         // linear max jogspeed
-    MinJogVel: integer;
-    MaxAngJogVel: Integer;      // angular max jogspeed
-    MinAngJogVel: integer;
+    ActFeed: Integer;
+    MaxFeed: integer;
+    ActJogVel: integer;
+    MaxJogVel: Integer;
+
+    UnitsChanged: Boolean;
+
   end;
 
 var
-  LastError: string[255];       // updated by checkerror
-  UpdateLock: Boolean;          // used to prevent controls to be updated
-  
-  emcVars: TEmcVars;            // global emc vars
-  emcState: TEmcState;          // global emc state
+  LastError: string;
+  UpdateLock: Boolean;
 
-  Emc: TEMC;                    // the base class of the emc interface
+  Vars: TEmcVars;
+  State: TEmcState;
 
   MocBtns: Array[0..NumTotalButtons - 1] of TSpeedButton; // the soft buttons
+
   GlobalImageList: TImageList;
 
 const
-  G5Systems: Array[1..9] of string = ('G54','G55','G56','G57','G58','G59','G59.1','G59.2','G59.3');
-  G5SysMax = 9;
+  CoordSysMax = 8;
+  CoordSys: Array[0..CoordSysMax] of string =
+    ('G54','G55','G56','G57','G58','G59','G59.1','G59.2','G59.3');
 
-  G54Variable = 5221;
-  G54Inc = 20;
+  CoordSysVar = '5221';
+  CoordSysInc = 10;
 
 type
   TOnClick = procedure(Sender: TObject) of object;
@@ -348,5 +347,9 @@ begin
         end;
 end;
 
+initialization
+
+GlobalImageList:= nil;
+LastError:= '';
 end.
 

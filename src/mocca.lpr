@@ -35,7 +35,7 @@ begin
       writeln('Cannot open inifile: ' + '"' + s + '"');
       Exit;
     end;
-  emcVars.IniFile:= s;
+  Vars.IniFile:= s;
   if (emcNmlInit <> 0) then
     begin
       writeln('Error: Cannot connect to emc');

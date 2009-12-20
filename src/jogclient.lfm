@@ -1,7 +1,7 @@
 object JogClientForm: TJogClientForm
-  Left = 604
+  Left = 451
   Height = 362
-  Top = 329
+  Top = 290
   Width = 477
   HorzScrollBar.Page = 476
   VertScrollBar.Page = 361
@@ -27,9 +27,9 @@ object JogClientForm: TJogClientForm
     ParentColor = False
   end
   object LabelJogVel: TLabel
-    Left = 368
+    Left = 16
     Height = 18
-    Top = 64
+    Top = 88
     Width = 35
     Caption = 'Label'
     ParentColor = False
@@ -37,7 +37,7 @@ object JogClientForm: TJogClientForm
   object Label3: TLabel
     Left = 16
     Height = 18
-    Top = 96
+    Top = 128
     Width = 76
     Caption = 'Schrittweite'
     ParentColor = False
@@ -61,16 +61,16 @@ object JogClientForm: TJogClientForm
     Height = 15
     Top = 65
     Width = 200
-    PageSize = 0
+    LargeChange = 10
+    PageSize = 1
     TabOrder = 0
     OnChange = sbJogVelChange
   end
   object rgJogInc: TRadioGroup
     Left = 152
     Height = 140
-    Top = 96
+    Top = 120
     Width = 200
-    Anchors = []
     AutoFill = True
     ChildSizing.LeftRightSpacing = 6
     ChildSizing.TopBottomSpacing = 6
@@ -80,8 +80,8 @@ object JogClientForm: TJogClientForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 136
-    ClientWidth = 196
+    ClientHeight = 138
+    ClientWidth = 198
     Items.Strings = (
       'Continous'
       '0.001'

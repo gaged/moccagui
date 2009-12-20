@@ -1,7 +1,7 @@
 object MDIClientForm: TMDIClientForm
-  Left = 643
+  Left = 685
   Height = 300
-  Top = 397
+  Top = 240
   Width = 400
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
@@ -29,24 +29,18 @@ object MDIClientForm: TMDIClientForm
     ParentColor = False
     ParentFont = False
   end
-  object Label1: TLabel
-    Left = 312
-    Height = 18
-    Top = 56
-    Width = 43
-    Caption = 'Label1'
-    ParentColor = False
-  end
   object LB: TListBox
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = LabelCaption
     AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = EdMDI
     Left = 4
-    Height = 223
+    Height = 227
     Top = 42
-    Width = 300
-    Anchors = [akTop, akLeft, akBottom]
+    Width = 392
+    Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 4
     ItemHeight = 0
     TabOrder = 0
@@ -59,9 +53,9 @@ object MDIClientForm: TMDIClientForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 4
-    Height = 27
-    Top = 269
-    Width = 300
+    Height = 23
+    Top = 273
+    Width = 392
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Top = 4
     BorderSpacing.Bottom = 4
