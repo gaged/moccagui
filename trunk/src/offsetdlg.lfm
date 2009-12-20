@@ -1,52 +1,80 @@
 object OffsetsDlg: TOffsetsDlg
-  Left = 342
-  Height = 346
-  Top = 305
+  Left = 595
+  Height = 351
+  Top = 332
   Width = 589
   ActiveControl = Grid
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'OffsetsDlg'
-  ClientHeight = 346
+  Caption = 'Koordinaten bearbeiten'
+  ClientHeight = 351
   ClientWidth = 589
-  Font.Height = -16
-  Font.Name = 'Courier 10 Pitch'
-  Font.Pitch = fpFixed
-  Font.Style = [fsBold]
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poScreenCenter
+  ShowInTaskBar = stNever
   LCLVersion = '0.9.28.2'
   object Grid: TStringGrid
-    Left = 8
-    Height = 288
-    Top = 8
-    Width = 480
-    DefaultColWidth = 80
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goAlwaysShowEditor, goSmoothScroll]
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 0
+    Height = 128
+    Top = 0
+    Width = 488
+    Font.Height = -16
+    Font.Name = 'Courier 10 Pitch'
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goAlwaysShowEditor, goSmoothScroll]
+    ParentFont = False
+    ScrollBars = ssNone
     TabOrder = 0
     TitleFont.Height = -16
     TitleFont.Name = 'Courier 10 Pitch'
-    TitleFont.Pitch = fpFixed
-    TitleFont.Style = [fsBold]
+    TitleStyle = tsNative
+    OnSetEditText = GridSetEditText
+    ColWidths = (
+      70
+      169
+      64
+      64
+      64
+    )
+    Cells = (
+      2
+      0
+      0
+      'Offset'
+      1
+      0
+      'Bezeichnung'
+    )
   end
-  object BtnOk: TButton
-    Left = 12
-    Height = 33
-    Top = 312
-    Width = 100
-    Caption = 'Ok'
-    ModalResult = 1
+  object PanelBottom: TPanel
+    Left = 8
+    Height = 50
+    Top = 272
+    Width = 552
+    ClientHeight = 50
+    ClientWidth = 552
     TabOrder = 1
-  end
-  object BtnCancel: TButton
-    Left = 128
-    Height = 34
-    Top = 312
-    Width = 102
-    Cancel = True
-    Caption = 'Abbruch'
-    ModalResult = 2
-    TabOrder = 2
+    object BtnOk: TButton
+      Left = 8
+      Height = 25
+      Top = 16
+      Width = 110
+      Caption = '&Ok'
+      ModalResult = 1
+      OnClick = BtnOkClick
+      TabOrder = 0
+    end
+    object BtnCancel: TButton
+      Left = 128
+      Height = 25
+      Top = 16
+      Width = 110
+      Cancel = True
+      Caption = '&Abbruch'
+      ModalResult = 2
+      TabOrder = 1
+    end
   end
 end

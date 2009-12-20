@@ -1,16 +1,16 @@
 object RunClientForm: TRunClientForm
-  Left = 418
-  Height = 424
-  Top = 304
-  Width = 616
+  Left = 669
+  Height = 335
+  Top = 89
+  Width = 516
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
   ActiveControl = LB
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'RunClientForm'
-  ClientHeight = 424
-  ClientWidth = 616
+  ClientHeight = 335
+  ClientWidth = 516
   Font.Style = [fsBold]
   OnCreate = FormCreate
   LCLVersion = '0.9.28.2'
@@ -19,7 +19,7 @@ object RunClientForm: TRunClientForm
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = LB
     AnchorSideRight.Side = asrBottom
-    Left = 488
+    Left = 388
     Height = 18
     Top = 12
     Width = 124
@@ -41,6 +41,14 @@ object RunClientForm: TRunClientForm
     ParentColor = False
     ParentFont = False
   end
+  object Label1: TLabel
+    Left = 208
+    Height = 18
+    Top = 12
+    Width = 50
+    Caption = 'Label1'
+    ParentColor = False
+  end
   object LB: TListBox
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = LabelCaption
@@ -50,9 +58,9 @@ object RunClientForm: TRunClientForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 4
-    Height = 378
+    Height = 289
     Top = 42
-    Width = 608
+    Width = 508
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 4
     Font.Height = -21
@@ -66,7 +74,9 @@ object RunClientForm: TRunClientForm
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.*.ngc'
+    FileName = '/home/gtom/Bilder'
     Filter = 'nc-files|*.ngc|gcode|*.nc'
+    InitialDir = '/home/gtom/'
     left = 24
     top = 16
   end

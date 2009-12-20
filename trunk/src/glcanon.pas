@@ -3,18 +3,16 @@ unit glcanon;
 {$MODE objfpc}
 {$H+}
 
-{$define DEBUG_SIM}
-
 {$link simcanon.o}
 {$link libemcini.so.0}
 {$link librs274.so.0}
 
-{$define PRINT_CANON}
+{$I mocca.inc}
 
 interface
 
 const
-  INTP_OK   = 0;
+  INTP_OK = 0;
   INTP_EXIT = 1;
   INTP_EXECUTE_FINISH = 2;
   INTP_ENDFILE = 3;
@@ -29,17 +27,6 @@ const
 var
   glMetric: boolean; external name 'metric';
 
-type
-  TGotoParams = record
-    UseMetric: Boolean;
-    FileName: string;
-    InitCode: string;
-    UnitCode: string;
-    GCode: string;
-    MCode: string;
-    Settings: string;
-  end;
-
 function ParseGCode(FileName: string; UseMetric: Boolean): integer;
 
 function interpreter_init: longint; cdecl; external;
@@ -51,7 +38,6 @@ procedure interpreter_codes; cdecl; external;
 function GetGCodeError(code: integer): string;
 
 function ToInternalUnits(Value: Double): Double;
-
 
 function GCodeToStr(i: integer): string;
 function MCodeToStr(i: integer): string;

@@ -103,7 +103,7 @@ begin
   
   if tmp = '' then
     begin
-      with emcVars do
+      with Vars do
         begin
           JogIncrements[0].Text:= 'Durchgehend'; // continous
           JogIncrements[0].Value:=  0;
@@ -159,63 +159,77 @@ begin
     writeln('Ini: NMLFile: ' + PChar(EMC_NMLFILE));
   {$endif}
 
-  emcVars.ToolTblFile:= 'emc.tbl';
-  emcVars.ParamFile:= 'emc.var';
+  Vars.ToolTblFile:= 'emc.tbl';
+  Vars.ParamFile:= 'emc.var';
 
-  GetIniStr('DISPLAY','PROGRAM_PREXIX',emcVars.ProgramPrefix,'');
+  GetIniStr('DISPLAY','PROGRAM_PREFIX',Vars.ProgramPrefix,'');
 
-  GetIniStr('EMC','MACHINE',emcVars.Machine,'');
+  GetIniStr('EMC','MACHINE',Vars.Machine,'');
 
-  GetIniStr('FILTER','PROGRAM_EXTENSION', emcVars.Extensions,'');
+  GetIniStr('FILTER','PROGRAM_EXTENSION', Vars.Extensions,'');
 
-  GetIniStr('HAL','POSTGUI_HALFILE',emcVars.PostguiHalfile,'');
+  GetIniStr('HAL','POSTGUI_HALFILE',Vars.PostGuiHalfile,'');
 
   GetIniDouble('DISPLAY','MAX_FEED_OVERRIDE',d,1);
-  emcVars.MaxFeedOverride:= Round(d * 100);
+  Vars.MaxFeedOverride:= Round(d * 100);
 
   GetIniDouble('DISPLAY','MAX_SPINDLE_OVERRIDE',d,1);
-  emcVars.MaxSpindleOverride:= Round(d * 100);
+  Vars.MaxSpindleOverride:= Round(d * 100);
 
   if not GetIniStr('DISPLAY','GEOMETRY',tmp,'XYZBC') then
   if Length(tmp) < 1 then Exit;  // no geometry
-  emcVars.Geometry:= tmp;
+  Vars.Geometry:= tmp;
 
   if not GetIniDouble('DISPLAY','DEFAULT_LINEAR_VELOCITY',d,1) then
     if not GetIniDouble('TRAJ', 'DEFAULT_LINEAR_VELOCITY',d,1) then
-     GetIniDouble('TRAJ', 'DEFAULT_VELOCITY',d,1);
-  emcVars.LinearJogSpeed:= d * 60;
+     GetIniDouble('TRAJ', 'DEFAULT_VELOCITY',d,0);
+  Vars.LinearJogSpeed:= d * 60;
 
   if not GetIniDouble('DISPLAY','DEFAULT_ANGULAR_VELOCITY',d,1) then
     if not GetIniDouble('TRAJ', 'DEFAULT_ANGULAR_VELOCITY',d,1) then
       GetIniDouble('TRAJ', 'DEFAULT_VELOCITY',d,1);
-  emcVars.AngularJogSpeed:= d * 60;
+  Vars.AngularJogSpeed:= d * 60;
 
   if not GetIniDouble('DISPLAY','MAX_LINEAR_VELOCITY',d,1) then
     if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d,1) then
       GetIniDouble('TRAJ','MAX_VELOCITY',d,1);
-  emcVars.MaxLinearVel:= d * 60;
+  Vars.MaxLinearVel:= d * 60;
+
+  {$ifdef DEBUG_INI}
+  writeln('Ini: MaxLinearVel ' + FloatToStr(Vars.MaxLinearVel));
+  {$endif}
+
+  if Vars.LinearJogSpeed < 0.0001 then
+    Vars.LinearJogSpeed:= Vars.MaxLinearVel;
+  if Vars.LinearJogSpeed > Vars.MaxLinearVel then
+    Vars.LinearJogSpeed:= Vars.MaxLinearVel;
+
+  State.MaxJogVel:= Round(Vars.MaxLinearVel);
+  State.ActJogVel:= Round(Vars.LinearJogSpeed);
+
+  State.MaxVel:= Round(Vars.MaxLinearVel);
+  State.ActVel:= State.MaxVel;
+
 
   if not GetIniDouble('DISPLAY','MAX_ANGULAR_VELOCITY',d,1) then
     if not GetIniDouble('TRAJ','MAX_ANGULAR_VELOCITY',d,1) then
       GetIniDouble('TRAJ','MAX_VELOCITY',d,1);
-  emcVars.MaxAngularVel:= d * 60;
+  Vars.MaxAngularVel:= d * 60;
 
   LinearUnitConversion:= 0;
   GetIniStr('TRAJ','LINEAR_UNITS',tmp,'');
   if Tmp = '' then
-    begin
-      emcVars.IsMetric:= True;
-      linearUnitConversion:= LINEAR_UNITS_MM;
-    end
+    linearUnitConversion:= LINEAR_UNITS_MM
   else
     begin
       StripBlank(tmp);
       tmp:= UpperCase(tmp);
-      if tmp = 'INCH' then LinearUnitConversion:= LINEAR_UNITS_INCH;
+      if tmp = 'INCH' then LinearUnitConversion:= LINEAR_UNITS_INCH else
       if tmp = 'MM' then LinearUnitConversion:= LINEAR_UNITS_MM;
-      if tmp = 'CM' then LinearUnitConversion:= LINEAR_UNITS_CM;
     end;
-    
+
+  Vars.Metric:= LinearUnitConversion = LINEAR_UNITS_MM;
+
   if linearUnitConversion = 0 then
     begin
       writeln('Linear Units not defined.');
@@ -223,12 +237,12 @@ begin
     end;
     
   case linearUnitConversion of
-    LINEAR_UNITS_MM: emcVars.UnitStr:= 'mm';
-    LINEAR_UNITS_INCH: emcVars.UnitStr:= 'in';
-    LINEAR_UNITS_CM: emcVars.UnitStr:= 'cm';
+    LINEAR_UNITS_MM: Vars.UnitStr:= 'mm';
+    LINEAR_UNITS_INCH: Vars.UnitStr:= 'in';
   end;
 
-  emcVars.UnitVelStr:= emcVars.UnitStr + '/min';
+  Vars.Metric:= LinearUnitConversion = LINEAR_UNITS_MM;
+  Vars.UnitVelStr:= Vars.UnitStr + '/min';
 
   // *todo: angularUnitsConversion
 
@@ -238,75 +252,66 @@ begin
       writeln('Number of Axes not defined or zero.');
       Exit;
     end;
-  emcVars.NumAxes:= i;
+  Vars.NumAxes:= i;
 
   if GetIniStr('TRAJ','COORDINATES',tmp,'') then
     begin
       if not StripBlank(tmp) then tmp:= '';
-      if Length(tmp) <> emcVars.NumAxes then
+      if Length(tmp) <> Vars.NumAxes then
         begin
           writeln('missmatch in number of joints and coord names');
           Exit;
         end;
     end;
-  emcVars.CoordNames:= tmp;
+  Vars.CoordNames:= tmp;
   
   {$ifdef DEBUG_INI}
-    writeln('Ini: Coordinates ' + emcVars.CoordNames);
+    writeln('Ini: Coordinates ' + Vars.CoordNames);
   {$endif}
-
 
   GetIniDouble('DISPLAY','CYCLE_TIME',d,0.2);
   i:= Round(d/1000);
   if (i > 500) then i:= 500;
   if (i < 50) then i := 50;
-  emcVars.CycleDelay:= i;
+  Vars.CycleDelay:= i;
 
-  GetIniStr('EMCIO','TOOL_TABLE',emcVars.ToolTblFile,'tool.tbl');
-  GetIniStr('RS274NGC','PARAMETER_FILE',emcVars.ParamFile,'');
+  GetIniStr('EMCIO','TOOL_TABLE',Vars.ToolTblFile,'tool.tbl');
+  GetIniStr('RS274NGC','PARAMETER_FILE',Vars.ParamFile,'');
 
   {$ifdef DEBUG_INI}
-    writeln('Ini: Tooltablefile: ' + emcVars.ToolTblFile);
-    writeln('Ini: Paramfile: ' + emcVars.ParamFile);
+  writeln('Ini: Tooltablefile: ' + Vars.ToolTblFile);
+  writeln('Ini: Paramfile: ' + Vars.ParamFile);
   {$endif}
 
 
-  emcVars.HomingOrderDefined:= GetIniStr('AXIS_0','HOME_SEQUENCE',tmp,'');
-
-  if emcVars.LinearJogSpeed > emcVars.MaxLinearVel then
-    emcVars.LinearJogSpeed:= emcVars.MaxLinearVel;
-
-  emcState.MaxJogVel:= Round(emcVars.MaxLinearVel);
-  emcState.MinJogVel:= Round(0);  // Fixme, should be minlinearvelocity
-  emcState.ActJogVel:= emcState.MaxJogVel;
-
-  emcState.MaxVel:= Round(emcVars.MaxLinearVel);
-  emcState.ActVel:= emcState.MaxVel;
+  Vars.HomingOrderDefined:= GetIniStr('AXIS_0','HOME_SEQUENCE',tmp,'');
 
   if GetIniStr('DISPLAY','POSITION_OFFSET',tmp,'') then
     begin
       tmp:= UpperCase(Trim(tmp));
-      emcVars.ShowRelative:= (tmp = 'RELATIVE') or (tmp = 'REL');
+      Vars.ShowRelative:= (tmp = 'RELATIVE') or (tmp = 'REL');
     end
   else
-    emcVars.ShowRelative:= True;
+    Vars.ShowRelative:= True;
 
   if GetIniStr('DISPLAY','POSITION_FEEDBACK',tmp,'') then
     begin
       tmp:= UpperCase(Trim(tmp));
-      emcVars.ShowActual:= (tmp = 'ACTUAL') or (tmp = 'ACT');
+      Vars.ShowActual:= (tmp = 'ACTUAL') or (tmp = 'ACT');
      end
   else
-    emcVars.ShowActual:= True;
+    Vars.ShowActual:= True;
 
-  for i:= 0 to emcVars.NumAxes - 1 do
+  for i:= 0 to Vars.NumAxes - 1 do
     begin
       tmp:= 'AXIS_' + IntToStr(i);
-      GetIniInt(tmp,'JOGGING_POLARITY',emcVars.jogPolarity[i],0);
+      GetIniInt(tmp,'JOGGING_POLARITY',Vars.jogPolarity[i],0);
     end;
     
   GetIniStr('DISPLAY','INCREMENTS',tmp,'');
   SetJogIncrements(tmp);
+
+  Vars.IniPath:= ExtractFilePath(Vars.IniFile);
   
   Result:= True;
 end;

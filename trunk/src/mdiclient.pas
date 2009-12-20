@@ -13,7 +13,6 @@ type
 
   TMDIClientForm = class(TForm)
     EdMDI: TEdit;
-    Label1: TLabel;
     LabelCaption: TLabel;
     LB: TListBox;
     procedure FormCreate(Sender: TObject);
@@ -35,7 +34,7 @@ var
 implementation
 
 uses
-  buttons,mocglb,mocjoints,
+  buttons,mocglb,mocemc,mocjoints,
   emc2pas;
 
 procedure TMDIClientForm.FormCreate(Sender: TObject);
@@ -53,7 +52,7 @@ begin
       begin
         S:= EdMDI.Text;
         if Length(S) > 0 then
-          Emc.ExecMDI(S);
+          Emc.Execute(S);
       end;
   else
     Result:= False;
@@ -62,11 +61,11 @@ end;
 
 procedure TMDIClientForm.ActivateSelf;
 begin
-  if emcState.TaskMode <> TASKMODEMDI then Exit;
+  if State.TaskMode <> TASKMODEMDI then Exit;
   if not Visible then
     Visible:= true;
   MapButtons;
-  SetButtonDown(cmMDI,True);
+  initControls;
 end;
 
 procedure TMDIClientForm.UpdateSelf;
@@ -80,6 +79,8 @@ end;
 
 procedure TMDIClientForm.InitControls;
 begin
+  SetButtonDown(cmMDI,True);
+  EdMDI.SetFocus;
 end;
 
 procedure TMDIClientForm.Click(Sender: TObject);

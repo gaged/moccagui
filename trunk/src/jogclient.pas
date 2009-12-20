@@ -28,6 +28,7 @@ type
     procedure Click(Sender: TObject);
   private
     OldORideLimits: Boolean;
+    OldJogVel: integer;
     OldSpDir: integer;
     procedure EditOffsets;
   public
@@ -66,7 +67,7 @@ end;
 procedure TJogClientForm.HandleCommand(Cmd: integer);
 begin
   case Cmd of
-    cmLIMITS: Emc.OverrideLimits;
+    //cmLIMITS: Emc.OverrideLimits;
     cmOFFSDLG: EditOffsets;
   else
     Emc.HandleCommand(Cmd);
@@ -75,7 +76,7 @@ end;
 
 procedure TJogClientForm.ActivateSelf;
 begin
-  if emcState.TaskMode <> TASKMODEMANUAL then
+  if State.TaskMode <> TASKMODEMANUAL then
     raise Exception.Create('Cannot activate jogwindow when not in mode manual.');
   if not Visible then
     Visible:= true;
@@ -85,19 +86,25 @@ end;
 
 procedure TJogClientForm.UpdateSelf;
 var
-  ORideLimits: Boolean;
+  i: integer;
 begin
-  if ORideLimits <> emcState.ORideLimits then
+  {if ORideLimits <> State.ORideLimits then
     begin
       SetButtonDown(cmLIMITS,ORideLimits);
-      OldORideLimits:= emcState.ORideLimits;
-    end;
-  if OldSpDir <> emcState.SpDir then
+      OldORideLimits:= State.ORideLimits;
+    end;}
+  if OldSpDir <> State.SpDir then
     begin
-      SetButtonDown(cmSPCW,emcState.SpDir > 0);
-      SetButtonDown(cmSPCCW,emcState.SpDir < 0);
-      OldSpDir:= emcState.SpDir;
+      SetButtonDown(cmSPCW,State.SpDir > 0);
+      SetButtonDown(cmSPCCW,State.SpDir < 0);
+      OldSpDir:= State.SpDir;
     end;
+ if (OldJogVel <> State.ActJogVel) or (State.UnitsChanged) then
+   begin
+     i:= Round(Emc.ToLinearUnits(State.ActJogVel));
+     LabelJogVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
+     OldJogVel:= State.ActJogVel;
+   end;
 end;
 
 procedure TJogClientForm.MapButtons;
@@ -111,21 +118,17 @@ var
 begin
   SetButtonDown(cmJOG,True);
   // SetButtonDown(cmLIMITS,emcState.ORideLimits);
-  SetButtonEnabled(cmREFALL,emcVars.HomingOrderDefined);
-  with emcState,emcVars do
-    begin
-      sbJogVel.Min:= MinJogVel;
-      sbJogVel.Max:= MaxJogVel;
-      sbJogVel.Position:= ActJogVel;
-      LabelJogVel.Caption:= IntToStr(ActJogVel) + UnitVelStr;
-      rgJogInc.Items.Clear;
-      for i:= 0 to JogIncMax do
-        rgJogInc.Items.Add(JogIncrements[i].Text);
-      rgJogInc.ItemIndex:= 0;
-      JogContinous:= True;
-      OldORideLimits:= False;
-      OldSpDir:= emcState.SpDir + 1;
-    end;
+  SetButtonEnabled(cmREFALL,Vars.HomingOrderDefined);
+  { gtk scrollbars need a pagesize of 1!}
+  sbJogVel.SetParams(State.ActJogVel,0,State.MaxJogVel,1);
+  rgJogInc.Items.Clear;
+  for i:= 0 to Vars.JogIncMax do
+    rgJogInc.Items.Add(Vars.JogIncrements[i].Text);
+  rgJogInc.ItemIndex:= 0;
+  Vars.JogContinous:= True;
+  OldORideLimits:= False;
+  OldSpDir:= State.SpDir + 1;
+  OldJogVel:= 0;
 end;
 
 function TJogClientForm.HandleJogKeys(var Key: Word; Down: Boolean): Boolean;
@@ -135,16 +138,16 @@ var
   Speed: Double;
 begin
   Key:= 0;
-  Speed:= emcState.ActJogVel * Dir;
-  if emcVars.JogContinous then
+  Speed:= State.ActJogVel * Dir;
+  if Vars.JogContinous then
     Joints.JogCont(Ch,Speed)
   else
-    Joints.JogIncr(Ch,Speed,emcVars.JogIncrement);
+    Joints.JogIncr(Ch,Speed,Vars.JogIncrement);
 end;
 
 procedure JogStop(Ch: Char);
 begin
-  if emcVars.JogContinous then
+  if Vars.JogContinous then
     begin
       Joints.JogStop(Ch);
       Sleep(10);
@@ -190,11 +193,11 @@ var
   Vel: integer;
 begin
   if UpdateLock then Exit;
-  Vel:= sbJogVel.Position;
-  if Vel <> emcState.ActJogVel then
+  Vel:= sbJogVel.Position + 1;
+  if Vel <> State.ActJogVel then
     begin
-      emcState.ActJogVel:= Vel;
-      LabelJogVel.Caption:= IntToStr(emcState.ActJogVel)+emcVars.UnitVelStr;
+      State.ActJogVel:= Vel;
+      LabelJogVel.Caption:= IntToStr(State.ActJogVel)+ Vars.UnitVelStr;
     end;
 end;
 
@@ -220,9 +223,9 @@ var
   i: integer;
 begin
   i:= rgJogInc.ItemIndex;
-  if (i < 0) or (i > emcVars.JogIncMax) then Exit;
-  emcVars.JogContinous:= (i = 0);
-  emcVars.jogIncrement:= emcVars.JogIncrements[i].Value;
+  if (i < 0) or (i > Vars.JogIncMax) then Exit;
+  Vars.JogContinous:= (i = 0);
+  Vars.jogIncrement:= Vars.JogIncrements[i].Value;
 end;
 
 

@@ -13,10 +13,9 @@ type
   { TSimClientForm }
 
   TSimClientForm = class(TForm)
-    Panel: TPanel;
+    OpenGLControl: TOpenGLControl;
     sbH: TScrollBar;
     sbV: TScrollBar;
-    procedure BevelResize(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure sbHChange(Sender: TObject);
@@ -95,18 +94,12 @@ begin
   if not Assigned(MyGlList) then
     MyGlList:= TGlList.Create;
   if not Assigned(MyGlView) then
-    MyGlView:= TGlView.Create(Panel,Panel);
+    MyGlView:= TGlView.Create(OpenGlControl);
   MyGlView.SetMachineLimits(E);
   MyGlView.ResetView;
   sbV.setParams(InitialRotX,-90,90);
   sbH.SetParams(InitialRotZ,-90,90);
   FShowLivePlot:= True;
-end;
-
-procedure TSimClientForm.BevelResize(Sender: TObject);
-begin
-  if Assigned(MyGlView) then
-    MyGlView.SetBounds(1,1,Panel.Width - 2,Panel.Height - 2);
 end;
 
 procedure TSimClientForm.FormDestroy(Sender: TObject);

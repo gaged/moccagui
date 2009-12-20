@@ -61,7 +61,9 @@ type
   private
 
     OldSpindleSpeed: Double;
-    OldFeed: Double;
+    OldFeed: integer;
+    OldMaxVel: integer;
+    NewMaxVel: integer;
 
     procedure InitPanels;
     procedure InitButtons;
@@ -91,10 +93,12 @@ end;
 
 procedure TMainForm.TaskModeChanged;  // called by MainForm.UpdateTaskMode
 begin
-  clJog.Visible:= (emcState.TaskMode = TaskModeManual);
-  clRun.Visible:= (emcState.TaskMode = TaskModeAuto);
-  clMdi.Visible:= (emcState.TaskMode = TaskModeMDI);
-  case emcState.TaskMode of
+  clJog.Visible:= (State.TaskMode = TaskModeManual);
+  clRun.Visible:= (State.TaskMode = TaskModeAuto);
+  clMdi.Visible:= (State.TaskMode = TaskModeMDI);
+  if Assigned(Joints) then
+    Joints.ShowBox:= (State.TaskMode = TaskModeManual);
+  case State.TaskMode of
     TaskModeManual: clJog.ActivateSelf;
     TaskModeAuto: clRun.ActivateSelf;
     TaskModeMDI: clMDI.ActivateSelf;
@@ -103,28 +107,39 @@ end;
 
 procedure TMainForm.UpdateButtons; // called by Main_Form.UpdateState
 begin
-  MocBtns[0].Down:= emcState.EStop;
-  MocBtns[1].Down:= emcState.Machine;
+  MocBtns[0].Down:= State.EStop;
+  MocBtns[1].Down:= State.Machine;
 end;
 
 procedure TMainForm.UpdateState;
+var
+  Scale: double;
+  i: integer;
 begin
   if EMC.UpdateState then  // returns true if the taskmode changed
-    TaskModeChanged;       // mainform.taskmodechanged
+    TaskModeChanged;  // mainform.taskmodechanged
 
-  UpdateButtons;           // update the buttons;
+  if LastError <> '' then
+    begin
+      lbMessages.Items.Add(LastError);
+      LastError:= '';
+    end;
 
-  Joints.Update;           // update the joints
-  clSim.UpdateSelf;        // update the preview
+  if ErrorStr[0] <> #0 then
+    begin
+      lbMessages.Items.Add(PChar(ErrorStr));
+      ErrorStr[0]:= #0;
+    end;
 
-  if (emcState.TaskMode = TASKMODEMANUAL) then clJog.UpdateSelf else
-  if (emcState.TaskMode = TASKMODEAUTO) then clRun.UpdateSelf else
-    clMDI.UpdateSelf;
+  UpdateButtons;  // Update the Buttons;
+  Joints.Update;  // update the joints
 
   LabelGCodes.Caption:= PChar(ACTIVEGCODES);
   LabelMCodes.Caption:= PChar(ACTIVEMCODES);
   LabelFWords.Caption:= PChar(ACTIVEFWORDS);
   LabelSWords.Caption:= PChar(ACTIVESWORDS);
+
+  clSim.UpdateSelf;
 
   if OperatorTextStr[0] <> #0 then
     begin
@@ -137,6 +152,41 @@ begin
       lbMessages.Items.Add(PChar(OperatorDisplayStr));
       OperatorDisplayStr[0]:= #0;
     end;
+
+  if State.TaskMode = TASKMODEMANUAL then
+    clJog.UpdateSelf
+  else
+  if State.TaskMode = TASKMODEAUTO then
+    clRun.UpdateSelf
+  else
+    clMDI.UpdateSelf;
+
+  if State.UnitsChanged then
+    OldMaxVel:= 0;  // update Maxvel...
+
+  if OldFeed <> State.ActFeed then
+    begin
+      LabelFeed.Caption:= IntToStr(State.ActFeed) + '%';
+      OldFeed:= State.ActFeed;
+    end;
+
+  if NewMaxVel <> State.ActVel then
+    begin
+      Emc.SetMaxVel(NewMaxVel);
+      NewMaxVel:= State.ActVel;
+      i:= Round(Emc.ToLinearUnits(State.ActVel));
+      LabelMaxVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
+    end;
+
+  {if OldMaxVel <> State.ActVel then
+    begin
+      i:= Round(Emc.ToLinearUnits(State.ActVel));
+      LabelMaxVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
+      OldMaxVel:= State.ActVel;
+    end;}
+
+  State.UnitsChanged:= False;  // clear this one last
+
  end;
 
 procedure TMainForm.InitPanels;  // init the panels, clients, joints
@@ -146,28 +196,28 @@ begin
   PanelDro.Font.Size:= DroFontSize; // from mocglb.pas
 
   Joints:= TJoints.Create(PanelDRO);  // create the joints here
-  Joints.CreateJoints(emcVars.CoordNames,emcVars.NumAxes);  // setup joints
+  Joints.CreateJoints(Vars.CoordNames,Vars.NumAxes);  // setup joints
 
   if Assigned(Joints) then
     begin
       h:= (Joints.BorderWidth + Abs(PanelDro.Font.Height)); // size the joints
-      Joints.ShowActual:= emcVars.ShowActual;
-      Joints.ShowRelative:= emcVars.ShowRelative;
+      // PanelDro.ClientHeight:= h * emcVars.NumAxes;   // size the dro panel
+      Joints.ShowActual:= Vars.ShowActual;
+      Joints.ShowRelative:= Vars.ShowRelative;
     end
   else
     raise Exception.Create('error creating joints');
 
-  with emcVars,emcState do  // setup mainforms controls
+  with Vars,State do  // setup mainforms controls
     begin
       ActFeed:= 100;
       sbFeed.Min:= 1;
       sbFeed.Max:= MaxFeedOverride;
       sbFeed.Position:= ActFeed;
-      LabelFeed.Caption:= IntToStr(ActFeed) + '%';
+      // LabelFeed.Caption:= IntToStr(ActFeed) + '%';
       sbMaxVel.Min:= 0;
       sbMaxVel.Max:= MaxVel;
       sbMaxVel.Position:= ActVel;
-      LabelMaxVel.Caption:= IntToStr(ActVel) + UnitVelStr;
       if ShowActual then
         rgCoords.ItemIndex:= 0
       else
@@ -177,6 +227,10 @@ begin
       else
         rgOrigin.ItemIndex:= 1;
     end;
+
+  OldMaxVel:= 0;
+  OldFeed:= 0;
+
 end;
 
 procedure TMainForm.InitButtons; // This creates the buttons used by mocca
@@ -207,36 +261,46 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  emcState.TaskMode:= 0;  // trigger a taskmodechanged
-  UpdateLock:= True;      // prevent from update in ontimer
+  State.TaskMode:= 0;  // trigger a taskmodechanged
+  UpdateLock:= True; // prevent from update in on_idle
+
   GlobalImageList:= Self.ImageList;  // assign the imagelist to the global imagelist
+
   Emc:= TEmc.Create;
+
   clJog:= TJogClientForm.Create(self); // create the client forms
   clJog.Parent:= PanelMaster;
   clJog.Visible:= False;
+
   clMDI:= TMDIClientForm.Create(self);
   clMDI.Parent:= PanelMaster;
   clMDI.Visible:= False;
+
   clRun:= TRunClientForm.Create(self);
   clRun.Parent:= PanelMaster;
   clRun.Visible:= False;
+
   clSim:= TSimClientForm.Create(self);
   clSim.Parent:= PanelMaster;
   clSim.Visible:= False;
-  InitPanels;                           // init the panels
-  InitButtons;                          // init the buttons
-  Timer.Interval:= emcVars.CycleDelay;  // setup timer
+
+  InitPanels;
+  InitButtons;
+
+  Timer.Interval:= Vars.CycleDelay;
   Timer.OnTimer:= @Self.OnTimer;
-  Timer.Enabled:= True;                 // switch timer on
-  UpdateLock:= False;                   // allow updates (is running now)
+
+  Timer.Enabled:= True;
+  UpdateLock:= False;
+
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 var
   i: integer;
 begin
-  UpdateLock:= True;                    // prevent from updates during destroy
-  Timer.Enabled:= False;                // disable the timer
+  UpdateLock:= True;  // prevent from updates during destroy
+  Timer.Enabled:= False;
   if Assigned(clJog) then clJog.Free;
   if Assigned(clMDI) then clMDI.Free;
   if Assigned(clRun) then clRun.Free;
@@ -245,6 +309,7 @@ begin
     if Assigned(MocBtns[i]) then MocBtns[i].Free;
   if Assigned(EMC) then Emc.Free;
   if Assigned(Joints) then Joints.Free;
+  GlobalImageList:= nil;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -257,63 +322,36 @@ end;
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word; // all keydowns get here
   Shift: TShiftState);
 
-procedure DoAction(Cmd: integer);
+procedure DoAction(cmd: integer);
 begin
-  if Assigned(Emc) then Emc.HandleCommand(Cmd);
-  Key:= 0;
+  if Assigned(Emc) then
+    Emc.HandleCommand(Cmd);
 end;
 
 begin
-  if (Key = 27) then DoAction(cmESTOP);   // EStop #27 first
-
-  if (emcState.TaskMode = TaskModeManual) then  // clJog needs almost all keys
-    clJog.FormKeyDown(nil,Key,Shift);           // send the keys
+  if Key = 27 then  // handle the escape key first
+    begin
+      DoAction(cmESTOP);
+      Key:= 0;
+      Exit;
+    end;
 
   if (Key = 32) and (ssCtrl in Shift) then
-    begin
-      lbMessages.Items.Clear;
-      Key:= 0;
-    end;
+    lbMessages.Items.Clear;
+
+  if (State.TaskMode = TaskModeManual) then
+    clJog.FormKeyDown(nil,Key,Shift);
 end;
 
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if (emcState.TaskMode = TaskModeManual) then
+  if (State.TaskMode = TaskModeManual) then
     clJog.FormKeyUp(nil,Key,Shift)
 end;
 
 procedure TMainForm.OnTimer(Sender: TObject);
 begin
-  if UpdateLock then Exit;    // do not update
-  if UpdateStatus <> 0 then   // fixme: its a serious error, terminate!
-    begin
-      lbMessages.Items.Add('Bad result in updatestatus');
-      Exit;
-    end;
-  if UpdateError <> 0 then
-    begin
-      lbMessages.Items.Add('Bad result in updateerror');
-      Exit;
-    end;
-    
-  if LastError <> '' then
-    begin
-      lbMessages.Items.Add(LastError);
-      LastError:= '';
-    end;
-    
-  if CheckError then
-    begin
-      if Length(LastError) > 0 then
-        with lbMessages do
-          begin
-            Items.Add(LastError);
-            ItemIndex:= Items.Count - 1;
-            MakeCurrentVisible;
-            LastError:= '';
-        end;
-    end;
-  Self.UpdateState;  // the mainform.updatestate.
+  if not UpdateLock then Self.UpdateState;
 end;
 
 procedure TMainForm.PanelMasterResize(Sender: TObject);  // the master for the clients
@@ -388,17 +426,18 @@ end;
 procedure TMainForm.sbFeedChange(Sender: TObject);
 begin
   if UpdateLock then Exit;
-  if Emc.SetFeedORide(sbFeed.Position) then
-    LabelFeed.Caption:= IntToStr(emcState.ActFeed) + '%';
+  Emc.SetFeedORide(sbFeed.Position);
+  // then
+  //  LabelFeed.Caption:= IntToStr(State.ActFeed) + '%';
 end;
 
 procedure TMainForm.sbMaxVelChange(Sender: TObject);
-var
-  s: string;
 begin
   if UpdateLock then Exit;
-  if Emc.SetMaxVel(sbMaxVel.Position) then
-    LabelMaxVel.Caption:= IntToStr(emcState.ActVel)+emcVars.UnitVelStr;
+  NewMaxVel:= sbMaxVel.Position;
+  {Emc.SetMaxVel(sbMaxVel.Position);}
+  // then
+  //  LabelMaxVel.Caption:= IntToStr(State.ActVel)+Vars.UnitVelStr;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);

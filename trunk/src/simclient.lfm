@@ -1,11 +1,10 @@
 object SimClientForm: TSimClientForm
-  Left = 367
+  Left = 633
   Height = 335
-  Top = 244
+  Top = 293
   Width = 453
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
-  ActiveControl = Panel
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'SimClientForm'
@@ -53,7 +52,7 @@ object SimClientForm: TSimClientForm
     TabOrder = 1
     OnChange = sbVChange
   end
-  object Panel: TPanel
+  object OpenGLControl: TOpenGLControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = sbV
@@ -63,7 +62,5 @@ object SimClientForm: TSimClientForm
     Top = 0
     Width = 434
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabOrder = 2
-    OnResize = BevelResize
   end
 end

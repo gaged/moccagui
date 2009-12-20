@@ -53,8 +53,10 @@ type
     FShowActual: Boolean;
     FShowRelative: Boolean;
     FNumAxes: Integer;
+    FShowBox: Boolean;
     FAxes: Array[0..MAX_JOINTS-1] of TAxis;
     procedure OnLabelClick(Sender: TObject);
+    procedure SetShowBox(Value: Boolean);
    public
     constructor Create(APanel: TPanel);
     destructor Destroy;
@@ -74,6 +76,7 @@ type
     property  ShowActual: Boolean read FShowActual write FShowActual;
     property  ShowRelative: Boolean read FShowRelative write FShowRelative;
     property  BorderWidth: integer read FBorderWidth write FBorderWidth;
+    property  ShowBox: Boolean write SetShowBox;
   end;
   
 var
@@ -82,7 +85,7 @@ var
 implementation
 
 uses
-  emc2pas,mocglb;
+  emc2pas,mocglb,mocemc;
 
 var
   FullWidth: integer;
@@ -205,9 +208,10 @@ begin
   FBox:= TShape.Create(FPanel);
   FBox.Parent:= FPanel;
   FBox.Shape:= stRectangle;
+  FBox.Visible:= False;
   FOldActiveAxis:= 0;
-  FShowActual:= emcVars.ShowActual;
-  FShowRelative:= emcVars.ShowRelative;
+  FShowActual:= Vars.ShowActual;
+  FShowRelative:= Vars.ShowRelative;
 end;
 
 destructor TJoints.Destroy;
@@ -221,6 +225,15 @@ begin
   FNumAxes:= 0;
   if Assigned(FBox) then
     FBox.Free;
+end;
+
+procedure TJoints.SetShowBox(Value: Boolean);
+begin
+  if FShowBox <> Value then
+    begin
+      FBox.Visible:= Value;
+      FShowBox:= Value;
+    end;
 end;
 
 function TJoints.AxisByChar(Ch: Char): integer;
@@ -243,7 +256,7 @@ begin
       if FAxes[i].Jogging then
         begin
           sendJogStop(FAxes[i].AxisNumber);
-          Emc.WaitEmcDone;
+          Emc.WaitDone;
           FAxes[i].Jogging:= False;
         end;
 end;
@@ -255,8 +268,8 @@ end;
 
 procedure TJoints.HomeActive;
 begin
-  if (emcVars.ActiveAxis >= 0) and (emcVars.ActiveAxis < FNumAxes) then
-    sendHome(emcVars.ActiveAxis);
+  if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then
+    sendHome(Vars.ActiveAxis);
 end;
 
 function TJoints.JogCont(Ch: Char; Speed: Double): integer;
@@ -268,8 +281,8 @@ begin
   if i < 0 then Exit;
   FAxes[i].Jogging:= True;
   Result:= sendJogCont(i,Speed);
-  if i <> emcVars.ActiveAxis then
-    emcVars.ActiveAxis:= i;
+  if i <> Vars.ActiveAxis then
+    Vars.ActiveAxis:= i;
 end;
 
 function TJoints.JogIncr(Ch: Char; Speed,Incr: Double): integer;
@@ -282,8 +295,8 @@ begin
   FAxes[i].Jogging:= True;
   Result:= sendJogIncr(i,Speed,Incr);
   FAxes[i].Jogging:= False;
-  if i <> emcVars.ActiveAxis then
-    emcVars.ActiveAxis:= i;
+  if i <> Vars.ActiveAxis then
+    Vars.ActiveAxis:= i;
 end;
 
 function TJoints.JogStop(Ch: Char): integer;
@@ -294,8 +307,8 @@ begin
   i:= AxisByChar(Ch);
   if i < 0 then Exit;
   Result:= sendJogStop(i);
-  if i <> emcVars.ActiveAxis then
-    emcVars.ActiveAxis:= i;
+  if i <> Vars.ActiveAxis then
+    Vars.ActiveAxis:= i;
   FAxes[i].Jogging:= False;
 end;
 
@@ -318,8 +331,8 @@ begin
       begin
         i:= Tag;
         if (i < 0) or (i >= FNumAxes) then
-        Exit;
-        emcVars.ActiveAxis:= i;
+          Exit;
+        Vars.ActiveAxis:= i;
     end;
 end;
 
@@ -373,12 +386,13 @@ begin
   if FNumAxes < 1 then Exit;
   for i:= 0 to FNumAxes - 1 do
     FAxes[i].Update(FShowActual,FShowRelative);
-  if FOldActiveAxis <> emcVars.ActiveAxis then
-    if (emcVars.ActiveAxis >= 0) and (emcVars.ActiveAxis < FNumAxes) then
-      begin
-        FBox.Top:= FAxes[emcVars.ActiveAxis].Top - 2;
-        FOldActiveAxis:= emcVars.ActiveAxis;
-      end;
+  if FShowBox then
+    if FOldActiveAxis <> Vars.ActiveAxis then
+      if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then
+        begin
+          FBox.Top:= FAxes[Vars.ActiveAxis].Top - 2;
+          FOldActiveAxis:= Vars.ActiveAxis;
+        end;
 end;
 
 procedure TJoints.DoResize(Sender: TObject);

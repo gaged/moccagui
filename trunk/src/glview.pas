@@ -13,8 +13,8 @@ type
   
 type
   TGlView = class
-    constructor Create(AParent,AOwner: TWinControl);
-    destructor Destroy; override;
+    constructor Create(AOpenGlControl: TOpenGlControl);
+    destructor Destroy;
     procedure Paint(Sender: TObject);
     procedure Resize(Sender: TObject);
     procedure MouseWheel(Sender: TObject; Shift: TShiftState;
@@ -92,14 +92,10 @@ implementation
 uses
   glCanon;
 
-constructor TGlView.Create(AParent,AOwner: TWinControl);
+constructor TGlView.Create(AOpenGlControl: TOpenGlControl);
 begin
   AreaInitialized:= False;
-  ogl:= TOpenGlControl.Create(AOwner);
-  ogl.Parent:= AParent;
-  ogl.SetBounds(0,0,500,500);
-  ogl.DoubleBuffered:= True;
-  ogl.AutoResizeViewPort:= False;
+  ogl:= AOpenGlControl;
   ogl.OnPaint:= @self.Paint;
   ogl.OnResize:= @self.Resize;
   ogl.OnMouseWheel:= @self.MouseWheel;
@@ -110,9 +106,15 @@ end;
 
 destructor TGlView.Destroy;
 begin
-  writeln('glview destroy');
-  if Assigned(ogl) then ogl.Free;
-  inherited;
+  if Assigned(ogl) then
+    begin
+    ogl.OnPaint:= nil;
+    ogl.OnResize:= nil;
+    ogl.OnMouseWheel:= nil;
+    ogl.OnMouseDown:= nil;
+    ogl.OnMouseMove:= nil;
+    ogl.OnMouseUp:= nil;
+  end;
 end;
 
 procedure TglView.RotateZ(Angle: integer);
@@ -423,8 +425,9 @@ end;
 
 procedure TGlView.Resize(Sender: TObject);
 begin
- if (AreaInitialized) and ogl.MakeCurrent then
-   glViewport(0,0,ogl.Width,ogl.Height);
+  if ogl.Visible then
+   if (AreaInitialized) and ogl.MakeCurrent then
+     glViewport(0,0,ogl.Width,ogl.Height);
 end;
 
 procedure TGlView.MakeCone;
