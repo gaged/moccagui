@@ -5,7 +5,7 @@ object MDIClientForm: TMDIClientForm
   Width = 400
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
-  ActiveControl = LB
+  ActiveControl = MDIHistListBox
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'MDIClientForm'
@@ -29,13 +29,13 @@ object MDIClientForm: TMDIClientForm
     ParentColor = False
     ParentFont = False
   end
-  object LB: TListBox
+  object MDIHistListBox: TListBox
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = LabelCaption
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = EdMDI
+    AnchorSideBottom.Control = MDIEdit
     Left = 4
     Height = 227
     Top = 42
@@ -43,12 +43,13 @@ object MDIClientForm: TMDIClientForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 4
     ItemHeight = 0
+    OnClick = MDIHistListBoxClick
     TabOrder = 0
     TopIndex = -1
   end
-  object EdMDI: TEdit
-    AnchorSideLeft.Control = LB
-    AnchorSideRight.Control = LB
+  object MDIEdit: TEdit
+    AnchorSideLeft.Control = MDIHistListBox
+    AnchorSideRight.Control = MDIHistListBox
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom

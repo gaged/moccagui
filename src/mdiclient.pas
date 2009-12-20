@@ -12,14 +12,17 @@ type
   { TMDIClientForm }
 
   TMDIClientForm = class(TForm)
-    EdMDI: TEdit;
+    MDIEdit: TEdit;
     LabelCaption: TLabel;
-    LB: TListBox;
+    MDIHistListBox: TListBox;
     procedure FormCreate(Sender: TObject);
     procedure Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure MDIHistListBoxClick(Sender: TObject);
   private
-    { private declarations }
+    function StripMdiInput(inp: string): string;
+    function FormatMdi(inp: string): string;
+    procedure ExecuteMdi;
   public
     procedure ActivateSelf;
     procedure UpdateSelf;
@@ -43,20 +46,14 @@ begin
 end;
 
 function TMDIClientForm.HandleCommand(Cmd: integer): Boolean;
-var
-  S: string;
 begin
-  Result:= True;
-  case Cmd of
-    cmMDIEXEC:
-      begin
-        S:= EdMDI.Text;
-        if Length(S) > 0 then
-          Emc.Execute(S);
-      end;
+  if Cmd = cmMDIExec then
+    begin
+      ExecuteMDI;
+      Result:= True;
+    end
   else
     Result:= False;
-  end; // case;
 end;
 
 procedure TMDIClientForm.ActivateSelf;
@@ -80,7 +77,7 @@ end;
 procedure TMDIClientForm.InitControls;
 begin
   SetButtonDown(cmMDI,True);
-  EdMDI.SetFocus;
+  MDIEdit.SetFocus;
 end;
 
 procedure TMDIClientForm.Click(Sender: TObject);
@@ -102,6 +99,94 @@ begin
       HandleCommand(cmMDIExec);
       Key:= 0;
     end;
+end;
+
+procedure TMDIClientForm.MDIHistListBoxClick(Sender: TObject);
+begin
+  with MdiHistListbox do MdiEdit.Text:=items[itemindex];
+end;
+
+function TMDIClientForm.StripMdiInput(inp: string): string;
+var
+  i,j: integer;
+  str1,str2 : string;
+  c  : char;
+begin
+  result:= '';
+  if inp = '' then
+    Exit;
+
+  // Leerzeichen strippen
+  str1:='';
+  for i:=1 to length(inp) do
+    if inp[i]<>#32 then str1:=str1+upcase(inp[i]);
+
+  // alphabetisch sortieren
+  str2:='';
+  for c:='A' to 'Z' do begin
+    // Buchstaben suchen gehen
+    i:=1;
+    while (str1[i]<>c) and (i<=length(str1)) do inc(i);
+    // einen gefunden? Dann bis zum nächsten Wortende oder zum Satzende suchen
+    if i<length(str1) then begin
+      repeat
+        str2:=str2+str1[i];
+        inc(i);
+      until (str1[i] in ['A'..'Z']) or (i>length(str1))
+    end;
+  end;
+  result:=str2;
+end;
+
+function TMDIClientForm.FormatMdi(inp: string): string;
+var i: integer;
+    str1, str2: string;
+begin
+  result:='';
+  if inp='' then exit;
+
+  // Leerzeichen strippen
+  str1:='';
+  for i:=1 to length(inp) do
+    if inp[i]<>#32 then str1:=str1+upcase(inp[i]);
+
+  // vor jedem Einzelbuchstaben ein Leerzeichen einfügen, ausser dem Ersten
+  str2:=str1[1];
+  for i:=2 to length(str1)-1 do begin
+    if (not(str1[i-1] in ['A'..'Z'])) and
+       (str1[i] in ['A'..'Z']) and
+       (not(str1[i+1] in ['A'..'Z'])) then str2:=str2+#32;
+    str2:=str2+str1[i];
+  end;
+  result:=str2+str1[i+1];
+end;
+
+procedure TMDIClientForm.ExecuteMdi;
+var
+  i,res: integer;
+  stripped_mdi,fmdi: string;
+  mdi_in_list: boolean;
+begin
+  stripped_mdi:=StripMdiInput(MDIEdit.Text);
+  // hier MDI senden:
+  Emc.Execute(MDIEdit.Text);  // send mdi command
+  Sleep(10);
+  UpdateStatus;
+  UpdateError;
+  if ErrorStr[0] <> #0 then Exit;
+  if MdiHistListbox.Count>0 then
+    begin
+      mdi_in_list:=false;
+      i:=0;
+      while (not mdi_in_list) and (i<MdiHistListbox.Count) do
+        begin
+          mdi_in_list:=stripped_mdi=StripMdiInput(MdiHistListbox.Items[i]);
+          inc(i);
+        end;
+      if not mdi_in_list then MdiHistListbox.Items.Add(FormatMdi(MDIEdit.text));
+    end
+  else
+    MdiHistListbox.Items.Add(FormatMdi(MDIEdit.text));
 end;
 
 
