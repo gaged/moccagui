@@ -60,7 +60,6 @@ type
 
   private
 
-    OldSpindleSpeed: Double;
     OldFeed: integer;
     OldMaxVel: integer;
     NewMaxVel: integer;
@@ -113,7 +112,6 @@ end;
 
 procedure TMainForm.UpdateState;
 var
-  Scale: double;
   i: integer;
 begin
   if EMC.UpdateState then  // returns true if the taskmode changed
@@ -191,7 +189,7 @@ begin
 
 procedure TMainForm.InitPanels;  // init the panels, clients, joints
 var
-  h,i: integer;
+  h: integer;
 begin
   PanelDro.Font.Size:= DroFontSize; // from mocglb.pas
 

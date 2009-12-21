@@ -108,7 +108,7 @@ end;
 
 function TMDIClientForm.StripMdiInput(inp: string): string;
 var
-  i,j: integer;
+  i: integer;
   str1,str2 : string;
   c  : char;
 begin
@@ -163,8 +163,8 @@ end;
 
 procedure TMDIClientForm.ExecuteMdi;
 var
-  i,res: integer;
-  stripped_mdi,fmdi: string;
+  i: integer;
+  stripped_mdi: string;
   mdi_in_list: boolean;
 begin
   stripped_mdi:=StripMdiInput(MDIEdit.Text);

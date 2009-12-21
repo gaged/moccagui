@@ -74,10 +74,14 @@ double emcSpindleDefaultSpeed = 500;
 // this is a workaround for the __dso_handle problem
 // undefine this if neccessary
 
+#define dsohandle
+
+#ifdef dsohandle
 extern "C"
 {
 void *__dso_handle = NULL;
 }
+#endif
 
 extern "C" int AxisAxisType(int joint) { return emcStatus->motion.axis[joint].axisType; }
 extern "C" double AxisUnits(int joint) { return emcStatus->motion.axis[joint].units; }

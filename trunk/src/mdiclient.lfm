@@ -1,7 +1,7 @@
 object MDIClientForm: TMDIClientForm
-  Left = 685
+  Left = 632
   Height = 300
-  Top = 240
+  Top = 251
   Width = 400
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
@@ -14,7 +14,6 @@ object MDIClientForm: TMDIClientForm
   KeyPreview = True
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
-  LCLVersion = '0.9.28.2'
   object LabelCaption: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -27,7 +26,6 @@ object MDIClientForm: TMDIClientForm
     Font.Height = -28
     Font.Pitch = fpFixed
     ParentColor = False
-    ParentFont = False
   end
   object MDIHistListBox: TListBox
     AnchorSideLeft.Control = Owner
@@ -42,7 +40,6 @@ object MDIClientForm: TMDIClientForm
     Width = 392
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 4
-    ItemHeight = 0
     OnClick = MDIHistListBoxClick
     TabOrder = 0
     TopIndex = -1

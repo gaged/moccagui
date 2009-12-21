@@ -5,7 +5,7 @@ unit offsetdlg;
 interface
 
 uses
-  Classes, ExtCtrls, Grids, MaskEdit, Spin, StdCtrls, SysUtils, FileUtil,
+  Classes, ExtCtrls, Grids, Spin, StdCtrls, SysUtils, FileUtil,
   LResources, Forms, Controls, Graphics, Dialogs;
 
 type
@@ -43,9 +43,6 @@ uses
   mocglb,emc2pas;
 
 { TOffsetsDlg }
-
-var
-  VOffs: array[1..9] of integer;
 
 type
   TOffsets = array[0..MaxAxes-1] of double;
@@ -170,7 +167,6 @@ end;
 procedure TOffsetsDlg.LoadVars;
 var
   a,c: integer;
-  Value: Double;
 begin
   VarFile.LoadFromFile(Vars.ParamFile);
   if VarFile.Count < 1 then

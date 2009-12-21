@@ -1,7 +1,7 @@
 object RunClientForm: TRunClientForm
-  Left = 669
+  Left = 613
   Height = 335
-  Top = 89
+  Top = 367
   Width = 516
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
@@ -41,14 +41,6 @@ object RunClientForm: TRunClientForm
     ParentColor = False
     ParentFont = False
   end
-  object Label1: TLabel
-    Left = 208
-    Height = 18
-    Top = 12
-    Width = 50
-    Caption = 'Label1'
-    ParentColor = False
-  end
   object LB: TListBox
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = LabelCaption
@@ -63,6 +55,8 @@ object RunClientForm: TRunClientForm
     Width = 508
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 4
+    ClickOnSelChange = False
+    ExtendedSelect = False
     Font.Height = -16
     Font.Name = 'Courier 10 Pitch'
     Font.Style = [fsBold]

@@ -13,7 +13,6 @@ type
   { TRunClientForm }
 
   TRunClientForm = class(TForm)
-    Label1: TLabel;
     LabelCaption: TLabel;
     LabelInterpState: TLabel;
     LB: TListBox;
@@ -40,7 +39,7 @@ type
     procedure UpdateLine;
     // vorlauf
     procedure SetCodes;
-    procedure GotoLine(LineNo: integer);
+    procedure GotoLine;
   end;
   
 var
@@ -50,7 +49,7 @@ implementation
 
 uses
   buttons,
-  mocglb,mocemc,mocjoints,
+  mocglb,mocemc,
   emc2pas,
   simclient,
   glcanon,gllist;
@@ -95,7 +94,7 @@ begin
   HasFile:= False;
 end;
 
-procedure TRunClientForm.GotoLine(LineNo: integer);
+procedure TRunClientForm.GotoLine;
 var
   CurrentLine: integer;
   StartLine,EndLine: integer;
@@ -150,13 +149,12 @@ begin
     cmRUN: Emc.TaskRun;
 
     cmRUNLINE :
-      if LB.ItemIndex > 0 then
+      if LB.ItemIndex < 0 then
+        LastError:= 'Need a selected line'
+      else
         begin
-          // emcVars.StartFromLine:= LB.ItemIndex + 2;
-          // Emc.TaskRun;
-          // TEST
-          // Emc.TaskGoto(LB.ItemIndex + 2);
-          GotoLine(0);
+          Vars.StartLine:= LB.ItemIndex + 2;
+          Emc.TaskRun;
         end;
 
     cmSTOP:
@@ -186,7 +184,9 @@ procedure TRunClientForm.UpdateSelf;
 var
   Running: Boolean;
 begin
-  UpdateLine;
+
+    UpdateLine;
+
 
   if OldHasFile <> HasFile then
     begin
@@ -215,14 +215,16 @@ begin
 
       if OldInterpState <> State.InterpState then
         begin
+
           Running:= InterpState <> INTERP_IDLE;
+          if not Running then LB.ItemIndex:= -1;
+
          // set buttons according to the interpreter state
           SetButtonDown(cmSTOP,not Running);
           SetButtonDown(cmPAUSE,InterpState = INTERP_PAUSED);
           SetButtonDown(cmRUN,Running);
           // LB.Enabled:= not Running;  // looks nice in gtk2
-          if not Running then
-            LB.ItemIndex:= -1;
+
 
         // disable the taskmode- buttons if not idle
           if OldRunning <> Running then
@@ -268,9 +270,7 @@ end;
 
 procedure TRunClientForm.OpenFile;
 var
-  s: string;
   FileName: string;
-  Error: integer;
 begin
   if OpenDialog.Execute then
     begin
@@ -309,13 +309,14 @@ begin
     begin
       ActiveLn:= taskMotionLine - 1;
       if ActiveLn < 0 then Exit;
-      Label1.Caption:= Inttostr(ActiveLn) + ',' + inttostr(taskcurrentline);
+      // Label1.Caption:= Inttostr(ActiveLn) + ',' + inttostr(taskcurrentline);
       if ActiveLn <> OldActiveLn then
         begin
           if ActiveLn < LB.Items.Count then
             begin
               LB.ItemIndex:= ActiveLn;
-              if (ActiveLn > 0) then  //if not LB.ItemFullyVisible(ActiveLn) then
+              if (ActiveLn > 0) then
+              //if not LB.ItemFullyVisible(ActiveLn) then
                 LB.MakeCurrentVisible;
             end;
           OldActiveLn:= ActiveLn;
