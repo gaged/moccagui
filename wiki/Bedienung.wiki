@@ -2,12 +2,13 @@
 
 = Introduction =
 
-Add your content here.
+Using mocca as a GUI for EMC2:
 
+1.) Get mocca compiled (see wiki comiling mocca)
+2.) Add a symbilic link in (YOURPATHTOEMC)/bin: ln -s /home/yourname/mocca/bin/mocca mocca
+3.) make mocca executeable
+3.) edit your config- file
+4.) set DISPLAY = mocca in your config- file
+5.) start emc using the ini- file mentioned above 
 
 = Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
