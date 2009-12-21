@@ -37,9 +37,6 @@ uses
   mocjoints,emc2pas,
   mocglb, glView,glList,glCanon;
 
-const
-  LINE_LEN = 256;
-  
 var
   E: TExtents;
 

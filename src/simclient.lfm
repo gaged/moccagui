@@ -1,10 +1,11 @@
 object SimClientForm: TSimClientForm
-  Left = 633
+  Left = 489
   Height = 335
-  Top = 293
+  Top = 308
   Width = 453
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
+  ActiveControl = OpenGLControl
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'SimClientForm'

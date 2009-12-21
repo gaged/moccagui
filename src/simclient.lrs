@@ -1,24 +1,26 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
 LazarusResources.Add('TSimClientForm','FORMDATA',[
-  'TPF0'#14'TSimClientForm'#13'SimClientForm'#4'Left'#3'y'#2#6'Height'#3'O'#1#3
-  +'Top'#3'%'#1#5'Width'#3#197#1#18'HorzScrollBar.Page'#3#196#1#18'VertScrollBa'
-  +'r.Page'#3'N'#1#11'BorderIcons'#11#0#11'BorderStyle'#7#6'bsNone'#7'Caption'#6
-  +#13'SimClientForm'#12'ClientHeight'#3'O'#1#11'ClientWidth'#3#197#1#8'OnCreat'
-  +'e'#7#10'FormCreate'#9'OnDestroy'#7#11'FormDestroy'#10'LCLVersion'#6#8'0.9.2'
-  +'8.2'#0#10'TScrollBar'#3'sbH'#22'AnchorSideLeft.Control'#7#5'Owner'#23'Ancho'
-  +'rSideRight.Control'#7#3'sbV'#24'AnchorSideBottom.Control'#7#5'Owner'#21'Anc'
-  +'horSideBottom.Side'#7#9'asrBottom'#4'Left'#2#4#6'Height'#2#15#3'Top'#3'<'#1
-  +#5'Width'#3#174#1#7'Anchors'#11#6'akLeft'#7'akRight'#8'akBottom'#0#18'Border'
-  +'Spacing.Left'#2#4#20'BorderSpacing.Bottom'#2#4#11'LargeChange'#2#10#3'Max'#2
-  +'Z'#3'Min'#2#166#8'PageSize'#2#10#8'TabOrder'#2#0#8'OnChange'#7#9'sbHChange'
-  +#0#0#10'TScrollBar'#3'sbV'#21'AnchorSideTop.Control'#7#5'Owner'#23'AnchorSid'
-  +'eRight.Control'#7#5'Owner'#20'AnchorSideRight.Side'#7#9'asrBottom'#24'Ancho'
-  +'rSideBottom.Control'#7#3'sbH'#4'Left'#3#178#1#6'Height'#3'8'#1#3'Top'#2#4#5
-  +'Width'#2#15#7'Anchors'#11#5'akTop'#7'akRight'#8'akBottom'#0#17'BorderSpacin'
-  +'g.Top'#2#4#19'BorderSpacing.Right'#2#4#4'Kind'#7#10'sbVertical'#11'LargeCha'
-  +'nge'#2#10#3'Max'#2'Z'#3'Min'#2#166#8'PageSize'#2#10#8'TabOrder'#2#1#8'OnCha'
-  +'nge'#7#9'sbVChange'#0#0#14'TOpenGLControl'#13'OpenGLControl'#22'AnchorSideL'
-  +'eft.Control'#7#5'Owner'#21'AnchorSideTop.Control'#7#5'Owner'#23'AnchorSideR'
-  +'ight.Control'#7#3'sbV'#24'AnchorSideBottom.Control'#7#3'sbH'#4'Left'#2#0#6
-  +'Height'#3'<'#1#3'Top'#2#0#5'Width'#3#178#1#7'Anchors'#11#5'akTop'#6'akLeft'
-  +#7'akRight'#8'akBottom'#0#0#0#0
+  'TPF0'#14'TSimClientForm'#13'SimClientForm'#4'Left'#3#233#1#6'Height'#3'O'#1#3
+  +'Top'#3'4'#1#5'Width'#3#197#1#18'HorzScrollBar.Page'#3#196#1#18'VertScrollBa'
+  +'r.Page'#3'N'#1#13'ActiveControl'#7#13'OpenGLControl'#11'BorderIcons'#11#0#11
+  +'BorderStyle'#7#6'bsNone'#7'Caption'#6#13'SimClientForm'#12'ClientHeight'#3
+  +'O'#1#11'ClientWidth'#3#197#1#8'OnCreate'#7#10'FormCreate'#9'OnDestroy'#7#11
+  +'FormDestroy'#10'LCLVersion'#6#8'0.9.28.2'#0#10'TScrollBar'#3'sbH'#22'Anchor'
+  +'SideLeft.Control'#7#5'Owner'#23'AnchorSideRight.Control'#7#3'sbV'#24'Anchor'
+  +'SideBottom.Control'#7#5'Owner'#21'AnchorSideBottom.Side'#7#9'asrBottom'#4'L'
+  +'eft'#2#4#6'Height'#2#15#3'Top'#3'<'#1#5'Width'#3#174#1#7'Anchors'#11#6'akLe'
+  +'ft'#7'akRight'#8'akBottom'#0#18'BorderSpacing.Left'#2#4#20'BorderSpacing.Bo'
+  +'ttom'#2#4#11'LargeChange'#2#10#3'Max'#2'Z'#3'Min'#2#166#8'PageSize'#2#10#8
+  +'TabOrder'#2#0#8'OnChange'#7#9'sbHChange'#0#0#10'TScrollBar'#3'sbV'#21'Ancho'
+  +'rSideTop.Control'#7#5'Owner'#23'AnchorSideRight.Control'#7#5'Owner'#20'Anch'
+  +'orSideRight.Side'#7#9'asrBottom'#24'AnchorSideBottom.Control'#7#3'sbH'#4'Le'
+  +'ft'#3#178#1#6'Height'#3'8'#1#3'Top'#2#4#5'Width'#2#15#7'Anchors'#11#5'akTop'
+  +#7'akRight'#8'akBottom'#0#17'BorderSpacing.Top'#2#4#19'BorderSpacing.Right'#2
+  +#4#4'Kind'#7#10'sbVertical'#11'LargeChange'#2#10#3'Max'#2'Z'#3'Min'#2#166#8
+  +'PageSize'#2#10#8'TabOrder'#2#1#8'OnChange'#7#9'sbVChange'#0#0#14'TOpenGLCon'
+  +'trol'#13'OpenGLControl'#22'AnchorSideLeft.Control'#7#5'Owner'#21'AnchorSide'
+  +'Top.Control'#7#5'Owner'#23'AnchorSideRight.Control'#7#3'sbV'#24'AnchorSideB'
+  +'ottom.Control'#7#3'sbH'#4'Left'#2#0#6'Height'#3'<'#1#3'Top'#2#0#5'Width'#3
+  +#178#1#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#8'akBottom'#0#0#0#0
 ]);

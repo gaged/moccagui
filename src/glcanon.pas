@@ -63,21 +63,12 @@ type
   end;
   
 var
-  FeedRate: Double;
-  FirstMove: Boolean; 
+  FirstMove: Boolean;
   lo: tlo;
   offset: tlo;
-  Text: string;
-  MinExtents: array[0..2] of double;
-  MaxExtents: array[0..2] of double;
-  InArc: Boolean;
   xo,zo,wo: Double;
-  Suppress: integer;
   DwellTime: Double;
   lineno: integer;
-
-var
-  last_selected_tool: integer;
 
 var
   Plane: integer; external name 'plane';
@@ -161,19 +152,15 @@ end;
 
 procedure Init;
 begin
-  FeedRate:= 1;
   FirstMove:= True;
   xo:= 0;
   zo:= 0;
   wo:= 0;
   DwellTime:= 0;
-  Suppress:= 0;
-  inArc:= False;
   lineno:= 0;
   Plane:= 1;
   glMetric:= False;
   ParameterFileName:= PChar('/home/gtom/moc.var');
-  last_selected_tool:= 0;
 end;
 
 function ParseGCode(FileName: string; UseMetric: Boolean): integer;
@@ -298,7 +285,7 @@ begin
   {$ifdef PRINT_CANON}
   writeln('selecttool: ' + intToStr(Tool));
   {$endif}
-  last_selected_tool:= tool;
+  //last_selected_tool:= tool;
 end;
 
 procedure setspindlerate(rate: double); cdecl; export;
@@ -307,7 +294,7 @@ end;
 
 procedure setfeedrate(rate: double); cdecl; export;
 begin
-  FeedRate:= rate / 60;
+  // FeedRate:= rate / 60;
 end;
 
 procedure settraverserate(rate: double); cdecl; export;
@@ -318,8 +305,6 @@ procedure straighttraverse(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 var
   l: Tlo;
 begin        
-  if Suppress > 0 then
-    Exit;
   SetCoords(l,x + offset.x,y + offset.y,z + offset.z,a,b,c,u,v,w);
   if not FirstMove then
     AppendTraverse(l);
@@ -331,7 +316,6 @@ var
   n: tlo;
   o: tlo;
   p: tlo;
-  ccx,ccy: double;
   Steps: integer;
   i: integer;
   theta1: Double;
@@ -350,30 +334,22 @@ begin
 
   if Plane = 1 then // XY Plane
     begin
-     SetCoords(n,x1+offset.x,y1+offset.y,z1+offset.z, a, b, c, u, v, w);
-     ccx:= cx + offset.x;
-     ccy:= cy + offset.y;
-     // xyz = [0,1,2]
-     theta1:= arctan2(o.y - cy, o.x - cx);
-     theta2:= arctan2(n.y - cy, n.x - cx);
-     rad:= hypot(o.x - cx, o.y - cy);
+      SetCoords(n,x1+offset.x,y1+offset.y,z1+offset.z, a, b, c, u, v, w);
+      theta1:= arctan2(o.y - cy, o.x - cx);
+      theta2:= arctan2(n.y - cy, n.x - cx);
+      rad:= hypot(o.x - cx, o.y - cy);
     end
   else
   if Plane = 3 then
     begin
       SetCoords(n,y1+offset.x,z1+offset.y,x1+offset.z, a, b, c, u, v, w);
-      ccx:=cx + offset.z;
-      ccy:=cy + offset.x;
-      // xyz = [2,0,1]
-     theta1:= arctan2(o.x - cy, o.z - cx);
-     theta2:= arctan2(n.x - cy, n.z - cx);
-     rad:= hypot(o.z - cx, o.x - cy);
+      theta1:= arctan2(o.x - cy, o.z - cx);
+      theta2:= arctan2(n.x - cy, n.z - cx);
+      rad:= hypot(o.z - cx, o.x - cy);
     end
   else
     begin
       SetCoords(n,z1+offset.x,x1+offset.y,y1+offset.z, a, b, c, u, v, w);
-      ccx:=cx + offset.y;
-      ccy:=cy + offset.z;
       theta1:= arctan2(o.z - cy, o.y - cx);
       theta2:= arctan2(n.z - cy, n.y - cx);
       rad:= hypot(o.y - cx, o.z - cy);
@@ -392,7 +368,6 @@ begin
 
   steps:= max(8, round(int(128 * abs(theta1 - theta2) / pi)));
   
-   //      p = [0] * 9
   for i:= 1 to steps do
     begin
       theta:= interp(theta1, theta2);
@@ -434,14 +409,8 @@ end;
 procedure arcfeed(end1,end2,axis1,axis2: double;
   rot: integer; endp,a,b,c,u,v,w: double); cdecl; export;
 begin
-  if Suppress > 0 then Exit;
   FirstMove:= False;
-  InArc:= True;
-  try
-    Arc2Segments(end1,end2,axis1,axis2,rot,endp,a,b,c,u,v,w);
-  finally
-    InArc:= False;
-  end;
+  Arc2Segments(end1,end2,axis1,axis2,rot,endp,a,b,c,u,v,w);
 end;
 
 procedure straightarcsegment(x,y,z,a,b,c,u,v,w: double); cdecl; export;
@@ -458,8 +427,6 @@ procedure rigidtap(x,y,z: double); cdecl; export;
 var
   l: tlo;
 begin
-  if Suppress > 0 then
-    Exit;
   FirstMove:= False;
   SetCoords(l,x + offset.x,y + offset.y,z + offset.z, lo.a,lo.b,lo.c,lo.u,lo.v,lo.w);
   AppendFeed(l);
@@ -471,7 +438,6 @@ procedure straightfeed(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 var
   l: tlo;
 begin       
-  if Suppress > 0 then Exit;
   FirstMove:= False;
   SetCoords(l,x + offset.x,y + offset.y,z + offset.z,
     a + offset.a, b + offset.b, c + offset.c,
@@ -487,17 +453,13 @@ end;
 
 procedure userdefinedfunction(i: integer; p,q: double); cdecl; export;
 begin        
-  if Suppress > 0 then Exit;
-  //color = self.colors['m1xx']
-  AppendDwell(lo.x,lo.y,lo.z  {self.state.plane/10-17)} )
+  AppendDwell(lo.x,lo.y,lo.z)
 end;
         
 procedure dwell(arg: double); cdecl; export;
 begin
-  if Suppress > 0 then Exit;
   DwellTime:= DwellTime + arg;
-  // color = self.colors['dwell']
-  AppendDwell(lo.x,lo.y,lo.z {self.state.plane/10-17)})
+  AppendDwell(lo.x,lo.y,lo.z)
 end;
 
 function getblockdelete: integer; cdecl; export;

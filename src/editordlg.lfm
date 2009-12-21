@@ -10,7 +10,6 @@ object EditorDlg: TEditorDlg
   ClientHeight = 587
   ClientWidth = 705
   Position = poScreenCenter
-  LCLVersion = '0.9.28.2'
   object Memo: TMemo
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner

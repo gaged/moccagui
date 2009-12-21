@@ -37,7 +37,7 @@ type
     procedure InitControls;
     procedure MapButtons;
     procedure HandleCommand(Cmd: integer);
-    function  HandleJogKeys(var Key: Word; Down: Boolean): Boolean;
+    function  HandleJogKeys(var Key: Word; Down,Fast: Boolean): Boolean;
   end;
 
 var
@@ -131,14 +131,18 @@ begin
   OldJogVel:= 0;
 end;
 
-function TJogClientForm.HandleJogKeys(var Key: Word; Down: Boolean): Boolean;
+function TJogClientForm.HandleJogKeys(var Key: Word;
+  Down,Fast: Boolean): Boolean;
 
 procedure Jog(Ch: Char; Dir: Integer);
 var
   Speed: Double;
 begin
   Key:= 0;
-  Speed:= State.ActJogVel * Dir;
+  if Fast then
+    Speed:= State.MaxJogVel * Dir
+  else
+    Speed:= State.ActJogVel * Dir;
   if Vars.JogContinous then
     Joints.JogCont(Ch,Speed)
   else
@@ -209,13 +213,13 @@ end;
 procedure TJogClientForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if HandleJogKeys(Key,True) then Key:= 0;
+  if HandleJogKeys(Key,True,(ssShift in Shift)) then Key:= 0;
 end;
 
 procedure TJogClientForm.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if HandleJogKeys(Key,False) then Key:= 0;
+  if HandleJogKeys(Key,False,False) then Key:= 0;
 end;
 
 procedure TJogClientForm.rgJogIncClick(Sender: TObject);

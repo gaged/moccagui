@@ -50,15 +50,13 @@ function TEmc.WaitDone: integer;
 var
   i: integer;
 begin
-  emcCommandWaitDone(emcCommandSerialNumber);
+  i:= emcCommandWaitDone(emcCommandSerialNumber);
   if i <> 0 then
     LastError:= 'wait command done failed';
   Result:= i;
 end;
 
 function TEmc.GetMaxVelText: string;
-var
-  Value: double;
 begin
   Result:= FloatToStr(ConvertLinearUnits(State.ActVel)) + Vars.UnitVelStr
 end;
@@ -116,7 +114,6 @@ end;
 
 function TEmc.GetActiveCoordSys: integer;
 var
-  s: string;
   i: integer;
 begin
   Result:= -1;

@@ -220,6 +220,7 @@ procedure TGlView.MoveCone(x,y,z: Double);
 var
   cx,cy,cz: Double;
 begin
+  if not Assigned(ogl) then Exit;
   cx:= ToInternalUnits(x);
   cy:= ToInternalUnits(y);
   cz:= ToInternalUnits(z);
@@ -437,7 +438,7 @@ begin
   q := gluNewQuadric();
   ConeL:= glGenLists(1);
   glNewList(ConeL, GL_COMPILE);
-  glColor3f(1,0.1,0.1);
+  glColor3f(1,0.4,0.4);
   // gluPartialDisk(q, 1, 2, 12, 4, 0, 310);
   gluCylinder(q, 0,0.2,0.5,12,1);
   glEndList;
