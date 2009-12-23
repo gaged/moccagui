@@ -34,6 +34,7 @@ type
     procedure UpdateSelf;
     procedure InitControls;
     procedure MapButtons;
+    procedure UpdatePreview(FileName: string);
 
     procedure OpenFile;
     procedure UpdateLine;
@@ -48,7 +49,7 @@ var
 implementation
 
 uses
-  buttons,
+  strutils,buttons,
   mocglb,mocemc,
   emc2pas,
   simclient,
@@ -131,6 +132,20 @@ begin
       end;
     SetCodes;
   end;
+end;
+
+procedure TRunClientForm.UpdatePreview(FileName: string);
+var
+  UnitCode,InitCode: string;
+  Metric: Boolean;
+begin
+  if Length(FileName) < 1 then Exit;
+  Metric:= Pos('G21',ActiveGCodes) > 0;
+  if Metric then
+    UnitCode:= 'G21' else UnitCode:= 'G20';
+  InitCode:= '';
+  clSim.ClearPreview;
+  clSim.LoadPreview(FileName,UnitCode,InitCode);
 end;
 
 function TRunClientForm.HandleCommand(Cmd: integer): Boolean;
@@ -281,7 +296,6 @@ begin
         begin
           Vars.ProgramFile:= '';
           LB.Items.LoadFromFile(FileName);
-          clSim.LoadPreview(FileName);
           if sendProgramOpen(PChar(FileName)) = 0 then
             begin
               Emc.WaitDone;
@@ -296,6 +310,8 @@ begin
               Vars.ProgramFile:= '';
               LastError:= 'Error opening file: ' + FileName;
             end;
+          if HasFile then
+            UpdatePreview(FileName);
         end;
     end;
 end;

@@ -22,8 +22,7 @@ LCL = -Fu.
 LCL += -Fu$(LAZDIR)/lcl/units/i386-linux
 LCL += -Fu$(LAZDIR)/lcl/units/i386-linux/$(WM)
 LCL += -Fu$(LAZDIR)/components/custom
-LCL += -Fu$(LAZDIR)/components/codetools/units/i386-linux
-LCL += -Fu$(LAZDIR)/components/opengl/lib/i386-linux/$(WM)
+LCL += -Fu$(LAZDIR)/components/opengl
 LCL += -Fu$(LAZDIR)/packager/units/i386-linux
 
 LIBDIR = $(EMCDIR)/lib

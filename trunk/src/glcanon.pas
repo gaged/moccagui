@@ -27,7 +27,7 @@ const
 var
   glMetric: boolean; external name 'metric';
 
-function ParseGCode(FileName: string; UseMetric: Boolean): integer;
+function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 
 function interpreter_init: longint; cdecl; external;
 function interpreter_reset: longint; cdecl; external;
@@ -163,9 +163,7 @@ begin
   ParameterFileName:= PChar('/home/gtom/moc.var');
 end;
 
-function ParseGCode(FileName: string; UseMetric: Boolean): integer;
-var
-  UnitCode: string;
+function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 begin
   Result:= -1;
   if not Assigned(MyGlList) then Exit;
@@ -173,11 +171,7 @@ begin
   if maxerror < 0 then
     initgcode;
   MyGlList.Clear;
-  if UseMetric then
-    UnitCode:= 'G21'
-  else
-    UnitCode:= 'G20';
-  Result:= parsefile(PChar(FileName),PChar(UnitCode),nil);
+  Result:= parsefile(PChar(FileName),PChar(UnitCode),PChar(InitCode));
 end;
 
 procedure AppendTraverse(l: tlo);

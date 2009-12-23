@@ -36,6 +36,7 @@ type
     procedure SaveVars;
   end;
 
+procedure EditOffsets;
 
 implementation
 
@@ -49,6 +50,18 @@ type
 
 var
   Offsets: array[0..CoordSysMax] of TOffsets;
+
+procedure EditOffsets;
+var
+  Dlg: TOffsetsDlg;
+begin
+  Application.CreateForm(TOffsetsDlg,Dlg);
+  if Assigned(Dlg) then
+    begin
+      Dlg.ShowModal;
+      Dlg.Free;
+    end;
+end;
 
 
 procedure TOffsetsDlg.FormCreate(Sender: TObject);

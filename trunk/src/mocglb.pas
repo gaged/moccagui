@@ -6,7 +6,7 @@ unit mocglb;
 interface
 
 uses
-  Buttons,Graphics,StdCtrls,
+  Buttons,Graphics,
   Classes, SysUtils, LResources, Forms, Controls, Dialogs, ExtCtrls,
   ExtDlgs, ComCtrls,
   mocemc;
@@ -75,7 +75,7 @@ const
   cmFLOOD     = 30;
   cmMIST      = 31;
 
-  cmCHTOOL    = 40;
+  cmTOOLS     = 40;
 
   cmREFACT    = 50;
   cmREFALL    = 51;
@@ -130,13 +130,13 @@ const
       (T:cmSPCCW;    G:-1;    S:'Spindel links'),
       (T:cmSPPLUS;   G:-1;    S:'schneller'),
       (T:cmFLOOD;    G:-1;    S:'Kühlung'),
-      (T:cmREFACT;   G:-1;    S:'Referenzfahrt'),
-      (T:cmREFALL;   G:-1;    S:'Referenzf. (Alle)'),
+      (T:cmREFACT;   G:-1;    S:'Referenzf.'),
+      (T:cmREFALL;   G:-1;    S:'Referenzf. Alle'),
       (T:cmOFFSACT;  G:-1;    S:'Aktive Null'),
       (T:cmOFFSALL;  G:-1;    S:'Alle Null'),
-      (T:cmOFFSDLG;  G:-1;    S:'Bearbeiten...'),
-      (T:cmCHTOOL;   G:-1;    S:'Wkzg wechseln'),
-      (T:cmLIMITS;   G:-1;    S:'Limits'),
+      (T:cmOFFSDLG;  G:-1;    S:'Koordinaten..'),
+      (T:cmTOOLS;    G:-1;    S:'Werkzeuge..'),
+      (T:cmLIMITS;   G:-1;    S:'Grenzwerte'),
       (T:-1;         G:-1;    S:''),
       (T:cmUNITS;    G:-1;    S:'mm/inch'),
       (T:-1;         G:-1;    S:''));
@@ -184,6 +184,15 @@ const
       (T:cmBLOCKDEL;        G:-1;            S:'"/" Blöcke'),
       (T:-1;        G:-1;            S:''),
       (T:cmEDITOR;  G:-1;            S:'NC-Editor'));
+
+const
+  ToolsLathe : array[0..8] of string =
+    ('Slot',' Id ','Z-Offset','X-Offset','Durchm. ',
+      'Winkel Vorne ','Winkel Hinten','Richtung',
+      '  Bezeichnung  ');
+
+  ToolsMill : array[0..4] of string =
+    ('Slot',' Id ','Länge   ','Durchm. ','  Bezeichnung  ');
 
 type
   TJogIncrement = record
@@ -253,8 +262,8 @@ type
     ProgUnits: integer;
     DisplayUnits: integer;
     ORideLimits: Boolean;
-    //FeedORide: integer;
     SpindleOverride: integer;
+
     Dtg: double;
     Vel: double;
     Acc: double;
@@ -296,12 +305,13 @@ procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
 procedure SetButtonDown(ACmd: integer; SetDown: Boolean);
 procedure SetButtonMap(B: PButtonArray; ObjClick: TOnClick);
 
+function setenv(envname,envval: PChar; overwrite: integer): longint; cdecl; external;
+
 implementation
 
 procedure SetButtonMap(B: PButtonArray; ObjClick: TOnClick);
 var
   i: Integer;
-  Form: TForm;
 begin
   if B = nil then Exit;
   for i:= 0 to NumTotalButtons - 1 do
