@@ -5,7 +5,7 @@ unit simclient;
 interface
 
 uses
-  Classes, OpenGLContext, SysUtils, LResources, Forms, Controls, Graphics,
+  Classes, openglcontext, SysUtils, LResources, Forms, Controls, Graphics,
   Dialogs, StdCtrls, Buttons, ExtCtrls;
 
 type
@@ -23,7 +23,8 @@ type
   private
     FShowLivePlot: Boolean;
   public
-    procedure LoadPreview(FileName: string);
+    procedure LoadPreview(FileName,UnitCode,InitCode: string);
+    procedure ClearPreview;
     procedure UpdateSelf;
     property ShowLivePlot: Boolean read FShowLivePlot write FShowLivePlot;
   end;
@@ -40,18 +41,25 @@ uses
 var
   E: TExtents;
 
-procedure TSimClientForm.LoadPreview(FileName: string);
+procedure TSimClientForm.LoadPreview(FileName,UnitCode,InitCode: string);
 var
   Error: integer;
 begin
   if (not Assigned(MyGlList)) or (not Assigned(MyGlView)) then
     Exit;
-  Error:= ParseGCode(FileName,True);
+  Error:= ParseGCode(FileName,UnitCode,InitCode);
   if Error <> 0 then
     LastError:= GetGCodeError(Error);
   MyGlView.UpdateView;
   MyGlView.GetLimits(E);
   MyGlView.Invalidate;
+end;
+
+procedure TSimClientForm.ClearPreview;
+begin
+  if (not Assigned(MyGlList)) or (not Assigned(MyGlView)) then
+    Exit;
+ // Add code here to clear the preview...
 end;
 
 procedure TSimClientForm.UpdateSelf;

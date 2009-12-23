@@ -134,6 +134,9 @@ var
 begin
   Result:= false;
   tmp:= ''; d:= 0;
+
+
+
   {$ifdef DEBUG_INI}
     writeln('Ini: Inifile: ' + Filename);
   {$endif}
@@ -143,6 +146,10 @@ begin
       writeln('Cannot open inifile: "' + FileName + '"');
       Exit;
     end;
+
+  Vars.IniFile:= FileName;
+  Vars.IniPath:= ExtractFilePath(Vars.IniFile);
+
 
   // first we try to find the nml-file
   if GetIniStr('EMC','NML_FILE',tmp,'') then
@@ -275,14 +282,18 @@ begin
   if (i < 50) then i := 50;
   Vars.CycleDelay:= i;
 
-  GetIniStr('EMCIO','TOOL_TABLE',Vars.ToolTblFile,'tool.tbl');
-  GetIniStr('RS274NGC','PARAMETER_FILE',Vars.ParamFile,'');
+  GetIniStr('EMCIO','TOOL_TABLE',tmp,'');
+  if Length(tmp) > 0 then
+    Vars.ToolTblFile:= Vars.IniPath + tmp;
+
+  GetIniStr('RS274NGC','PARAMETER_FILE',tmp,'');
+  if Length(tmp) > 0 then
+    Vars.ParamFile:= Vars.IniPath + tmp;
 
   {$ifdef DEBUG_INI}
   writeln('Ini: Tooltablefile: ' + Vars.ToolTblFile);
   writeln('Ini: Paramfile: ' + Vars.ParamFile);
   {$endif}
-
 
   Vars.HomingOrderDefined:= GetIniStr('AXIS_0','HOME_SEQUENCE',tmp,'');
 
@@ -311,8 +322,7 @@ begin
   GetIniStr('DISPLAY','INCREMENTS',tmp,'');
   SetJogIncrements(tmp);
 
-  Vars.IniPath:= ExtractFilePath(Vars.IniFile);
-  
+
   Result:= True;
 end;
 

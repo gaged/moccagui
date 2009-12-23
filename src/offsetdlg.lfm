@@ -1,7 +1,7 @@
 object OffsetsDlg: TOffsetsDlg
-  Left = 447
+  Left = 477
   Height = 351
-  Top = 377
+  Top = 340
   Width = 589
   ActiveControl = Grid
   BorderIcons = [biSystemMenu]

@@ -14,10 +14,9 @@ uses
   emc2pas,
   SysUtils,
   mocmain,
-  mocemc,
-  mocjoints, mocglb, mocini, jogclient,
-  runclient, mdiclient, simclient, gllist, glview, glcanon, editordlg, 
-  offsetdlg;
+  mocglb, mocini, jogclient,
+  runclient, mdiclient, simclient, editordlg,
+  offsetdlg, tooleditdlg;
   
 function InitEmc: Boolean;
 var
@@ -52,6 +51,10 @@ begin
 end;
 
 begin
+  write('Setting LANG: en_EN ...');
+  if setenv(PChar('LANG'),PChar('en_us.utf-8'),1) = 0 then
+    writeln('Ok') else writeln('Failed');
+  Writeln ('LANG=',getenvironmentvariable('LANG'));
   decimalseparator:='.';
   if not InitEmc then
     Halt(1);

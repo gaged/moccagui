@@ -1,0 +1,26 @@
+object ToolDlg: TToolDlg
+  Left = 485
+  Height = 340
+  Top = 337
+  Width = 625
+  ActiveControl = Grid
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'ToolDlg'
+  ClientHeight = 340
+  ClientWidth = 625
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poDesktopCenter
+  ShowInTaskBar = stNever
+  LCLVersion = '0.9.28.2'
+  object Grid: TStringGrid
+    Left = 8
+    Height = 216
+    Top = 16
+    Width = 608
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowSelect, goSmoothScroll]
+    TabOrder = 0
+    OnEditingDone = GridEditingDone
+  end
+end

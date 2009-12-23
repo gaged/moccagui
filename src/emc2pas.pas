@@ -19,6 +19,31 @@ const
   MM_PER_INCH = 25.4;
   INCH_PER_MM = (1.0/25.4);
 
+  CANON_TOOL_MAX = 56;	// from canon.hh
+  CANON_TOOL_ENTRY_LEN = 256; // from canon.hh
+
+
+type
+  TTool = packed record
+    id: integer;
+    zoffset: double;
+    xoffset: double;
+    diameter: double;
+    frontangle: double;
+    backangle: double;
+    orientation: integer;
+  end;
+
+type
+  TTools = array[0..CANON_TOOL_MAX + 1] of TTool;
+
+var
+  Tools: TTools; external name 'toolTable';
+  ToolComments: array[0..CANON_TOOL_MAX+ 1] of PChar; external name 'ttcomments';
+
+const
+  ToolsInitialized: Boolean = False;
+
 const
   TaskModeManual = 1;
   TaskModeAuto   = 2;
@@ -66,6 +91,10 @@ var
   LinearUnitConversion: integer; external name 'linearUnitConversion';
   AngularUnitConversion: integer; external name 'angularUnitConversion';
 
+function loadToolTable(const FileName: PChar): integer; cdecl; external;
+function saveToolTable(const FileName: PChar): integer; cdecl; external;
+procedure InitToolTable; cdecl; external;
+procedure FreeToolTable; cdecl; external;
 
 // axis related functions
 function AxisAxisType(Joint: integer): integer cdecl; external; { motion.axis.*.axisType; }
@@ -123,6 +152,11 @@ function spindleDirection: integer; cdecl; external; { motion.spindle.direction;
 function spindleBrake: integer; cdecl; external; { motion.spindle.brake; }
 function spindleIncreasing: integer; cdecl; external; { motion.spindle.increasing; }
 function spindleEnabled: integer; cdecl; external; { motion.spindle.enabled; }
+
+// toolstat read functions
+function toolPrepped: integer; cdecl; external; { io.tool.toolPrepped; }
+function toolInSpindle: integer; cdecl; external; { io.tool.toolInSpindle; }
+function toolLengthOffset: double; cdecl; external; { emcStatus->task.toolOffset.tran.z }
 
 // coolantstat read functions
 function coolantMist: boolean; cdecl; external; { io.coolant.mist != 0; }

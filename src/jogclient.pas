@@ -30,7 +30,6 @@ type
     OldORideLimits: Boolean;
     OldJogVel: integer;
     OldSpDir: integer;
-    procedure EditOffsets;
   public
     procedure ActivateSelf;
     procedure UpdateSelf;
@@ -50,25 +49,15 @@ implementation
 uses
   buttons,mocemc,
   mocglb,mocjoints,
-  emc2pas,offsetdlg;
+  emc2pas,offsetdlg,tooleditdlg;
 
-procedure TJogClientForm.EditOffsets;
-var
-  Dlg: TOffsetsDlg;
-begin
-  Application.CreateForm(TOffsetsDlg,Dlg);
-  if Assigned(Dlg) then
-    begin
-      Dlg.ShowModal;
-      Dlg.Free;
-    end;
-end;
 
 procedure TJogClientForm.HandleCommand(Cmd: integer);
 begin
   case Cmd of
     //cmLIMITS: Emc.OverrideLimits;
     cmOFFSDLG: EditOffsets;
+    cmTOOLS: EditTools;
   else
     Emc.HandleCommand(Cmd);
   end;
