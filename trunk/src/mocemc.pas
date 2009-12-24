@@ -31,6 +31,7 @@ type
     function  GetActiveCoordSys: integer;
     function  GetMaxVelText: string;  // returns MaxVel in value[units]/min;
     function  WaitDone: integer;
+    procedure LoadTools;
   end;
 
 var
@@ -40,6 +41,24 @@ implementation
 
 uses
   mocglb,emc2pas,mocjoints,glcanon;
+
+procedure TEmc.LoadTools;
+var
+  FileName: PChar;
+begin
+  if Length(Vars.ToolFile) < 1 then Exit;
+  FileName:= PChar(Vars.ToolFile);
+  sendLoadToolTable(FileName);
+  if WaitDone = 0 then
+    begin
+      if not ToolsInitialized then
+        begin
+          InitToolTable;
+          ToolsInitialized:= True;
+        end;
+      LoadToolTable(FileName);
+    end;
+end;
 
 function TEmc.ToLinearUnits(Value: double): double;
 begin
@@ -255,6 +274,10 @@ begin
       Acc:= trajAcceleration;
       Probing:= trajProbing;
       ORideLimits:= AxisOverrideLimits(0);
+
+      CurrentTool:= toolInSpindle;
+      ToolPrepared:= toolPrepped <> 0;
+      ToolOffset:= toolLengthOffset;
 
       if TaskMode = TASKMODEAUTO then
         begin

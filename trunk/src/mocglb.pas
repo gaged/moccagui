@@ -209,7 +209,7 @@ type
     ProgramFile: string;
     Machine: string;              // the machine as defined in inifile
     PostGuiHalfile: string;
-    ToolTblFile: string;
+    ToolFile: string;
     ParamFile: string;
     Extensions: string;
     Geometry: string;
@@ -264,19 +264,20 @@ type
     ORideLimits: Boolean;
     SpindleOverride: integer;
 
+    CurrentTool: integer;
+    ToolPrepared: Boolean;
+    ToolOffset: double;
+
     Dtg: double;
     Vel: double;
     Acc: double;
-
     ActVel: Integer;
     MaxVel: integer;
     ActFeed: Integer;
     MaxFeed: integer;
     ActJogVel: integer;
     MaxJogVel: Integer;
-
     UnitsChanged: Boolean;
-
   end;
 
 var

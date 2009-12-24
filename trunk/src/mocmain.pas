@@ -16,6 +16,7 @@ type
 
   TMainForm = class(TForm)
     ImageList: TImageList;
+    LabelTool: TLabel;
     LabelFText: TLabel;
     LabelMaxVel: TLabel;
     LabelFWords: TLabel;
@@ -62,6 +63,7 @@ type
 
     OldFeed: integer;
     OldMaxVel: integer;
+    OldTool: integer;
     NewMaxVel: integer;
 
     procedure InitPanels;
@@ -183,8 +185,13 @@ begin
       OldMaxVel:= State.ActVel;
     end;}
 
-  State.UnitsChanged:= False;  // clear this one last
+  if OldTool <> State.CurrentTool then
+    begin
+      OldTool:= State.CurrentTool;
+      LabelTool.Caption:= 'Werkzeug: ' + IntToStr(OldTool);
+    end;
 
+  State.UnitsChanged:= False;  // clear this one last
  end;
 
 procedure TMainForm.InitPanels;  // init the panels, clients, joints
@@ -228,6 +235,7 @@ begin
 
   OldMaxVel:= 0;
   OldFeed:= 0;
+  OldTool:= -1;
 
 end;
 
@@ -290,6 +298,8 @@ begin
 
   Timer.Enabled:= True;
   UpdateLock:= False;
+
+  Emc.LoadTools;
 
 end;
 
