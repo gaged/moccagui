@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 270
+  Left = 208
   Height = 721
-  Top = 208
+  Top = 149
   Width = 963
   HorzScrollBar.Page = 985
   VertScrollBar.Page = 792
@@ -279,6 +279,14 @@ object MainForm: TMainForm
       Layout = tlCenter
       ParentColor = False
       Transparent = False
+    end
+    object LabelTool: TLabel
+      Left = 648
+      Height = 18
+      Top = 8
+      Width = 59
+      Caption = 'LabelTool'
+      ParentColor = False
     end
   end
   object PanelMainBtns: TPanel

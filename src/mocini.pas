@@ -166,8 +166,8 @@ begin
     writeln('Ini: NMLFile: ' + PChar(EMC_NMLFILE));
   {$endif}
 
-  Vars.ToolTblFile:= 'emc.tbl';
-  Vars.ParamFile:= 'emc.var';
+  Vars.ToolFile:= '';
+  Vars.ParamFile:= '';
 
   GetIniStr('DISPLAY','PROGRAM_PREFIX',Vars.ProgramPrefix,'');
 
@@ -284,15 +284,15 @@ begin
 
   GetIniStr('EMCIO','TOOL_TABLE',tmp,'');
   if Length(tmp) > 0 then
-    Vars.ToolTblFile:= Vars.IniPath + tmp;
+    Vars.ToolFile:= Vars.IniPath + tmp;
 
   GetIniStr('RS274NGC','PARAMETER_FILE',tmp,'');
   if Length(tmp) > 0 then
     Vars.ParamFile:= Vars.IniPath + tmp;
 
   {$ifdef DEBUG_INI}
-  writeln('Ini: Tooltablefile: ' + Vars.ToolTblFile);
-  writeln('Ini: Paramfile: ' + Vars.ParamFile);
+  writeln('Ini: Toolfile: ',Vars.ToolFile);
+  writeln('Ini: Paramfile: ',Vars.ParamFile);
   {$endif}
 
   Vars.HomingOrderDefined:= GetIniStr('AXIS_0','HOME_SEQUENCE',tmp,'');

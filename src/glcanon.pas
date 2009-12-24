@@ -48,20 +48,11 @@ implementation
 
 uses
   math, sysutils,
+  mocglb,
   emc2pas,  // LINELEN
   gllist;   // MyGlList
 
-type
-  TTool = packed record
-    id: integer;
-    zoffset,
-    xoffset,
-    diameter,
-    frontangle, 
-    backangle: double;
-    orientation: integer;
-  end;
-  
+
 var
   FirstMove: Boolean;
   lo: tlo;
@@ -75,7 +66,7 @@ var
   last_sequence_number: integer; external name 'last_sequence_number';
   maxerror: integer; external name 'maxerror';
   savedError: array[0..LINELEN] of char; external name 'savedError';
-  dummy_tool: TTool; external name 'dummy_tool';
+  CanonTool: TTool; external name 'canontool';
   ParameterFileName: array[0..LINELEN] of Char; external name '_parameter_file_name';
 
   glSettings: array[0..ACTIVE_SETTINGS_MAX-1] of double; external name 'settings';
@@ -151,6 +142,8 @@ begin
 end;
 
 procedure Init;
+var
+  s: string;
 begin
   FirstMove:= True;
   xo:= 0;
@@ -160,16 +153,21 @@ begin
   lineno:= 0;
   Plane:= 1;
   glMetric:= False;
-  ParameterFileName:= PChar('/home/gtom/moc.var');
+  s:= Vars.IniPath + 'moc.var';
+  ParameterFileName:= PChar(s);
 end;
 
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 begin
   Result:= -1;
-  if not Assigned(MyGlList) then Exit;
+  if not Assigned(MyGlList) then
+    begin
+      writeln('glcanon: gllist = nil!');
+      Exit;
+    end;
   Init;
   if maxerror < 0 then
-    initgcode;
+    InitGCode;
   MyGlList.Clear;
   Result:= parsefile(PChar(FileName),PChar(UnitCode),PChar(InitCode));
 end;
@@ -185,29 +183,29 @@ end;
 
 procedure AppendFeed(l: tlo);
 begin
- {$ifdef PRINT_CANON}
+  {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Feed ',l.x,l.y,l.z]));
- {$endif}
+  {$endif}
  if Assigned(MyGlList) then
    MyGlList.AddFeed(lineno,lo,l);
 end;
 
 procedure AppendArcFeed(l: tlo);
 begin
- //{$ifdef PRINT_CANON}
- // writeln(Format('%s %n %n %n',['Arcfeed ',l.x,l.y,l.z]));
- //{$endif}
+  {$ifdef PRINT_CANON}
+  writeln(Format('%s %n %n %n',['Arcfeed ',l.x,l.y,l.z]));
+  {$endif}
   if Assigned(MyGlList) then
     MyGlList.AddArcFeed(lineno,lo,l);
 end;
 
 procedure AppendDwell(x,y,z: double);
 begin
- {$ifdef PRINT_CANON}
+  {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Dwell ',x,y,z]));
- {$endif}
- if Assigned(MyGlList) then
-   MyGlList.AddDwell(lineno,x,y,z);
+  {$endif}
+  if Assigned(MyGlList) then
+    MyGlList.AddDwell(lineno,x,y,z);
 end;
   
 procedure nextline; cdecl; export;
@@ -239,8 +237,12 @@ begin
   offset.x:= x;
   offset.y:= y;
   offset.z:= z;
-  {self.offset_a = offset_a self.offset_b = offset_b self.offset_c = offset_c
-   self.offset_u = offset_u self.offset_v = offset_v self.offset_w = offset_w}
+  offset.a:= a;
+  offset.b:= b;
+  offset.c:= c;
+  offset.u:= u;
+  offset.v:= v;
+  offset.w:= w;
 end;
 
 procedure setplane(pl: integer); cdecl; export;
@@ -256,22 +258,22 @@ begin
   FirstMove:= True;
 end;
 
-function gettool(Tool: integer): integer; cdecl; export;
+function gettool(i: integer): integer; cdecl; export;
 begin
-  {$ifdef PRINT_CANON}
-  writeln('gettool: ' + intToStr(Tool));
-  {$endif}
-  with dummy_tool do
-    begin
-      id:= Tool;
-      zoffset:= 0.75;
-      xoffset:= 0.0625;
-      diameter:= 0.3;
-      frontangle:= 0;
-      backangle:= 0;
-      orientation:= 0;
-    end;
-  Result:= 1;
+  if (i < 0) or (i > CANON_TOOL_MAX) then
+    result:= 0
+  else
+    with CanonTool do
+      begin
+        id:= Tools[i].Id;
+        zoffset:= ToInternalUnits(Tools[i].zoffset);
+        xoffset:= ToInternalUnits(Tools[i].xoffset);
+        diameter:= ToInternalUnits(Tools[i].diameter);
+        frontangle:= ToInternalUnits(Tools[i].frontangle);
+        backangle:= ToInternalUnits(Tools[i].backangle);
+        orientation:= Tools[i].orientation;
+        Result:= 1;
+      end;
 end;
 
 procedure selecttool(tool: integer); cdecl; export;
@@ -279,7 +281,7 @@ begin
   {$ifdef PRINT_CANON}
   writeln('selecttool: ' + intToStr(Tool));
   {$endif}
-  //last_selected_tool:= tool;
+  // last_selected_tool:= tool;
 end;
 
 procedure setspindlerate(rate: double); cdecl; export;
@@ -468,10 +470,12 @@ end;
 
 procedure setcomment(const msg: PChar); cdecl; export;
 begin
+  writeln(msg);
 end;
 
 procedure setmessage(const msg: PChar); cdecl; export;
 begin
+  writeln(msg);
 end;
 
 

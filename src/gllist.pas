@@ -60,6 +60,9 @@ procedure SetCoords(var l: Tlo; x,y,z,a,b,c,u,v,w: double);
 
 implementation
 
+var
+  OutOfMemory: Boolean;
+
 procedure SetCoords(var l: Tlo; x,y,z,a,b,c,u,v,w: double);
 begin
   l.x:= x; l.y:= y; l.z:= z; l.a:= a;
@@ -71,6 +74,8 @@ function NewListItem(ItemType: TListItemType; ln: integer; n1,n2: tlo): PListIte
 var
   P: PListItem;
 begin
+  if OutOfMemory then
+    Exit;
   P:= New(PListItem);
   if P <> nil then
     begin
@@ -78,6 +83,11 @@ begin
       P^.ltype:= ItemType;
       P^.l1:= n1;
       P^.l2:= n2;
+    end
+  else
+    begin
+      OutOfMemory:= True;
+      writeln('list out of memory');
     end;
   Result:= P;
 end;
@@ -85,6 +95,7 @@ end;
 constructor TGlList.Create;
 begin
   ItemList:= TList.Create;
+  OutOfMemory:= False;
   Clear;
 end;
 
@@ -92,6 +103,7 @@ destructor TGlList.Destroy;
 begin
   Clear;
   ItemList.Free;
+  OutOfMemory:= False;
 end;
 
 procedure TGlList.First;

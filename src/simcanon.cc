@@ -25,7 +25,7 @@ Interp interp_new;
 char _parameter_file_name[LINELEN];
 extern char *_rs274ngc_errors[];
 
-CANON_TOOL_TABLE dummy_tool;
+CANON_TOOL_TABLE canontool;
 
 double settings[ACTIVE_SETTINGS];
 int gcodes[ACTIVE_G_CODES];
@@ -36,7 +36,6 @@ int plane;
 bool metric;
 double _pos_x, _pos_y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w;
 double tool_xoffset, tool_zoffset, tool_woffset;
-
 
 extern "C" void nextline();
 extern "C" void arcfeed(double first_end, double second_end, double first_axis, 
@@ -344,7 +343,7 @@ CANON_TOOL_TABLE GET_EXTERNAL_TOOL_TABLE(int tool) {
       return t;
     }
     else {
-      return dummy_tool;
+      return canontool;
     }
 }
 

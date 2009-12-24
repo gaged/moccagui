@@ -1,7 +1,9 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
 LazarusResources.Add('TJogClientForm','FORMDATA',[
-  'TPF0'#14'TJogClientForm'#13'JogClientForm'#4'Left'#3'V'#2#6'Height'#3'j'#1#3
-  +'Top'#3'o'#1#5'Width'#3#221#1#18'HorzScrollBar.Page'#3#220#1#18'VertScrollBa'
-  +'r.Page'#3'i'#1#13'ActiveControl'#7#21'rgJogInc.RadioButton0'#11'BorderIcons'
+  'TPF0'#14'TJogClientForm'#13'JogClientForm'#4'Left'#3#221#1#6'Height'#3'j'#1#3
+  +'Top'#2'b'#5'Width'#3#221#1#18'HorzScrollBar.Page'#3#220#1#18'VertScrollBar.'
+  +'Page'#3'i'#1#13'ActiveControl'#7#21'rgJogInc.RadioButton0'#11'BorderIcons'
   +#11#0#11'BorderStyle'#7#6'bsNone'#7'Caption'#6#13'JogClientForm'#12'ClientHe'
   +'ight'#3'j'#1#11'ClientWidth'#3#221#1#10'KeyPreview'#9#8'OnCreate'#7#10'Form'
   +'Create'#9'OnKeyDown'#7#11'FormKeyDown'#7'OnKeyUp'#7#9'FormKeyUp'#10'ParentF'

@@ -38,10 +38,14 @@ procedure EditTools;
 var
   Dlg: TToolDlg;
 begin
+  if not ToolsInitialized then
+    begin
+      ShowMessage('No Toolfile set in ' + Vars.IniFile);
+      Exit;
+    end;
   Application.CreateForm(TToolDlg,Dlg);
   if Assigned(Dlg) then
     begin
-      Dlg.LoadTools;
       Dlg.ShowModal;
       Dlg.Free;
     end;
@@ -50,6 +54,7 @@ end;
 procedure TToolDlg.FormCreate(Sender: TObject);
 begin
   SetupGrid;
+  UpdateGrid;
 end;
 
 procedure TToolDlg.FormDestroy(Sender: TObject);
@@ -131,14 +136,7 @@ procedure TToolDlg.LoadTools;
 var
   FileName: PChar;
 begin
-  FileName:= PChar(Vars.ToolTblFile);
-  if not ToolsInitialized then
-    begin
-      InitToolTable;
-      ToolsInitialized:= True;
-    end;
-  LoadToolTable(FileName);
-  UpdateGrid;
+
 end;
 
 initialization
