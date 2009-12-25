@@ -14,21 +14,33 @@ Komponente: universe
 = Installieren =
 
   * lazarus 0.9.28.2-0
-  * freepascal
+  * fpc
+
+  * freeglut3
+  * freeglut3-dbg
+  * freeglut3-dev
+
+falls gtk gewünscht:
+  * libgtk1.2 
+  * libgtk1.2-common
+  * libgtk1.2-dev
+  * libglib1.2ldbl
+  * libglib1.2ldbl-dbg
+  * libglib1.2ldbl-dev
+  * libgdk_pixbuf2
+  * libgdk_pixbuf-dev
+
 
 = Konfigurieren =
 
+Damit das kompilieren funktioniert:
+
+sudo chmod a+w /usr/lib/lazarus/0.9.28.2/components/opengl
+
+lazaraus, Menü Packages - Installierte Packages einrichten
+
 LazOpenGLContext 0.01 als package hinzufügen, kompilieren
 
-gtk:
-  * libgtk1.2, 
-  * libglib1.2ldbl, 
-  * libldk_pixbuf 
+falls gtk gewünscht:
 
-installieren, alles inkl -dev
-
-LCL kompilieren
-
-gtk2:
-
-LCL kompilieren
+LCL kompilieren ??? TBD
