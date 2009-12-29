@@ -66,6 +66,8 @@ type
     MouseY: integer;
     Moving: Boolean;
 
+    Mode: integer;
+
   public
     procedure GetLimits(var E: TExtents);
     procedure SetMachineLimits(E: TExtents);
@@ -77,6 +79,7 @@ type
     procedure ResetView;
     procedure RotateZ(Angle: integer);
     procedure RotateX(Angle: integer);
+    procedure ViewMode(AMode: integer);
   end;
   
 var
@@ -95,7 +98,10 @@ uses
 constructor TGlView.Create(AOpenGlControl: TOpenGlControl);
 begin
   AreaInitialized:= False;
+  Mode:= 0;
   ogl:= AOpenGlControl;
+  //ogl.AutoResizeViewport:= False;
+  //ogl.DoubleBuffered:= True;
   ogl.OnPaint:= @self.Paint;
   ogl.OnResize:= @self.Resize;
   ogl.OnMouseWheel:= @self.MouseWheel;
@@ -131,6 +137,38 @@ begin
   if Round(RotationX) <> Angle then
     begin
       RotationX:= Angle;
+      Invalidate;
+    end;
+end;
+
+procedure TGlView.ViewMode(AMode: integer);
+begin
+  if AMode <> Mode then
+    begin
+      ResetView;
+      Mode:= AMode;
+      if Mode = 0 then
+        begin
+          rotationZ:= -45;
+          rotationX:= 45;
+          rotationY:= 0;
+          ResetView;
+        end
+      else
+      if Mode = 1 then
+        begin
+          rotationX:= 0;
+          rotationY:= 0;
+          rotationZ:= 0;
+        end
+      else
+      if Mode = 2 then
+        begin
+          rotationX:= -90;
+          rotationY:= 0;
+          rotationZ:= 0;
+        end;
+      AreaInitialized:= False;
       Invalidate;
     end;
 end;
@@ -221,9 +259,9 @@ var
   cx,cy,cz: Double;
 begin
   if not Assigned(ogl) then Exit;
-  cx:= ToInternalUnits(x);
-  cy:= ToInternalUnits(y);
-  cz:= ToInternalUnits(z);
+  cx:= ToCanonPos(x,0);
+  cy:= ToCanonPos(y,1);
+  cz:= ToCanonPos(z,2);
   if (cx <> ConeX) or (cy <> ConeY) or (cz <> ConeZ) then
     begin
       ConeX:= cx; ConeY:= cy; ConeZ:= cz;
@@ -327,10 +365,10 @@ begin
   AreaInitialized:= False;
 end;
 
-
 procedure TGlView.SetMachineLimits(E: TExtents);
 begin
   ML:= E;
+  MakeLimits;
   UpdateView;
 end;
 
@@ -338,6 +376,8 @@ procedure TGlView.MakeList;
 var
   P: PListItem;
 begin
+  //if ListL <> 0 then
+  //glDeleteLists(ListL,1);
   ListL:= glGenLists(4);
   glNewList(ListL, GL_COMPILE);
   if Assigned(MyGlList) then
@@ -363,6 +403,8 @@ end;
 procedure TGlView.Paint(sender: TObject);
 
 const GLInitialized: boolean = false;
+var
+  k,n: double;
 
 procedure InitGL;
 begin
@@ -383,24 +425,33 @@ begin
   if not AreaInitialized then
     begin
       InitGL;
-      glMatrixMode (GL_PROJECTION);
-      glLoadIdentity;
-      gluPerspective(60,ogl.Width/ogl.Height,0.1,LimD * 100);
-      glMatrixMode (GL_MODELVIEW);
-      glViewport (0,0,ogl.Width,ogl.Height);
       AreaInitialized:=true;
     end;
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity;
+   if Mode = 0 then
+     begin
+       gluPerspective(60,ogl.Width/ogl.Height,0.1,LimD * 100);
+       glMatrixMode(GL_MODELVIEW);
+       glViewport (0,0,ogl.Width,ogl.Height);
+     end
+   else
+     begin
+       k:= sqrt(abs(EyeZ));
+       n:= k * ogl.height / ogl.width;
+       glOrtho(-k,k,-n,n, -1000, 1000);
+       glMatrixMode(GL_MODELVIEW);
+       glViewport (0,0,ogl.Width,ogl.Height);
+     end;
+
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   glLoadIdentity;
 
   gluLookAt(EyeX+PanX,EyeY+PanY,EyeZ+centerZ+PanZ,centerX+PanX,centerY+PanY,centerZ+PanZ,0,1,0);
+
   glRotatef(RotationX,1.0,0.0,0.0);
   glRotatef(RotationY,0.0,1.0,0.0);
   glRotatef(RotationZ,0.0,0.0,1.0);
-
-   //glPushMatrix;
-   // glTranslatef (-centerx + PanX,-centery + PanY ,-centerz + PanZ);
-   //glPopMatrix;
 
   DrawCone;
   glCallList(CoordsL);
@@ -427,8 +478,10 @@ end;
 procedure TGlView.Resize(Sender: TObject);
 begin
   if ogl.Visible then
-   if (AreaInitialized) and ogl.MakeCurrent then
-     glViewport(0,0,ogl.Width,ogl.Height);
+    begin
+      AreaInitialized:= False;
+      glViewport(0,0,ogl.Width,ogl.Height);
+    end;
 end;
 
 procedure TGlView.MakeCone;
@@ -436,10 +489,11 @@ var
   q: PGLUquadric;
 begin
   q := gluNewQuadric();
+  //if ConeL <> 0 then
+  //  glDeleteLists(ConeL,1);
   ConeL:= glGenLists(1);
   glNewList(ConeL, GL_COMPILE);
   glColor3f(1,0.4,0.4);
-  // gluPartialDisk(q, 1, 2, 12, 4, 0, 310);
   gluCylinder(q, 0,0.2,0.5,12,1);
   glEndList;
   gluDeleteQuadric(q);
@@ -447,22 +501,24 @@ end;
 
 procedure TGlView.MakeCoords;
 begin
+  //if CoordsL <> 0 then
+  //  glDeleteLists(CoordsL,1);
   CoordsL:= glGenLists(2);
   glNewList(CoordsL, GL_COMPILE);
   glBegin(GL_LINES);
     glColor3f(1,0,0);
     glVertex3f(0,0,0);
-    glVertex3f(10,0,0);
+    glVertex3f(2,0,0);
   glEnd;
   glBegin(GL_LINES);
     glColor3f(0,10,0);
     glVertex3f(0,0,0);
-    glVertex3f(0,10,0);
+    glVertex3f(0,2,0);
   glEnd;
   glBegin(GL_LINES);
     glColor3f(0,0,10);
     glVertex3f(0,0,0);
-    glVertex3f(0,0,10);
+    glVertex3f(0,0,2);
   glEnd;
   glEndList;
 end;
@@ -470,38 +526,46 @@ end;
 procedure TGlView.MakeLimits;
 const
   pattern = $5555;
+var
+  W,H,D: double;
 begin
   //Stippling aktivieren
-  LimitsL:= glGenLists(3);
-  glNewList(LimitsL, GL_COMPILE);
-  glEnable(GL_LINE_STIPPLE);
-  glLineStipple(10, pattern);
-  glBegin(GL_LINE_STRIP);
-    glColor3f(0.7,0.1,0.1);
-    glVertex3f(ML.minX,ML.minY,ML.minZ);
-    glVertex3f(ML.maxX,ML.minY,ML.minZ);
-    glVertex3f(ML.maxX,ML.maxY,ML.minZ);
-    glVertex3f(ML.minX,ML.maxY,ML.minZ);
-    glVertex3f(ML.minX,ML.minY,ML.minZ);
-    glVertex3f(ML.minX,ML.minY,ML.maxZ);
-    glVertex3f(ML.minX,ML.maxY,ML.maxZ);
-    glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
-    glVertex3f(ML.maxX,ML.minY,ML.maxZ);
-    glVertex3f(ML.maxX,ML.minY,ML.minZ);
-  glEnd;
-  glBegin(GL_LINES);
-    glVertex3f(ML.minX,ML.maxY,ML.minZ);
-    glVertex3f(ML.minX,ML.maxY,ML.maxZ);
-  glEnd;
-  glBegin(GL_LINES);
-    glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
-    glVertex3f(ML.maxX,ML.maxY,ML.minZ);
-  glEnd;
-    //glVertex3f(ML.minX,ML.maxY,ML.maxZ);
-    //glVertex3f(ML.maxX,ML.minY,ML.maxZ);
-    //glVertex3f(ML.minX,ML.minY,ML.maxZ);
-  glDisable(GL_LINE_STIPPLE);
-  glEndList;
+  //if LimitsL <> 0 then
+  //  glDeleteLists(LimitsL,1);
+  w:= ML.MaxX - ML.MinX;
+  h:= ML.MaxY - ML.MinY;
+  d:= ML.MaxZ - ML.MinZ;
+
+  if (W <> 0) and (H <> 0) and (D <> 0) then
+    begin
+      LimitsL:= glGenLists(3);
+      glNewList(LimitsL, GL_COMPILE);
+      glEnable(GL_LINE_STIPPLE);
+      glLineStipple(10, pattern);
+      glBegin(GL_LINE_STRIP);
+        glColor3f(0.7,0.1,0.1);
+        glVertex3f(ML.minX,ML.minY,ML.minZ);
+        glVertex3f(ML.maxX,ML.minY,ML.minZ);
+        glVertex3f(ML.maxX,ML.maxY,ML.minZ);
+        glVertex3f(ML.minX,ML.maxY,ML.minZ);
+        glVertex3f(ML.minX,ML.minY,ML.minZ);
+        glVertex3f(ML.minX,ML.minY,ML.maxZ);
+        glVertex3f(ML.minX,ML.maxY,ML.maxZ);
+        glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
+        glVertex3f(ML.maxX,ML.minY,ML.maxZ);
+        glVertex3f(ML.maxX,ML.minY,ML.minZ);
+      glEnd;
+      glBegin(GL_LINES);
+        glVertex3f(ML.minX,ML.maxY,ML.minZ);
+        glVertex3f(ML.minX,ML.maxY,ML.maxZ);
+      glEnd;
+      glBegin(GL_LINES);
+        glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
+        glVertex3f(ML.maxX,ML.maxY,ML.minZ);
+      glEnd;
+      glDisable(GL_LINE_STIPPLE);
+      glEndList;
+   end;
 end;
 
 end.

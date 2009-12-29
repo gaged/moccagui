@@ -1,7 +1,7 @@
 object SimClientForm: TSimClientForm
-  Left = 516
+  Left = 538
   Height = 335
-  Top = 381
+  Top = 448
   Width = 453
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
@@ -13,16 +13,62 @@ object SimClientForm: TSimClientForm
   ClientWidth = 453
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '0.9.28.2'
+  object BtnP: TSpeedButton
+    Left = 0
+    Height = 22
+    Top = 8
+    Width = 23
+    Caption = 'P'
+    Color = clBtnFace
+    Down = True
+    GroupIndex = 1
+    NumGlyphs = 0
+    OnClick = BtnPClick
+  end
+  object BtnX: TSpeedButton
+    Left = 0
+    Height = 22
+    Top = 32
+    Width = 23
+    Caption = 'X'
+    Color = clBtnFace
+    GroupIndex = 1
+    NumGlyphs = 0
+    OnClick = BtnXClick
+  end
+  object BtnY: TSpeedButton
+    Left = 0
+    Height = 22
+    Top = 56
+    Width = 23
+    Caption = 'Y'
+    Color = clBtnFace
+    GroupIndex = 1
+    NumGlyphs = 0
+    OnClick = BtnYClick
+  end
+  object BtnZ: TSpeedButton
+    Left = 0
+    Height = 22
+    Top = 80
+    Width = 23
+    Caption = 'Z'
+    Color = clBtnFace
+    GroupIndex = 1
+    NumGlyphs = 0
+    OnClick = BtnZClick
+  end
   object sbH: TScrollBar
-    AnchorSideLeft.Control = Owner
+    AnchorSideLeft.Control = OpenGLControl
     AnchorSideRight.Control = sbV
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 4
+    Left = 31
     Height = 15
     Top = 316
-    Width = 430
+    Width = 403
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 4
     BorderSpacing.Bottom = 4
@@ -54,14 +100,16 @@ object SimClientForm: TSimClientForm
     OnChange = sbVChange
   end
   object OpenGLControl: TOpenGLControl
-    AnchorSideLeft.Control = Owner
+    AnchorSideLeft.Control = BtnP
+    AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = sbV
     AnchorSideBottom.Control = sbH
-    Left = 0
+    Left = 27
     Height = 316
     Top = 0
-    Width = 434
+    Width = 407
     Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 4
   end
 end

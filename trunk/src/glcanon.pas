@@ -24,9 +24,6 @@ const
   ACTIVE_M_CODES_MAX = 10;
   ACTIVE_SETTINGS_MAX = 3;
 
-var
-  glMetric: boolean; external name 'metric';
-
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 
 function interpreter_init: longint; cdecl; external;
@@ -37,7 +34,8 @@ procedure interpreter_codes; cdecl; external;
 
 function GetGCodeError(code: integer): string;
 
-function ToInternalUnits(Value: Double): Double;
+function ToCanonUnits(Value: Double): Double;
+function ToCanonPos(Value: double; Index: integer): double;
 
 function GCodeToStr(i: integer): string;
 function MCodeToStr(i: integer): string;
@@ -51,7 +49,6 @@ uses
   mocglb,
   emc2pas,  // LINELEN
   gllist;   // MyGlList
-
 
 var
   FirstMove: Boolean;
@@ -68,6 +65,7 @@ var
   savedError: array[0..LINELEN] of char; external name 'savedError';
   CanonTool: TTool; external name 'canontool';
   ParameterFileName: array[0..LINELEN] of Char; external name '_parameter_file_name';
+  glMetric: boolean; external name 'metric';
 
   glSettings: array[0..ACTIVE_SETTINGS_MAX-1] of double; external name 'settings';
   glGCodes: array[0..ACTIVE_G_CODES_MAX-1] of integer; external name 'gcodes';
@@ -125,12 +123,25 @@ begin
   Result:= glSettings[2];
 end;
 
-function ToInternalUnits(Value: Double): Double;
+function ToCanonUnits(Value: Double): Double;
 begin
-  if linearUnitConversion = LINEAR_UNITS_MM then
+  if Vars.Metric then
     Result:= Value / 25.4
   else
     Result:= Value;
+end;
+
+function ToCanonPos(Value: double; Index: integer): double;
+var
+  P: double;
+begin
+  if Index = 0 then P:= offset.x else
+    if Index = 1 then P:= offset.y else
+      P:= offset.z;
+ if Vars.Metric then
+    Result:= (Value / 25.4) + P
+  else
+    Result:= Value + P;
 end;
 
 function GetGCodeError(Code: integer): string;
@@ -139,6 +150,16 @@ begin
   if converterror(Code) <> 0 then
     if savedError[0] <> #0 then
       Result:= PChar(savedError);
+end;
+
+procedure InitOffsets;
+var
+  x,y,z: double;
+begin
+  x:= ToCanonUnits(GetOrigin(0));
+  y:= ToCanonUnits(GetOrigin(1));
+  z:= ToCanonUnits(GetOrigin(2));
+  SetCoords(Offset,x,y,z,0,0,0,0,0,0);
 end;
 
 procedure Init;
@@ -155,6 +176,7 @@ begin
   glMetric:= False;
   s:= Vars.IniPath + 'moc.var';
   ParameterFileName:= PChar(s);
+  InitOffsets;
 end;
 
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
@@ -170,9 +192,14 @@ begin
     InitGCode;
   MyGlList.Clear;
   Result:= parsefile(PChar(FileName),PChar(UnitCode),PChar(InitCode));
+  if linearUnitConversion = LINEAR_UNITS_MM then
+    writeln('Units are mm') else writeln('Units are Inches');
+  if glMetric then
+    writeln('Canon is mm') else writeln('Canon is Inch');
 end;
 
 procedure AppendTraverse(l: tlo);
+
 begin
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Traverse ',l.x,l.y,l.z]));
@@ -234,15 +261,10 @@ end;
 
 procedure setoriginoffsets(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 begin
-  offset.x:= x;
-  offset.y:= y;
-  offset.z:= z;
-  offset.a:= a;
-  offset.b:= b;
-  offset.c:= c;
-  offset.u:= u;
-  offset.v:= v;
-  offset.w:= w;
+  SetCoords(offset,offset.x-x,offset.y-y,offset.z-z,a,b,c,u,v,w);
+  {$ifdef PRINT_CANON}
+  writeln(Format('%s %n %n %n',['set_origin_offsets: ',x,y,z]));
+  {$endif}
 end;
 
 procedure setplane(pl: integer); cdecl; export;
@@ -252,9 +274,6 @@ end;
 
 procedure changetool(Tool: integer); cdecl; export;
 begin
-  {$ifdef PRINT_CANON}
-  writeln('changetool: ' + inttoStr(Tool));
-  {$endif}
   FirstMove:= True;
 end;
 
@@ -266,11 +285,11 @@ begin
     with CanonTool do
       begin
         id:= Tools[i].Id;
-        zoffset:= ToInternalUnits(Tools[i].zoffset);
-        xoffset:= ToInternalUnits(Tools[i].xoffset);
-        diameter:= ToInternalUnits(Tools[i].diameter);
-        frontangle:= ToInternalUnits(Tools[i].frontangle);
-        backangle:= ToInternalUnits(Tools[i].backangle);
+        zoffset:= ToCanonUnits(Tools[i].zoffset);
+        xoffset:= ToCanonUnits(Tools[i].xoffset);
+        diameter:= ToCanonUnits(Tools[i].diameter);
+        frontangle:= ToCanonUnits(Tools[i].frontangle);
+        backangle:= ToCanonUnits(Tools[i].backangle);
         orientation:= Tools[i].orientation;
         Result:= 1;
       end;
@@ -278,10 +297,6 @@ end;
 
 procedure selecttool(tool: integer); cdecl; export;
 begin
-  {$ifdef PRINT_CANON}
-  writeln('selecttool: ' + intToStr(Tool));
-  {$endif}
-  // last_selected_tool:= tool;
 end;
 
 procedure setspindlerate(rate: double); cdecl; export;
@@ -290,7 +305,6 @@ end;
 
 procedure setfeedrate(rate: double); cdecl; export;
 begin
-  // FeedRate:= rate / 60;
 end;
 
 procedure settraverserate(rate: double); cdecl; export;
@@ -325,12 +339,12 @@ var
   end;
 
 begin
-
   o:= lo;
-
   if Plane = 1 then // XY Plane
     begin
       SetCoords(n,x1+offset.x,y1+offset.y,z1+offset.z, a, b, c, u, v, w);
+      cx:= cx + offset.x;
+      cy:= cy + offset.y;
       theta1:= arctan2(o.y - cy, o.x - cx);
       theta2:= arctan2(n.y - cy, n.x - cx);
       rad:= hypot(o.x - cx, o.y - cy);
@@ -339,6 +353,8 @@ begin
   if Plane = 3 then
     begin
       SetCoords(n,y1+offset.x,z1+offset.y,x1+offset.z, a, b, c, u, v, w);
+      cx:= cx + offset.z;
+      cy:= cy + offset.x;
       theta1:= arctan2(o.x - cy, o.z - cx);
       theta2:= arctan2(n.x - cy, n.z - cx);
       rad:= hypot(o.z - cx, o.x - cy);
@@ -346,6 +362,8 @@ begin
   else
     begin
       SetCoords(n,z1+offset.x,x1+offset.y,y1+offset.z, a, b, c, u, v, w);
+      cx:= cx + offset.y;
+      cy:= cy + offset.z;
       theta1:= arctan2(o.z - cy, o.y - cx);
       theta2:= arctan2(n.z - cy, n.y - cx);
       rad:= hypot(o.y - cx, o.z - cy);
@@ -460,22 +478,22 @@ end;
 
 function getblockdelete: integer; cdecl; export;
 begin
-  Result:= integer(true);
+  Result:= integer(State.BlockDel);
 end;
 
 function toolalongw: integer; cdecl; export;
 begin
-  result:= 0;
+  result:= integer(State.TloAlongW);
 end;
 
 procedure setcomment(const msg: PChar); cdecl; export;
 begin
-  writeln(msg);
+  // writeln(msg);
 end;
 
 procedure setmessage(const msg: PChar); cdecl; export;
 begin
-  writeln(msg);
+  // writeln(msg);
 end;
 
 

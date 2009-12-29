@@ -267,6 +267,7 @@ type
     CurrentTool: integer;
     ToolPrepared: Boolean;
     ToolOffset: double;
+    TloAlongW: Boolean;
 
     Dtg: double;
     Vel: double;

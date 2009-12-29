@@ -807,6 +807,39 @@ extern "C" double getRelPos(int axis)
   }
 }
 
+extern "C" double getOrigin(int axis)
+{
+  if (axis == 0) {
+    return convertLinearUnits(emcStatus->task.origin.tran.x);
+  } else
+  if (axis == 1) {
+    return convertLinearUnits(emcStatus->task.origin.tran.y);
+  } else
+  if (axis == 2) {
+    return convertLinearUnits(emcStatus->task.origin.tran.z);
+  } else
+  if (axis == 3) {
+    return convertLinearUnits(emcStatus->task.origin.a);
+  } else
+  if (axis == 4) {
+    return convertLinearUnits(emcStatus->task.origin.b);
+  } else
+  if (axis == 5) {
+    return convertLinearUnits(emcStatus->task.origin.c);
+  } else
+  if (axis == 6) {
+    return convertLinearUnits(emcStatus->task.origin.u);
+  } else
+  if (axis == 7) {
+    return convertLinearUnits(emcStatus->task.origin.v);
+  } else
+  if (axis == 8) {
+    return convertLinearUnits(emcStatus->task.origin.w);
+  } else {
+    return 0;
+  }
+}
+
 extern "C" double getJointPos(int axis)
 {
   return emcStatus->motion.axis[axis].input;
