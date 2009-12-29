@@ -16,14 +16,25 @@ type
     OpenGLControl: TOpenGLControl;
     sbH: TScrollBar;
     sbV: TScrollBar;
+    BtnP: TSpeedButton;
+    BtnX: TSpeedButton;
+    BtnY: TSpeedButton;
+    BtnZ: TSpeedButton;
+    procedure BtnPClick(Sender: TObject);
+    procedure BtnXClick(Sender: TObject);
+    procedure BtnYClick(Sender: TObject);
+    procedure BtnZClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure sbHChange(Sender: TObject);
     procedure sbVChange(Sender: TObject);
   private
     FShowLivePlot: Boolean;
+    FInitialized: Boolean;
   public
     procedure LoadPreview(FileName,UnitCode,InitCode: string);
+    procedure UpdateLimits;
     procedure ClearPreview;
     procedure UpdateSelf;
     property ShowLivePlot: Boolean read FShowLivePlot write FShowLivePlot;
@@ -38,20 +49,17 @@ uses
   mocjoints,emc2pas,
   mocglb, glView,glList,glCanon;
 
-var
-  E: TExtents;
-
 procedure TSimClientForm.LoadPreview(FileName,UnitCode,InitCode: string);
 var
   Error: integer;
 begin
   if (not Assigned(MyGlList)) or (not Assigned(MyGlView)) then
     Exit;
+  UpdateLimits;
   Error:= ParseGCode(FileName,UnitCode,InitCode);
   if Error <> 0 then
     LastError:= GetGCodeError(Error);
   MyGlView.UpdateView;
-  MyGlView.GetLimits(E);
   MyGlView.Invalidate;
 end;
 
@@ -60,6 +68,38 @@ begin
   if (not Assigned(MyGlList)) or (not Assigned(MyGlView)) then
     Exit;
  // Add code here to clear the preview...
+end;
+
+procedure TSimClientForm.UpdateLimits;
+var
+  Axis: TAxis;
+  E: TExtents;
+begin
+  if not Assigned(Joints) then
+    Exit;
+  with Joints do
+    begin
+      Axis:= GetAxis(AxisByChar('X'));
+      if Axis <> nil then
+        begin
+          E.MinX:= ToCanonUnits(Axis.MinPosLimit);
+          E.MaxX:= ToCanonUnits(Axis.MaxPosLimit);
+        end;
+      Axis:= GetAxis(AxisByChar('Y'));
+      if Axis <> nil then
+        begin
+          E.MinY:= ToCanonUnits(Axis.MinPosLimit);
+          E.MaxY:= ToCanonUnits(Axis.MaxPosLimit);
+        end;
+      Axis:= GetAxis(AxisByChar('Z'));
+      if Axis <> nil then
+        begin
+          E.MinZ:= ToCanonUnits(Axis.MinPosLimit);
+          E.MaxZ:= ToCanonUnits(Axis.MaxPosLimit);
+         end;
+    end;
+  if Assigned(MyGlView) then
+    MyGlView.SetMachineLimits(E);
 end;
 
 procedure TSimClientForm.UpdateSelf;
@@ -92,6 +132,8 @@ begin
 end;
 
 procedure TSimClientForm.FormCreate(Sender: TObject);
+var
+  E: TExtents;
 begin
   E.MinX:= 0; E.MaxX:= 10;
   E.MinY:= 0; E.MaxY:= 10;
@@ -107,12 +149,45 @@ begin
   FShowLivePlot:= True;
 end;
 
+procedure TSimClientForm.BtnPClick(Sender: TObject);
+begin
+  if Assigned(MyGlView) then
+    MyGlView.ViewMode(0);
+end;
+
+procedure TSimClientForm.BtnXClick(Sender: TObject);
+begin
+  if Assigned(MyGlView) then
+    MyGlView.ViewMode(1);
+end;
+
+procedure TSimClientForm.BtnYClick(Sender: TObject);
+begin
+  if Assigned(MyGlView) then
+    MyGlView.ViewMode(2);
+end;
+
+procedure TSimClientForm.BtnZClick(Sender: TObject);
+begin
+  if Assigned(MyGlView) then
+    MyGlView.ViewMode(3);
+end;
+
 procedure TSimClientForm.FormDestroy(Sender: TObject);
 begin
   if Assigned(MyGlView) then
     MyGlView.Free;
   if Assigned(MyGlList) then
     MyGlList.Free;
+end;
+
+procedure TSimClientForm.FormShow(Sender: TObject);
+begin
+  if not FInitialized then
+    begin
+      UpdateLimits;
+      FInitialized:= True;
+    end;
 end;
 
 initialization

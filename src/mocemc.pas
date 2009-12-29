@@ -279,6 +279,8 @@ begin
       ToolPrepared:= toolPrepped <> 0;
       ToolOffset:= toolLengthOffset;
 
+      TloAlongW:=  taskTloIsAlongW;
+
       if TaskMode = TASKMODEAUTO then
         begin
           InterpState:= taskInterpState;

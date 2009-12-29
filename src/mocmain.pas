@@ -16,6 +16,8 @@ type
 
   TMainForm = class(TForm)
     ImageList: TImageList;
+    LabelCUnits: TLabel;
+    LabelUnits: TLabel;
     LabelTool: TLabel;
     LabelFText: TLabel;
     LabelMaxVel: TLabel;
@@ -64,7 +66,7 @@ type
     OldFeed: integer;
     OldMaxVel: integer;
     OldTool: integer;
-    NewMaxVel: integer;
+    // NewMaxVel: integer;
 
     procedure InitPanels;
     procedure InitButtons;
@@ -85,7 +87,7 @@ implementation
 { TMainForm }
 
 uses
-  emc2pas,mocemc,mocStatusDlg;
+  emc2pas,mocemc,glCanon;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -162,7 +164,14 @@ begin
     clMDI.UpdateSelf;
 
   if State.UnitsChanged then
-    OldMaxVel:= 0;  // update Maxvel...
+    begin
+      OldMaxVel:= 0;
+      if LinearUnitConversion = linear_units_mm then
+        LabelUnits.Caption:= 'mm'
+      else
+        LabelUnits.Caption:= 'Inch';
+      State.UnitsChanged:= False;
+    end;
 
   if OldFeed <> State.ActFeed then
     begin
@@ -170,20 +179,12 @@ begin
       OldFeed:= State.ActFeed;
     end;
 
-  if NewMaxVel <> State.ActVel then
-    begin
-      Emc.SetMaxVel(NewMaxVel);
-      NewMaxVel:= State.ActVel;
-      i:= Round(Emc.ToLinearUnits(State.ActVel));
-      LabelMaxVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
-    end;
-
-  {if OldMaxVel <> State.ActVel then
+  if OldMaxVel <> State.ActVel then
     begin
       i:= Round(Emc.ToLinearUnits(State.ActVel));
       LabelMaxVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
       OldMaxVel:= State.ActVel;
-    end;}
+    end;
 
   if OldTool <> State.CurrentTool then
     begin
@@ -191,7 +192,6 @@ begin
       LabelTool.Caption:= 'Werkzeug: ' + IntToStr(OldTool);
     end;
 
-  State.UnitsChanged:= False;  // clear this one last
  end;
 
 procedure TMainForm.InitPanels;  // init the panels, clients, joints
@@ -236,6 +236,7 @@ begin
   OldMaxVel:= 0;
   OldFeed:= 0;
   OldTool:= -1;
+  State.UnitsChanged:= True;
 
 end;
 
@@ -435,17 +436,12 @@ procedure TMainForm.sbFeedChange(Sender: TObject);
 begin
   if UpdateLock then Exit;
   Emc.SetFeedORide(sbFeed.Position);
-  // then
-  //  LabelFeed.Caption:= IntToStr(State.ActFeed) + '%';
 end;
 
 procedure TMainForm.sbMaxVelChange(Sender: TObject);
 begin
   if UpdateLock then Exit;
-  NewMaxVel:= sbMaxVel.Position;
-  {Emc.SetMaxVel(sbMaxVel.Position);}
-  // then
-  //  LabelMaxVel.Caption:= IntToStr(State.ActVel)+Vars.UnitVelStr;
+  Emc.SetMaxVel(sbMaxVel.Position);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);

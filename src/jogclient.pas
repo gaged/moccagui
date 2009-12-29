@@ -14,12 +14,18 @@ type
   { TJogClientForm }
 
   TJogClientForm = class(TForm)
+    Bevel1: TBevel;
     Label1: TLabel;
+    Label2: TLabel;
+    Label4: TLabel;
+    LabelSpORide: TLabel;
+    LabelSpVel: TLabel;
     LabelCaption: TLabel;
     LabelJogVel: TLabel;
     Label3: TLabel;
     rgJogInc: TRadioGroup;
     sbJogVel: TScrollBar;
+    ScrollBar1: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -30,6 +36,8 @@ type
     OldORideLimits: Boolean;
     OldJogVel: integer;
     OldSpDir: integer;
+    OldSpVel: double;
+    OldSpORide: integer;
   public
     procedure ActivateSelf;
     procedure UpdateSelf;
@@ -82,18 +90,31 @@ begin
       SetButtonDown(cmLIMITS,ORideLimits);
       OldORideLimits:= State.ORideLimits;
     end;}
+
   if OldSpDir <> State.SpDir then
     begin
       SetButtonDown(cmSPCW,State.SpDir > 0);
       SetButtonDown(cmSPCCW,State.SpDir < 0);
       OldSpDir:= State.SpDir;
     end;
- if (OldJogVel <> State.ActJogVel) or (State.UnitsChanged) then
-   begin
-     i:= Round(Emc.ToLinearUnits(State.ActJogVel));
-     LabelJogVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
-     OldJogVel:= State.ActJogVel;
-   end;
+  if (OldJogVel <> State.ActJogVel) or (State.UnitsChanged) then
+    begin
+      i:= Round(Emc.ToLinearUnits(State.ActJogVel));
+      LabelJogVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
+      OldJogVel:= State.ActJogVel;
+    end;
+
+  if (OldSpVel <> State.SpSpeed) then
+    begin
+      LabelSpVel.Caption:= FloatToStr(State.SpSpeed) + ' U/min';
+      OldSpVel:= State.SpSpeed;
+    end;
+
+  if (OldSpORide <> State.SpindleOverride) then
+    begin
+      LabelSpORide.Caption:= IntToStr(State.SpindleOverride) + '%';
+      OldSpORide:= State.SpindleOverride;
+    end;
 end;
 
 procedure TJogClientForm.MapButtons;
@@ -117,7 +138,9 @@ begin
   Vars.JogContinous:= True;
   OldORideLimits:= False;
   OldSpDir:= State.SpDir + 1;
-  OldJogVel:= 0;
+  OldJogVel:= -1;
+  OldSpVel:= -1;
+  OldSpORide:= -1;
 end;
 
 function TJogClientForm.HandleJogKeys(var Key: Word;

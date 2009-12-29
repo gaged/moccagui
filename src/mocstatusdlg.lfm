@@ -1,7 +1,7 @@
 object StatusDlgForm: TStatusDlgForm
-  Left = 551
+  Left = 546
   Height = 433
-  Top = 325
+  Top = 311
   Width = 459
   HorzScrollBar.Page = 458
   VertScrollBar.Page = 432
@@ -13,19 +13,25 @@ object StatusDlgForm: TStatusDlgForm
   ClientWidth = 459
   OnShow = FormShow
   Position = poScreenCenter
+  LCLVersion = '0.9.28.2'
   object LbStat: TListBox
+    Left = 0
     Height = 383
+    Top = 0
     Width = 459
     Align = alClient
     ExtendedSelect = False
     Font.Height = -16
     Font.Name = 'Courier 10 Pitch'
     Font.Pitch = fpFixed
+    ItemHeight = 0
+    ParentFont = False
     TabOrder = 0
     TabStop = False
     TopIndex = -1
   end
   object Panel1: TPanel
+    Left = 0
     Height = 50
     Top = 383
     Width = 459

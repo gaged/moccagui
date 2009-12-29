@@ -187,7 +187,8 @@ function  getAbsCmdPos(axis: integer): double; cdecl; external;
 function  getAbsPos(axis: integer): double; cdecl; external;
 function  getRelCmdPos(axis: integer): double; cdecl; external;
 function  getRelPos(axis: integer): double; cdecl; external;
-function  getJointPos(joint: integer): Double; cdecl; external;
+function  getJointPos(joint: integer): double; cdecl; external;
+function  getOrigin(axis: integer): double; cdecl; external;
 
 function  updateStatus: Longint; cdecl; external;
 function  updateError: Longint; cdecl; external;

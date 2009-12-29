@@ -34,7 +34,7 @@ implementation
 { TStatusDlgForm }
 
 uses
-  emc2pas;
+  emc2pas,glCanon;
   
 procedure TStatusDlgForm.AddDouble(s: string; d: double);
 begin
@@ -112,7 +112,8 @@ begin
   // AddDouble('Delay left',taskDelayLeft);
   AddBool('Block Delete is On',taskBlockDelete);
   AddBool('Opt. Stop is On',taskOptStop);
-
+  AddBool('Canon Metric', glMetric);
+  AddInt('Program Units',TaskProgramUnits);
 end;
 
 procedure TStatusDlgForm.FormShow(Sender: TObject);

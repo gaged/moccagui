@@ -198,11 +198,6 @@ void CHANGE_TOOL_NUMBER(int tool) {
     if(interp_error) return;
 }
 
-/* XXX: This needs to be re-thought.  Sometimes feed rate is not in linear
- * units--e.g., it could be inverse time feed mode.  in that case, it's wrong
- * to convert from mm to inch here.  but the gcode time estimate gets inverse
- * time feed wrong anyway..
- */
 void SET_FEED_RATE(double rate) {
     maybe_new_line();   
     if(interp_error) return;
@@ -281,6 +276,7 @@ void SET_MOTION_OUTPUT_BIT(int bit) {}
 void SET_MOTION_OUTPUT_VALUE(int index, double value) {}
 void TURN_PROBE_ON() {}
 void TURN_PROBE_OFF() {}
+
 void STRAIGHT_PROBE(int line_number, 
                     double x, double y, double z, 
                     double a, double b, double c,

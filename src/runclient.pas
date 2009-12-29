@@ -140,7 +140,8 @@ var
   Metric: Boolean;
 begin
   if Length(FileName) < 1 then Exit;
-  Metric:= Pos('G21',ActiveGCodes) > 0;
+  //Metric:= Pos('G21',ActiveGCodes) > 0;
+  Metric:= Vars.Metric;
   if Metric then
     UnitCode:= 'G21' else UnitCode:= 'G20';
   InitCode:= '';

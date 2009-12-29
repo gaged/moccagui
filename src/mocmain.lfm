@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 208
+  Left = 226
   Height = 721
-  Top = 149
+  Top = 195
   Width = 963
   HorzScrollBar.Page = 985
   VertScrollBar.Page = 792
@@ -211,24 +211,25 @@ object MainForm: TMainForm
     AnchorSideRight.Control = PanelMainBtns
     AnchorSideBottom.Control = PanelBars
     Left = 0
-    Height = 32
-    Top = 312
+    Height = 48
+    Top = 296
     Width = 895
     Anchors = [akLeft, akRight, akBottom]
     BevelInner = bvLowered
-    ClientHeight = 32
+    ClientHeight = 48
     ClientWidth = 895
     FullRepaint = False
     TabOrder = 1
     object LabelMCodes: TLabel
       AnchorSideLeft.Control = LabelGCodes
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabelGCodes
-      Left = 101
+      AnchorSideTop.Control = PanelInfo
+      Left = 95
       Height = 18
-      Top = 7
+      Top = 2
       Width = 86
       BorderSpacing.Left = 6
+      BorderSpacing.Top = 2
       Caption = 'LabelMCodes'
       Color = clForm
       Layout = tlCenter
@@ -238,12 +239,12 @@ object MainForm: TMainForm
     object LabelGCodes: TLabel
       AnchorSideLeft.Control = PanelInfo
       AnchorSideTop.Control = PanelInfo
-      AnchorSideTop.Side = asrCenter
-      Left = 10
+      Left = 4
       Height = 18
-      Top = 7
+      Top = 2
       Width = 85
-      BorderSpacing.Left = 10
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 2
       Caption = 'LabelGCodes'
       Color = clForm
       Layout = tlCenter
@@ -253,12 +254,13 @@ object MainForm: TMainForm
     object LabelSWords: TLabel
       AnchorSideLeft.Control = LabelMCodes
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabelGCodes
-      Left = 193
+      AnchorSideTop.Control = PanelInfo
+      Left = 187
       Height = 18
-      Top = 7
+      Top = 2
       Width = 78
       BorderSpacing.Left = 6
+      BorderSpacing.Top = 2
       Caption = 'LabelOpText'
       Color = clForm
       Layout = tlCenter
@@ -268,12 +270,13 @@ object MainForm: TMainForm
     object LabelFWords: TLabel
       AnchorSideLeft.Control = LabelSWords
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabelGCodes
-      Left = 277
+      AnchorSideTop.Control = PanelInfo
+      Left = 271
       Height = 18
-      Top = 7
+      Top = 2
       Width = 81
       BorderSpacing.Left = 6
+      BorderSpacing.Top = 2
       Caption = 'LabelOpDisp'
       Color = clForm
       Layout = tlCenter
@@ -281,11 +284,36 @@ object MainForm: TMainForm
       Transparent = False
     end
     object LabelTool: TLabel
-      Left = 648
+      AnchorSideLeft.Control = PanelInfo
+      AnchorSideTop.Control = LabelGCodes
+      AnchorSideTop.Side = asrBottom
+      Left = 4
       Height = 18
-      Top = 8
+      Top = 22
       Width = 59
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 2
       Caption = 'LabelTool'
+      ParentColor = False
+    end
+    object LabelUnits: TLabel
+      AnchorSideLeft.Control = LabelTool
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabelTool
+      Left = 67
+      Height = 18
+      Top = 22
+      Width = 68
+      BorderSpacing.Left = 4
+      Caption = 'LabelUnits'
+      ParentColor = False
+    end
+    object LabelCUnits: TLabel
+      Left = 188
+      Height = 18
+      Top = 24
+      Width = 77
+      Caption = 'LabelCUnits'
       ParentColor = False
     end
   end
@@ -323,13 +351,12 @@ object MainForm: TMainForm
   object PanelDRO: TPanel
     AnchorSideLeft.Control = PanelBars
     AnchorSideLeft.Side = asrBottom
-    AnchorSideRight.Control = PanelMainBtns
     AnchorSideBottom.Control = lbMessages
     Left = 314
     Height = 232
     Top = 344
-    Width = 571
-    Anchors = [akLeft, akRight, akBottom]
+    Width = 334
+    Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 10
     BorderSpacing.Right = 10
     BevelOuter = bvNone
@@ -349,7 +376,7 @@ object MainForm: TMainForm
     AnchorSideRight.Control = PanelMainBtns
     AnchorSideBottom.Control = PanelInfo
     Left = 0
-    Height = 312
+    Height = 296
     Top = 0
     Width = 895
     Anchors = [akTop, akLeft, akRight, akBottom]

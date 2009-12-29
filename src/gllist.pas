@@ -209,7 +209,7 @@ var
   n1,n2: tlo;
 begin
   SetCoords(n1,x,y,z,0,0,0,0,0,0);
-  Setcoords(n2,0,0,0,0,0,0,0,0,0);
+  SetCoords(n2,0,0,0,0,0,0,0,0,0);
   P:= NewListItem(ltDwell,line,n1,n2);
   if P <> nil then
     ItemList.Add(P);

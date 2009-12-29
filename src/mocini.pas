@@ -251,6 +251,11 @@ begin
   Vars.Metric:= LinearUnitConversion = LINEAR_UNITS_MM;
   Vars.UnitVelStr:= Vars.UnitStr + '/min';
 
+  if Vars.Metric then
+    writeln('Setup is metric')
+  else
+    writeln('Setup are Inches');
+
   // *todo: angularUnitsConversion
 
   GetIniInt('TRAJ','AXES',i,0);

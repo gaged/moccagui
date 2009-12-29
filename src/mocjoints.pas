@@ -33,13 +33,37 @@ type
     procedure SetHomed(const Value: Boolean);
     procedure SizeLabels(ActTop,FontHeight,BorderWidth: integer);
     procedure Update(ShowActual,ShowRelative: Boolean);
+    function GetAxisType: integer;
+    function GetUnits: double;
+    function GetBacklash: double;
+    function GetMinPosLimit: double;
+    function GetMaxPosLimit: double;
+    function GetMinSoftLimit: double;
+    function GetMaxSoftLimit: double;
+    function GetMinHardLimit: double;
+    function GetMaxHardLimit: double;
+    function GetEnabled: boolean;
+    function GetFault: boolean;
+    function GetOverrideLimits: boolean;
    public
     property AxisChar: Char read FAxisChar;
     property AxisNumber: Integer read FAxisNumber;
-    property Homed: Boolean read FHomed write SetHomed;
     property Jogging: Boolean read FJogging write FJogging;
     property Panel: TWinControl read FPanel write FPanel;
     property Top: integer read FTop;
+    property Homed: Boolean read FHomed write SetHomed;
+    property AxisType: integer read GetAxisType;
+    property Units: double read GetUnits;
+    property Backlash: Double read GetBacklash;
+    property MinPosLimit: Double read GetMinPosLimit;
+    property MaxPosLimit: double read GetMaxPosLimit;
+    property MinSoftLimit: double read GetMinSoftLimit;
+    property MaxSoftLimit: Double read GetMaxSoftLimit;
+    property MinHardLimit: Double read GetMinHardLimit;
+    property MaxHardLimit: Double read GetMaxHardLimit;
+    property Enabled: Boolean read GetEnabled;
+    property Fault: Boolean read GetFault;
+    property OverrideLimits: Boolean read GetOverrideLimits;
   end;
   
 type
@@ -77,6 +101,7 @@ type
     property  ShowRelative: Boolean read FShowRelative write FShowRelative;
     property  BorderWidth: integer read FBorderWidth write FBorderWidth;
     property  ShowBox: Boolean write SetShowBox;
+
   end;
   
 var
@@ -142,7 +167,7 @@ end;
 
 procedure TAxis.SizeLabels(ActTop,FontHeight,BorderWidth: integer);
 var
-  X,CellW,W: integer;
+  X,CellW,W,i: integer;
 begin
   CellW:= Round(FontHeight * 0.7);
   X:= (2*CellW) + BorderWidth;
@@ -150,7 +175,9 @@ begin
   FDesLabel.SetBounds(BorderWidth,ActTop,CellW,FontHeight);
   FPosLabel.SetBounds(X,ActTop,W,FontHeight);
   FTop:= ActTop;
-  FullWidth:= X + W;
+  i:= X + W;
+  if FullWidth < i then
+    FullWidth:= i;
 end;
 
 procedure TAxis.SetHomed(const Value: Boolean);
@@ -198,6 +225,62 @@ begin
       else
         FDesLabel.Font.Color:= clRed;
     end;
+end;
+
+function TAxis.GetAxisType: integer;
+begin
+  Result:= AxisAxisType(FAxisNumber);
+end;
+
+function TAxis.GetUnits: double;
+begin
+  Result:= AxisUnits(FAxisNumber);
+end;
+
+function TAxis.GetBacklash: double;
+begin
+  Result:= AxisBacklash(FAxisNumber);
+end;
+
+function TAxis.GetMinPosLimit: double;
+begin
+  Result:= AxisMinPositionLimit(FAxisNumber);
+end;
+
+function TAxis.GetMaxPosLimit: double;
+begin
+  Result:= AxisMaxPositionLimit(FAxisNumber);
+end;
+function TAxis.GetMinSoftLimit: double;
+begin
+  Result:= AxisMinSoftLimit(FAxisNumber);
+end;
+function TAxis.GetMaxSoftLimit: double;
+begin
+  Result:= AxisMaxSoftLimit(FAxisNumber);
+end;
+function TAxis.GetMinHardLimit: double;
+begin
+  Result:= AxisMinHardLimit(FAxisNumber);
+end;
+function TAxis.GetMaxHardLimit: double;
+begin
+  Result:= AxisMaxHardLimit(FAxisNumber);
+end;
+
+function TAxis.GetEnabled: boolean;
+begin
+   Result:= AxisEnabled(FAxisNumber);
+end;
+
+function TAxis.GetFault: boolean;
+begin
+  Result:= AxisFault(FAxisNumber);
+end;
+
+function TAxis.GetOverrideLimits: boolean;
+begin
+  Result:= AxisOverrideLimits(FAxisNumber);
 end;
 
 constructor TJoints.Create(APanel: TPanel);
@@ -409,8 +492,10 @@ begin
       y:= y + BorderWidth + h;
     end;
   FBox.Left:= 0;
-  FBox.Width:= FullWidth + 1; // FPanel.ClientWidth;
+  FBox.Width:= FullWidth; // FPanel.ClientWidth;
   FBox.Height:= h;
+  if FPanel.ClientWidth < FullWidth + 1 then
+    FPanel.ClientWidth:= FullWidth + 1;
 end;
 
 end.
