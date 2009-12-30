@@ -1,4 +1,4 @@
-#Sumary Mocca als EMC Oberfläche
+#summary Mocca als EMC Oberfläche
 
 = mocca as EMC2 GUI =
 
