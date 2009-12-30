@@ -6,7 +6,7 @@ Das Makefile muss den lokalen Gegebenheiten angepasst werden.
 
 Dies betrifft insbesondere die Pfade zu EMCDIR und ggf. zu lazarus.
 
-Zusätzlich kann es erforderlich sein, die Include Verzeichnisse zu erweitern, ein guter Ansatz ist folgende konfiguration:
+Zusätzlich kann es erforderlich sein, die Include Verzeichnisse zu erweitern, ein guter Ansatz ist folgende Konfiguration (Pfade ggf. anpassen):
 
 {{{
 INCLUDES = -I$(EMCDIR)/include
@@ -32,7 +32,7 @@ INCLUDES += -I$(EMCDIR)/src/libnml/cms
 INCLUDES += -I$(EMCDIR)/src/libnml/rcs
 }}}
 
-Sollte es beim Start von Mocca zu einem X-Server Fehler kommen, so iust im Makefile die Zeile 
+Sollte es beim Start von Mocca zu einem X-Server Fehler kommen, so ist im Makefile die Zeile 
 
 WM=gtk2
 
@@ -40,4 +40,4 @@ durch
 
 WM=gtk
 
-zu ersetzen und neu zu kompilieren. Ggf. müssen noch einige Libraries nachinstlliert werden, siehe Wiki Lazarus installieren.
+zu ersetzen und neu zu kompilieren. Ggf. müssen noch einige Libraries nachinstalliert werden, siehe Wiki Lazarus installieren.
