@@ -1,14 +1,21 @@
-#summary mocca als EMC2 Oberfläche
-
-= Introduction =
+= mocca as EMC2 GUI =
 
 Using mocca as a GUI for EMC2:
 
-1.) Get mocca compiled (see wiki comiling mocca)
-2.) Add a symbilic link in (YOURPATHTOEMC)/bin: ln -s /home/yourname/mocca/bin/mocca mocca
-3.) make mocca executeable
-3.) edit your config- file
-4.) set DISPLAY = mocca in your config- file
-5.) start emc using the ini- file mentioned above 
+ # Get mocca compiled (see wiki comiling mocca)
+ # Add a symbilic link in (YOURPATHTOEMC)/bin: ln -s /home/yourname/mocca/bin/mocca mocca
+ # make mocca executeable
+ # edit your config- file
+ # set DISPLAY = mocca in your config- file
+ # start emc using the ini- file mentioned above 
 
-= Details =
+
+= mocca als EMC2 Oberfläche =
+
+mocca als Grafikfrontend für EMC2 einstellen:
+
+ # Mocca gemäß Wiki kompilieren
+ # Einen symbolischen Link in (DeinPfadZuEMC)/bin einfügen: ln -s /home/yourname/mocca/bin/mocca mocca  (Meist ist dies /usr/bin)
+ # Mocca ausführbar machen
+ # Die Ini Datei von der Maschine bearbeiten DISPLAY = mocca 
+ # EMC starten, mocca wird geladen 
