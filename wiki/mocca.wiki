@@ -2,4 +2,42 @@
 
 = makefile =
 
+Das Makefile muss den lokalen Gegebenheiten angepasst werden.
 
+Dies betrifft insbesondere die Pfade zu EMCDIR und ggf. zu lazarus.
+
+Zusätzlich kann es erforderlich sein, die Include Verzeichnisse zu erweitern, ein guter Ansatz ist folgende konfiguration:
+
+{{{
+INCLUDES = -I$(EMCDIR)/include
+INCLUDES += -I$(EMCDIR)/src
+INCLUDES += -I$(EMCDIR)/lib
+INCLUDES += -I$(EMCDIR)/bin
+INCLUDES += -I$(EMCDIR)/src/emc/ini
+INCLUDES += -I/usr/lib
+INCLUDES += -I/lib
+
+INCLUDES += -I$(EMCDIR)/src/emc/iotask
+INCLUDES += -I$(EMCDIR)/src/emc/kinematics
+INCLUDES += -I$(EMCDIR)/src/emc/motion
+INCLUDES += -I$(EMCDIR)/src/emc/nml_intf
+INCLUDES += -I$(EMCDIR)/src/emc/usr_intf
+INCLUDES += -I$(EMCDIR)/src/emc/rs274ngc
+INCLUDES += -I$(EMCDIR)/src/emc/task
+INCLUDES += -I$(EMCDIR)/src/libnml/posemath
+INCLUDES += -I$(EMCDIR)/src/libnml/inifile
+INCLUDES += -I$(EMCDIR)/src/libnml/os_intf
+INCLUDES += -I$(EMCDIR)/src/libnml/nml
+INCLUDES += -I$(EMCDIR)/src/libnml/cms
+INCLUDES += -I$(EMCDIR)/src/libnml/rcs
+}}}
+
+Sollte es beim Start von Mocca zu einem X-Server Fehler kommen, so iust im Makefile die Zeile 
+
+WM=gtk2
+
+durch
+
+WM=gtk
+
+zu ersetzen und neu zu kompilieren. Ggf. müssen noch einige Libraries nachinstlliert werden, siehe Wiki Lazarus installieren.
