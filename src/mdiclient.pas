@@ -15,8 +15,10 @@ type
     MDIEdit: TEdit;
     LabelCaption: TLabel;
     MDIHistListBox: TListBox;
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MDIHistListBoxClick(Sender: TObject);
   private
@@ -34,6 +36,9 @@ type
 var
   clMdi: TMDIClientForm;
 
+const
+  MDI_HIST_FILENAME = 'mocmdi.txt';
+
 implementation
 
 uses
@@ -43,6 +48,16 @@ uses
 procedure TMDIClientForm.FormCreate(Sender: TObject);
 begin
   Self.Tag:= TASKMODEMDI;
+  try
+    MDIHistListBox.Items.LoadFromFile(Vars.IniPath + MDI_HIST_FILENAME);
+  except
+    writeln('could not open: ' + Vars.IniPath + MDI_HIST_FILENAME);
+  end;
+end;
+
+procedure TMDIClientForm.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
+begin
 end;
 
 function TMDIClientForm.HandleCommand(Cmd: integer): Boolean;
@@ -89,6 +104,11 @@ begin
         if not Self.HandleCommand(Tag) then
           Emc.HandleCommand(Tag);
       end;
+end;
+
+procedure TMDIClientForm.FormDestroy(Sender: TObject);
+begin
+  MDIHistListBox.Items.SaveToFile(Vars.IniPath + MDI_HIST_FILENAME);
 end;
 
 procedure TMDIClientForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -187,6 +207,7 @@ begin
     end
   else
     MdiHistListbox.Items.Add(FormatMdi(MDIEdit.text));
+  MdiEdit.Text:= ''; // clear Edittext finally...
 end;
 
 
