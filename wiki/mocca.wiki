@@ -1,6 +1,37 @@
-#summary mocca kompilieren und linken
+#summary mocca kompilieren und installieren
 
-= makefile =
+== Übersicht ==
+
+Voraussetzung:
+Installiertes EMC2 2.3.4, einschließlich -dev
+
+Derzeit wird kein binary package veröffentlicht, da die Änderungsrate noch zu groß ist.
+
+Kompilieren und Installieren erfordert folgende Schritte
+  # Source code herunterladen bzw. aktualisieren
+  # Kompilieren mit makefile
+  # Installieren
+
+== Source code ==
+=== herunterladen ===
+  # `svn checkout http://moccagui.googlecode.com/svn/trunk/ mocca`
+  # `cd mocca`
+=== aktualiseren ===
+Wenn das Verzeichnis mocca durch svn checkout bereits angelegt wurde, kann es mit svn update immer wieder auf den neuesten Stand aktualisiert werden. Mit -r XX auch auf eine beliebige Version XX.
+  # `cd mocca`
+  # `svn update [-r XX]`
+
+== Kompilieren mit makefile ==
+  # Ins src Verzeichnis wechseln: `cd src`
+  # Makefile anpassen, siehe unten
+  # Alles kompilieren und linken: `make all`
+
+== Installieren ==
+ # Mocca ausführbar machen: `chmod a+x ../lib/mocca`
+ # Einen symbolischen Link in /usr/bin einfügen: `sudo ln -s ../lib/mocca /usr/bin/mocca`
+Das letztere muss nur einmalig gemacht werden
+
+== makefile ==
 
 Das Makefile muss den lokalen Gegebenheiten angepasst werden.
 
