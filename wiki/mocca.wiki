@@ -2,8 +2,9 @@
 
 == Übersicht ==
 
-Voraussetzung:
-Installiertes EMC2 2.3.4, einschließlich -dev
+Voraussetzungen:
+  * Installiertes EMC2 2.3.4, einschließlich -dev
+  * Installiertes lazarus, siehe wiki seite "lazarus"
 
 Derzeit wird kein binary package veröffentlicht, da die Änderungsrate noch zu groß ist.
 
@@ -23,7 +24,7 @@ Wenn das Verzeichnis mocca durch svn checkout bereits angelegt wurde, kann es mi
 
 == Kompilieren mit makefile ==
   # Ins src Verzeichnis wechseln: `cd src`
-  # Makefile anpassen, siehe unten
+  # Makefile anpassen, siehe [mocca#makefile]
   # Alles kompilieren und linken: `make all`
 
 == Installieren ==
