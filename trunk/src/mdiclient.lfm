@@ -1,7 +1,7 @@
 object MDIClientForm: TMDIClientForm
-  Left = 208
+  Left = 422
   Height = 300
-  Top = 584
+  Top = 386
   Width = 400
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
@@ -39,7 +39,7 @@ object MDIClientForm: TMDIClientForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = MDIEdit
     Left = 4
-    Height = 223
+    Height = 225
     Top = 42
     Width = 392
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -57,11 +57,11 @@ object MDIClientForm: TMDIClientForm
     AnchorSideBottom.Side = asrBottom
     Left = 4
     Height = 27
-    Top = 269
+    Top = 271
     Width = 392
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Top = 4
-    BorderSpacing.Bottom = 4
+    BorderSpacing.Bottom = 2
     TabOrder = 1
   end
 end

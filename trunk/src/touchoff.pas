@@ -5,28 +5,132 @@ unit touchoff;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs; 
+  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
+  StdCtrls;
 
 type
-  TForm1 = class(TForm)
+
+  { TTouchOffDlg }
+
+  TTouchOffDlg = class(TForm)
+    Button1: TButton;
+    cbCoords: TComboBox;
+    EditV: TEdit;
+    procedure cbCoordsChange(Sender: TObject);
+    procedure EditVKeyPress(Sender: TObject; var Key: char);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
-    { private declarations }
+    FValue: double;
+    FCurrentAxis: Char;
+    FCoord: integer;
   public
-    procedure Init;
+    procedure InitControls;
   end;
 
-var
-  Form1: TForm1; 
+procedure DoTouchOff;
 
 implementation
 
-initialization
-  {$I unit1.lrs}
+uses
+  emc2pas,mocglb,mocjoints,mocemc;
 
-prcoedure TForm1.Init;
+procedure DoTouchOff;
+var
+  Dlg: TTouchOffDlg;
 begin
-  if emcState.tlo_is_along_w:
-    tool_offset_axes:= 'w'
+  Application.CreateForm(TTouchOffDlg,Dlg);
+  if Assigned(Dlg) then
+    begin
+      Dlg.ShowModal;
+      Dlg.Free;
+    end;
+end;
+
+procedure TTouchOffDlg.FormCreate(Sender: TObject);
+begin
+  InitControls;
+end;
+
+procedure TTouchOffDlg.EditVKeyPress(Sender: TObject; var Key: char);
+begin
+  if Ord(Key) = 8 then Exit;
+  if Key = ',' then Key:= '.';
+  if not (Key in ['0'..'9','.','-','+']) then
+    begin
+      Beep;
+      Key:= #0;
+    end;
+end;
+
+procedure TTouchOffDlg.cbCoordsChange(Sender: TObject);
+begin
+
+end;
+
+procedure TTouchOffDlg.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+  if ModalResult = mrOk then
+    begin
+      try
+        CanClose:= False;
+        if EditV.Text <> '' then
+          FValue:= StrToFLoat(EditV.Text);
+        FCoord:= cbCoords.ItemIndex;
+        Emc.TouchOffAxis(FCurrentAxis,FCoord + 1,FValue);
+        CanClose:= True;
+      except
+      end;
+    end;
+end;
+
+procedure TTouchOffDlg.FormShow(Sender: TObject);
+begin
+  EditV.SetFocus;
+end;
+
+procedure TTouchOffDlg.InitControls;
+var
+  ToolAxis: Char;
+  i: integer;
+begin
+  if not Assigned(Joints) then
+    begin
+      writeln('invalid call to joints.');
+      Exit;
+    end;
+  if State.TloAlongW then
+    ToolAxis:= 'W'
+  else
+    ToolAxis:= 'Z';
+
+  FCurrentAxis:= Joints.GetAxisChar(Vars.ActiveAxis);
+
+  if FCurrentAxis = #0 then Exit;
+
+  FValue:= GetAbsPos(Vars.ActiveAxis);
+  EditV.Text:= FloatToStr(FValue);
+
+  cbCoords.Items.Clear;
+  for i:= 0 to CoordSysMax do
+    cbCoords.Items.Add(CoordSys[i]);
+
+  FCoord:= Emc.GetActiveCoordSys;
+  if FCoord < 0 then FCoord:= 0;
+  cbCoords.ItemIndex:= FCoord;
+
+  Caption:= 'Antasten Achse ' + FCurrentAxis;
+end;
+
+initialization
+  {$I touchoff.lrs}
+
+end.
+
+ if State.TloIsAlongW then
+    begin
+      tool_offset_axes:= 'w'
   else
   if emcState.Lathe then
     tool_offset_axes:= 'xz'
@@ -35,44 +139,5 @@ begin
 
   if (emcState.tool_in_spindle = 0) or vars.current_axis.get() not in tool_offset_axes:
             del systems[-1]
-            if defaultsystem.startswith("T"): defaultsystem = systems[0]
-  linear_axis = vars.current_axis.get() in "xyzuvw"
-  if linear_axis:
-    if vars.metric.get(): unit_str = " " + _("mm")
-    else: unit_str = " " + _("in")
-            if lathe and vars.current_axis.get() == "x":
-                if 80 in s.gcodes:
-                    unit_str += _(" radius")
-                else:
-                    unit_str += _(" diameter")
-        else: unit_str = _(u"\xb0")
-        _prompt_float.__init__(self, title, text, default, unit_str)
-        t = self.t
-        f = Frame(t)
-        self.c = c = StringVar(t)
-        c.set(defaultsystem)
-        l = Label(f, text=_("Coordinate System:"))
-        mb = OptionMenu(f, c, *systems)
-        mb.tk.call("size_menubutton_to_entries", mb)
-        mb.configure(takefocus=1)
-        l.pack(side="left")
-        mb.pack(side="left")
-        f.pack(side="top")
-        self.buttons.tkraise()
-        for i in [1,2,3,4,5,6,7,8,9]:
-            t.bind("<Alt-KeyPress-%s>" % i, lambda event, system=systems[i-1]: c.set(system))
-        if not (current_tool is None or vars.current_axis.get() not in tool_offset_axes):
-            t.bind("<Alt-t>", lambda event: c.set(systems[9]))
-            t.bind("<Alt-0>", lambda event: c.set(systems[9]))
 
-    def result(self):
-        if self.u.get(): return self.v.get(), self.c.get()
-        return None, None
-
-def prompt_touchoff(title, text, default, system=None):
-    t = _prompt_touchoff(title, text, default, system)
-    return t.run()
-
-
-end.
 

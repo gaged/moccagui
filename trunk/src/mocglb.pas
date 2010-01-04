@@ -1,6 +1,5 @@
 unit mocglb;
 
-{$mode objfpc}{$H+}
 {$I mocca.inc}
 
 interface
@@ -82,8 +81,8 @@ const
 
   cmUNITS     = 60;
 
-  cmOFFSALL   = 70;
-  cmOFFSACT   = 71;
+  cmZEROALL   = 70;
+  cmZEROACT   = 71;
   cmOFFSDLG   = 72;
 
   cmLIMITS    = 80;
@@ -132,8 +131,8 @@ const
       (T:cmFLOOD;    G:-1;    S:'Kühlung'),
       (T:cmREFACT;   G:-1;    S:'Referenzf.'),
       (T:cmREFALL;   G:-1;    S:'Referenzf. Alle'),
-      (T:cmOFFSACT;  G:-1;    S:'Aktive Null'),
-      (T:cmOFFSALL;  G:-1;    S:'Alle Null'),
+      (T:cmZEROACT;  G:-1;    S:'Antasten...'),
+      (T:cmZEROALL;  G:-1;    S:'Alle Null'),
       (T:cmOFFSDLG;  G:-1;    S:'Koordinaten..'),
       (T:cmTOOLS;    G:-1;    S:'Werkzeuge..'),
       (T:cmLIMITS;   G:-1;    S:'Grenzwerte'),
@@ -305,11 +304,19 @@ type
 
 procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
 procedure SetButtonDown(ACmd: integer; SetDown: Boolean);
+procedure SetButtonText(ACmd: integer; AText: string);
 procedure SetButtonMap(B: PButtonArray; ObjClick: TOnClick);
 
-function setenv(envname,envval: PChar; overwrite: integer): longint; cdecl; external;
+// function setenv(envname,envval: PChar; overwrite: integer): longint; cdecl; external;
+
+procedure RaiseError(const Msg: string);
 
 implementation
+
+procedure RaiseError(const Msg: string);
+begin
+  raise Exception.Create(Msg);
+end;
 
 procedure SetButtonMap(B: PButtonArray; ObjClick: TOnClick);
 var
@@ -358,6 +365,20 @@ begin
           Break;
         end;
 end;
+
+procedure SetButtonText(ACmd: integer; AText: string);
+var
+  i: integer;
+begin
+  for i:= 0 to NumTotalButtons - 1 do
+    if Assigned(MocBtns[i]) then
+      if MocBtns[i].Tag = ACmd then
+        begin
+          MocBtns[i].Caption:= AText;
+          Break;
+        end;
+end;
+
 
 initialization
 

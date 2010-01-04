@@ -1,20 +1,28 @@
 unit glview;
 
-{$mode objfpc}{$H+}
+{$I mocca.inc}
 
 interface
 
 uses
-  Classes, Controls, OpenGLContext, SysUtils,
-  gllist,gl,glu;
+  Classes, Controls, SysUtils,
+  gllist,gl,glu,
+  {$IFNDEF OWNGL}
+  OpenGlContext;
+  {$ELSE}
+  glcontext;
+  {$ENDIF}
 
 type
   TGlVector3 = array[0..2] of glDouble;
   
 type
   TGlView = class
-    constructor Create(AOpenGlControl: TOpenGlControl);
-    destructor Destroy;
+    constructor Create(AOgl:
+      {$IFDEF OWNGL}TGlControl
+      {$ELSE}TOpenGlControl
+      {$ENDIF});
+    destructor Destroy; override;
     procedure Paint(Sender: TObject);
     procedure Resize(Sender: TObject);
     procedure MouseWheel(Sender: TObject; Shift: TShiftState;
@@ -51,22 +59,30 @@ type
     LimH: double;
     LimD: double;
 
+    {$IFNDEF OWNGL}
     ogl: TOpenGlControl;
+    {$ELSE}
+    ogl: TGlControl;
+    Parent: TWinControl;
+    {$ENDIF}
 
     AreaInitialized: Boolean;
 
     L, ML, DL: TExtents;  // L= limits  ML= machine limits  DL= drawing limits
 
-    ConeL: integer;
-    LimitsL: integer;
-    CoordsL: integer;
-    ListL: integer;
+    ConeL: gluInt;
+    LimitsL: gluInt;
+    CoordsL: gluInt;
+    ListL: gluInt;
 
     MouseX: integer;
     MouseY: integer;
     Moving: Boolean;
 
     Mode: integer;
+
+    ToolRad: double;
+    ToolLen: double;
 
   public
     procedure GetLimits(var E: TExtents);
@@ -80,6 +96,7 @@ type
     procedure RotateZ(Angle: integer);
     procedure RotateX(Angle: integer);
     procedure ViewMode(AMode: integer);
+    procedure SetTool(ToolNo: integer);
   end;
   
 var
@@ -95,19 +112,28 @@ implementation
 uses
   glCanon;
 
-constructor TGlView.Create(AOpenGlControl: TOpenGlControl);
+ constructor TGlView.Create(AOgl:
+      {$IFDEF OWNGL}TGlControl
+      {$ELSE}TOpenGlControl
+      {$ENDIF});
+
 begin
+  inherited Create;
   AreaInitialized:= False;
   Mode:= 0;
-  ogl:= AOpenGlControl;
-  //ogl.AutoResizeViewport:= False;
-  //ogl.DoubleBuffered:= True;
+  ogl:= AOgl;
   ogl.OnPaint:= @self.Paint;
   ogl.OnResize:= @self.Resize;
   ogl.OnMouseWheel:= @self.MouseWheel;
   ogl.OnMouseDown:= @self.MouseDown;
   ogl.OnMouseMove:= @self.MouseMove;
   ogl.OnMouseUp:= @self.MouseUp;
+  ConeL:= 1;
+  LimitsL:= 2;
+  CoordsL:= 3;
+  ListL:= 4;
+  ToolRad:= 0.2;
+  ToolLen:= 0.5;
 end;
 
 destructor TGlView.Destroy;
@@ -121,6 +147,10 @@ begin
     ogl.OnMouseMove:= nil;
     ogl.OnMouseUp:= nil;
   end;
+  {$IFDEF OWNGL}
+  FreeAndNil(ogl);
+  {$ENDIF}
+  inherited Destroy;
 end;
 
 procedure TglView.RotateZ(Angle: integer);
@@ -145,14 +175,13 @@ procedure TGlView.ViewMode(AMode: integer);
 begin
   if AMode <> Mode then
     begin
-      ResetView;
       Mode:= AMode;
+      ResetView;
       if Mode = 0 then
         begin
-          rotationZ:= -45;
-          rotationX:= 45;
+          rotationX:= -45;
           rotationY:= 0;
-          ResetView;
+          rotationZ:= 0;
         end
       else
       if Mode = 1 then
@@ -168,7 +197,12 @@ begin
           rotationY:= 0;
           rotationZ:= 0;
         end;
-      AreaInitialized:= False;
+      if Mode = 3 then
+        begin
+          rotationX:= 0;
+          rotationY:= -90;
+          rotationZ:= 0;
+        end;
       Invalidate;
     end;
 end;
@@ -185,8 +219,8 @@ end;
 
 procedure TGlView.Pan(dx,dy: integer);
 var
-  V: array[0..3] of glInt;
-  P,M : array[0..15] of glDouble;
+  V: TViewPortArray;// array[0..3] of glInt;
+  P,M : T16DArray; // array[0..15] of glDouble;
   ObjC: TGlVector3;
   Obj: TGlVector3;
   WinX,WinY,WinZ: glDouble;
@@ -228,7 +262,7 @@ begin
       dx:= MouseX - X;
       dy:= MouseY - Y;
       Pan(dx,dy);
-      ogl.Invalidate;
+      Invalidate;
     end;
 end;
 
@@ -280,11 +314,12 @@ begin
   E:= L;
 end;
 
-procedure TglView.Invalidate;
+procedure TGlView.Invalidate;
 begin
   if Assigned(ogl) then
-    if Assigned(MyGlList) then
-      ogl.Invalidate;
+    ogl.Invalidate;
+  //  if Assigned(MyGlList) then
+  //    ogl.Invalidate;
 end;
 
 procedure TGlView.UpdateView;
@@ -358,10 +393,20 @@ begin
   RotationY:= InitialRotY;
   RotationZ:= InitialRotZ;
 
-  if limW < limH then
-    EyeZ:= CenterZ + LimH
+  if Mode = 0 then
+    begin
+      if limW < limH then
+        EyeZ:= (CenterZ + LimH) * 1.2
+      else
+        EyeZ:= (CenterZ + LimW) * 1.2;
+    end
   else
-    EyeZ:= CenterZ + LimW;
+    begin
+      if limW < limH then
+        EyeZ:= CenterZ + Sqr(LimH)
+      else
+        EyeZ:= CenterZ + Sqr(LimW);
+    end;
   AreaInitialized:= False;
 end;
 
@@ -376,10 +421,8 @@ procedure TGlView.MakeList;
 var
   P: PListItem;
 begin
-  //if ListL <> 0 then
-  //glDeleteLists(ListL,1);
-  ListL:= glGenLists(4);
-  glNewList(ListL, GL_COMPILE);
+  glDeleteLists(ListL,1);
+  glNewList(ListL,GL_COMPILE);
   if Assigned(MyGlList) then
     begin
       MyGlList.First;
@@ -442,6 +485,7 @@ begin
        glOrtho(-k,k,-n,n, -1000, 1000);
        glMatrixMode(GL_MODELVIEW);
        glViewport (0,0,ogl.Width,ogl.Height);
+       writeln(FloatToStr(EyeZ));
      end;
 
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -484,27 +528,34 @@ begin
     end;
 end;
 
+procedure TglView.SetTool(ToolNo: integer);
+begin
+  ToolRad:= GetToolDiameter(ToolNo) / 2;
+  ToolLen:= GetToolLength(ToolNo);
+  MakeCone;
+end;
+
 procedure TGlView.MakeCone;
 var
   q: PGLUquadric;
 begin
   q := gluNewQuadric();
-  //if ConeL <> 0 then
-  //  glDeleteLists(ConeL,1);
-  ConeL:= glGenLists(1);
+  glDeleteLists(ConeL,1);
   glNewList(ConeL, GL_COMPILE);
   glColor3f(1,0.4,0.4);
-  gluCylinder(q, 0,0.2,0.5,12,1);
+  gluCylinder(q,0,ToolRad,ToolLen,12,1);
+  glBegin(GL_LINES);
+    glVertex3f(0,0,0);
+    glVertex3f(0,0,ToolLen + 5);
+  glEnd;
   glEndList;
   gluDeleteQuadric(q);
 end;
 
 procedure TGlView.MakeCoords;
 begin
-  //if CoordsL <> 0 then
-  //  glDeleteLists(CoordsL,1);
-  CoordsL:= glGenLists(2);
-  glNewList(CoordsL, GL_COMPILE);
+  glDeleteLists(CoordsL,1);
+  glNewList(CoordsL,GL_COMPILE);
   glBegin(GL_LINES);
     glColor3f(1,0,0);
     glVertex3f(0,0,0);
@@ -529,17 +580,13 @@ const
 var
   W,H,D: double;
 begin
-  //Stippling aktivieren
-  //if LimitsL <> 0 then
-  //  glDeleteLists(LimitsL,1);
+  glDeleteLists(LimitsL,1);
+  glNewList(LimitsL, GL_COMPILE);
   w:= ML.MaxX - ML.MinX;
   h:= ML.MaxY - ML.MinY;
   d:= ML.MaxZ - ML.MinZ;
-
   if (W <> 0) and (H <> 0) and (D <> 0) then
     begin
-      LimitsL:= glGenLists(3);
-      glNewList(LimitsL, GL_COMPILE);
       glEnable(GL_LINE_STIPPLE);
       glLineStipple(10, pattern);
       glBegin(GL_LINE_STRIP);
@@ -564,9 +611,13 @@ begin
         glVertex3f(ML.maxX,ML.maxY,ML.minZ);
       glEnd;
       glDisable(GL_LINE_STIPPLE);
-      glEndList;
-   end;
+    end;
+  glEndList;
 end;
+
+initialization
+
+  MyGlView:= nil;
 
 end.
 

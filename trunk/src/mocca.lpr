@@ -1,7 +1,5 @@
 program mocca;
 
-{$mode delphi}{$H+}
-
 {$I mocca.inc}
 
 uses
@@ -10,19 +8,36 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces,
   Forms,
-  Dialogs,
+  Dialogs, LazOpenGLContext,
   emc2pas,
   SysUtils,
   mocmain,
   mocglb, mocini, jogclient,
   runclient, mdiclient, simclient, editordlg,
-  offsetdlg, tooleditdlg;
+  offsetdlg, tooleditdlg, touchoff,
+  ctypes;
+
+const
+  __LC_CTYPE    = 0;
+  __LC_NUMERIC  = 1;
+  __LC_TIME     = 2;
+  __LC_COLLATE  = 3;
+  __LC_MONETARY = 4;
+  __LC_MESSAGES = 5;
+  __LC_ALL      = 6;
+
+Const
+  clib = 'c';
+
+function setlocale(category: cint; locale: pchar): pchar; cdecl; external clib name 'setlocale';
+// function nl_langinfo(__item: cint):Pchar; cdecl; external clib name 'nl_langinfo';
   
 function InitEmc: Boolean;
 var
   s: string;
 begin
   Result:= False;
+  SetLocale(__LC_NUMERIC,PChar('C'));
   if (ParamCount < 2) then
     begin
       writeln('Error starting mocca, check params.');
@@ -51,10 +66,8 @@ begin
 end;
 
 begin
-  write('Setting LANG: en_EN ...');
-  if setenv(PChar('LANG'),PChar('en_us.utf-8'),1) = 0 then
-    writeln('Ok') else writeln('Failed');
-  Writeln ('LANG=',getenvironmentvariable('LANG'));
+  writeln('starting mocca...');
+  Set8087CW($133F);
   decimalseparator:='.';
   if not InitEmc then
     Halt(1);

@@ -1,6 +1,5 @@
 unit jogclient;
 
-{$mode objfpc}{$H+}
 {$I mocca.inc}
 
 interface
@@ -38,6 +37,7 @@ type
     OldSpDir: integer;
     OldSpVel: double;
     OldSpORide: integer;
+    OldMachineOn: Boolean;
   public
     procedure ActivateSelf;
     procedure UpdateSelf;
@@ -57,18 +57,11 @@ implementation
 uses
   buttons,mocemc,
   mocglb,mocjoints,
-  emc2pas,offsetdlg,tooleditdlg;
-
+  emc2pas,runclient;
 
 procedure TJogClientForm.HandleCommand(Cmd: integer);
 begin
-  case Cmd of
-    //cmLIMITS: Emc.OverrideLimits;
-    cmOFFSDLG: EditOffsets;
-    cmTOOLS: EditTools;
-  else
-    Emc.HandleCommand(Cmd);
-  end;
+  Emc.HandleCommand(Cmd);
 end;
 
 procedure TJogClientForm.ActivateSelf;
@@ -84,12 +77,32 @@ end;
 procedure TJogClientForm.UpdateSelf;
 var
   i: integer;
+  s: string;
 begin
-  {if ORideLimits <> State.ORideLimits then
+
+  if OldMachineOn <> State.Machine then
     begin
-      SetButtonDown(cmLIMITS,ORideLimits);
+      OldMachineOn:= State.Machine;
+      SetButtonEnabled(cmSPMINUS,State.Machine);
+      SetButtonEnabled(cmSPCW,State.Machine);
+      SetButtonEnabled(cmSPCCW,State.Machine);
+      SetButtonEnabled(cmSPPLUS,State.Machine);
+      SetButtonEnabled(cmFLOOD,State.Machine);
+      SetButtonEnabled(cmREFACT,State.Machine);
+      SetButtonEnabled(cmREFALL,State.Machine);
+      SetButtonEnabled(cmZEROACT,State.Machine);
+      SetButtonEnabled(cmZEROALL,State.Machine);
+      //SetButtonEnabled(cmOFFSDLG;  G:-1;    S:'Koordinaten..'),
+      //SetButtonEnabled(cmTOOLS;    G:-1;    S:'Werkzeuge..'),
+      //SetButtonEnabled(cmLIMITS;   G:-1;    S:'Grenzwerte'),
+      //SetButtonEnabled(cmUNITS;    G:-1;    S:'mm/inch'),
+    end;
+
+  if OldORideLimits <> State.ORideLimits then
+    begin
+      SetButtonDown(cmLIMITS,State.ORideLimits);
       OldORideLimits:= State.ORideLimits;
-    end;}
+    end;
 
   if OldSpDir <> State.SpDir then
     begin
@@ -97,6 +110,7 @@ begin
       SetButtonDown(cmSPCCW,State.SpDir < 0);
       OldSpDir:= State.SpDir;
     end;
+
   if (OldJogVel <> State.ActJogVel) or (State.UnitsChanged) then
     begin
       i:= Round(Emc.ToLinearUnits(State.ActJogVel));
@@ -115,6 +129,9 @@ begin
       LabelSpORide.Caption:= IntToStr(State.SpindleOverride) + '%';
       OldSpORide:= State.SpindleOverride;
     end;
+
+  if State.UnitsChanged then
+    SetButtonText(cmUnits,'Anzeige ' + Vars.UnitStr);
 end;
 
 procedure TJogClientForm.MapButtons;
@@ -127,17 +144,16 @@ var
   i: integer;
 begin
   SetButtonDown(cmJOG,True);
-  // SetButtonDown(cmLIMITS,emcState.ORideLimits);
   SetButtonEnabled(cmREFALL,Vars.HomingOrderDefined);
-  { gtk scrollbars need a pagesize of 1!}
   sbJogVel.SetParams(State.ActJogVel,0,State.MaxJogVel,1);
   rgJogInc.Items.Clear;
   for i:= 0 to Vars.JogIncMax do
     rgJogInc.Items.Add(Vars.JogIncrements[i].Text);
   rgJogInc.ItemIndex:= 0;
   Vars.JogContinous:= True;
-  OldORideLimits:= False;
-  OldSpDir:= State.SpDir + 1;
+  OldORideLimits:= not State.ORideLimits;
+  OldMachineOn:= not State.Machine;
+  OldSpDir:= State.SpDir - 1;
   OldJogVel:= -1;
   OldSpVel:= -1;
   OldSpORide:= -1;

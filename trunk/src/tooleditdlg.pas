@@ -1,6 +1,6 @@
 unit tooleditdlg;
 
-{$mode objfpc}{$H+}
+{$I mocca.inc}
 
 interface
 

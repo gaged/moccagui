@@ -1,6 +1,5 @@
 unit mocmain;
 
-{$mode objfpc}
 {$I mocca.inc}
 
 interface
@@ -16,23 +15,22 @@ type
 
   TMainForm = class(TForm)
     ImageList: TImageList;
-    LabelCUnits: TLabel;
-    LabelUnits: TLabel;
-    LabelTool: TLabel;
     LabelFText: TLabel;
-    LabelMaxVel: TLabel;
-    LabelFWords: TLabel;
-    LabelSWords: TLabel;
-    LabelVText: TLabel;
-    LabelGCodes: TLabel;
+    LabelF: TLabel;
     LabelMCodes: TLabel;
+    LabelGCodes: TLabel;
+    LabelMaxVel: TLabel;
+    LabelS: TLabel;
+    LabelTool: TLabel;
+    LabelUnits: TLabel;
+    LabelVText: TLabel;
     LabelFeed: TLabel;
     lbMessages: TListBox;
+    PanelInf: TPanel;
     PanelMaster: TPanel;
     PanelDRO: TPanel;
     PanelSoftBtns: TPanel;
     PanelMainBtns: TPanel;
-    PanelInfo: TPanel;
     PanelBars: TPanel;
     rgOrigin: TRadioGroup;
     rgCoords: TRadioGroup;
@@ -66,7 +64,6 @@ type
     OldFeed: integer;
     OldMaxVel: integer;
     OldTool: integer;
-    // NewMaxVel: integer;
 
     procedure InitPanels;
     procedure InitButtons;
@@ -87,7 +84,7 @@ implementation
 { TMainForm }
 
 uses
-  emc2pas,mocemc,glCanon;
+  emc2pas,mocemc,glView;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -117,6 +114,8 @@ end;
 procedure TMainForm.UpdateState;
 var
   i: integer;
+  d,l,Scale: double;
+  UpdateMsg: Boolean;
 begin
   if EMC.UpdateState then  // returns true if the taskmode changed
     TaskModeChanged;  // mainform.taskmodechanged
@@ -124,34 +123,38 @@ begin
   if LastError <> '' then
     begin
       lbMessages.Items.Add(LastError);
+      UpdateMsg:= True;
       LastError:= '';
     end;
 
   if ErrorStr[0] <> #0 then
     begin
       lbMessages.Items.Add(PChar(ErrorStr));
+      UpdateMsg:= True;
       ErrorStr[0]:= #0;
     end;
 
   UpdateButtons;  // Update the Buttons;
   Joints.Update;  // update the joints
 
-  LabelGCodes.Caption:= PChar(ACTIVEGCODES);
-  LabelMCodes.Caption:= PChar(ACTIVEMCODES);
-  LabelFWords.Caption:= PChar(ACTIVEFWORDS);
-  LabelSWords.Caption:= PChar(ACTIVESWORDS);
+  LabelGCodes.Caption:= TrimLeft(PChar(ACTIVEGCODES));
+  LabelMCodes.Caption:= TrimLeft(PChar(ACTIVEMCODES));
+  LabelF.Caption:= TrimLeft(PChar(ACTIVEFWORDS));
+  LabelS.Caption:= TrimLeft(PChar(ACTIVESWORDS));
 
   clSim.UpdateSelf;
 
   if OperatorTextStr[0] <> #0 then
     begin
       lbMessages.Items.Add(PChar(OperatorTextStr));
+      UpdateMsg:= True;
       OperatorTextStr[0]:= #0;
     end;
 
   if OperatorDisplayStr[0] <> #0 then
     begin
       lbMessages.Items.Add(PChar(OperatorDisplayStr));
+      UpdateMsg:= True;
       OperatorDisplayStr[0]:= #0;
     end;
 
@@ -167,9 +170,9 @@ begin
     begin
       OldMaxVel:= 0;
       if LinearUnitConversion = linear_units_mm then
-        LabelUnits.Caption:= 'mm'
+        LabelUnits.Caption:= 'Einheiten: mm'
       else
-        LabelUnits.Caption:= 'Inch';
+        LabelUnits.Caption:= 'Einheiten: Inch';
       State.UnitsChanged:= False;
     end;
 
@@ -189,9 +192,29 @@ begin
   if OldTool <> State.CurrentTool then
     begin
       OldTool:= State.CurrentTool;
-      LabelTool.Caption:= 'Werkzeug: ' + IntToStr(OldTool);
+      if Vars.Metric then Scale:= 1 else Scale:= 25.4;
+      if (OldTool < 0) or (OldTool > CANON_TOOL_MAX) then
+        begin
+          d:= 0;
+          l:= 0;
+        end
+      else
+        begin
+          d:= Tools[OldTool].diameter / Scale;
+          l:= Tools[OldTool].zoffset / Scale;
+        end;
+      LabelTool.Caption:= Format('%s %d %s %n %s %n',
+        ['Tool: ',OldTool,' Dia: ',d,' Z: ',l]);
+      if Assigned(MyGlView) then
+        MyGlView.SetTool(State.CurrentTool);
     end;
 
+    if UpdateMsg then
+      begin
+        lbMessages.ItemIndex:= lbMessages.Items.Count - 1;
+        lbMessages.MakeCurrentVisible;
+        UpdateMsg:= False;
+      end;
  end;
 
 procedure TMainForm.InitPanels;  // init the panels, clients, joints
@@ -199,19 +222,13 @@ var
   h: integer;
 begin
   PanelDro.Font.Size:= DroFontSize; // from mocglb.pas
-
   Joints:= TJoints.Create(PanelDRO);  // create the joints here
+  if not Assigned(Joints) then
+    RaiseError('joints not initialized.');
   Joints.CreateJoints(Vars.CoordNames,Vars.NumAxes);  // setup joints
-
-  if Assigned(Joints) then
-    begin
-      h:= (Joints.BorderWidth + Abs(PanelDro.Font.Height)); // size the joints
-      // PanelDro.ClientHeight:= h * emcVars.NumAxes;   // size the dro panel
-      Joints.ShowActual:= Vars.ShowActual;
-      Joints.ShowRelative:= Vars.ShowRelative;
-    end
-  else
-    raise Exception.Create('error creating joints');
+  h:= (Joints.BorderWidth + Abs(PanelDro.Font.Height)); // size the joints
+  Joints.ShowActual:= Vars.ShowActual;
+  Joints.ShowRelative:= Vars.ShowRelative;
 
   with Vars,State do  // setup mainforms controls
     begin
@@ -219,7 +236,6 @@ begin
       sbFeed.Min:= 1;
       sbFeed.Max:= MaxFeedOverride;
       sbFeed.Position:= ActFeed;
-      // LabelFeed.Caption:= IntToStr(ActFeed) + '%';
       sbMaxVel.Min:= 0;
       sbMaxVel.Max:= MaxVel;
       sbMaxVel.Position:= ActVel;
@@ -237,7 +253,6 @@ begin
   OldFeed:= 0;
   OldTool:= -1;
   State.UnitsChanged:= True;
-
 end;
 
 procedure TMainForm.InitButtons; // This creates the buttons used by mocca
@@ -248,6 +263,8 @@ begin
   for i:= 0 to NumTotalButtons - 1 do  // create the buttons
     begin
       S:= TSpeedButton.Create(self);
+      if not Assigned(S) then
+        raiseError('Error creating buttons');
       if i < NumSideButtons then
         S.Parent:= PanelMainBtns
       else
@@ -274,20 +291,30 @@ begin
   GlobalImageList:= Self.ImageList;  // assign the imagelist to the global imagelist
 
   Emc:= TEmc.Create;
+  if not Assigned(Emc) then
+    RaiseError('Cannot create the emc-class');
 
   clJog:= TJogClientForm.Create(self); // create the client forms
+  if not Assigned(clJog) then
+    RaiseError('Error create class "jogclient"');
   clJog.Parent:= PanelMaster;
   clJog.Visible:= False;
 
   clMDI:= TMDIClientForm.Create(self);
+  if not Assigned(clMDI) then
+    RaiseError('Error create class "mdiclient"');
   clMDI.Parent:= PanelMaster;
   clMDI.Visible:= False;
 
   clRun:= TRunClientForm.Create(self);
+  if not Assigned(clRun) then
+    RaiseError('Error create class "runclient"');
   clRun.Parent:= PanelMaster;
   clRun.Visible:= False;
 
   clSim:= TSimClientForm.Create(self);
+  if not Assigned(clSim) then
+    RaiseError('Error create class "simclient"');
   clSim.Parent:= PanelMaster;
   clSim.Visible:= False;
 
@@ -300,8 +327,11 @@ begin
   Timer.Enabled:= True;
   UpdateLock:= False;
 
+  try
   Emc.LoadTools;
-
+  except
+    LastError:= 'Could not load Toolfile';
+  end;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -310,14 +340,14 @@ var
 begin
   UpdateLock:= True;  // prevent from updates during destroy
   Timer.Enabled:= False;
-  if Assigned(clJog) then clJog.Free;
-  if Assigned(clMDI) then clMDI.Free;
-  if Assigned(clRun) then clRun.Free;
-  if Assigned(clSim) then clSim.Free;
+  if Assigned(clJog) then FreeAndNil(clJog);
+  if Assigned(clMDI) then FreeAndNil(clMDI);
+  if Assigned(clRun) then FreeAndNil(clRun);
+  if Assigned(clSim) then FreeAndNil(clSim);
   for i:= 0 to NumTotalButtons - 1 do
-    if Assigned(MocBtns[i]) then MocBtns[i].Free;
-  if Assigned(EMC) then Emc.Free;
-  if Assigned(Joints) then Joints.Free;
+    if Assigned(MocBtns[i]) then FreeAndNil(MocBtns[i]);
+  if Assigned(EMC) then FreeAndNil(Emc);
+  if Assigned(Joints) then FreeAndNil(Joints);
   GlobalImageList:= nil;
 end;
 
@@ -355,7 +385,8 @@ end;
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if (State.TaskMode = TaskModeManual) then
-    clJog.FormKeyUp(nil,Key,Shift)
+    if Assigned(clJog) then
+      clJog.FormKeyUp(nil,Key,Shift)
 end;
 
 procedure TMainForm.OnTimer(Sender: TObject);
@@ -369,12 +400,15 @@ var
 begin
   w:= PanelMaster.ClientWidth div 2;
   h:= PanelMaster.ClientHeight;
-  clJog.SetBounds(0,0,w,h);
-  clMDI.SetBounds(0,0,w,h);
-  clRun.SetBounds(0,0,w,h);
-  clSim.SetBounds(w,0,w,h);
-  if not clSim.Visible then
-    clSim.Visible:= True;
+  if Assigned(clJog) then clJog.SetBounds(0,0,w,h);
+  if Assigned(clMDI) then clMDI.SetBounds(0,0,w,h);
+  if Assigned(clRun) then clRun.SetBounds(0,0,w,h);
+  if Assigned(clSim) then
+    begin
+      clSim.SetBounds(w,0,w,h);
+      if not clSim.Visible then
+        clSim.Visible:= True;
+    end;
 end;
 
 procedure TMainForm.PanelSoftBtnsResize(Sender: TObject);
@@ -388,7 +422,7 @@ begin
   x:= 0;
   dx:= trunc(w);
   for i:= 0 to NumSoftButtons - 1 do
-    if MocBtns[i+NumSideButtons] <> nil then
+    if Assigned(MocBtns[i+NumSideButtons]) then
       begin
         x:= round(w * i);
         MocBtns[i+NumSideButtons].SetBounds(x,0,dx,GlobalButtonSize);
@@ -409,7 +443,7 @@ begin
   if y < 0 then y:= 0;
   w:= PanelMainBtns.ClientWidth;
   for i:= 0 to NumSideButtons - 1 do
-    if MocBtns[i] <> nil then
+    if Assigned(MocBtns[i]) then
       begin
         MocBtns[i].SetBounds(0,y,w,GlobalButtonSize);
         y:= y + h;
@@ -424,12 +458,14 @@ end;
 
 procedure TMainForm.rgCoordsClick(Sender: TObject);
 begin
-  Joints.ShowActual:= rgCoords.ItemIndex = 0;
+  if Assigned(Joints) then
+    Joints.ShowActual:= rgCoords.ItemIndex = 0;
 end;
 
 procedure TMainForm.rgOriginClick(Sender: TObject);
 begin
-  Joints.ShowRelative:= rgOrigin.ItemIndex = 0;
+  if Assigned(Joints) then
+    Joints.ShowRelative:= rgOrigin.ItemIndex = 0;
 end;
 
 procedure TMainForm.sbFeedChange(Sender: TObject);

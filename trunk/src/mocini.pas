@@ -1,8 +1,7 @@
 unit mocini;
 
-{$mode objfpc}
-{$I mocca.inc}
 
+{$I mocca.inc}
 
 interface
 

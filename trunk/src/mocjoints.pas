@@ -87,6 +87,7 @@ type
     procedure AddAxis(Id: Integer; Des: Char);
     procedure CreateJoints(CoordNames: string; NumAxes: Integer);
     function  GetAxis(Index: integer): TAxis;
+    function  GetAxisChar(Index: integer): Char;
     procedure Update;
     procedure CheckJogExit;
     procedure DoResize(Sender: TObject);
@@ -444,6 +445,15 @@ begin
     Result:= nil
   else
     Result:= FAxes[index];
+end;
+
+function TJoints.GetAxisChar(Index: integer): Char;
+begin
+  Result:= #0;
+  if (index < 0) or (index > FNumAxes - 1) then
+    Exit;
+  if Assigned(FAxes[index]) then
+    Result:= GetAxis(Index).AxisChar;
 end;
 
 procedure TJoints.CreateJoints(CoordNames: string; NumAxes: integer);

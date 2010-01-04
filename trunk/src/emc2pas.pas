@@ -6,10 +6,9 @@ unit emc2pas;
 {$linklib libnml.so}
 {$linklib c}
 
-
-
 interface
 
+{$mode objfpc}
 {$H+}
 
 const
