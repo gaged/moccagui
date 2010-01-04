@@ -1,8 +1,8 @@
 unit mocstatusdlg;
 
-{$mode objfpc}{$H+}
-
 interface
+
+{$I mocca.inc}
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,

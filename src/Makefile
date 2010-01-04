@@ -37,7 +37,7 @@ glcanon.o: glcanon.pas
 	$(COMPILEPAS) -FU../lib -o../lib/glcanon.o glcanon.pas
 
 mocca.o: mocca.lpr
-	$(COMPILEMOC) $(LCL) -Fl$(LIBDIR) -Fl../lib -Fu../lib -FU../lib -o../lib/mocca mocca.lpr
+	$(COMPILEMOC) $(LCL) -Fl$(LIBDIR) -Fl../lib -Fu../lib -Fu../opengl -FU../lib -o../lib/mocca mocca.lpr
 	
 all: simcanon.o emcpas.o mocca.o
 

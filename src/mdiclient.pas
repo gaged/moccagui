@@ -1,6 +1,6 @@
 unit mdiclient;
 
-{$mode objfpc}{$H+}
+{$I mocca.inc}
 
 interface
 

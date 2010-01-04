@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 226
+  Left = 223
   Height = 721
-  Top = 195
+  Top = 193
   Width = 963
   HorzScrollBar.Page = 985
   VertScrollBar.Page = 792
@@ -10,6 +10,7 @@ object MainForm: TMainForm
   ClientHeight = 721
   ClientWidth = 963
   Color = clForm
+  Font.Height = -13
   KeyPreview = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -19,6 +20,7 @@ object MainForm: TMainForm
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '0.9.28.2'
+  WindowState = wsMaximized
   object PanelBars: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = PanelDRO
@@ -206,117 +208,6 @@ object MainForm: TMainForm
       TabOrder = 3
     end
   end
-  object PanelInfo: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = PanelMainBtns
-    AnchorSideBottom.Control = PanelBars
-    Left = 0
-    Height = 48
-    Top = 296
-    Width = 895
-    Anchors = [akLeft, akRight, akBottom]
-    BevelInner = bvLowered
-    ClientHeight = 48
-    ClientWidth = 895
-    FullRepaint = False
-    TabOrder = 1
-    object LabelMCodes: TLabel
-      AnchorSideLeft.Control = LabelGCodes
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = PanelInfo
-      Left = 95
-      Height = 18
-      Top = 2
-      Width = 86
-      BorderSpacing.Left = 6
-      BorderSpacing.Top = 2
-      Caption = 'LabelMCodes'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-    end
-    object LabelGCodes: TLabel
-      AnchorSideLeft.Control = PanelInfo
-      AnchorSideTop.Control = PanelInfo
-      Left = 4
-      Height = 18
-      Top = 2
-      Width = 85
-      BorderSpacing.Left = 4
-      BorderSpacing.Top = 2
-      Caption = 'LabelGCodes'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-    end
-    object LabelSWords: TLabel
-      AnchorSideLeft.Control = LabelMCodes
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = PanelInfo
-      Left = 187
-      Height = 18
-      Top = 2
-      Width = 78
-      BorderSpacing.Left = 6
-      BorderSpacing.Top = 2
-      Caption = 'LabelOpText'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-    end
-    object LabelFWords: TLabel
-      AnchorSideLeft.Control = LabelSWords
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = PanelInfo
-      Left = 271
-      Height = 18
-      Top = 2
-      Width = 81
-      BorderSpacing.Left = 6
-      BorderSpacing.Top = 2
-      Caption = 'LabelOpDisp'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-    end
-    object LabelTool: TLabel
-      AnchorSideLeft.Control = PanelInfo
-      AnchorSideTop.Control = LabelGCodes
-      AnchorSideTop.Side = asrBottom
-      Left = 4
-      Height = 18
-      Top = 22
-      Width = 59
-      BorderSpacing.Left = 4
-      BorderSpacing.Top = 2
-      Caption = 'LabelTool'
-      ParentColor = False
-    end
-    object LabelUnits: TLabel
-      AnchorSideLeft.Control = LabelTool
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabelTool
-      Left = 67
-      Height = 18
-      Top = 22
-      Width = 68
-      BorderSpacing.Left = 4
-      Caption = 'LabelUnits'
-      ParentColor = False
-    end
-    object LabelCUnits: TLabel
-      Left = 188
-      Height = 18
-      Top = 24
-      Width = 77
-      Caption = 'LabelCUnits'
-      ParentColor = False
-    end
-  end
   object PanelMainBtns: TPanel
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
@@ -329,7 +220,7 @@ object MainForm: TMainForm
     Anchors = [akTop, akRight, akBottom]
     BevelOuter = bvNone
     FullRepaint = False
-    TabOrder = 2
+    TabOrder = 1
     OnResize = PanelMainBtnsResize
   end
   object PanelSoftBtns: TPanel
@@ -345,20 +236,21 @@ object MainForm: TMainForm
     Anchors = [akLeft, akRight, akBottom]
     BevelOuter = bvNone
     FullRepaint = False
-    TabOrder = 3
+    TabOrder = 2
     OnResize = PanelSoftBtnsResize
   end
   object PanelDRO: TPanel
     AnchorSideLeft.Control = PanelBars
     AnchorSideLeft.Side = asrBottom
     AnchorSideBottom.Control = lbMessages
-    Left = 314
+    Left = 316
     Height = 232
     Top = 344
     Width = 334
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 10
     BorderSpacing.Right = 10
+    BorderSpacing.Around = 2
     BevelOuter = bvNone
     Font.Color = clBlue
     Font.Height = -43
@@ -367,22 +259,24 @@ object MainForm: TMainForm
     Font.Style = [fsBold]
     FullRepaint = False
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 3
     OnResize = PanelDROResize
   end
   object PanelMaster: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = PanelMainBtns
-    AnchorSideBottom.Control = PanelInfo
+    AnchorSideBottom.Control = PanelBars
     Left = 0
-    Height = 296
+    Height = 344
     Top = 0
     Width = 895
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvNone
+    Font.Height = -13
     FullRepaint = False
-    TabOrder = 5
+    ParentFont = False
+    TabOrder = 4
     OnResize = PanelMasterResize
   end
   object lbMessages: TListBox
@@ -396,13 +290,130 @@ object MainForm: TMainForm
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Around = 4
     ClickOnSelChange = False
+    Color = clWhite
     ExtendedSelect = False
-    IntegralHeight = True
+    Enabled = False
+    Font.Height = -13
+    Font.Style = [fsBold]
     ItemHeight = 0
-    ParentColor = True
-    Style = lbOwnerDrawFixed
-    TabOrder = 6
+    ParentFont = False
+    TabOrder = 5
+    TabStop = False
     TopIndex = -1
+  end
+  object PanelInf: TPanel
+    AnchorSideLeft.Control = PanelDRO
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = PanelDRO
+    AnchorSideRight.Control = PanelMainBtns
+    AnchorSideBottom.Control = lbMessages
+    Left = 662
+    Height = 232
+    Top = 344
+    Width = 233
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BevelOuter = bvNone
+    ClientHeight = 232
+    ClientWidth = 233
+    TabOrder = 6
+    object LabelTool: TLabel
+      AnchorSideLeft.Control = PanelInf
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelInf
+      AnchorSideRight.Side = asrBottom
+      Left = 4
+      Height = 18
+      Top = 8
+      Width = 225
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Around = 4
+      Caption = 'LabelTool'
+      Color = clWhite
+      ParentColor = False
+      Transparent = False
+    end
+    object LabelUnits: TLabel
+      AnchorSideLeft.Control = PanelInf
+      AnchorSideRight.Control = PanelInf
+      AnchorSideRight.Side = asrBottom
+      Left = 4
+      Height = 18
+      Top = 32
+      Width = 225
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Around = 4
+      Caption = 'LabelUnits'
+      Color = clWhite
+      ParentColor = False
+      Transparent = False
+    end
+    object LabelMCodes: TLabel
+      AnchorSideLeft.Control = PanelInf
+      AnchorSideRight.Control = PanelInf
+      AnchorSideRight.Side = asrBottom
+      Left = 4
+      Height = 18
+      Top = 56
+      Width = 225
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Around = 4
+      Caption = 'LabelMCodes'
+      Color = clWhite
+      ParentColor = False
+      Transparent = False
+    end
+    object LabelGCodes: TLabel
+      AnchorSideLeft.Control = PanelInf
+      AnchorSideRight.Control = PanelInf
+      AnchorSideRight.Side = asrBottom
+      Left = 4
+      Height = 56
+      Top = 128
+      Width = 225
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Around = 4
+      Caption = 'LabelGCodes'
+      Color = clWhite
+      ParentColor = False
+      Transparent = False
+      WordWrap = True
+    end
+    object LabelS: TLabel
+      AnchorSideLeft.Control = PanelInf
+      AnchorSideRight.Control = PanelInf
+      AnchorSideRight.Side = asrBottom
+      Left = 4
+      Height = 18
+      Top = 80
+      Width = 225
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Around = 4
+      Caption = 'LabelOpText'
+      Color = clWhite
+      ParentColor = False
+      Transparent = False
+    end
+    object LabelF: TLabel
+      AnchorSideLeft.Control = PanelInf
+      AnchorSideRight.Control = PanelInf
+      AnchorSideRight.Side = asrBottom
+      Left = 4
+      Height = 18
+      Top = 104
+      Width = 225
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Around = 4
+      Caption = 'LabelOpDisp'
+      Color = clWhite
+      ParentColor = False
+      Transparent = False
+    end
   end
   object ImageList: TImageList
     DrawingStyle = dsTransparent

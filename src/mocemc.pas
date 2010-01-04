@@ -1,7 +1,6 @@
 unit mocemc;
 
 {$I mocca.inc}
-{$mode objfpc}{$H+}
 
 interface
 
@@ -15,11 +14,12 @@ type
     function  HandleCommand(Cmd: integer): Boolean;
     function  ForceTaskMode(ToMode: integer): Boolean;
     function  ForceMachineOff: Boolean;
-    function  SetFeedORide(Feed: integer): Boolean;
-    function  SetMaxVel(NewVel: integer): Boolean;
-    function  SetORideLimits(ORide: Boolean): Boolean;
-    function  SetDisplayUnits(UseMetric: Boolean): Boolean;
+    procedure SetFeedORide(Feed: integer);
+    procedure SetMaxVel(NewVel: integer);
+    procedure ORideLimits;
+    procedure SetDisplayUnits(UseMetric: Boolean);
     procedure SetCoordsZero;
+    procedure TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
     procedure TaskStop;
     procedure TaskPauseResume;
     procedure TaskResume;
@@ -29,6 +29,7 @@ type
     procedure Execute(cmd: string);
     procedure ExecuteSilent(cmd: string);
     function  GetActiveCoordSys: integer;
+    function  GetActiveIsInch: Boolean;
     function  GetMaxVelText: string;  // returns MaxVel in value[units]/min;
     function  WaitDone: integer;
     procedure LoadTools;
@@ -40,7 +41,7 @@ var
 implementation
 
 uses
-  mocglb,emc2pas,mocjoints,glcanon;
+  mocglb,emc2pas,mocjoints,glcanon,RunClient,offsetdlg,tooleditdlg,touchoff;
 
 procedure TEmc.LoadTools;
 var
@@ -80,18 +81,9 @@ begin
   Result:= FloatToStr(ConvertLinearUnits(State.ActVel)) + Vars.UnitVelStr
 end;
 
-function TEmc.SetORideLimits(ORide: Boolean): Boolean;
+procedure TEmc.ORideLimits;
 begin
-  Result:= False;
-  if State.ORideLimits <> ORide then
-    begin
-      if ORide then
-        sendOverrideLimits(-1)
-      else
-        sendOverrideLimits(1);
-      State.ORideLimits:= ORide;
-      Result:= True;
-    end;
+  sendOverrideLimits(0)
 end;
 
 procedure TEmc.Execute(cmd: string);
@@ -144,29 +136,59 @@ begin
       end;
 end;
 
+function TEmc.GetActiveIsInch: Boolean;
+begin
+  Result:= Pos('G20',ActiveGCodes) > 0;
+end;
+
 procedure TEmc.SetCoordsZero;
 var
   i: integer;
   S: string;
   PosX,PosY,PosZ: Double;
+  Scale: double;
+  IsInch: Boolean;
 begin
   i:= GetActiveCoordSys;
+  IsInch:= GetActiveIsInch;
+  if IsInch then
+    Scale:= 25.4
+  else
+    Scale:= 1;
+
   if i < 0 then
     begin
       LastError:= 'invalid call too coord system';
       Exit;
     end;
-  PosX:= GetAbsPos(Joints.AxisByChar('X'));
-  PosY:= GetAbsPos(Joints.AxisByChar('Y'));
-  PosZ:= GetAbsPos(Joints.AxisByChar('Z'));
+  PosX:= GetAbsPos(Joints.AxisByChar('X')) / Scale;
+  PosY:= GetAbsPos(Joints.AxisByChar('Y')) / scale;
+  PosZ:= GetAbsPos(Joints.AxisByChar('Z')) / scale;
   if taskTloIsAlongW then
     begin
       // fixme
     end;
-  S:= Format('%s%d%s%n%s%n%s%n',['G10L2P',i+1,'X',PosX,'Y',PosY,'Z',PosZ]);
-  // S:= Format('%s%d%s',['G10 L2 P',i,'X0 Y0 Z0']);
+  S:= Format('%s%d%s%.5f%s%.5f%s%.5f',['G10L2P',i+1,'X',PosX,'Y',PosY,'Z',PosZ]);
   ExecuteSilent(S);
   UpdateError;
+  LastError:= S;
+  if Assigned(clRun) then
+    clRun.UpdatePreview;
+end;
+
+procedure TEmc.TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
+var
+  s: string;
+  IsInch: Boolean;
+  V: Double;
+begin
+  IsInch:= GetActiveIsInch;
+  if IsInch then
+    V:= Value / 25.4
+  else
+    V:= Value;
+  S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,V]);
+  ExecuteSilent(s);
   LastError:= S;
 end;
 
@@ -198,9 +220,8 @@ begin
   Result:= True;
 end;
 
-function TEmc.SetDisplayUnits(UseMetric: Boolean): Boolean;
+procedure TEmc.SetDisplayUnits(UseMetric: Boolean);
 begin
-  Result:= False;
   State.UnitsChanged:= UseMetric <> Vars.Metric;
   if State.UnitsChanged then
     begin
@@ -216,29 +237,24 @@ begin
         end;
       Vars.UnitVelStr:= Vars.UnitStr + '/min';
       Vars.Metric:= UseMetric;
-      Result:= True;
     end;
 end;
 
-function TEmc.SetFeedORide(Feed: integer): Boolean;  // true if Feed changed
+procedure TEmc.SetFeedORide(Feed: integer);
 begin
-  Result:= False;
   if Feed <> State.ActFeed then
     begin
       sendFeedOverride(Feed / 100);
       State.ActFeed:= Feed;
-      Result:= True;
     end;
 end;
 
-function TEmc.SetMaxVel(NewVel: integer): Boolean;  // true if maxvel changed
+procedure TEmc.SetMaxVel(NewVel: integer);
 begin
-  Result:= False;
   if NewVel <> State.ActVel then
     begin
       sendMaxVelocity(State.ActVel / 60);
       State.ActVel:= NewVel;
-      Result:= True;
     end;
 end;
 
@@ -278,6 +294,8 @@ begin
       CurrentTool:= toolInSpindle;
       ToolPrepared:= toolPrepped <> 0;
       ToolOffset:= toolLengthOffset;
+
+      ORideLimits:= AxisOverrideLimits(0);
 
       TloAlongW:=  taskTloIsAlongW;
 
@@ -399,7 +417,21 @@ begin
         sendMistOn;
     cmREFACT: Joints.HomeActive;
     cmREFALL: Joints.HomeAll;
-    cmOFFSALL: SetCoordsZero;
+    cmZEROALL: SetCoordsZero;
+    cmZEROACT:
+      begin
+        DoTouchOff;
+        if Assigned(clRun) then
+          clRun.UpdatePreview;
+      end;
+    cmLIMITS: Emc.ORideLimits;
+    cmOFFSDLG:
+      begin
+        EditOffsets;
+        if Assigned(clRun) then
+          clRun.UpdatePreview;
+      end;
+    cmTOOLS: EditTools;
     cmUNITS: SetDisplayUnits(not Vars.Metric);
   else
     begin

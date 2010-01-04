@@ -1,7 +1,7 @@
 object JogClientForm: TJogClientForm
-  Left = 634
+  Left = 541
   Height = 362
-  Top = 244
+  Top = 260
   Width = 477
   HorzScrollBar.Page = 476
   VertScrollBar.Page = 361

@@ -1,6 +1,6 @@
 unit gllist;
 
-{$mode objfpc}{$H+}
+{$I mocca.inc}
 
 interface
 
@@ -215,6 +215,10 @@ begin
     ItemList.Add(P);
   inc(nDwells);
 end;
+
+initialization
+
+  MyGlList:= nil;
 
 end.
 

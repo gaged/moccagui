@@ -24,6 +24,9 @@ const
   ACTIVE_M_CODES_MAX = 10;
   ACTIVE_SETTINGS_MAX = 3;
 
+  DEFAULT_TOOL_DIA = 0.1;
+  DEFAULT_TOOL_LENGTH = 0.5;
+
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 
 function interpreter_init: longint; cdecl; external;
@@ -36,6 +39,9 @@ function GetGCodeError(code: integer): string;
 
 function ToCanonUnits(Value: Double): Double;
 function ToCanonPos(Value: double; Index: integer): double;
+
+function GetToolDiameter(i: integer): double;
+function GetToolLength(i: integer): double;
 
 function GCodeToStr(i: integer): string;
 function MCodeToStr(i: integer): string;
@@ -150,6 +156,32 @@ begin
   if converterror(Code) <> 0 then
     if savedError[0] <> #0 then
       Result:= PChar(savedError);
+end;
+
+function GetToolDiameter(i: integer): double;
+var
+  d: double;
+begin
+  if (i < 0) or (i > CANON_TOOL_MAX) then
+    d:= DEFAULT_TOOL_DIA
+  else
+    d:= ToCanonUnits(Tools[i].diameter);
+  if d < DEFAULT_TOOL_DIA then
+    d:= DEFAULT_TOOL_DIA;
+  Result:= d;
+end;
+
+function GetToolLength(i: integer): double;
+var
+  d: double;
+begin
+  if (i < 0) or (i > CANON_TOOL_MAX) then
+    d:= DEFAULT_TOOL_LENGTH
+  else
+    d:= ToCanonUnits(Tools[i].zoffset);
+  if d < 0.5 then
+    d:= 0.5;
+  Result:= d;
 end;
 
 procedure InitOffsets;

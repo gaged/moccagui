@@ -1,37 +1,50 @@
 unit simclient;
 
-{$mode objfpc}{$H+}
+{$I mocca.inc}
 
 interface
 
 uses
-  Classes, openglcontext, SysUtils, LResources, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, Buttons, ExtCtrls;
+  Classes, SysUtils, LResources, Forms, Controls, Graphics,
+  Dialogs, StdCtrls, Buttons, ExtCtrls,
+  {$IFNDEF OWNGL}
+  OpenGlContext;
+  {$ELSE}
+  glcontext;
+  {$ENDIF}
 
 type
 
   { TSimClientForm }
 
   TSimClientForm = class(TForm)
-    OpenGLControl: TOpenGLControl;
+    Bevel: TBevel;
     sbH: TScrollBar;
     sbV: TScrollBar;
     BtnP: TSpeedButton;
     BtnX: TSpeedButton;
     BtnY: TSpeedButton;
     BtnZ: TSpeedButton;
+    procedure BevelResize(Sender: TObject);
     procedure BtnPClick(Sender: TObject);
     procedure BtnXClick(Sender: TObject);
     procedure BtnYClick(Sender: TObject);
     procedure BtnZClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GlPanelResize(Sender: TObject);
     procedure sbHChange(Sender: TObject);
     procedure sbVChange(Sender: TObject);
   private
     FShowLivePlot: Boolean;
     FInitialized: Boolean;
+    {$IFNDEF OWNGL}
+    ogl: TOpenGlControl;
+    {$ELSE}
+    ogl: TGlControl;
+    {$ENDIF}
   public
     procedure LoadPreview(FileName,UnitCode,InitCode: string);
     procedure UpdateLimits;
@@ -140,8 +153,26 @@ begin
   E.MinZ:= 0; E.MaxZ:= 10;
   if not Assigned(MyGlList) then
     MyGlList:= TGlList.Create;
+  if not Assigned(MyGlList) then
+    RaiseError('could not create gllist');
+
+  if not Assigned(ogl) then
+    {$IFNDEF OWNGL}
+    ogl:= TOpenGlControl.Create(Self);
+    {$ELSE}
+    ogl:= TGlControl.Create(Self);
+    {$ENDIF}
+
+  if not Assigned(ogl) then
+    RaiseError('could not create opengl-control');
+
+  ogl.Parent:= Self;
+
   if not Assigned(MyGlView) then
-    MyGlView:= TGlView.Create(OpenGlControl);
+    MyGlView:= TGlView.Create(ogl);
+  if not Assigned(MyGlView) then
+    RaiseError('could not create glview');
+
   MyGlView.SetMachineLimits(E);
   MyGlView.ResetView;
   sbV.setParams(InitialRotX,-90,90);
@@ -153,6 +184,12 @@ procedure TSimClientForm.BtnPClick(Sender: TObject);
 begin
   if Assigned(MyGlView) then
     MyGlView.ViewMode(0);
+end;
+
+procedure TSimClientForm.BevelResize(Sender: TObject);
+begin
+ if Assigned(MyGlView) and Assigned(ogl) then
+   MyGlView.SetBounds(Bevel.Left,Bevel.Top,Bevel.Width,Bevel.Height);
 end;
 
 procedure TSimClientForm.BtnXClick(Sender: TObject);
@@ -176,9 +213,13 @@ end;
 procedure TSimClientForm.FormDestroy(Sender: TObject);
 begin
   if Assigned(MyGlView) then
-    MyGlView.Free;
+    FreeAndNil(MyGlView);
   if Assigned(MyGlList) then
-    MyGlList.Free;
+    FreeAndNil(MyGlList);
+end;
+
+procedure TSimClientForm.FormResize(Sender: TObject);
+begin
 end;
 
 procedure TSimClientForm.FormShow(Sender: TObject);
@@ -188,6 +229,10 @@ begin
       UpdateLimits;
       FInitialized:= True;
     end;
+end;
+
+procedure TSimClientForm.GlPanelResize(Sender: TObject);
+begin
 end;
 
 initialization

@@ -1,6 +1,6 @@
 unit runclient;
 
-{$mode objfpc}{$H+}
+{$I mocca.inc}
 
 interface
 
@@ -25,8 +25,8 @@ type
     OldRunning: Boolean;
     OldBlockDel: Boolean;
     OldOptStop: Boolean;
-    OldHasFile: Boolean;
-    HasFile: Boolean;
+    OldIsOpen: Boolean;
+    IsOpen: Boolean;
 
     function  HandleCommand(Cmd: integer): Boolean;
   public
@@ -34,8 +34,7 @@ type
     procedure UpdateSelf;
     procedure InitControls;
     procedure MapButtons;
-    procedure UpdatePreview(FileName: string);
-
+    procedure UpdatePreview;
     procedure OpenFile;
     procedure UpdateLine;
     // vorlauf
@@ -54,7 +53,6 @@ uses
   emc2pas,
   simclient,
   glcanon,gllist;
-
 
 procedure TRunClientForm.SetCodes;
 var
@@ -92,7 +90,7 @@ begin
   OldInterpState:= 0;
   OldActiveLn:= -1;
   OldRunning:= True;
-  HasFile:= False;
+  IsOpen:= False;
 end;
 
 procedure TRunClientForm.GotoLine;
@@ -134,19 +132,22 @@ begin
   end;
 end;
 
-procedure TRunClientForm.UpdatePreview(FileName: string);
+procedure TRunClientForm.UpdatePreview;
 var
   UnitCode,InitCode: string;
   Metric: Boolean;
 begin
-  if Length(FileName) < 1 then Exit;
+  if (Length(Vars.ProgramFile) < 1) or (not IsOpen) then Exit;
   //Metric:= Pos('G21',ActiveGCodes) > 0;
   Metric:= Vars.Metric;
   if Metric then
     UnitCode:= 'G21' else UnitCode:= 'G20';
   InitCode:= '';
-  clSim.ClearPreview;
-  clSim.LoadPreview(FileName,UnitCode,InitCode);
+  if Assigned(clSim) then
+    begin
+      clSim.ClearPreview;
+      clSim.LoadPreview(Vars.ProgramFile,UnitCode,InitCode);
+    end;
 end;
 
 function TRunClientForm.HandleCommand(Cmd: integer): Boolean;
@@ -201,18 +202,17 @@ var
   Running: Boolean;
 begin
 
-    UpdateLine;
+  UpdateLine;
 
-
-  if OldHasFile <> HasFile then
+  if OldIsOpen <> IsOpen then
     begin
-      SetButtonEnabled(cmSTOP,HasFile);
-      SetButtonEnabled(cmSTEP,HasFile);
-      SetButtonEnabled(cmRUN,HasFile);
-      SetButtonEnabled(cmPAUSE,HasFile);
-      SetButtonEnabled(cmRUN,HasFile);
-      SetButtonEnabled(cmRUNLINE,HasFile);
-      OldHasFile:= HasFile;
+      SetButtonEnabled(cmSTOP,IsOpen);
+      SetButtonEnabled(cmSTEP,IsOpen);
+      SetButtonEnabled(cmRUN,IsOpen);
+      SetButtonEnabled(cmPAUSE,IsOpen);
+      SetButtonEnabled(cmRUN,IsOpen);
+      SetButtonEnabled(cmRUNLINE,IsOpen);
+      OldIsOpen:= IsOpen;
     end;
 
   with State do
@@ -235,14 +235,11 @@ begin
           Running:= InterpState <> INTERP_IDLE;
           if not Running then LB.ItemIndex:= -1;
 
-         // set buttons according to the interpreter state
           SetButtonDown(cmSTOP,not Running);
           SetButtonDown(cmPAUSE,InterpState = INTERP_PAUSED);
           SetButtonDown(cmRUN,Running);
-          // LB.Enabled:= not Running;  // looks nice in gtk2
 
-
-        // disable the taskmode- buttons if not idle
+          // disable the taskmode- buttons if not idle
           if OldRunning <> Running then
             begin
               SetButtonEnabled(cmMDI,not Running);
@@ -276,12 +273,11 @@ procedure TRunClientForm.InitControls;
 begin
   OldBlockDel:= State.BlockDel;
   OldRunning:= False;
-  OldHasFile:= not HasFile;
+  OldIsOpen:= not IsOpen;
   SetButtonDown(cmAUTO,True);
   SetButtonDown(cmStop,True);
   SetButtonDown(cmOPTSTOP,State.OptStop);
   SetButtonDown(cmBLOCKDEL,State.BlockDel);
-
 end;
 
 procedure TRunClientForm.OpenFile;
@@ -300,19 +296,23 @@ begin
           if sendProgramOpen(PChar(FileName)) = 0 then
             begin
               Emc.WaitDone;
-              Vars.StartLine:= -1; // verify
               Vars.ProgramFile:= FileName;
-              Emc.TaskRun;
+              if State.Machine then
+                begin
+                  Vars.StartLine:= -1; // verify
+                  Emc.TaskRun;
+                end;
               Vars.StartLine:= 1;
-              HasFile:= true;
+              IsOpen:= True;
             end
           else
             begin
               Vars.ProgramFile:= '';
               LastError:= 'Error opening file: ' + FileName;
+              IsOpen:= False;
             end;
-          if HasFile then
-            UpdatePreview(FileName);
+          if IsOpen then
+            UpdatePreview;
         end;
     end;
 end;
