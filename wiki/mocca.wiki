@@ -73,3 +73,5 @@ durch
 WM=gtk
 
 zu ersetzen und neu zu kompilieren. Ggf. müssen noch einige Libraries nachinstalliert werden, siehe Wiki Lazarus installieren.
+
+Die Datei mocca.inc enthält einige $define direktiven. Eine davon ($DEFINE OWNGL) wird dazu verwendet das Lazarus OpenGlControl durch ein internes TGlControl zu ersetzen. Wer also Lazarus NICHT mit dem Package LazOPenGlContext.0.0.1 verwendet MUSS hier $DEFINE OWNGL definieren. 
