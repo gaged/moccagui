@@ -160,6 +160,9 @@ begin
     {$IFNDEF OWNGL}
     ogl:= TOpenGlControl.Create(Self);
     {$ELSE}
+    GlRGBA:= GlSettings.UseRGBA;
+    GlDirect:= GlSettings.UseDirect;
+    GlDoubleBuffered:= GlSettings.UseDoubleBuffered;
     ogl:= TGlControl.Create(Self);
     {$ENDIF}
 

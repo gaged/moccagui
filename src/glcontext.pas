@@ -65,6 +65,11 @@ type
     class procedure DestroyHandle(const AWinControl: TWinControl); override;
   end;
 
+var
+  GlRGBA: Boolean;
+  GlDirect: Boolean;
+  GlDoubleBuffered: Boolean;
+
 implementation
 
 procedure TGLControl.WMPaint(var Message: TLMPaint);
@@ -142,8 +147,10 @@ class function TWSGLControl.CreateHandle(const AWinControl: TWinControl;
 var
   GlControl: TGLControl;
 begin
+  writeln('createhandle');
   GlControl:=AWinControl as TGLControl;
-  Result:=LOpenGLCreateContext(GlControl,WSPrivate,True,True,AParams);
+  Result:=LOpenGLCreateContext(GlControl,WSPrivate,
+    GlDoubleBuffered,GlRGBA,GlDirect,AParams);
 end;
 
 class procedure TWSGLControl.DestroyHandle(const AWinControl: TWinControl);

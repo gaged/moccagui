@@ -110,7 +110,7 @@ procedure gtk_gl_area_swap_buffers(gl_area: PGtkGLArea);
 procedure LOpenGLSwapBuffers(Handle: HWND);
 function  LOpenGLMakeCurrent(Handle: HWND): boolean;
 function  LOpenGLCreateContext(AWinControl: TWinControl;
-             WSPrivate: TWSPrivateClass; DoubleBuffered, RGBA: boolean;
+             WSPrivate: TWSPrivateClass; DoubleBuffered, RGBA, IsDirect: boolean;
              const AParams: TCreateParams): HWND;
 procedure LOpenGLDestroyContextInfo(AWinControl: TWinControl);
 function CreateOpenGLContextAttrList(DoubleBuffered: boolean;
@@ -125,7 +125,6 @@ type
   {$ENDIF}
 
 implementation
-
 
 var
   gl_area_type: TGtkType = 0;
@@ -644,13 +643,14 @@ end;
 {$ENDIF}
 
 function LOpenGLCreateContext(AWinControl: TWinControl;
-  WSPrivate: TWSPrivateClass; DoubleBuffered, RGBA: boolean;
+  WSPrivate: TWSPrivateClass; DoubleBuffered, RGBA, IsDirect: boolean;
   const AParams: TCreateParams): HWND;
 var
   NewWidget: PGtkWidget;
   SharedArea: PGtkGLArea;
   AttrList: PInteger;
 begin
+  Direct:= TBool(IsDirect);
   if WSPrivate=nil then ;
   AttrList:=CreateOpenGLContextAttrList(DoubleBuffered,RGBA);
   try
