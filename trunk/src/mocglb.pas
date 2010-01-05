@@ -280,13 +280,21 @@ type
     UnitsChanged: Boolean;
   end;
 
+type
+  TGlSettings = record
+    UseDirect: Boolean;
+    UseRGBA: Boolean;
+    UseDoubleBuffered: Boolean;
+  end;
+
 var
   LastError: string;
   UpdateLock: Boolean;
 
   Vars: TEmcVars;
   State: TEmcState;
-
+  GlSettings: TGlSettings;
+ 
   MocBtns: Array[0..NumTotalButtons - 1] of TSpeedButton; // the soft buttons
 
   GlobalImageList: TImageList;

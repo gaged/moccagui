@@ -326,6 +326,24 @@ begin
   GetIniStr('DISPLAY','INCREMENTS',tmp,'');
   SetJogIncrements(tmp);
 
+  GetIniInt('DISPLAY','GLDIRECT',i,1);
+  GlSettings.UseDirect:= (i = 1);
+
+  if GlSettings.UseDirect then
+    writeln('direct OpenGl rendering activated')
+  else
+    writeln('direct OpenGl rendering decativated');
+
+  GetIniInt('DISPLAY','GLRGBA',i,1);
+  GlSettings.UseRGBA:=  (i = 1);
+  
+  GetIniInt('DISPLAY','GLDOUBLEBUFFERED',i,1);
+  GlSettings.UseDoubleBuffered:= (i = 1);
+
+  if GlSettings.UseDoubleBuffered then
+    writeln('OpenGl doublebuffer activated')
+  else
+    writeln('OpenGl doublebuffer decativated');
 
   Result:= True;
 end;
