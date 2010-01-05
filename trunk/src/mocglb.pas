@@ -75,6 +75,7 @@ const
   cmMIST      = 31;
 
   cmTOOLS     = 40;
+  cmTOOLCHG   = 41;
 
   cmREFACT    = 50;
   cmREFALL    = 51;
@@ -135,8 +136,8 @@ const
       (T:cmZEROALL;  G:-1;    S:'Alle Null'),
       (T:cmOFFSDLG;  G:-1;    S:'Koordinaten..'),
       (T:cmTOOLS;    G:-1;    S:'Werkzeuge..'),
+      (T:cmTOOLCHG;  G:-1;    S:'Wkzg. wecheln'),
       (T:cmLIMITS;   G:-1;    S:'Grenzwerte'),
-      (T:-1;         G:-1;    S:''),
       (T:cmUNITS;    G:-1;    S:'mm/inch'),
       (T:-1;         G:-1;    S:''));
 

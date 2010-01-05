@@ -33,6 +33,8 @@ type
     function  GetMaxVelText: string;  // returns MaxVel in value[units]/min;
     function  WaitDone: integer;
     procedure LoadTools;
+    procedure ChangeTool;
+
   end;
 
 var
@@ -41,7 +43,13 @@ var
 implementation
 
 uses
-  mocglb,emc2pas,mocjoints,glcanon,RunClient,offsetdlg,tooleditdlg,touchoff;
+  mocglb,emc2pas,mocjoints,
+  glcanon,
+  runclient,
+  offsetdlg,
+  tooleditdlg,
+  toolchange,
+  touchoff;
 
 procedure TEmc.LoadTools;
 var
@@ -58,6 +66,24 @@ begin
           ToolsInitialized:= True;
         end;
       LoadToolTable(FileName);
+    end;
+end;
+
+procedure TEmc.ChangeTool;
+var
+  s: string;
+  i: integer;
+begin
+  i:= DoChangeTool;
+  {$IFDEF DEBUG_EMC}
+  writeln('ChangeTool: ' + IntToStr(i));
+  {$ENDIF}
+  if (i < 1) or (i > CANON_TOOL_MAX) then
+    Exit;
+  if i <> State.CurrentTool then
+    begin
+      s:= 'T' + IntToStr(i) + ' M6';
+      ExecuteSilent(s);
     end;
 end;
 
@@ -90,6 +116,10 @@ procedure TEmc.Execute(cmd: string);
 var
   i: integer;
 begin
+  {$IFDEF DEBUG_EMC}
+  writeln('Execute: ' + cmd);
+  {$ENDIF}
+
   i:= sendMDICmd(PCHar(cmd));
   if i <> 0 then
     LastError:= 'call to mdi returned ' + inttostr(i);
@@ -432,6 +462,7 @@ begin
           clRun.UpdatePreview;
       end;
     cmTOOLS: EditTools;
+    cmTOOLCHG: ChangeTool;
     cmUNITS: SetDisplayUnits(not Vars.Metric);
   else
     begin

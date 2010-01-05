@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 223
+  Left = 232
   Height = 721
-  Top = 193
+  Top = 150
   Width = 963
   HorzScrollBar.Page = 985
   VertScrollBar.Page = 792
@@ -144,8 +144,8 @@ object MainForm: TMainForm
       AnchorSideRight.Control = sbFeed
       AnchorSideRight.Side = asrBottom
       Left = 10
-      Height = 53
-      Top = 120
+      Height = 51
+      Top = 121
       Width = 286
       Anchors = [akLeft, akRight]
       AutoFill = True
@@ -161,8 +161,8 @@ object MainForm: TMainForm
       ChildSizing.ShrinkVertical = crsScaleChilds
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 34
-      ClientWidth = 282
+      ClientHeight = 33
+      ClientWidth = 284
       Columns = 2
       ItemIndex = 0
       Items.Strings = (
@@ -179,8 +179,8 @@ object MainForm: TMainForm
       AnchorSideRight.Control = sbFeed
       AnchorSideRight.Side = asrBottom
       Left = 10
-      Height = 53
-      Top = 176
+      Height = 51
+      Top = 177
       Width = 286
       Anchors = [akLeft, akRight]
       AutoFill = True
@@ -196,8 +196,8 @@ object MainForm: TMainForm
       ChildSizing.ShrinkVertical = crsScaleChilds
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 34
-      ClientWidth = 282
+      ClientHeight = 33
+      ClientWidth = 284
       Columns = 2
       ItemIndex = 0
       Items.Strings = (
