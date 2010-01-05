@@ -15,7 +15,7 @@ uses
   mocglb, mocini, jogclient,
   runclient, mdiclient, simclient, editordlg,
   offsetdlg, tooleditdlg, touchoff,
-  ctypes;
+  ctypes, toolchange;
 
 const
   __LC_CTYPE    = 0;

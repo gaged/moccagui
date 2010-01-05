@@ -1,0 +1,49 @@
+object ToolChgDlg: TToolChgDlg
+  Left = 572
+  Height = 386
+  Top = 316
+  Width = 443
+  ActiveControl = LbTools
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Werkzeug auswählen'
+  ClientHeight = 386
+  ClientWidth = 443
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '0.9.28.2'
+  object LbTools: TListBox
+    Left = 8
+    Height = 320
+    Top = 8
+    Width = 425
+    ExtendedSelect = False
+    Font.Height = -16
+    Font.Name = 'Courier 10 Pitch'
+    Font.Pitch = fpFixed
+    ItemHeight = 0
+    ParentFont = False
+    TabOrder = 0
+    TopIndex = -1
+  end
+  object Button1: TButton
+    Left = 16
+    Height = 25
+    Top = 352
+    Width = 75
+    Caption = '&Ok'
+    ModalResult = 1
+    TabOrder = 1
+  end
+  object Button2: TButton
+    Left = 104
+    Height = 25
+    Top = 352
+    Width = 75
+    Caption = 'Abbruch'
+    ModalResult = 2
+    TabOrder = 2
+  end
+end
