@@ -48,7 +48,7 @@ var
 implementation
 
 uses
-  strutils,buttons,
+  strutils,mocbtn,
   mocglb,mocemc,
   emc2pas,
   simclient,
@@ -246,6 +246,9 @@ begin
               SetButtonEnabled(cmJOG,not Running);
               SetButtonEnabled(cmOPEN,not Running);
               SetButtonEnabled(cmEDITOR,not Running);
+              {$IFDEF LCLGTK2}  //looks better in Gtk2 :)
+              LB.Enabled:= not Running;
+              {$ENDIF}
               OldRunning:= Running;
             end;
 
@@ -344,9 +347,8 @@ end;
 procedure TRunClientForm.Click(Sender: TObject);
 begin
   if Assigned(Sender) then
-    with Sender as TSpeedButton do
+    with Sender as TMocButton do
       begin
-        Down:= False;
         if not Self.HandleCommand(Tag) then
           Emc.HandleCommand(Tag);
       end;

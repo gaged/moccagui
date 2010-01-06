@@ -1,16 +1,16 @@
 object JogClientForm: TJogClientForm
-  Left = 541
-  Height = 362
-  Top = 260
-  Width = 477
+  Left = 393
+  Height = 332
+  Top = 209
+  Width = 452
   HorzScrollBar.Page = 476
   VertScrollBar.Page = 361
   ActiveControl = rgJogInc.RadioButton0
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'JogClientForm'
-  ClientHeight = 362
-  ClientWidth = 477
+  ClientHeight = 332
+  ClientWidth = 452
   KeyPreview = True
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
@@ -122,8 +122,8 @@ object JogClientForm: TJogClientForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 136
-    ClientWidth = 196
+    ClientHeight = 138
+    ClientWidth = 198
     Items.Strings = (
       'Continous'
       '0.001'

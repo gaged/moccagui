@@ -42,8 +42,9 @@ const
 implementation
 
 uses
-  buttons,mocglb,mocemc,mocjoints,
-  emc2pas;
+  mocglb,mocemc,mocjoints,
+  emc2pas,
+  mocbtn;
 
 procedure TMDIClientForm.FormCreate(Sender: TObject);
 begin
@@ -98,9 +99,8 @@ end;
 procedure TMDIClientForm.Click(Sender: TObject);
 begin
   if Assigned(Sender) then
-    with Sender as TSpeedButton do
+    with Sender as TMocButton do
       begin
-        Down:= False;
         if not Self.HandleCommand(Tag) then
           Emc.HandleCommand(Tag);
       end;
@@ -141,7 +141,7 @@ begin
   for i:=1 to length(inp) do
     if inp[i]<>#32 then str1:=str1+upcase(inp[i]);
 
-  // alphabetisch sortieren
+{  // alphabetisch sortieren
   str2:='';
   for c:='A' to 'Z' do begin
     // Buchstaben suchen gehen
@@ -155,7 +155,8 @@ begin
       until (str1[i] in ['A'..'Z']) or (i>length(str1))
     end;
   end;
-  result:=str2;
+  result:=str2; }
+  result:= str1;
 end;
 
 function TMDIClientForm.FormatMdi(inp: string): string;

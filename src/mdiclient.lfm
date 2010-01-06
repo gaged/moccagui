@@ -39,7 +39,7 @@ object MDIClientForm: TMDIClientForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = MDIEdit
     Left = 4
-    Height = 225
+    Height = 229
     Top = 42
     Width = 392
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -56,8 +56,8 @@ object MDIClientForm: TMDIClientForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 4
-    Height = 27
-    Top = 271
+    Height = 23
+    Top = 275
     Width = 392
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Top = 4

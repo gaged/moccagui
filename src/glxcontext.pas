@@ -59,10 +59,8 @@ type
 function gdk_gl_query: boolean;
 function gdk_gl_choose_visual(attrlist: Plongint): PGdkVisual;
 function gdk_gl_get_config(visual: PGdkVisual; attrib: longint): longint;
-//function gdk_gl_context_new(visual: PGdkVisual; attrlist: PlongInt): PGdkGLContext;
 function gdk_gl_context_new(visual: PGdkVisual; attrlist: plongint): PGdkGLContext;
-function gdk_gl_context_attrlist_share_new(attrlist: Plongint;
-               sharelist: PGdkGLContext): PGdkGLContext;
+function gdk_gl_context_attrlist_new(attrlist: Plongint): PGdkGLContext;
 function gdk_gl_context_ref(context: PGdkGLContext): PGdkGLContext;
 procedure gdk_gl_context_unref(context:PGdkGLContext);
 function gdk_gl_make_current(drawable: PGdkDrawable;
@@ -77,8 +75,6 @@ type
   TGdkGLPixmap = record end;
   PGdkGLPixmap = ^TGdkGLPixmap;
   TGLXContext = pointer;
-
-// gtkglarea
 
 type
   TGtkGlAreaMakeCurrentType = boolean;
@@ -102,7 +98,6 @@ function GTK_IS_GL_AREA_CLASS(klass: Pointer): Boolean;
 
 function gtk_gl_area_get_type: TGtkType;
 function gtk_gl_area_new(attrList: Plongint): PGtkWidget;
-function gtk_gl_area_share_new(attrList: Plongint): PGtkWidget;
 function gtk_gl_area_make_current(glarea: PGtkGLArea): boolean;
 function gtk_gl_area_begingl(glarea: PGtkGLArea): boolean;
 procedure gtk_gl_area_swap_buffers(gl_area: PGtkGLArea);
@@ -110,11 +105,11 @@ procedure gtk_gl_area_swap_buffers(gl_area: PGtkGLArea);
 procedure LOpenGLSwapBuffers(Handle: HWND);
 function  LOpenGLMakeCurrent(Handle: HWND): boolean;
 function  LOpenGLCreateContext(AWinControl: TWinControl;
-             WSPrivate: TWSPrivateClass; DoubleBuffered, RGBA, IsDirect: boolean;
-             const AParams: TCreateParams): HWND;
+  WSPrivate: TWSPrivateClass; DoubleBuffered, RGBA, IsDirect: boolean;
+  const AParams: TCreateParams): HWND;
 procedure LOpenGLDestroyContextInfo(AWinControl: TWinControl);
 function CreateOpenGLContextAttrList(DoubleBuffered: boolean;
-                                     RGBA: boolean): PInteger;
+  RGBA: boolean): PInteger;
 
 type
   {$IFDEF LCLGTK}
@@ -130,7 +125,6 @@ var
   gl_area_type: TGtkType = 0;
   parent_class: Pointer = nil;
   direct: TBool;
-
 
 type
   TGdkGLContextPrivate = record
@@ -166,7 +160,6 @@ procedure glXSwapBuffers(dpy:PDisplay; drawable:GLXDrawable);cdecl;external;
 procedure glXUseXFont(font:TFont; first:longint; count:longint; list_base:longint);cdecl;external;
 procedure glXWaitGL;cdecl;external;
 procedure glXWaitX;cdecl;external;
-
 
 procedure g_return_if_fail(b: boolean; const Msg: string);
 begin
@@ -234,10 +227,8 @@ var
 begin
   g_return_if_fail (obj <>nil,'');
   g_return_if_fail (GTK_IS_GL_AREA(obj),'');
-
   gl_area := GTK_GL_AREA(obj);
   gdk_gl_context_unref(gl_area^.glcontext);
-
   if Assigned(GTK_OBJECT_CLASS(parent_class)^.destroy) then
     GTK_OBJECT_CLASS(parent_class)^.destroy(obj);
 end;
@@ -250,13 +241,12 @@ begin
   g_return_if_fail(parent_class<>nil,'gtk_gl_area_class_init parent_class=nil');
   object_class := PGtkObjectClass(klass);
   g_return_if_fail(object_class<>nil,'gtk_gl_area_class_init object_class=nil');
-
   object_class^.destroy := @gtk_gl_area_destroy;
 end;
 
 function gdk_gl_query: boolean;
 begin
-  Result:=boolean(glXQueryExtension(GetDefaultXDisplay,nil,nil){$IFDEF VER2_2}=true{$ENDIF});
+  Result:= boolean(glXQueryExtension(GetDefaultXDisplay,nil,nil){$IFDEF VER2_2}=true{$ENDIF});
 end;
 
 function gdk_gl_choose_visual(attrlist: Plongint): PGdkVisual;
@@ -268,19 +258,16 @@ begin
   {$IFDEF LCLGTK2}
   RaiseGDBException('gdk_gl_choose_visual not implemented yet for gtk2');
   {$ENDIF}
-
   if attrList=nil then begin
     Result:=nil;
     exit;
   end;
-
   dpy := GetDefaultXDisplay;
   vi := glXChooseVisual(dpy,DefaultScreen(dpy), attrlist);
   if (vi=nil) then begin
     Result:=nil;
     exit;
   end;
-
   visual := gdkx_visual_get(vi^.visualid);
   XFree(vi);
   Result:=visual;
@@ -294,23 +281,14 @@ var
 begin
   Result:=-1;
   if visual=nil then exit;
-
   dpy := GetDefaultXDisplay;
-
   vi := get_xvisualinfo(visual);
-
   if (glXGetConfig(dpy, vi, attrib, @value) = 0) then begin
     XFree(vi);
     Result:=value;
   end else
     XFree(vi);
 end;
-
-{function gdk_gl_context_new(visual: PGdkVisual; attrlist: PlongInt): PGdkGLContext;
-begin
-  Result := gdk_gl_context_share_new(visual,
-    {$IFDEF VER2_2}false{$ELSE}0{$ENDIF}, attrlist);
-end;}
 
 function gdk_gl_context_new(visual: PGdkVisual; attrlist: plongint): PGdkGLContext;
 var
@@ -344,18 +322,17 @@ begin
   Result := PGdkGLContext(PrivateContext);
 end;
 
-function gdk_gl_context_attrlist_share_new(attrlist: Plongint;
-  sharelist: PGdkGLContext): PGdkGLContext;
+function gdk_gl_context_attrlist_new(attrlist: Plongint): PGdkGLContext;
 var
   visual: PGdkVisual;
 begin
   {$IFDEF LCLGTK2}
-  visual :=nil;
-  Result := gdk_gl_context_new(visual, attrlist);
+  visual:= nil;
+  Result:= gdk_gl_context_new(visual, attrlist);
   {$ELSE}
-  visual := gdk_gl_choose_visual(attrlist);
+  visual:= gdk_gl_choose_visual(attrlist);
   if (visual <> nil) then
-    Result := gdk_gl_context_new(visual, sharelist, direct, attrlist)
+    Result := gdk_gl_context_new(visual, attrlist)
   else
     Result := nil;
   {$ENDIF}
@@ -507,23 +484,6 @@ end;
 
 function gtk_gl_area_new(attrList: Plongint): PGtkWidget;
 var
-  Count: Integer;
-  CopyAttrList: Plongint;
-  Size: Integer;
-begin
-  Count:=0;
-  while (attrList[Count]<>GDK_GL_NONE) do inc(Count);
-  inc(Count);
-  Size:=SizeOf(Integer)*Count;
-  CopyAttrList:=nil;
-  GetMem(CopyAttrList,Size);
-  System.Move(attrList^,CopyAttrList^,Size);
-  Result:=gtk_gl_area_share_new(CopyAttrList);
-  FreeMem(CopyAttrList);
-end;
-
-function gtk_gl_area_share_new(attrList: Plongint): PGtkWidget;
-var
   visual: PGdkVisual;
   glcontext: PGdkGLContext;
   gl_area: PGtkGLArea;
@@ -647,12 +607,11 @@ function LOpenGLCreateContext(AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
 var
   NewWidget: PGtkWidget;
-  SharedArea: PGtkGLArea;
   AttrList: PInteger;
 begin
   Direct:= TBool(IsDirect);
-  if WSPrivate=nil then ;
-  AttrList:=CreateOpenGLContextAttrList(DoubleBuffered,RGBA);
+  if WSPrivate= nil then ;
+  AttrList:= CreateOpenGLContextAttrList(DoubleBuffered,RGBA);
   try
     NewWidget:=gtk_gl_area_new(AttrList);
     Result:=HWND(PtrUInt(Pointer(NewWidget)));

@@ -38,11 +38,14 @@ type
     OldSpVel: double;
     OldSpORide: integer;
     OldMachineOn: Boolean;
+    // FShifted: Boolean;
   public
     procedure ActivateSelf;
     procedure UpdateSelf;
     procedure InitControls;
     procedure MapButtons;
+    procedure UpdateButtons;
+    // procedure ShiftButtons(Up: Boolean);
     procedure HandleCommand(Cmd: integer);
     function  HandleJogKeys(var Key: Word; Down,Fast: Boolean): Boolean;
   end;
@@ -55,14 +58,30 @@ implementation
 { TJogClientForm }
 
 uses
-  buttons,mocemc,
+  mocemc,
   mocglb,mocjoints,
-  emc2pas,runclient;
+  emc2pas,runclient,
+  mocbtn;
 
 procedure TJogClientForm.HandleCommand(Cmd: integer);
 begin
-  Emc.HandleCommand(Cmd);
+ { if (cmd = cmSHIFTUP) or (cmd = cmSHIFTDN) then
+    ShiftButtons(cmd = cmSHIFTUP)
+  else }
+    Emc.HandleCommand(Cmd);
 end;
+
+{
+procedure TJogClientForm.ShiftButtons(Up: Boolean);
+begin
+  if Up <> FShifted then
+    begin
+      FShifted:= Up;
+      MapButtons;
+      UpdateButtons;
+    end;
+end;
+}
 
 procedure TJogClientForm.ActivateSelf;
 begin
@@ -74,6 +93,20 @@ begin
   InitControls;
 end;
 
+procedure TJogClientForm.UpdateButtons;
+begin
+  // if FShifted then Exit;
+  SetButtonEnabled(cmSPMINUS,State.Machine);
+  SetButtonEnabled(cmSPCW,State.Machine);
+  SetButtonEnabled(cmSPCCW,State.Machine);
+  SetButtonEnabled(cmSPPLUS,State.Machine);
+  SetButtonEnabled(cmFLOOD,State.Machine);
+  SetButtonEnabled(cmREFACT,State.Machine);
+  SetButtonEnabled(cmREFALL,State.Machine);
+  SetButtonEnabled(cmZEROACT,State.Machine);
+  SetButtonEnabled(cmZEROALL,State.Machine);
+end;
+
 procedure TJogClientForm.UpdateSelf;
 var
   i: integer;
@@ -83,19 +116,7 @@ begin
   if OldMachineOn <> State.Machine then
     begin
       OldMachineOn:= State.Machine;
-      SetButtonEnabled(cmSPMINUS,State.Machine);
-      SetButtonEnabled(cmSPCW,State.Machine);
-      SetButtonEnabled(cmSPCCW,State.Machine);
-      SetButtonEnabled(cmSPPLUS,State.Machine);
-      SetButtonEnabled(cmFLOOD,State.Machine);
-      SetButtonEnabled(cmREFACT,State.Machine);
-      SetButtonEnabled(cmREFALL,State.Machine);
-      SetButtonEnabled(cmZEROACT,State.Machine);
-      SetButtonEnabled(cmZEROALL,State.Machine);
-      //SetButtonEnabled(cmOFFSDLG;  G:-1;    S:'Koordinaten..'),
-      //SetButtonEnabled(cmTOOLS;    G:-1;    S:'Werkzeuge..'),
-      //SetButtonEnabled(cmLIMITS;   G:-1;    S:'Grenzwerte'),
-      //SetButtonEnabled(cmUNITS;    G:-1;    S:'mm/inch'),
+      UpdateButtons;
     end;
 
   if OldORideLimits <> State.ORideLimits then
@@ -136,7 +157,13 @@ end;
 
 procedure TJogClientForm.MapButtons;
 begin
-  SetButtonMap(@BtnDefJog,@Self.Click);
+  {if FShifted then
+    begin
+      SetButtonMapFromTo(@BtnDefJog,0,NumSideButtons-1,@Self.Click);
+      SetButtonMapFromTo(@BtnDefJogShifted,NumSideButtons,NumTotalButtons-1,@Self.Click);
+    end
+  else }
+    SetButtonMap(@BtnDefJog,@Self.Click);
 end;
 
 procedure TJogClientForm.InitControls;
@@ -213,11 +240,8 @@ end;
 procedure TJogClientForm.Click(Sender: TObject);
 begin
   if Assigned(Sender) then
-    with Sender as TSpeedButton do
-      begin
-        Down:= False;
-        HandleCommand(Tag)
-      end;
+    with Sender as TMocButton do
+    HandleCommand(Tag)
 end;
 
 procedure TJogClientForm.sbJogVelChange(Sender: TObject);
@@ -236,6 +260,7 @@ end;
 procedure TJogClientForm.FormCreate(Sender: TObject);
 begin
   Self.Tag:= TASKMODEMANUAL;
+  // FShifted:= False;
 end;
 
 procedure TJogClientForm.FormKeyDown(Sender: TObject; var Key: Word;
