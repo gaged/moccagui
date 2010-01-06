@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, ExtDlgs, Buttons, ComCtrls,
+  StdCtrls, ExtDlgs, ComCtrls,
   mocglb,mocjoints,jogclient,runclient,mdiclient,simclient;
 
 type
@@ -84,7 +84,9 @@ implementation
 { TMainForm }
 
 uses
-  emc2pas,mocemc,glView;
+  emc2pas,
+  mocemc,mocbtn,
+  glView;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -257,26 +259,26 @@ end;
 
 procedure TMainForm.InitButtons; // This creates the buttons used by mocca
 var
-  S: TSpeedButton;
+  S: TMocButton;
   i: Integer;
 begin
   for i:= 0 to NumTotalButtons - 1 do  // create the buttons
     begin
-      S:= TSpeedButton.Create(self);
+      S:= TMocButton.Create(self);
       if not Assigned(S) then
         raiseError('Error creating buttons');
       if i < NumSideButtons then
         S.Parent:= PanelMainBtns
       else
         S.Parent:= PanelSoftBtns;
-      S.AllowAllUp:= True;
-      S.GroupIndex:= i+1;
+      //S.AllowAllUp:= True;
+      //S.GroupIndex:= i+1;
       S.Width:= 64;
       S.Height:= 64;
       S.Tag:= -1;
       S.Transparent:= False;
       S.OnClick:= nil;
-      S.Layout:= blGlyphTop;
+      //S.Layout:= blGlyphTop;
       S.Spacing:= 0;
       MocBtns[i]:= S;
     end;

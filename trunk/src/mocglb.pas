@@ -5,10 +5,10 @@ unit mocglb;
 interface
 
 uses
-  Buttons,Graphics,
+  Graphics,
   Classes, SysUtils, LResources, Forms, Controls, Dialogs, ExtCtrls,
   ExtDlgs, ComCtrls,
-  mocemc;
+  mocemc,mocbtn;
   
 const
   MaxAxes = 5;                   // maimum number of axes, default 5 XYZCB
@@ -102,10 +102,18 @@ const
 
   cmEDITOR    = 110;
 
-  cmReturn  = 1001;
-  cmExit    = 1002;
-  cmCancel  = 1003;
-  cmClose   = 1004;
+  cmFEEDUP1   = 121;
+  cmFEEDUP10  = 122;
+  cmFEEDDN1   = 123;
+  cmFEEDDN10  = 124;
+
+  cmJVELUP1   = 131;
+  cmJVELUP10  = 132;
+  cmJVELDN1   = 133;
+  cmJVELDN10  = 134;
+
+  cmSHIFTUP   = 800;
+  cmSHIFTDN   = 801;
 
 type
   TButtonDef = record
@@ -139,7 +147,29 @@ const
       (T:cmTOOLCHG;  G:-1;    S:'Wkzg. wecheln'),
       (T:cmLIMITS;   G:-1;    S:'Grenzwerte'),
       (T:cmUNITS;    G:-1;    S:'mm/inch'),
-      (T:-1;         G:-1;    S:''));
+      (T:cmSHIFTUP;  G:-1;    S:'>'));
+
+  BtnDefJogShifted: TButtonArray =
+     ((T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:-1;         G:-1;       S:''),
+      (T:cmFEEDDN10; G:-1;       S:'F -10%'),
+      (T:cmFEEDDN1;  G:-1;       S:'F -1%'),
+      (T:cmFEEDUP1;  G:-1;       S:'F +1%'),
+      (T:cmFEEDUP10; G:-1;       S:'F +10%'),
+      (T:cmJVELDN10; G:-1;       S:'G -10%'),
+      (T:cmJVELDN1;  G:-1;       S:'G -1%'),
+      (T:cmJVELUP1;  G:-1;       S:'G +1%'),
+      (T:cmJVELUP10; G:-1;       S:'G +10%'),
+      (T:-1;         G:-1;       S:''),
+      (T:cmSHIFTDN;  G:-1;       S:'<'));
 
   BtnDefMDI: TButtonArray =
      ((T:cmESTOP;    G:-1;   S:'Notaus'),
@@ -148,10 +178,10 @@ const
       (T:cmAUTO;     G:-1;   S:'Satzlauf'),
       (T:-1;         G:-1;   S:'MDI'),
       (T:-1;         G:-1;   S:'langsamer'),
-      (T:-1;          G:-1;   S:'Spindel rechts'),
-      (T:-1;          G:-1;   S:'Spindel links'),
-      (T:-1;          G:-1;   S:'schneller'),
-      (T:-1;          G:-1;   S:'Kühlung'),
+      (T:-1;          G:-1;  S:'Spindel rechts'),
+      (T:-1;          G:-1;  S:'Spindel links'),
+      (T:-1;          G:-1;  S:'schneller'),
+      (T:-1;          G:-1;  S:'Kühlung'),
       (T:cmMDIEXEC; G:-1;       S:'Ausführen'),
       (T:-1;        G:-1;       S:''),
       (T:-1;        G:-1;       S:''),
@@ -296,7 +326,7 @@ var
   State: TEmcState;
   GlSettings: TGlSettings;
  
-  MocBtns: Array[0..NumTotalButtons - 1] of TSpeedButton; // the soft buttons
+  MocBtns: Array[0..NumTotalButtons - 1] of TMocButton; // the soft buttons
 
   GlobalImageList: TImageList;
 
@@ -315,6 +345,7 @@ procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
 procedure SetButtonDown(ACmd: integer; SetDown: Boolean);
 procedure SetButtonText(ACmd: integer; AText: string);
 procedure SetButtonMap(B: PButtonArray; ObjClick: TOnClick);
+procedure SetButtonMapFromTo(B: PButtonArray; iFrom,iTo: integer; ObjCLick: TOnClick);
 
 // function setenv(envname,envval: PChar; overwrite: integer): longint; cdecl; external;
 
@@ -333,6 +364,32 @@ var
 begin
   if B = nil then Exit;
   for i:= 0 to NumTotalButtons - 1 do
+  begin
+    if B^[i].T < 0 then
+      MocBtns[i].OnClick:= nil
+    else
+      MocBtns[i].OnClick:= ObjClick;
+    if B^[i].G < 0 then
+      MocBtns[i].Glyph:= nil
+    else
+      GlobalImageList.GetBitmap(B^[i].G,MocBtns[i].Glyph);
+    MocBtns[i].Tag:= B^[i].T;
+    MocBtns[i].Caption:= B^[i].S;
+    MocBtns[i].Enabled:= not (B^[i].T < 0);
+    MocBtns[i].Down:= False;
+  end;
+end;
+
+procedure SetButtonMapFromTo(B: PButtonArray; iFrom,iTo: integer; ObjCLick: TOnClick);
+var
+  i: Integer;
+begin
+  if B = nil then Exit;
+  if (iFrom < 0) or (iFrom > NumTotalButtons - 1) or
+    (iTo < 0) or (iTo > NumTotalButtons - 1) or
+    (iFrom > iTo) then
+      Exit;
+  for i:= iFrom to iTo do
   begin
     if B^[i].T < 0 then
       MocBtns[i].OnClick:= nil

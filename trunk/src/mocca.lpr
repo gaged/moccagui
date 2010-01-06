@@ -8,9 +8,11 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces,
   Forms,
-  Dialogs, LazOpenGLContext,
+  Dialogs,
+  {$IFNDEF OWNGL} LazOpenGLContext,
+  {$ENDIF}
   emc2pas,
-  SysUtils,
+  mocbtn, SysUtils,
   mocmain,
   mocglb, mocini, jogclient,
   runclient, mdiclient, simclient, editordlg,

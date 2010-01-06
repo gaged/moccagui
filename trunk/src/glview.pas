@@ -63,7 +63,7 @@ type
     ogl: TOpenGlControl;
     {$ELSE}
     ogl: TGlControl;
-    Parent: TWinControl;
+    // Parent: TWinControl;
     {$ENDIF}
 
     AreaInitialized: Boolean;

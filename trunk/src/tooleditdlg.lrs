@@ -1,5 +1,7 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
 LazarusResources.Add('TToolDlg','FORMDATA',[
-  'TPF0'#8'TToolDlg'#7'ToolDlg'#4'Left'#3#207#1#6'Height'#3'T'#1#3'Top'#3'D'#1#5
+  'TPF0'#8'TToolDlg'#7'ToolDlg'#4'Left'#3'e'#1#6'Height'#3'T'#1#3'Top'#3#192#0#5
   +'Width'#3'q'#2#13'ActiveControl'#7#4'Grid'#11'BorderIcons'#11#12'biSystemMen'
   +'u'#0#11'BorderStyle'#7#8'bsDialog'#7'Caption'#6#7'ToolDlg'#12'ClientHeight'
   +#3'T'#1#11'ClientWidth'#3'q'#2#8'OnCreate'#7#10'FormCreate'#9'OnDestroy'#7#11
