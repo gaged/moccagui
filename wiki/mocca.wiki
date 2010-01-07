@@ -28,8 +28,9 @@ Wenn das Verzeichnis mocca durch svn checkout bereits angelegt wurde, kann es mi
   # Alles kompilieren und linken: `make all`
 
 == Installieren ==
- # Mocca ausführbar machen: `chmod a+x ../lib/mocca`
- # Einen symbolischen Link in /usr/bin einfügen: `sudo ln -s ../lib/mocca /usr/bin/mocca`
+ # Nach ../lib wechseln: `cd ../lib`
+ # Mocca ausführbar machen: `chmod a+x mocca`
+ # Einen symbolischen Link in /usr/bin einfügen: `sudo ln -s mocca /usr/bin/mocca`
 Das letztere muss nur einmalig gemacht werden
 
 == makefile ==
