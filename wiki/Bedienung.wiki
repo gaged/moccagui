@@ -5,8 +5,9 @@
 Using mocca as a GUI for EMC2:
 
  # Get mocca compiled (see wiki comiling mocca)
- # make mocca executeable: `chmod a+x ../lib/mocca`
- # Add a symbilic link in /usr/bin: `sudo ln -s ../lib/mocca /usr/bin/mocca`
+ # Goto ../lib: `cd ../lib`
+ # make mocca executeable: `chmod a+x mocca`
+ # Add a symbilic link in /usr/bin: `sudo ln -s mocca /usr/bin/mocca`
  # edit your EMC ini file: `DISPLAY = mocca`
  # start emc using the ini- file mentioned above 
 
@@ -18,7 +19,8 @@ Using mocca as a GUI for EMC2:
 mocca als Grafikfrontend für EMC2 einstellen:
 
  # Mocca gemäß Wiki kompilieren
- # Mocca ausführbar machen: `chmod a+x ../lib/mocca`
- # Einen symbolischen Link in /usr/bin einfügen: `sudo ln -s ../lib/mocca /usr/bin/mocca`
+ # Gehe zu ../lib: `cd ../lib`
+ # Mocca ausführbar machen: `chmod a+x mocca`
+ # Einen symbolischen Link in /usr/bin einfügen: `sudo ln -s mocca /usr/bin/mocca`
  # Die ini Datei der Maschine bearbeiten: `DISPLAY = mocca` 
  # EMC starten, mocca wird geladen 
