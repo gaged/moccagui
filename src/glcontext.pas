@@ -2,12 +2,14 @@ unit glcontext;
 
 {$mode objfpc}{$H+}
 
+{$I mocca.inc}
+
 
 interface
 
 uses
   Classes, SysUtils, LCLProc, Forms, Controls, LCLType, LCLIntf, LResources,
-  Graphics, LMessages, WSLCLClasses, GlxContext;
+  Graphics, LMessages, WSLCLClasses, glxcontext;
 
 type
   TGLControl = class(TWinControl)
@@ -93,19 +95,23 @@ end;
 
 constructor TGLControl.Create(TheOwner: TComponent);
 begin
+  {$ifdef DEBUG_GL}writeln('glcontrol.create ->');{$endif}
   inherited Create(TheOwner);
   ControlStyle:=ControlStyle-[csSetCaption];
   FCompStyle:=csNonLCL;
   SetInitialBounds(0, 0, 160, 90);
+  {$ifdef DEBUG_GL}writeln('<- glcontrol.create');{$endif}
 end;
 
 destructor TGLControl.Destroy;
 begin
+  {$ifdef DEBUG_GL}writeln('glcontrol.destroy');{$endif}
   inherited Destroy;
 end;
 
 procedure TGLControl.Paint;
 begin
+  {$ifdef DEBUG_GL}writeln('glcontrol.paint');{$endif}
   if IsVisible and HandleAllocated then begin
     if ([csDesigning,csDestroying]*ComponentState=[]) then begin
       if not MakeCurrent then exit
@@ -126,12 +132,16 @@ end;
 
 procedure TGLControl.SwapBuffers;
 begin
+  {$ifdef DEBUG_GL}writeln('glcontrol.swapbuffers');{$endif}
   LOpenGLSwapBuffers(Handle);
 end;
 
 function TGLControl.MakeCurrent: boolean;
 begin
   Result:=LOpenGLMakeCurrent(Handle);
+  {$ifdef DEBUG_GL}
+  writeln('glcontrol.makecurrent = ' + IntToStr((Integer(Result))));
+  {$endif}
 end;
 
 procedure TGLControl.Invalidate;
@@ -144,13 +154,16 @@ end;
 
 class function TWSGLControl.CreateHandle(const AWinControl: TWinControl;
   const AParams: TCreateParams): HWND;
-var
-  GlControl: TGLControl;
+//var
+//  GlControl: TGLControl;
 begin
-  writeln('createhandle');
-  GlControl:=AWinControl as TGLControl;
-  Result:=LOpenGLCreateContext(GlControl,WSPrivate,
+  {$ifdef DEBUG_GL}writeln('glcontrol.createhandle');{$endif}
+  //GlControl:=AWinControl as TGLControl;
+  Result:=LOpenGLCreateContext(AWinControl,WSPrivate,
     GlDoubleBuffered,GlRGBA,GlDirect,AParams);
+  {$ifdef DEBUG_GL}
+  writeln('glcontrol.createhandle = ' + IntToStr((Integer(Result))));
+  {$endif}
 end;
 
 class procedure TWSGLControl.DestroyHandle(const AWinControl: TWinControl);

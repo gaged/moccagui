@@ -11,7 +11,6 @@ uses
 type
 
   { TRunClientForm }
-
   TRunClientForm = class(TForm)
     LabelCaption: TLabel;
     LabelInterpState: TLabel;
@@ -27,17 +26,15 @@ type
     OldOptStop: Boolean;
     OldIsOpen: Boolean;
     IsOpen: Boolean;
-
     function  HandleCommand(Cmd: integer): Boolean;
   public
     procedure ActivateSelf;
     procedure UpdateSelf;
     procedure InitControls;
     procedure MapButtons;
-    procedure UpdatePreview;
+    procedure UpdatePreview(Reload: Boolean);
     procedure OpenFile;
     procedure UpdateLine;
-    // vorlauf
     procedure SetCodes;
     procedure GotoLine;
   end;
@@ -51,7 +48,9 @@ uses
   strutils,mocbtn,
   mocglb,mocemc,
   emc2pas,
+  {$IFDEF USEGL}
   simclient,
+  {$ENDIF}
   glcanon,gllist;
 
 procedure TRunClientForm.SetCodes;
@@ -132,22 +131,32 @@ begin
   end;
 end;
 
-procedure TRunClientForm.UpdatePreview;
+procedure TRunClientForm.UpdatePreview(Reload: Boolean);
 var
   UnitCode,InitCode: string;
   Metric: Boolean;
 begin
+  if Reload then
+    begin
+      {$IFDEF USEGL}
+      if Assigned(clSim) then
+        clSim.ReloadFile;
+      {$ENDIF}
+      Exit;
+    end;
   if (Length(Vars.ProgramFile) < 1) or (not IsOpen) then Exit;
   //Metric:= Pos('G21',ActiveGCodes) > 0;
   Metric:= Vars.Metric;
   if Metric then
     UnitCode:= 'G21' else UnitCode:= 'G20';
   InitCode:= '';
+  {$IFDEF USEGL}
   if Assigned(clSim) then
     begin
-      clSim.ClearPreview;
-      clSim.LoadPreview(Vars.ProgramFile,UnitCode,InitCode);
+      clSim.ClearFile;
+      clSim.LoadFile(Vars.ProgramFile,UnitCode,InitCode);
     end;
+  {$ENDIF}
 end;
 
 function TRunClientForm.HandleCommand(Cmd: integer): Boolean;
@@ -315,7 +324,7 @@ begin
               IsOpen:= False;
             end;
           if IsOpen then
-            UpdatePreview;
+            UpdatePreview(False);
         end;
     end;
 end;
@@ -329,14 +338,12 @@ begin
     begin
       ActiveLn:= taskMotionLine - 1;
       if ActiveLn < 0 then Exit;
-      // Label1.Caption:= Inttostr(ActiveLn) + ',' + inttostr(taskcurrentline);
       if ActiveLn <> OldActiveLn then
         begin
           if ActiveLn < LB.Items.Count then
             begin
               LB.ItemIndex:= ActiveLn;
               if (ActiveLn > 0) then
-              //if not LB.ItemFullyVisible(ActiveLn) then
                 LB.MakeCurrentVisible;
             end;
           OldActiveLn:= ActiveLn;

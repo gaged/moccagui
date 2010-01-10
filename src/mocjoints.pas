@@ -111,7 +111,7 @@ var
 implementation
 
 uses
-  emc2pas,mocglb,mocemc;
+  emc2pas,mocglb,mocemc,hal;
 
 var
   FullWidth: integer;
@@ -293,7 +293,7 @@ begin
   FBox.Parent:= FPanel;
   FBox.Shape:= stRectangle;
   FBox.Visible:= False;
-  FOldActiveAxis:= 0;
+  FOldActiveAxis:= -1;
   FShowActual:= Vars.ShowActual;
   FShowRelative:= Vars.ShowRelative;
 end;
@@ -478,13 +478,16 @@ var
 begin
   if FNumAxes < 1 then Exit;
   for i:= 0 to FNumAxes - 1 do
-    FAxes[i].Update(FShowActual,FShowRelative);
+    begin
+      FAxes[i].Update(FShowActual,FShowRelative);
+    end;
   if FShowBox then
     if FOldActiveAxis <> Vars.ActiveAxis then
       if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then
         begin
           FBox.Top:= FAxes[Vars.ActiveAxis].Top - 2;
           FOldActiveAxis:= Vars.ActiveAxis;
+          SetHalJogAxis(GetAxisChar(Vars.ActiveAxis));
         end;
 end;
 

@@ -5,7 +5,7 @@ unit offsetdlg;
 interface
 
 uses
-  Classes, ExtCtrls, Grids, Spin, StdCtrls, SysUtils, FileUtil,
+  Classes, ExtCtrls, Grids, StdCtrls, SysUtils, FileUtil,
   LResources, Forms, Controls, Graphics, Dialogs;
 
 type
