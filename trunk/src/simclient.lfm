@@ -1,15 +1,15 @@
 object SimClientForm: TSimClientForm
-  Left = 652
-  Height = 331
-  Top = 193
-  Width = 464
+  Left = 386
+  Height = 453
+  Top = 300
+  Width = 601
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'SimClientForm'
-  ClientHeight = 331
-  ClientWidth = 464
+  ClientHeight = 453
+  ClientWidth = 601
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
@@ -60,29 +60,14 @@ object SimClientForm: TSimClientForm
     NumGlyphs = 0
     OnClick = BtnZClick
   end
-  object Bevel: TBevel
-    AnchorSideLeft.Control = BtnP
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = sbV
-    AnchorSideBottom.Control = sbH
-    Left = 25
-    Height = 314
-    Top = 0
-    Width = 422
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Left = 2
-    OnResize = BevelResize
-  end
   object sbH: TScrollBar
-    AnchorSideLeft.Control = Bevel
     AnchorSideRight.Control = sbV
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 25
     Height = 15
-    Top = 314
-    Width = 422
+    Top = 436
+    Width = 559
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
     LargeChange = 10
@@ -97,8 +82,8 @@ object SimClientForm: TSimClientForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = sbH
-    Left = 447
-    Height = 314
+    Left = 584
+    Height = 436
     Top = 0
     Width = 15
     Anchors = [akTop, akRight, akBottom]

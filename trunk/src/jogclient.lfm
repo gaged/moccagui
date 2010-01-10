@@ -1,7 +1,7 @@
 object JogClientForm: TJogClientForm
-  Left = 393
+  Left = 470
   Height = 332
-  Top = 209
+  Top = 357
   Width = 452
   HorzScrollBar.Page = 476
   VertScrollBar.Page = 361
@@ -122,8 +122,8 @@ object JogClientForm: TJogClientForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 138
-    ClientWidth = 198
+    ClientHeight = 136
+    ClientWidth = 196
     Items.Strings = (
       'Continous'
       '0.001'

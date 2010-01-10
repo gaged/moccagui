@@ -4,6 +4,8 @@ unit glxcontext;
 {$LinkLib GL}
 {$PACKRECORDS C}
 
+{$I mocca.inc}
+
 interface
 
 uses
@@ -194,10 +196,10 @@ var
   nitems_return: integer;
   vi: PXVisualInfo;
 begin
-  dpy := GetDefaultXDisplay;
   {$IFDEF LCLGTK2}
   RaiseGDBException('GetDefaultXDisplay not implemented for gtk2');
   {$ENDIF}
+  dpy := GetDefaultXDisplay;
 
   // 'GLX uses VisualInfo records because they uniquely identify
   // a (VisualID,screen,depth) tuple.'
@@ -258,10 +260,9 @@ begin
   {$IFDEF LCLGTK2}
   RaiseGDBException('gdk_gl_choose_visual not implemented yet for gtk2');
   {$ENDIF}
-  if attrList=nil then begin
-    Result:=nil;
-    exit;
-  end;
+  if attrList=nil then
+    raise Exception.Create('no attribute list for choose visual');
+
   dpy := GetDefaultXDisplay;
   vi := glXChooseVisual(dpy,DefaultScreen(dpy), attrlist);
   if (vi=nil) then begin
@@ -297,6 +298,7 @@ var
   PrivateContext: PGdkGLContextPrivate;
   glxcontext: TGLXContext;
 begin
+  {$ifdef DEBUG_GL} writeln('context_new_begin');{$endif}
   Result:=nil;
   dpy := GetDefaultXDisplay;
   {$IFDEF LCLGTK2}
@@ -309,6 +311,7 @@ begin
   if vi=nil then
     raise Exception.Create('gdk_gl_context_new no visual found');
 
+  {$ifdef DEBUG_GL} writeln('context_new 1');{$endif}
   glxcontext := glXCreateContext(dpy, vi, nil, direct);
 
   XFree(vi);
@@ -320,6 +323,7 @@ begin
   PrivateContext^.ref_count := 1;
 
   Result := PGdkGLContext(PrivateContext);
+  {$ifdef DEBUG_GL} writeln('context_new end');{$endif}
 end;
 
 function gdk_gl_context_attrlist_new(attrlist: Plongint): PGdkGLContext;
@@ -328,8 +332,10 @@ var
 begin
   {$IFDEF LCLGTK2}
   visual:= nil;
+  {$ifdef DEBUG_GL} writeln('attlist_new gtk2');{$endif}
   Result:= gdk_gl_context_new(visual, attrlist);
   {$ELSE}
+  {$ifdef DEBUG_GL} writeln('attlist_new gtk');{$endif}
   visual:= gdk_gl_choose_visual(attrlist);
   if (visual <> nil) then
     Result := gdk_gl_context_new(visual, attrlist)
@@ -342,6 +348,7 @@ function gdk_gl_context_ref(context: PGdkGLContext): PGdkGLContext;
 var
   PrivateContext: PGdkGLContextPrivate;
 begin
+  {$ifdef DEBUG_GL} writeln('context_ref 350');{$endif}
   Result:=nil;
   if context=nil then exit;
   PrivateContext := PGdkGLContextPrivate(context);
@@ -370,6 +377,8 @@ function gdk_gl_make_current(drawable: PGdkDrawable;
 var
   PrivateContext: PGdkGLContextPrivate;
 begin
+  {$ifdef DEBUG_GL} writeln('makecurrent 379 ->');{$endif}
+
   Result:=false;
   if  drawable=nil then exit;
   if context=nil then exit;
@@ -383,12 +392,12 @@ begin
                                  {$ENDIF}
                                  PrivateContext^.glxcontext)
                                  {$IFDEF VER2_2}=true{$ENDIF});
+  {$ifdef DEBUG_GL} writeln('< - makecurrent');{$endif}
 end;
 
 procedure gdk_gl_swap_buffers(drawable: PGdkDrawable);
 begin
   g_return_if_fail(drawable <> nil);
-
   glXSwapBuffers({$IFDEF LCLGTK}
                  GDK_WINDOW_XDISPLAY(PGdkWindowPrivate(drawable)),
                  GDK_WINDOW_XWINDOW(PGdkWindowPrivate(drawable))
@@ -419,11 +428,13 @@ procedure gtk_gl_area_init(
 begin
   if theClass=nil then ;
   //DebugLn(['gtk_gl_area_init START']);
+  {$ifdef DEBUG_GL} writeln('area_init ->');{$endif}
   PGtkGLArea(gl_area)^.glcontext:=nil;
   {$IFDEF LCLGTK2}
   gtk_widget_set_double_buffered(PGtkWidget(gl_area),gdkFALSE);
   GTK_WIDGET_UNSET_FLAGS(PGtkWidget(gl_area),GTK_NO_WINDOW);
   {$ENDIF}
+  {$ifdef DEBUG_GL} writeln('< - area_init');{$endif}
   //DebugLn(['gtk_gl_area_init END']);
 end;
 
@@ -612,8 +623,16 @@ begin
   Direct:= TBool(IsDirect);
   if WSPrivate= nil then ;
   AttrList:= CreateOpenGLContextAttrList(DoubleBuffered,RGBA);
+  {$ifdef DEBUG_GL}
+  write('LCreateContext ');
+  if AttrList = nil then
+    writeln('failed') else writeln('ok');
+  {$endif}
+
   try
     NewWidget:=gtk_gl_area_new(AttrList);
+    if NewWidget = nil then
+      raise Exception.Create('createcontext failed, Widget = nil!');
     Result:=HWND(PtrUInt(Pointer(NewWidget)));
     PGtkobject(NewWidget)^.flags:=PGtkobject(NewWidget)^.flags or GTK_CAN_FOCUS;
     {$IFDEF LCLGTK}
@@ -623,6 +642,7 @@ begin
     g_signal_connect_after(PGtkObject(NewWidget), 'size-allocate',
                        TGTKSignalFunc(@gtkglarea_size_allocateCB), AWinControl);
     {$ENDIF}
+    {$ifdef DEBUG_GL}writeln('LCreateContext end');{$endif}
   finally
     FreeMem(AttrList);
   end;

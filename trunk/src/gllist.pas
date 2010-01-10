@@ -5,22 +5,11 @@ unit gllist;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils,
+  mocglb;
   
 type
   TListItemType = (ltFeed,ltArcFeed,ltTraverse,ltDwell);
-  
-type
-  Tlo = packed record
-    x,y,z,a,b,c,u,v,w: double;
-  end;
-  
-type
-  TExtents = record
-    MinX,MaxX: double;
-    MinY,MaxY: double;
-    MinZ,MaxZ: double;
-  end;
 
 type
   PListItem = ^TListItem;
@@ -56,19 +45,12 @@ type
 var
   MyGlList: TGlList;
   
-procedure SetCoords(var l: Tlo; x,y,z,a,b,c,u,v,w: double);
+
 
 implementation
 
 var
   OutOfMemory: Boolean;
-
-procedure SetCoords(var l: Tlo; x,y,z,a,b,c,u,v,w: double);
-begin
-  l.x:= x; l.y:= y; l.z:= z; l.a:= a;
-  l.b:= b; l.c:= c; l.u:= u; l.v:= v;
-  l.w:= w;
-end;
 
 function NewListItem(ItemType: TListItemType; ln: integer; n1,n2: tlo): PListItem;
 var

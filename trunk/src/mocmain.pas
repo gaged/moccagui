@@ -7,7 +7,9 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   StdCtrls, ExtDlgs, ComCtrls,
-  mocglb,mocjoints,jogclient,runclient,mdiclient,simclient;
+  mocglb,mocjoints,jogclient,runclient,mdiclient
+  {$IFDEF USEGL}
+  ,simclient{$ENDIF};
 
 type
 
@@ -85,8 +87,7 @@ implementation
 
 uses
   emc2pas,
-  mocemc,mocbtn,
-  glView;
+  mocemc,mocbtn;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -144,7 +145,9 @@ begin
   LabelF.Caption:= TrimLeft(PChar(ACTIVEFWORDS));
   LabelS.Caption:= TrimLeft(PChar(ACTIVESWORDS));
 
+  {$IFDEF USEGL}
   clSim.UpdateSelf;
+  {$ENDIF}
 
   if OperatorTextStr[0] <> #0 then
     begin
@@ -207,8 +210,8 @@ begin
         end;
       LabelTool.Caption:= Format('%s %d %s %n %s %n',
         ['Tool: ',OldTool,' Dia: ',d,' Z: ',l]);
-      if Assigned(MyGlView) then
-        MyGlView.SetTool(State.CurrentTool);
+      if Assigned(clSim) then
+        clSim.SetTool(State.CurrentTool);
     end;
 
     if UpdateMsg then
@@ -314,11 +317,13 @@ begin
   clRun.Parent:= PanelMaster;
   clRun.Visible:= False;
 
+  {$IFDEF USEGL}
   clSim:= TSimClientForm.Create(self);
   if not Assigned(clSim) then
     RaiseError('Error create class "simclient"');
   clSim.Parent:= PanelMaster;
   clSim.Visible:= False;
+  {$ENDIF}
 
   InitPanels;
   InitButtons;
@@ -345,7 +350,9 @@ begin
   if Assigned(clJog) then FreeAndNil(clJog);
   if Assigned(clMDI) then FreeAndNil(clMDI);
   if Assigned(clRun) then FreeAndNil(clRun);
+  {$IFDEF USEGL}
   if Assigned(clSim) then FreeAndNil(clSim);
+  {$ENDIF}
   for i:= 0 to NumTotalButtons - 1 do
     if Assigned(MocBtns[i]) then FreeAndNil(MocBtns[i]);
   if Assigned(EMC) then FreeAndNil(Emc);
@@ -400,17 +407,19 @@ procedure TMainForm.PanelMasterResize(Sender: TObject);  // the master for the c
 var
   w,h: integer;
 begin
-  w:= PanelMaster.ClientWidth div 2;
+  w:= PanelMaster.ClientWidth {$IFDEF USEGL} div 2 {$ENDIF};
   h:= PanelMaster.ClientHeight;
   if Assigned(clJog) then clJog.SetBounds(0,0,w,h);
   if Assigned(clMDI) then clMDI.SetBounds(0,0,w,h);
   if Assigned(clRun) then clRun.SetBounds(0,0,w,h);
+  {$IFDEF USEGL}
   if Assigned(clSim) then
     begin
       clSim.SetBounds(w,0,w,h);
       if not clSim.Visible then
         clSim.Visible:= True;
     end;
+  {$ENDIF}
 end;
 
 procedure TMainForm.PanelSoftBtnsResize(Sender: TObject);

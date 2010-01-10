@@ -11,6 +11,9 @@ unit glcanon;
 
 interface
 
+uses
+  mocglb;
+
 const
   INTP_OK = 0;
   INTP_EXIT = 1;
@@ -40,6 +43,8 @@ function GetGCodeError(code: integer): string;
 function ToCanonUnits(Value: Double): Double;
 function ToCanonPos(Value: double; Index: integer): double;
 
+procedure GetOffset(var Ofs: tlo);
+
 function GetToolDiameter(i: integer): double;
 function GetToolLength(i: integer): double;
 
@@ -52,7 +57,6 @@ implementation
 
 uses
   math, sysutils,
-  mocglb,
   emc2pas,  // LINELEN
   gllist;   // MyGlList
 
@@ -192,6 +196,12 @@ begin
   y:= ToCanonUnits(GetOrigin(1));
   z:= ToCanonUnits(GetOrigin(2));
   SetCoords(Offset,x,y,z,0,0,0,0,0,0);
+end;
+
+procedure GetOffset(var Ofs: tlo);
+begin
+  InitOffsets;
+  ofs:= offset;
 end;
 
 procedure Init;

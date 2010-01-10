@@ -203,7 +203,7 @@ begin
   UpdateError;
   LastError:= S;
   if Assigned(clRun) then
-    clRun.UpdatePreview;
+    clRun.UpdatePreview(True);
 end;
 
 procedure TEmc.TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
@@ -452,14 +452,14 @@ begin
       begin
         DoTouchOff;
         if Assigned(clRun) then
-          clRun.UpdatePreview;
+          clRun.UpdatePreview(True);
       end;
     cmLIMITS: Emc.ORideLimits;
     cmOFFSDLG:
       begin
         EditOffsets;
         if Assigned(clRun) then
-          clRun.UpdatePreview;
+          clRun.UpdatePreview(True);
       end;
     cmTOOLS: EditTools;
     cmTOOLCHG: ChangeTool;

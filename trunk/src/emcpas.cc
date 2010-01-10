@@ -74,9 +74,9 @@ double emcSpindleDefaultSpeed = 500;
 // this is a workaround for the __dso_handle problem
 // undefine this if neccessary
 
-#define dsohandle
+// #define dsohandle
 
-#ifdef dsohandle
+#ifdef DSOHANDLE
 extern "C"
 {
 void *__dso_handle = NULL;

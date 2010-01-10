@@ -8,16 +8,19 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces,
   Forms,
-  Dialogs,
-  {$IFNDEF OWNGL} LazOpenGLContext,
+  Dialogs, LResources,
+  {$IFNDEF OWNGL}
+  OpenGlContext,
   {$ENDIF}
   emc2pas,
   mocbtn, SysUtils,
   mocmain,
   mocglb, mocini, jogclient,
-  runclient, mdiclient, simclient, editordlg,
-  offsetdlg, tooleditdlg, touchoff,
-  ctypes, toolchange;
+  runclient, mdiclient,
+  {$IFDEF USEGL}
+  simclient,
+  {$ENDIF}
+  editordlg, offsetdlg, tooleditdlg, touchoff, toolchange, hal;
 
 const
   __LC_CTYPE    = 0;
@@ -31,9 +34,8 @@ const
 Const
   clib = 'c';
 
-function setlocale(category: cint; locale: pchar): pchar; cdecl; external clib name 'setlocale';
-// function nl_langinfo(__item: cint):Pchar; cdecl; external clib name 'nl_langinfo';
-  
+function setlocale(category: integer; locale: pchar): pchar; cdecl; external clib name 'setlocale';
+
 function InitEmc: Boolean;
 var
   s: string;
@@ -57,6 +59,9 @@ begin
       writeln('Error: Cannot connect to emc');
       Exit;
     end;
+  LoadHal;
+  if not InitHal('mocca') then
+    Exit;
   Result:= True;
 end;
 
@@ -65,14 +70,24 @@ begin
   result:= 0;
   emcNmlQuit; // free NML buffers
   iniClose;   // close inifile if open
+  FreeHal;
 end;
 
+procedure InitEnv;
 begin
+  Emc2Home:= '';
+  Emc2Home:= getenvironmentvariable('EMC2_HOME');
+end;
+
+{$IFDEF WINDOWS}{$R mocca.rc}{$ENDIF}
+
+begin
+  {$I mocca.lrs}
   writeln('starting mocca...');
-  Set8087CW($133F);
+  InitEnv;
+  // Set8087CW($133F);
   decimalseparator:='.';
-  if not InitEmc then
-    Halt(1);
+  if not InitEmc then Halt(1);
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
