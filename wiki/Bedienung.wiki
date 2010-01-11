@@ -24,3 +24,26 @@ mocca als Grafikfrontend für EMC2 einstellen:
  # Einen symbolischen Link in /usr/bin einfügen: `sudo ln -s mocca /usr/bin/mocca`
  # Die ini Datei der Maschine bearbeiten: `DISPLAY = mocca` 
  # EMC starten, mocca wird geladen 
+
+
+Mocca Ini- Parameter:
+
+Sektion [DISPLAY]
+
+"DRO_FONT_SIZE = 18"
+Mit DRO_FONT_SIZE wird der Größe der Schriftart der Achsanzeige eingestellt.
+Minimaler Wert sind 10 Pixel, Maximaler Wert sind 72 Pixel.
+
+"GLRGBA = 1"
+Mit GLRGBA wird der RGBA Parameter der OpenGl Erweiterung eingestellt.
+Mögliche Werte sind 0 (Disabled) und 1 (Enabled)
+
+"GLDOUBLEBUFFERED = 1"
+Damit wird der DOUBLEBUFFERED Parameter der OpenGl Erweiterung eingestellt.
+Std. Einstellung ist 1 (Enabled);
+Mögliche Werte sind 0 (Disabled) und 1 (Enabled) 
+
+"GLDIRECT = 1"
+Mit GLDIRECT wird der GLDIRECT Parameter der OpenGl Erweiterung eingestellt.
+Bei Problemen mit MesaGl Treibern und Grafikkarten die OpenGl Directbuffer nicht unterstützen kann hier der Wert entsprechend verändert werden.
+Mögliche Werte sind 0 (Disabled) und 1 (Enabled)
