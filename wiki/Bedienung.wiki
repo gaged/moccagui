@@ -28,11 +28,19 @@ mocca als Grafikfrontend für EMC2 einstellen:
 
 Mocca Ini- Parameter:
 
-Sektion [DISPLAY]
+Sektion DISPLAY
 
 "DRO_FONT_SIZE = 18"
 Mit DRO_FONT_SIZE wird der Größe der Schriftart der Achsanzeige eingestellt.
-Minimaler Wert sind 10 Pixel, Maximaler Wert sind 72 Pixel.
+Minimaler Wert sind 10 Punkt, Maximaler Wert sind 72 Punkt.
+
+"FONT_SIZE = 10"
+Mit FONT_SIZE wird die Mocca Fensterschriftart eingestellt.
+Mögliche Werte sind 8 - 16 Punkt.
+
+"BUTTON_SIZE = small" Optionen: medium,large
+Mit BUTTON_SIZE wird die größe der Buttons (Rechte und untere Leiste) eingestellt.
+Mögliche Werte sind small,medium,large
 
 "GLRGBA = 1"
 Mit GLRGBA wird der RGBA Parameter der OpenGl Erweiterung eingestellt.
@@ -47,3 +55,23 @@ Mögliche Werte sind 0 (Disabled) und 1 (Enabled)
 Mit GLDIRECT wird der GLDIRECT Parameter der OpenGl Erweiterung eingestellt.
 Bei Problemen mit MesaGl Treibern und Grafikkarten die OpenGl Directbuffer nicht unterstützen kann hier der Wert entsprechend verändert werden.
 Mögliche Werte sind 0 (Disabled) und 1 (Enabled)
+
+"SCRIPT_DIR = /home/your_name/myscripts"
+Mit SCRIPT_DIR wird der Suchpfad für Scripts angegeben. Mocca lädt Scripts aus diesem Verzeichniss. Scripts haben die Datei- Endung .mdi Beispiel: toolchange.mdi
+
+Scripts werden in der Ini- Datei fortlaufend mit SCRIPT_0 .. SCRIPT_9 definiert.
+Beispiel:
+
+[SCRIPT_0]
+NAME = Werkzeuglänge vermessen
+SCRIPT = /home/your_name/measure.mdi
+
+[SCRIPT_1]
+NAME = Schmierzyklus
+SCRIPT = /home/your_name/lube.mdi
+
+"NAME = Button1"
+Mit Name wird der Text bezeichnet der im Button für das Script angezeigt wird.
+
+SCRIPT = /home/your_name/script.mdi
+Mit Script wird das ausführbare Script (NC-Code) bezeichnet das beim drücken des Buttons "Button1" ausgeführt wird.
