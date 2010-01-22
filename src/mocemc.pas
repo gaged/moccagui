@@ -9,16 +9,23 @@ uses
   
 type
   TEMC = class
-    function  ToLinearUnits(Value: Double): double;
-    function  UpdateState: Boolean;
-    function  HandleCommand(Cmd: integer): Boolean;
+    procedure Execute(cmd: string);
+    procedure ExecuteSilent(cmd: string);
     function  ForceTaskMode(ToMode: integer): Boolean;
     function  ForceMachineOff: Boolean;
-    procedure SetFeedORide(Feed: integer);
-    procedure SetMaxVel(NewVel: integer);
-    procedure ORideLimits;
-    procedure SetDisplayUnits(UseMetric: Boolean);
+    function  GetActiveCoordSys: integer;
+    function  GetActiveIsInch: Boolean;
+    function  GetMaxVelText: string;
+    function  HandleCommand(Cmd: integer): Boolean;
+    function  ToLinearUnits(Value: double): double;
+    //function  ToAngularUnits(Value: double): double;
+    function  UpdateState: Boolean;
     procedure SetCoordsZero;
+    procedure SetDisplayUnits(UseMetric: Boolean);
+    procedure SetFeedORide(Feed: integer);
+    procedure SetSpORide(ORide: integer);
+    procedure SetMaxVel(NewVel: integer);
+    procedure SetORideLimits(ORide: Boolean);
     procedure TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
     procedure TaskStop;
     procedure TaskPauseResume;
@@ -26,15 +33,11 @@ type
     procedure TaskPause;
     procedure TaskStep;
     procedure TaskRun;
-    procedure Execute(cmd: string);
-    procedure ExecuteSilent(cmd: string);
-    function  GetActiveCoordSys: integer;
-    function  GetActiveIsInch: Boolean;
-    function  GetMaxVelText: string;  // returns MaxVel in value[units]/min;
     function  WaitDone: integer;
     procedure LoadTools;
     procedure ChangeTool;
-
+    procedure PartAlign;
+    procedure TouchOff(Axis: Char);
   end;
 
 var
@@ -43,13 +46,27 @@ var
 implementation
 
 uses
+  Forms,
   mocglb,emc2pas,mocjoints,
   glcanon,
   runclient,
   offsetdlg,
   tooleditdlg,
   toolchange,
-  touchoff;
+  touchoff,
+  partaligndlg;
+
+procedure TEmc.PartAlign;
+var
+  X,Y,Z: Double;
+begin
+  if not Assigned(Joints) then
+    Exit;
+  X:= GetAbsPos(Joints.AxisByChar('X'));
+  Y:= GetAbsPos(Joints.AxisByChar('Y'));
+  Z:= GetAbsPos(Joints.AxisByChar('Z'));
+  DoPartAlign(X,Y,Z)
+end;
 
 procedure TEmc.LoadTools;
 var
@@ -69,6 +86,37 @@ begin
     end;
 end;
 
+function ExecToolChange(Cmd: string): boolean;
+begin
+  {$IFDEF DEBUG_EMC}
+  writeln('ExecToolChange: ',Cmd);
+  {$ENDIF}
+  StateLocked:= True;
+  try
+    sendMDI;
+    Emc.WaitDone;
+    if sendMDICmd(PChar(Cmd)) <> 0 then
+    begin
+      LastError:= 'Error executing toolchange- command 1';
+      StateLocked:= False;
+      Exit;
+    end;
+    if emcCommandWaitReceived(emcCommandSerialNumber) <> 0 then
+      begin
+        LastError:= 'Error executing toolchange- command 2';
+        StateLocked:= False;
+        Exit;
+      end;
+    while emcPollStatus = RCS_EXEC do
+      begin
+        Application.ProcessMessages;
+      end;
+  finally
+      SendManual;
+      StateLocked:= False;
+  end;
+end;
+
 procedure TEmc.ChangeTool;
 var
   s: string;
@@ -78,12 +126,12 @@ begin
   {$IFDEF DEBUG_EMC}
   writeln('ChangeTool: ' + IntToStr(i));
   {$ENDIF}
-  if (i < 1) or (i > CANON_TOOL_MAX) then
+  if (i < 1) or (i > CANON_TOOL_MAX - 1) then
     Exit;
   if i <> State.CurrentTool then
     begin
       s:= 'T' + IntToStr(i) + ' M6';
-      ExecuteSilent(s);
+      ExecToolChange(s);
     end;
 end;
 
@@ -107,9 +155,12 @@ begin
   Result:= FloatToStr(ConvertLinearUnits(State.ActVel)) + Vars.UnitVelStr
 end;
 
-procedure TEmc.ORideLimits;
+procedure TEmc.SetORideLimits(ORide: Boolean);
 begin
-  sendOverrideLimits(0)
+  if ORide then
+    sendOverrideLimits(0)
+  else
+    sendOverrideLimits(-1);
 end;
 
 procedure TEmc.Execute(cmd: string);
@@ -119,7 +170,6 @@ begin
   {$IFDEF DEBUG_EMC}
   writeln('Execute: ' + cmd);
   {$ENDIF}
-
   i:= sendMDICmd(PCHar(cmd));
   if i <> 0 then
     LastError:= 'call to mdi returned ' + inttostr(i);
@@ -185,7 +235,6 @@ begin
     Scale:= 25.4
   else
     Scale:= 1;
-
   if i < 0 then
     begin
       LastError:= 'invalid call too coord system';
@@ -201,7 +250,6 @@ begin
   S:= Format('%s%d%s%.5f%s%.5f%s%.5f',['G10L2P',i+1,'X',PosX,'Y',PosY,'Z',PosZ]);
   ExecuteSilent(S);
   UpdateError;
-  LastError:= S;
   if Assigned(clRun) then
     clRun.UpdatePreview(True);
 end;
@@ -210,30 +258,40 @@ procedure TEmc.TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
 var
   s: string;
   IsInch: Boolean;
-  V: Double;
+  Scale,V: Double;
+  UVal: Double;
 begin
   IsInch:= GetActiveIsInch;
   if IsInch then
-    V:= Value / 25.4
+    Scale:= 25.4
   else
-    V:= Value;
+    Scale:= 1;
+  if Vars.Metric and IsInch then
+    UVal:= Value / Scale
+  else
+    UVal:= Value;
+  V:= (GetAbsPos(Joints.AxisByChar(Axis)) / Scale) + Value;
   S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,V]);
   ExecuteSilent(s);
-  LastError:= S;
 end;
 
 function TEmc.ForceTaskMode(ToMode: integer): Boolean;
 begin
+  {$IFDEF DEBUG_EMC}
+  writeln('ForceTaskMode',ToMode);
+  {$ENDIF}
   Result:= False;
   if ToMode = State.TaskMode then Exit;
-  if Assigned(Joints) then
-    Joints.CheckJogExit;
-  with State do
-    if SpindleDirection <> 0 then
-      begin
-        sendSpindleOff;
-        WaitDone;
-      end;
+  if State.TaskMode = TaskModeManual then
+    if Assigned(Joints) then
+      Joints.CheckJogExit;
+  if not State.EStop then
+    with State do
+      if SpindleDirection <> 0 then
+        begin
+          sendSpindleOff;
+          WaitDone;
+        end;
   case ToMode of
     TASKMODEMANUAL: sendManual;
     TASKMODEAUTO: sendAuto;
@@ -279,12 +337,22 @@ begin
     end;
 end;
 
+procedure TEmc.SetSpORide(Oride: integer);
+begin
+  if Oride <> State.ActSpORide then
+    begin
+      sendSpindleOverride(Oride / 100);
+      State.ActSpORide:= ORide;
+    end;
+end;
+
 procedure TEmc.SetMaxVel(NewVel: integer);
 begin
   if NewVel <> State.ActVel then
     begin
-      sendMaxVelocity(State.ActVel / 60);
       State.ActVel:= NewVel;
+      if State.ActVel < 1 then State.ActVel:= 1;
+      sendMaxVelocity(State.ActVel / 60);
     end;
 end;
 
@@ -292,7 +360,7 @@ function TEmc.UpdateState: Boolean;
 var
   i: integer;
 begin
-  // Result:= False;
+  Result:= False;
   if UpdateLock then Exit;
 
   if UpdateStatus <> 0 then Exit;
@@ -300,9 +368,9 @@ begin
 
   i:= taskMode;
   Result:= (i <> State.TaskMode);
+  State.TaskMode:= i;
   with State do
     begin
-      TaskMode:= i;
       EStop:= GetEStop;
       Machine:= GetMachineOn;
       SpDir:= SpindleDirection;
@@ -310,25 +378,21 @@ begin
       SpSpeed:= SpindleSpeed;
       SpEnabled:= SpindleEnabled <> 0;
       SpBrake:= SpindleBrake <> 0;
+      SpIncreasing:= SpindleIncreasing;
       Flood:= coolantFlood;
       Mist:= coolantMist;
       Lube:= lubeOn;
       LubeLevel:= emc2pas.lubeLevel;
       Dtg:= trajDtg;
       Vel:= trajVel;
-
       Acc:= trajAcceleration;
       Probing:= trajProbing;
       ORideLimits:= AxisOverrideLimits(0);
-
       CurrentTool:= toolInSpindle;
       ToolPrepared:= toolPrepped <> 0;
       ToolOffset:= toolLengthOffset;
-
       ORideLimits:= AxisOverrideLimits(0);
-
       TloAlongW:=  taskTloIsAlongW;
-
       if TaskMode = TASKMODEAUTO then
         begin
           InterpState:= taskInterpState;
@@ -344,16 +408,14 @@ end;
 
 procedure TEmc.TaskRun;
 begin
-  if State.TaskMode <> TASKMODEAUTO then Exit;
-  sendProgramRun(Vars.StartLine);
+  if State.TaskMode = TASKMODEAUTO then
+    sendProgramRun(Vars.StartLine);
 end;
 
 procedure TEmc.TaskStep;
 begin
-  if (State.TaskMode <> TASKMODEAUTO) or
-    (State.InterpState <> INTERP_IDLE) then
-      Exit;
-  sendProgramStep;
+  if (State.TaskMode = TASKMODEAUTO) then
+    sendProgramStep;
 end;
 
 procedure TEmc.TaskPause;
@@ -367,18 +429,17 @@ end;
 procedure TEmc.TaskResume;
 begin
   UpdateState;
-  if not State.InterpState = INTERP_PAUSED then
+  if (State.TaskMode <> TASKMODEAUTO) then
     Exit;
-  if not (State.TaskMode in [TASKMODEAUTO,TASKMODEMDI]) then
-    Exit;
-  sendProgramResume;
+  if State.InterpState = INTERP_PAUSED then
+    sendProgramResume;
 end;
 
 procedure TEmc.TaskPauseResume;
 begin
-  if not (State.TaskMode in [TASKMODEAUTO,TASKMODEMDI]) then
-   Exit;
   UpdateState;
+  if State.TaskMode <> TASKMODEAUTO then
+    Exit;
   if State.InterpState = INTERP_PAUSED then
     sendProgramResume
   else
@@ -398,12 +459,10 @@ end;
 function TEMC.HandleCommand(Cmd: integer): boolean;
 begin
   case Cmd of
+    cmAbort: sendAbort;
     cmESTOP:
       if not State.EStop then
-        begin
-          sendAbort;
-          sendEStop;
-        end
+        SendEStop
       else
         SendEStopReset;
     cmMACHINE:
@@ -445,25 +504,30 @@ begin
         sendMistOff
       else
         sendMistOn;
-    cmREFACT: Joints.HomeActive;
+    cmREFX: Joints.HomeAxis('X');
+    cmREFY: Joints.HomeAxis('Y');
+    cmREFZ: Joints.HomeAxis('Z');
+    cmREFA: Joints.HomeAxis('A');
+    cmREFB: Joints.HomeAxis('B');
+    cmREFC: Joints.HomeAxis('C');
     cmREFALL: Joints.HomeAll;
     cmZEROALL: SetCoordsZero;
-    cmZEROACT:
-      begin
-        DoTouchOff;
-        if Assigned(clRun) then
-          clRun.UpdatePreview(True);
-      end;
-    cmLIMITS: Emc.ORideLimits;
+    cmTOUCHX: TouchOff('X');
+    cmTOUCHY: TouchOff('Y');
+    cmTOUCHZ: TouchOff('Z');
+    cmTOUCHA: TouchOff('A');
+    cmTOUCHB: TouchOff('B');
+    cmTOUCHC: TouchOff('C');
     cmOFFSDLG:
       begin
         EditOffsets;
-        if Assigned(clRun) then
-          clRun.UpdatePreview(True);
+        clRun.UpdatePreview(True);
       end;
-    cmTOOLS: EditTools;
+    cmTOOLEDT: EditTools;
     cmTOOLCHG: ChangeTool;
     cmUNITS: SetDisplayUnits(not Vars.Metric);
+    //cmPARTALGN: if State.TaskMode = TASKMODEMANUAL then
+    //  PartAlign;
   else
     begin
       Result:= False;
@@ -473,6 +537,14 @@ begin
   Result:= true;
 end;
   
+procedure TEmc.TouchOff(Axis: Char);
+begin
+  if State.TaskMode <> TASKMODEMANUAL then
+    Exit;
+  DoTouchOff(Axis);
+  if Assigned(clRun) then
+    clRun.UpdatePreview(True);
+end;
 
 end.
 

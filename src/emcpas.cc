@@ -255,6 +255,12 @@ extern "C" int saveToolTable(char *filename)
 }
 
 
+// some "special" stuff
+// we need the emctask interp state to execute scripts 
+
+extern "C" int GetTaskInterpState() { return emcStatus->task.interpState; }
+extern "C" int GetTaskExecState() { return emcStatus->task.execState; }
+
 extern "C" int AxisAxisType(int joint) { return emcStatus->motion.axis[joint].axisType; }
 extern "C" double AxisUnits(int joint) { return emcStatus->motion.axis[joint].units; }
 extern "C" double AxisBacklash(int joint) { return emcStatus->motion.axis[joint].backlash; }
@@ -317,10 +323,27 @@ extern "C" bool trajProbeTripped() { return emcStatus->motion.traj.probe_tripped
     execState = EMC_TASK_EXEC_DONE;
     input_timeout = OFF;
     file[0] = 0;
-    command[0] = 0;
-    ZERO_EMC_POSE(origin);
     ZERO_EMC_POSE(toolOffset);
 */
+
+
+extern "C" bool taskGetFile(char *msg)
+{
+  if (emcStatus->task.file[0] != 0) {
+    strcpy(msg,emcStatus->task.file);
+    return true;
+  }
+  return false;
+}
+
+extern "C" bool taskGetCommand(char *msg)
+{
+  if (emcStatus->task.command[0] != 0) {
+    strcpy(msg,emcStatus->task.command);
+    return true;
+  }
+  return false;
+}
 
 // taskstate read functions
 extern "C" int taskMode() { return emcStatus->task.mode; }
@@ -464,6 +487,12 @@ extern "C" int emcCommandWaitDone(int serial_number)
     return -1;
 }
 
+extern "C" int emcPollStatus()
+{
+  updateStatus();
+  return emcStatus->status;
+} 
+  
 extern "C" double convertLinearUnits(double u)
 {
     double in_mm;

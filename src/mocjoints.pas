@@ -14,6 +14,8 @@ const
   ZERO_POS_STRING = '+00000.000';
   ZERO_DES_STRING = '0';
 
+  KeyDelayTime = 200;
+
 
 type
   TAxis = class
@@ -88,16 +90,18 @@ type
     procedure CreateJoints(CoordNames: string; NumAxes: Integer);
     function  GetAxis(Index: integer): TAxis;
     function  GetAxisChar(Index: integer): Char;
+    function  AxisByChar(Ch: Char): integer;
+    procedure SetActiveChar(Ch: Char);
     procedure Update;
     procedure CheckJogExit;
     procedure DoResize(Sender: TObject);
-    function  AxisByChar(Ch: Char): integer;
     function  JogCont(Ch: Char; Speed: Double): integer;
     function  JogIncr(Ch: Char; Speed,Incr: Double): integer;
     function  JogStop(Ch: Char): integer;
     procedure JogStopAll;
     procedure HomeAll;
     procedure HomeActive;
+    procedure HomeAxis(Ax: Char);
     property  ShowActual: Boolean read FShowActual write FShowActual;
     property  ShowRelative: Boolean read FShowRelative write FShowRelative;
     property  BorderWidth: integer read FBorderWidth write FBorderWidth;
@@ -111,10 +115,23 @@ var
 implementation
 
 uses
-  emc2pas,mocglb,mocemc,hal;
+  emc2pas,mocglb,mocemc,hal,LCLIntf;
 
 var
   FullWidth: integer;
+  AxisTicks: Array[0..MAX_JOINTS - 1] of longint;
+
+function GetTickDiff(var t: longint): longint;
+var
+  i: longint;
+begin
+  i:= GetTickCount;
+  if t = 0 then  // First use..
+    Result:= KeyDelayTime
+  else
+    Result:= i - t;
+  t:= i;
+end;
 
 function PosToString(const Value: Double): string;
 var
@@ -122,7 +139,7 @@ var
 begin
   Result:= '';
   if Value >= 0 then S:= '+';
-  S:= S + FloatToStrF(Value, ffFixed, 8, 3);
+  S:= S + FloatToStrF(Value, ffFixed, 8, 4);
   Result:= S;
 end;
 
@@ -172,11 +189,11 @@ var
 begin
   CellW:= Round(FontHeight * 0.7);
   X:= (2*CellW) + BorderWidth;
-  W:= 7 * CellW;
+  W:= 9 * CellW;
   FDesLabel.SetBounds(BorderWidth,ActTop,CellW,FontHeight);
   FPosLabel.SetBounds(X,ActTop,W,FontHeight);
   FTop:= ActTop;
-  i:= X + W;
+  i:= X + W + BorderWidth;
   if FullWidth < i then
     FullWidth:= i;
 end;
@@ -320,17 +337,6 @@ begin
     end;
 end;
 
-function TJoints.AxisByChar(Ch: Char): integer;
-var
-  i: integer;
-begin
-  i:= Pos(Ch,FCoords);
-  if i > 0 then
-    Result:= i-1
-  else
-    Result:= -1;
-end;
-
 procedure TJoints.CheckJogExit;
 var
   i: integer;
@@ -356,14 +362,30 @@ begin
     sendHome(Vars.ActiveAxis);
 end;
 
+procedure TJoints.HomeAxis(Ax: Char);
+var
+  i: integer;
+begin
+  i:= AxisByChar(Ax);
+  if i < 0 then Exit;
+  sendHome(i);
+end;
+
 function TJoints.JogCont(Ch: Char; Speed: Double): integer;
 var
   i: Integer;
+  d: longint;
 begin
   Result:= -1;
   i:= AxisByChar(Ch);
   if i < 0 then Exit;
   FAxes[i].Jogging:= True;
+  d:= GetTickDiff(AxisTicks[i]);
+  if d < KeyDelayTime then
+    begin
+      writeln('Skipped');
+      Exit;
+    end;
   Result:= sendJogCont(i,Speed);
   if i <> Vars.ActiveAxis then
     Vars.ActiveAxis:= i;
@@ -447,6 +469,17 @@ begin
     Result:= FAxes[index];
 end;
 
+function TJoints.AxisByChar(Ch: Char): integer;
+var
+  i: integer;
+begin
+  i:= Pos(Ch,FCoords);
+  if i > 0 then
+    Result:= i-1
+  else
+    Result:= -1;
+end;
+
 function TJoints.GetAxisChar(Index: integer): Char;
 begin
   Result:= #0;
@@ -454,6 +487,16 @@ begin
     Exit;
   if Assigned(FAxes[index]) then
     Result:= GetAxis(Index).AxisChar;
+end;
+
+procedure TJoints.SetActiveChar(Ch: Char);
+var
+  i: integer;
+begin
+  i:= AxisByChar(UpCase(Ch));
+  if i < 0 then
+    Exit;
+  Vars.ActiveAxis:= i;
 end;
 
 procedure TJoints.CreateJoints(CoordNames: string; NumAxes: integer);
@@ -507,8 +550,9 @@ begin
   FBox.Left:= 0;
   FBox.Width:= FullWidth; // FPanel.ClientWidth;
   FBox.Height:= h;
-  if FPanel.ClientWidth < FullWidth + 1 then
-    FPanel.ClientWidth:= FullWidth + 1;
+  //if FPanel.ClientWidth < FullWidth + 1 then
+  FPanel.ClientWidth:= FullWidth + 1;
+  FPanel.ClientHeight:= y + 1;
 end;
 
 end.

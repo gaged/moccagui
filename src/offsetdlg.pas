@@ -63,7 +63,6 @@ begin
     end;
 end;
 
-
 procedure TOffsetsDlg.FormCreate(Sender: TObject);
 begin
   VarFile:= TStringList.Create;

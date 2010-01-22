@@ -1,12 +1,12 @@
 object SimClientForm: TSimClientForm
-  Left = 386
+  Left = 496
   Height = 453
-  Top = 300
+  Top = 245
   Width = 601
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
-  BorderIcons = []
-  BorderStyle = bsNone
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
   Caption = 'SimClientForm'
   ClientHeight = 453
   ClientWidth = 601
@@ -14,12 +14,18 @@ object SimClientForm: TSimClientForm
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
+  ParentFont = True
   LCLVersion = '0.9.28.2'
   object BtnP: TSpeedButton
-    Left = 0
-    Height = 22
-    Top = 8
-    Width = 23
+    AnchorSideLeft.Control = Owner
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 1
+    Height = 24
+    Top = 428
+    Width = 24
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Around = 1
     Caption = 'P'
     Color = clBtnFace
     Down = True
@@ -28,46 +34,93 @@ object SimClientForm: TSimClientForm
     OnClick = BtnPClick
   end
   object BtnX: TSpeedButton
-    Left = 0
-    Height = 22
-    Top = 32
-    Width = 23
-    Caption = 'X'
+    AnchorSideLeft.Control = BtnP
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 26
+    Height = 24
+    Top = 428
+    Width = 24
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Around = 1
+    Caption = 'D'
     Color = clBtnFace
     GroupIndex = 1
     NumGlyphs = 0
     OnClick = BtnXClick
   end
   object BtnY: TSpeedButton
-    Left = 0
-    Height = 22
-    Top = 56
-    Width = 23
-    Caption = 'Y'
+    AnchorSideLeft.Control = BtnX
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BtnP
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 51
+    Height = 24
+    Top = 428
+    Width = 24
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Around = 1
+    Caption = 'V'
     Color = clBtnFace
     GroupIndex = 1
     NumGlyphs = 0
     OnClick = BtnYClick
   end
   object BtnZ: TSpeedButton
-    Left = 0
-    Height = 22
-    Top = 80
-    Width = 23
-    Caption = 'Z'
+    AnchorSideLeft.Control = BtnY
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 76
+    Height = 24
+    Top = 428
+    Width = 24
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Around = 1
+    Caption = 'R'
     Color = clBtnFace
     GroupIndex = 1
     NumGlyphs = 0
     OnClick = BtnZClick
   end
+  object LabelZoom: TLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = LabelL1
+    AnchorSideRight.Control = SbZoom
+    Left = 350
+    Height = 18
+    Top = 431
+    Width = 77
+    Anchors = [akTop, akRight]
+    AutoSize = False
+    BorderSpacing.Left = 4
+    BorderSpacing.Right = 4
+    Caption = 'LabelZ'
+    ParentColor = False
+  end
+  object LabelL1: TLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BtnZ
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = LabelZoom
+    Left = 307
+    Height = 18
+    Top = 431
+    Width = 39
+    Anchors = [akTop, akRight]
+    Caption = 'Zoom'
+    ParentColor = False
+  end
   object sbH: TScrollBar
+    AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = sbV
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 25
-    Height = 15
-    Top = 436
-    Width = 559
+    AnchorSideBottom.Control = BtnP
+    Left = 0
+    Height = 18
+    Top = 408
+    Width = 581
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
     LargeChange = 10
@@ -82,10 +135,10 @@ object SimClientForm: TSimClientForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = sbH
-    Left = 584
-    Height = 436
+    Left = 581
+    Height = 408
     Top = 0
-    Width = 15
+    Width = 18
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 2
     Kind = sbVertical
@@ -95,5 +148,21 @@ object SimClientForm: TSimClientForm
     PageSize = 10
     TabOrder = 1
     OnChange = sbVChange
+  end
+  object SbZoom: TScrollBar
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = LabelZoom
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = sbH
+    AnchorSideRight.Side = asrBottom
+    Left = 437
+    Height = 18
+    Top = 431
+    Width = 144
+    Anchors = [akTop, akRight]
+    BorderSpacing.Left = 10
+    PageSize = 0
+    TabOrder = 2
+    OnChange = SbZoomChange
   end
 end

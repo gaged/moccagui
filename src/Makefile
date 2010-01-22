@@ -9,12 +9,7 @@ EMCDIR = /home/gtom/emc
 LAZDIR = /usr/lib/lazarus/0.9.28.2
 
 INCLUDES = -I$(EMCDIR)/include
-INCLUDES += -I$(EMCDIR)/src
-INCLUDES += -I$(EMCDIR)/lib
-INCLUDES += -I$(EMCDIR)/bin
-INCLUDES += -I$(EMCDIR)/src/emc/ini
-INCLUDES += -I/usr/lib
-INCLUDES += -I/lib
+INCLUDES += -I$/usr/include/emc2
 
 LCL = -Fu.
 LCL += -Fu../lib
@@ -27,7 +22,7 @@ LCL += -Fu$(LAZDIR)/packager/units/i386-linux
 LIBDIR = $(EMCDIR)/lib
 
 emcpas.o: emcpas.cc
-	$(COMPILE) $(INCLUDES) -o../lib/emcpas.o -UDSOHANDLE -l/usr/lib emcpas.cc
+	$(COMPILE) $(INCLUDES) -o../lib/emcpas.o -DDSOHANDLE -l/usr/lib emcpas.cc
 
 simcanon.o: simcanon.cc
 	$(COMPILE) $(INCLUDES) -o../lib/simcanon.o simcanon.cc

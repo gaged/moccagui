@@ -36,7 +36,7 @@ type
     procedure AddFeed(line: integer; n1,n2: tlo);
     procedure AddArcFeed(line: integer; n1,n2: tlo);
     procedure AddDwell(line: integer; x,y,z: double);
-    procedure GetExtents(var E: TExtents);
+    function  GetExtents(var E: TExtents): Boolean;
     function  GetInfo: string;
     procedure First;
     function  Get: PListItem;
@@ -44,8 +44,6 @@ type
   
 var
   MyGlList: TGlList;
-  
-
 
 implementation
 
@@ -93,7 +91,7 @@ begin
   Current:= -1;
 end;
 
-procedure TGlList.GetExtents(var E: TExtents);
+function TGlList.GetExtents(var E: TExtents): Boolean;
 var
   P: PListItem;
   
@@ -108,22 +106,25 @@ var
   end;
   
 begin
-  with E do
-    begin
-      MinX:= 0; MaxX:= 0;
-      MinY:= 0; MaxY:= 0;
-      MinZ:= 0; MaxZ:= 0;
-    end;
+  Result:= False;
+  E:= SetExtents(0,0,0,0,0,0);
   if ItemList.Count < 1 then
     Exit;
   First;
   P:= Get;
+  if P <> nil then
+  begin
+    E:= SetExtents(P^.l1.x,P^.l1.y,P^.l1.z,0,0,0);
+    Check(P^.l2);
+    P:= Get;
+  end;
   while P <> nil do
     begin
       Check(P^.l1);
       Check(P^.l2);
       P:= Get;
     end;
+  Result:= True;
 end;
 
 function TGlList.Get: PListItem;

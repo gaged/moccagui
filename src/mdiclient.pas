@@ -87,7 +87,7 @@ end;
 
 procedure TMDIClientForm.MapButtons;
 begin
-  SetButtonMap(@BtnDefMDI,@Self.Click);
+  SetButtonMap(@BtnDefMDI,@BtnDefMDI1,@Self.Click);
 end;
 
 procedure TMDIClientForm.InitControls;

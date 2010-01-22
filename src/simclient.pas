@@ -18,12 +18,15 @@ type
 
   { TSimClientForm }
   TSimClientForm = class(TForm)
+    LabelZoom: TLabel;
+    LabelL1: TLabel;
     sbH: TScrollBar;
     sbV: TScrollBar;
     BtnP: TSpeedButton;
     BtnX: TSpeedButton;
     BtnY: TSpeedButton;
     BtnZ: TSpeedButton;
+    SbZoom: TScrollBar;
     procedure BtnPClick(Sender: TObject);
     procedure BtnXClick(Sender: TObject);
     procedure BtnYClick(Sender: TObject);
@@ -44,6 +47,7 @@ type
       Y: Integer);
     procedure OglMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure SbZoomChange(Sender: TObject);
   private
     {$IFNDEF OWNGL}
     ogl: TOpenGlControl;
@@ -56,14 +60,16 @@ type
     CenterX,CenterY,CenterZ: double;
     EyeX,EyeY,EyeZ: Double;
     ConeX,ConeY,ConeZ: Double;
-    LimW,LimH,LimD: double;
+    LimX,LimY,LimZ: double;
     L: TExtents;
+    Offset: tlo;
     ConeL,LimitsL,CoordsL,ListL: gluInt;
     MouseX,MouseY: integer;
     Moving: Boolean;
     Mode: integer;
     ToolRad,ToolLen: double;
     AreaInitialized: Boolean;
+    ZoomMax: integer;
     FFileName: string;
     FUnitCode: string;
     FInitCode: string;
@@ -73,6 +79,7 @@ type
     procedure MakeList;
     procedure Pan(DX,DY: integer);
     procedure UpdateView;
+    procedure UpdateLabels;
     procedure MoveCone(X,Y,Z: Double);
     procedure ResetView;
     procedure RotateZ(Angle: integer);
@@ -109,33 +116,34 @@ end;
 procedure TSimClientForm.ReloadFile;
 var
   Error: integer;
+  Dist: Double;
 begin
-  if Length(FFileName) < 1 then
-    begin
-      LastError:= 'Filename = ""';
-      Exit;
-    end;
   if (not Assigned(MyGlList)) then
     raise Exception.Create('cannot show preview without a list');
-  Error:= ParseGCode(FFileName,FUnitCode,FInitCode);
-  if Error <> 0 then
-    LastError:= GetGCodeError(Error);
+  if FFileName <> '' then
+    begin
+      Error:= ParseGCode(FFileName,FUnitCode,FInitCode);
+      if Error <> 0 then
+        LastError:= GetGCodeError(Error);
+      end;
+  CanonInitOffsets;
   UpdateView;
   Ogl.Invalidate;
 end;
 
 procedure TSimClientForm.ClearFile;
 begin
-  if (not Assigned(MyGlList)) then
-    Exit;
-  if FFileName <> '' then
-    begin
-      MyGlList.Clear;
-      FFileName:= '';
-      UpdateView;
-      Ogl.Invalidate;
-    end;
+  if Assigned(MyGlList) then
+    MyGlList.Clear;
+  FFileName:= '';
+  UpdateView;
+  Ogl.Invalidate;
  end;
+
+procedure TSimClientForm.UpdateLabels;
+begin
+  LabelZoom.Caption:= FloatToStr(EyeZ);
+end;
 
 procedure TSimClientForm.UpdateSelf;
 var
@@ -175,10 +183,11 @@ begin
   ListL:= 4;
   ToolRad:= 0.2;
   ToolLen:= 0.5;
+  ZoomMax:= 10;
   FShowLivePlot:= True;
   FFileName:= '';
-  sbV.setParams(InitialRotX,-180,180);
-  sbH.SetParams(InitialRotZ,-180,180);
+  sbV.setParams(InitialRotX,-180,180,1);
+  sbH.SetParams(InitialRotZ,-180,180,1);
   if not Assigned(MyGlList) then
     MyGlList:= TGlList.Create;
   if not Assigned(MyGlList) then
@@ -203,6 +212,8 @@ begin
   ogl.OnMouseDown:= @self.OglMouseDown;
   ogl.OnMouseMove:= @self.OglMouseMove;
   ogl.OnMouseUp:= @self.OglMouseUp;
+  CanonInitOffsets;
+  GetCanonOffset(Offset);
 end;
 
 procedure TSimClientForm.BtnPClick(Sender: TObject);
@@ -296,9 +307,9 @@ begin
         end;
       if Mode = 3 then
         begin
-          rotationX:= 0;
-          rotationY:= -90;
-          rotationZ:= 0;
+          rotationX:= -90;
+          rotationY:= 0;
+          rotationZ:= -90;
         end;
       sbV.setParams(Round(RotationX),-180,180);
       sbH.SetParams(Round(RotationZ),-180,180);
@@ -385,6 +396,16 @@ begin
   PanY:= 0;
 end;
 
+procedure TSimClientForm.SbZoomChange(Sender: TObject);
+begin
+  if Assigned(Ogl) and AreaInitialized then
+    begin
+      EyeZ:= SbZoom.Position;
+      UpdateLabels;
+      Ogl.Invalidate;
+    end;
+end;
+
 procedure TSimClientForm.MoveCone(x,y,z: Double);
 var
   cx,cy,cz: Double;
@@ -400,53 +421,63 @@ begin
     end;
 end;
 
+
 procedure TSimClientForm.UpdateView;
+
+  procedure CalcExtents;
+  begin
+    LimX:= (L.maxX - L.minX);
+    LimY:= (L.maxY - L.minY);
+    LimZ:= (L.maxZ - L.minZ);
+  end;
+
 begin
   L:= SetExtents(0,0,0,0,0,0);
   if (Assigned(MyGlList)) and (FFileName <> '') then
     MyGlList.GetExtents(L)
   else
     L:= Vars.MLimits;
-  LimW:= (L.maxX - L.minX);
-  LimH:= (L.maxY - L.minY);
-  LimD:= (L.maxZ - L.minZ);
-  if (LimW < 0.5) then
+  CalcExtents;
+  if (LimX < 0.0001) and (LimY < 0.0001) and (LimZ < 0.0001) then
     begin
-      L.MinX:= Vars.MLimits.MinX;
-      L.MaxX:= Vars.MLimits.MaxX;
+      L:= Vars.MLimits;
+      CalcExtents;
     end;
-  if (LimH < 0.5) then
-    begin
-      L.MinY:= Vars.MLimits.MinY;
-      L.MaxY:= Vars.MLimits.MaxY;
-    end;
-  if (LimD < 0.5) then
-    begin
-      L.MinZ:= Vars.MLimits.MinZ;
-      L.MaxZ:= Vars.MLimits.MaxZ;
-    end;
+  GetCanonOffset(Offset);
   ResetView;
 end;
 
 procedure TSimClientForm.ResetView;
 begin
-  Centerx:= L.maxX - (limW / 2);
-  Centery:= L.maxY - (limH / 2);
-  Centerz:= L.maxZ - (limD / 2);
+  Centerx:= L.maxX - (limX / 2); //  + offset.x;
+  Centery:= L.maxY - (limY / 2); // + offset.y;
+  Centerz:= L.maxZ - (limZ / 2); // + offset.z;
+  //writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
+  //writeln(Format('%s %f %f %f',['Extents: ',LimX,LimY,LimZ]));
   PanX:= 0; PanY:= 0; PanZ:= 0; EyeX:= 0; EyeY:= 0;
-  RotationX:= InitialRotX;
-  RotationY:= InitialRotY;
-  RotationZ:= InitialRotZ;
   if Mode = 0 then
     begin
-      if limW < limH then EyeZ:= (CenterZ + LimH) * 1.2
-        else EyeZ:= (CenterZ + LimW) * 1.2;
+      RotationX:= InitialRotX;
+      RotationY:= InitialRotY;
+      RotationZ:= InitialRotZ;
+    end;
+  if Mode = 0 then
+    begin
+      if limX < limY then EyeZ:= (CenterZ + LimY) * 1.2
+        else EyeZ:= (CenterZ + LimX) * 1.2;
+      ZoomMax:= Round(EyeZ*10);
     end
   else
     begin
-      if limW < limH then EyeZ:= CenterZ + Sqr(LimH)
-        else EyeZ:= CenterZ + Sqr(LimW);
+      if limX < limY then EyeZ:= CenterZ + Sqr(LimY)
+        else EyeZ:= CenterZ + Sqr(LimX);
+      ZoomMax:= Round(EyeZ*2);
     end;
+  if ZoomMax > 10000 then ZoomMax:= 10000 else
+    if ZoomMax < 10 then ZoomMax:= 10;
+  if Round(EyeZ) < 1 then EyeZ:= 1;
+  SbZoom.SetParams(Round(EyeZ),1,ZoomMax,1);
+
   if Ogl.MakeCurrent then
     begin
       MakeCone;
@@ -454,6 +485,7 @@ begin
       MakeLimits;
       MakeList;
     end;
+  UpdateLabels;
   Ogl.Invalidate;
 end;
 
@@ -468,19 +500,36 @@ begin
     begin
       MyGlList.First;
       P:= MyGlList.Get;
+      glLineWidth(3);
       while (P <> nil) do
         begin
-          glBegin(GL_LINES);
           if (P^.ltype = ltFeed) or (P^.ltype = ltArcFeed) then
-            glColor3f(1,1,1)
-          else
-            glColor3f(0.5,0.5,0.5);
-          glVertex3f(P^.l1.x,P^.l1.y,P^.l1.z);
-          glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
-          glEnd;
+            begin
+              glBegin(GL_LINES);
+              glColor3f(0,0,1);
+              glVertex3f(P^.l1.x,P^.l1.y,P^.l1.z);
+              glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
+              glEnd();
+            end;
+          P:= MyGlList.Get;
+        end;
+      MyGlList.First;
+      P:= MyGlList.Get;
+      glLineWidth(1);
+      while (P <> nil) do
+        begin
+          if (P^.ltype = ltTraverse) or (P^.ltype = ltDwell) then
+            begin
+              glBegin(GL_LINES);
+              glColor3f(0.5,0.5,0.5);
+              glVertex3f(P^.l1.x,P^.l1.y,P^.l1.z);
+              glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
+              glEnd();
+            end;
           P:= MyGlList.Get;
         end;
     end;
+  glLineWidth(1);
   glEndList;
 end;
 
@@ -494,7 +543,7 @@ procedure InitGL;
 begin
   if GLInitialized then Exit;
   GLInitialized:= True;
-  glClearColor(0,0,0,1);
+  glClearColor(1,1,1,1);
   glClearDepth(1.0);
   EyeX:= 0;
   EyeY:= 0;
@@ -513,7 +562,7 @@ begin
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity;
   if Mode = 0 then
-    gluPerspective(60,ogl.Width/ogl.Height,0.1,LimD * 100)
+    gluPerspective(60,ogl.Width/ogl.Height,0.1,LimZ * 100)
   else
     begin
       k:= sqrt(abs(EyeZ));
@@ -524,17 +573,21 @@ begin
   glMatrixMode(GL_MODELVIEW);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   glLoadIdentity;
+  glEnable(GL_LINE_SMOOTH);
   glRotatef(RotationX,1.0,0.0,0.0);
   glRotatef(RotationY,0.0,1.0,0.0);
   glRotatef(RotationZ,0.0,0.0,1.0);
   glTranslatef(-centerx,-centery,-centerz);
+  glCallList(LimitsL);
+  glPushMatrix;
+  glTranslatef(offset.x,offset.y,offset.z);
+  glCallList(CoordsL);
+  glPopMatrix;
+  glCallList(ListL);
   glPushMatrix;
   glTranslatef(ConeX,ConeY,ConeZ);
   glCallList(ConeL);
   glPopMatrix;
-  glCallList(CoordsL);
-  glCallList(LimitsL);
-  glCallList(ListL);
   ogl.SwapBuffers;
 end;
 
@@ -548,7 +601,13 @@ begin
           EyeZ:= EyeZ / 1.2
         else
           EyeZ:= EyeZ * 1.2;
+        if EyeZ > ZoomMax then
+          EyeZ:= ZoomMax
+        else
+        if EyeZ < 1 then EyeZ:= 1;
         Handled:= True;
+        UpdateLabels;
+        SbZoom.Position:= Round(EyeZ);
         ogl.Invalidate;
       end;
 end;
@@ -579,8 +638,10 @@ begin
   q := gluNewQuadric();
   glDeleteLists(ConeL,1);
   glNewList(ConeL, GL_COMPILE);
-  glColor3f(1,0.4,0.4);
-  gluCylinder(q,0,ToolRad,ToolLen,12,1);
+  glEnable (GL_BLEND);
+  //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glColor4f(1,0.5,0,0.5);
+  gluCylinder(q,ToolRad/10,ToolRad,ToolLen,12,1);
   glBegin(GL_LINES);
     glVertex3f(0,0,0);
     glVertex3f(0,0,ToolLen + 5);
@@ -600,14 +661,32 @@ begin
     glVertex3f(2,0,0);
   glEnd;
   glBegin(GL_LINES);
+    glVertex3f(1.5,-0.25,0);
+    glVertex3f(2,0,0);
+    glVertex3f(2,0,0);
+    glVertex3f(1.5,0.25,0);
+  glEnd;
+  glBegin(GL_LINES);
     glColor3f(0,10,0);
     glVertex3f(0,0,0);
     glVertex3f(0,2,0);
   glEnd;
   glBegin(GL_LINES);
+    glVertex3f(-0.25,1.5,0);
+    glVertex3f(0,2,0);
+    glVertex3f(0,2,0);
+    glVertex3f(0.25,1.5,0);
+  glEnd;
+  glBegin(GL_LINES);
     glColor3f(0,0,10);
     glVertex3f(0,0,0);
     glVertex3f(0,0,2);
+  glEnd;
+  glBegin(GL_LINES);
+    glVertex3f(0,-0.25,1.5);
+    glVertex3f(0,0,2);
+    glVertex3f(0,0,2);
+    glVertex3f(0,0.25,1.5);
   glEnd;
   glEndList;
 end;
@@ -618,7 +697,6 @@ const
 var
   W,H,D: double;
   ML: TExtents;
-  Offset: tlo;
 begin
   if not Assigned(ogl) then Exit;
   ML:= Vars.MLimits;
@@ -629,10 +707,22 @@ begin
   d:= ML.MaxZ - ML.MinZ;
   if (W <> 0) and (H <> 0) and (D <> 0) then
     begin
+      //glEnable(GL_BLEND);
+      glEnable (GL_BLEND);
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glColor4f(0,0,0.9, 0.1);
+      glBegin(GL_QUADS);
+        glVertex3f(ML.minX,ML.minY,ML.minZ);
+        glVertex3f(ML.maxX,ML.minY,ML.minZ);
+        glVertex3f(ML.maxX,ML.maxY,ML.minZ);
+        glVertex3f(ML.minX,ML.maxY,ML.minZ);
+      glEnd();
+
       glEnable(GL_LINE_STIPPLE);
       glLineStipple(10, pattern);
       glBegin(GL_LINE_STRIP);
-        glColor3f(0.7,0.1,0.1);
+        // glColor3f(0.7,0.1,0.1);
+        glColor3f(0.7,0.7,0.6);
         glVertex3f(ML.minX,ML.minY,ML.minZ);
         glVertex3f(ML.maxX,ML.minY,ML.minZ);
         glVertex3f(ML.maxX,ML.maxY,ML.minZ);
