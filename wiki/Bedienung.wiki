@@ -62,11 +62,11 @@ Mit SCRIPT_DIR wird der Suchpfad für Scripts angegeben. Mocca lädt Scripts aus
 Scripts werden in der Ini- Datei fortlaufend mit SCRIPT_0 .. SCRIPT_9 definiert.
 Beispiel:
 
-[SCRIPT_0]
+SCRIPT_0
 NAME = Werkzeuglänge vermessen
 SCRIPT = /home/your_name/measure.mdi
 
-[SCRIPT_1]
+SCRIPT_1
 NAME = Schmierzyklus
 SCRIPT = /home/your_name/lube.mdi
 
