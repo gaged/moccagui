@@ -1,5 +1,6 @@
 unit runclient;
 
+{$mode objfpc}{$H+}
 {$I mocca.inc}
 
 interface
@@ -84,12 +85,21 @@ end;
 
 procedure TRunClientForm.FormCreate(Sender: TObject);
 begin
+  if MainFontSize > 0 then
+    Self.Font.Size:= MainFontSize;
   OpenDialog.InitialDir:= Vars.ProgramPrefix;
+  {$ifdef DEBUG_INI}
+  writeln(OpenDialog.InitialDir);
+  {$endif}
   Self.Tag:= TASKMODEAUTO;
   OldInterpState:= 0;
   OldActiveLn:= -1;
   OldRunning:= True;
   IsOpen:= False;
+  {$IFNDEF LCLGTK2}
+  LB.Enabled:= True;
+  writeln('Gtk Widgetset');
+  {$ENDIF}
 end;
 
 procedure TRunClientForm.GotoLine;
@@ -183,9 +193,21 @@ begin
           Emc.TaskRun;
         end;
 
+    cmRELOAD: begin
+      LB.ClearSelection;
+      LB.ItemIndex:= -1;
+
+    end;
     cmSTOP:
       Emc.TaskStop;
 
+    cmSTEP:
+      begin
+        Emc.TaskStep;
+        write('ML:',taskMotionline);
+        write('CL:',taskCurrentLine);
+        writeln('RL:',taskReadLine);
+      end;
     cmOPTSTOP:
       sendSetOptionalStop(not State.OptStop);
 
@@ -210,6 +232,12 @@ procedure TRunClientForm.UpdateSelf;
 var
   Running: Boolean;
 begin
+
+  if State.TaskMode <> TASKMODEAUTO then
+    begin
+      writeln('Invalid call to runclient.updateself');
+      Exit;
+    end;
 
   UpdateLine;
 
@@ -238,11 +266,10 @@ begin
           OldOptStop:= OptStop;
         end;
 
-      if OldInterpState <> State.InterpState then
+      if OldInterpState <> InterpState then
         begin
 
           Running:= InterpState <> INTERP_IDLE;
-          if not Running then LB.ItemIndex:= -1;
 
           SetButtonDown(cmSTOP,not Running);
           SetButtonDown(cmPAUSE,InterpState = INTERP_PAUSED);
@@ -256,7 +283,9 @@ begin
               SetButtonEnabled(cmOPEN,not Running);
               SetButtonEnabled(cmEDITOR,not Running);
               {$IFDEF LCLGTK2}  //looks better in Gtk2 :)
-              LB.Enabled:= not Running;
+              // LB.Enabled:= not Running;
+              if not Running then
+                LB.ClearSelection;
               {$ENDIF}
               OldRunning:= Running;
             end;
@@ -278,7 +307,7 @@ end;
 
 procedure TRunClientForm.MapButtons;
 begin
-  SetButtonMap(@BtnDefRun,@Self.Click);
+  SetButtonMap(@BtnDefRun,@BtnDefRun1,@Self.Click);
 end;
 
 procedure TRunClientForm.InitControls;
@@ -296,17 +325,24 @@ procedure TRunClientForm.OpenFile;
 var
   FileName: string;
 begin
+  writeln('OpenFile');
   if OpenDialog.Execute then
     begin
       sendAuto;
       sendAbort;
+      Vars.ProgramFile:= '';
+      IsOpen:= False;
+      {$IFDEF USEGL}
+      if Assigned(clSim) then
+        clSim.ClearFile;
+      {$ENDIF}
       FileName:= OpenDialog.FileName;
       if Length(FileName) > 0 then
         begin
-          Vars.ProgramFile:= '';
           LB.Items.LoadFromFile(FileName);
           if sendProgramOpen(PChar(FileName)) = 0 then
             begin
+              LB.ClearSelection;
               Emc.WaitDone;
               Vars.ProgramFile:= FileName;
               if State.Machine then

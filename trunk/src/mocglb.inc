@@ -1,12 +1,22 @@
 const
+
   MaxAxes = 5;                   // maimum number of axes, default 5 XYZCB
   MaxJogIncs = 10;               // numer of joc-increments
-  NumSoftButtons  = 10;          // the buttons of the "bottom" panel
-  NumSideButtons  = 10;          // the buttons of the "right" or "left" panel
-  NumTotalButtons = NumSideButtons + NumSoftButtons;
-  GlobalButtonSize: integer = 72;
+
+  NumSButtons  = 10;
+  NumMButtons  = 10;
+  NumAllButtons = NumSButtons + NumMButtons;
+
+  ButtonSizeLarge = 72;
+  ButtonSizeMed = 60;
+  ButtonSizeSmall = 48;
+
+  GlobalButtonSize: integer = ButtonSizeLarge;
   GlobalButtonSpace: integer = 2;
-  DroFontSize: integer = 48;
+
+  DroFontSize: integer = 36;  // default dro font size
+  MainFontSize: integer = 0;  // use default widgetset font
+  MainFontBold: Boolean = False;
 
 type
   TButtonDef = record
@@ -15,8 +25,12 @@ type
     S: string;
   end;
 
-  PButtonArray = ^TButtonArray;
-  TButtonArray = Array[0..NumTotalButtons - 1] of TButtonDef;
+  PSButtonArray = ^TSButtonArray;
+  TSButtonArray = Array[0..NumSButtons-1] of TButtonDef;
+
+  PMButtonArray = ^TMButtonArray;
+  TMButtonArray = Array[0..NumMButtons-1] of TButtonDef;
+
 
 const
   bmESTOP   = 0;  // Esc
@@ -47,119 +61,172 @@ const
 // values < 100 define the button as a state- showing button
 // they are used in TSpeedButton.Tag
 
-  cmESTOP     = 0;
-  cmMACHINE   = 1;
+  cmABORT     = 0;
+  cmESTOP     = 1;
+  cmMACHINE   = 2;
+  cmJOG       = 3;
+  cmAUTO      = 4;
+  cmMDI       = 5;
 
-  cmJOG       = 10;
-  cmAUTO      = 11;
-  cmMDI       = 12;
+  cmSPMINUS   = 201;
+  cmSPPLUS    = 202;
+  cmSPCW      = 11;
+  cmSPCCW     = 12;
+  cmSPBRAKE   = 13;
 
-  cmSPMINUS   = 21;
-  cmSPPLUS    = 22;
-  cmSPCW      = 23;
-  cmSPCCW     = 24;
-  cmSPBRAKE   = 25;
+  cmFLOOD     = 15;
+  cmMIST      = 16;
 
-  cmFLOOD     = 30;
-  cmMIST      = 31;
+  cmREF       = 220;
+  cmREFX      = 221;
+  cmREFY      = 222;
+  cmREFZ      = 223;
+  cmREFA      = 224;
+  cmREFB      = 225;
+  cmREFC      = 226;
+  cmUNREF     = 227;
+  cmREFALL    = 228;
 
-  cmTOOLS     = 40;
-  cmTOOLCHG   = 41;
+  cmTOOLS     = 230;
+  cmTOOLEDT   = 231;
+  cmTOOLCHG   = 232;
+  cmTOOLCL    = 233;
+  cmTOOLUNCL  = 234;
+  cmTOOLPAR   = 235;
+  cmTOOLMSR   = 236;
 
-  cmREFACT    = 50;
-  cmREFALL    = 51;
+  cmTOUCHOFF  = 240;
+  cmTOUCHX    = 241;
+  cmTOUCHY    = 242;
+  cmTOUCHZ    = 243;
+  cmTOUCHA    = 244;
+  cmTOUCHB    = 245;
+  cmTOUCHC    = 246;
+  cmZEROALL   = 247;
+  cmOFFSDLG   = 248;
 
-  cmUNITS     = 60;
 
-  cmZEROALL   = 70;
-  cmZEROACT   = 71;
-  cmOFFSDLG   = 72;
+  cmSETUP     = 250;
+  cmVIEW      = 260;
 
-  cmLIMITS    = 80;
+  cmLIMITS    = 260;
 
-  cmOPEN      = 90;
-  cmRUN       = 91;
-  cmRUNLINE   = 92;
-  cmSTOP      = 93;
-  cmSTEP      = 94;
-  cmPAUSE     = 95;
-  cmOPTSTOP   = 96;
-  cmBLOCKDEL  = 97;
+  cmOPEN      = 270;
+  cmRUN       = 20;
+  cmRUNLINE   = 21;
+  cmSTOP      = 22;
+  cmSTEP      = 271;
+  cmPAUSE     = 23;
+  cmOPTSTOP   = 24;
+  cmBLOCKDEL  = 25;
+  cmRELOAD    = 272;
 
-  cmMDIEXEC   = 101;
-  cmMDIHIST   = 102;
+  cmMDIEXEC   = 280;
+  cmMDIHIST   = 281;
 
-  cmEDITOR    = 110;
+  cmEDITOR    = 290;
 
-  cmFEEDUP1   = 121;
-  cmFEEDUP10  = 122;
-  cmFEEDDN1   = 123;
-  cmFEEDDN10  = 124;
+  cmFEEDUP1   = 301;
+  cmFEEDUP10  = 302;
+  cmFEED100   = 303;
+  cmFEEDDN1   = 304;
+  cmFEEDDN10  = 305;
 
-  cmJVELUP1   = 131;
-  cmJVELUP10  = 132;
-  cmJVELDN1   = 133;
-  cmJVELDN10  = 134;
+  cmJVELUP1    = 310;
+  cmJVELUP10   = 311;
+  cmJVEL100    = 312;
+  cmJVELDN1    = 313;
+  cmJVELDN10   = 314;
 
-  cmSHIFTUP   = 800;
-  cmSHIFTDN   = 801;     
+  cmINCRDN     = 320;
+  cmINCRUP     = 321;
 
-  BtnDefJog: TButtonArray =
+  cmSHIFTUP    = 330;
+  cmSHIFTDN    = 331;
+
+  cmPARTALGN   = 340;
+  cmUNITS      = 350;
+
+  cmBACK       = 999;
+
+  cmSCRIPTBASE = 1000;
+  cmSCRIPTS    = 1099;
+
+  BtnDefJog: TMButtonArray =
      ((T:cmESTOP;    G:-1;    S:'Notaus'),
       (T:cmMACHINE;  G:-1;    S:'Maschine'),
       (T:-1;         G:-1;    S:'Manuell'),
       (T:cmAUTO;     G:-1;    S:'Satzlauf'),
       (T:cmMDI;      G:-1;    S:'MDI'),
-      (T:cmSPMINUS;  G:-1;    S:'langsamer'),
-      (T:cmSPCW;     G:-1;    S:'Spindel rechts'),
-      (T:cmSPCCW;    G:-1;    S:'Spindel links'),
-      (T:cmSPPLUS;   G:-1;    S:'schneller'),
-      (T:cmFLOOD;    G:-1;    S:'Kühlung'),
-      (T:cmREFACT;   G:-1;    S:'Referenzf.'),
-      (T:cmREFALL;   G:-1;    S:'Referenzf. Alle'),
-      (T:cmZEROACT;  G:-1;    S:'Antasten...'),
-      (T:cmZEROALL;  G:-1;    S:'Alle Null'),
-      (T:cmOFFSDLG;  G:-1;    S:'Koordinaten..'),
-      (T:cmTOOLS;    G:-1;    S:'Werkzeuge..'),
-      (T:cmTOOLCHG;  G:-1;    S:'Wkzg. wecheln'),
-      (T:cmLIMITS;   G:-1;    S:'Grenzwerte'),
-      (T:cmUNITS;    G:-1;    S:'mm/inch'),
-      (T:cmSHIFTUP;  G:-1;    S:'>'));
+      (T:cmSPPLUS;  G:-1;     S:'Spindel schneller'),
+      (T:cmSPCW;     G:-1;    S:'Spindel Rechts'),
+      (T:cmSPCCW;    G:-1;    S:'Spindel Links'),
+      (T:cmSPMINUS;   G:-1;   S:'Spindel langsamer'),
+      (T:cmFLOOD;    G:-1;    S:'Kühlung'));
 
-  BtnDefJogShifted: TButtonArray =
-     ((T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:-1;         G:-1;       S:''),
-      (T:cmFEEDDN10; G:-1;       S:'F -10%'),
-      (T:cmFEEDDN1;  G:-1;       S:'F -1%'),
-      (T:cmFEEDUP1;  G:-1;       S:'F +1%'),
-      (T:cmFEEDUP10; G:-1;       S:'F +10%'),
-      (T:cmJVELDN10; G:-1;       S:'G -10%'),
-      (T:cmJVELDN1;  G:-1;       S:'G -1%'),
-      (T:cmJVELUP1;  G:-1;       S:'G +1%'),
-      (T:cmJVELUP10; G:-1;       S:'G +10%'),
-      (T:-1;         G:-1;       S:''),
-      (T:cmSHIFTDN;  G:-1;       S:'<'));
+  BtnDefJogMain: TSButtonArray =
+     ((T:cmREF;      G:-1;    S:'Referenz- Fahrt'),
+      (T:cmTOUCHOFF; G:-1;    S:'Antasten'),
+      (T:cmTOOLS;    G:-1;    S:'Werkzeug'),
+      (T:cmSCRIPTS;  G:-1;    S:'Scripts'),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''),
+      (T:cmINCRDN;   G:-1;    S:'Schrittweite -'),
+      (T:cmINCRUP;   G:-1;    S:'Schrittweite +'));
 
-  BtnDefMDI: TButtonArray =
-     ((T:cmESTOP;    G:-1;   S:'Notaus'),
-      (T:cmMACHINE;  G:-1;   S:'Maschine'),
-      (T:cmJOG;      G:-1;   S:'Manuell'),
-      (T:cmAUTO;     G:-1;   S:'Satzlauf'),
-      (T:-1;         G:-1;   S:'MDI'),
-      (T:-1;         G:-1;   S:'langsamer'),
-      (T:-1;          G:-1;  S:'Spindel rechts'),
-      (T:-1;          G:-1;  S:'Spindel links'),
-      (T:-1;          G:-1;  S:'schneller'),
-      (T:-1;          G:-1;  S:'Kühlung'),
-      (T:cmMDIEXEC; G:-1;       S:'Ausführen'),
+  BtnDefJogRef: TSButtonArray =
+     ((T:cmBACK;     G:-1;    S:'<'),
+      (T:cmREFALL;   G:-1;    S:'Alle Achsen'),
+      (T:cmREFX;     G:-1;    S:'X-Achse'),
+      (T:cmREFY;     G:-1;    S:'Y-Achse'),
+      (T:cmREFZ;     G:-1;    S:'Z-Achse'),
+      (T:cmREFA;     G:-1;    S:'A-Achse'),
+      (T:cmREFB;     G:-1;    S:'B-Achse'),
+      (T:cmREFC;     G:-1;    S:'C-Achse'),
+      (T:cmUNREF;    G:-1;    S:'Aufheben'),
+      (T:-1;         G:-1;    S:''));
+
+
+  BtnDefJogTouch: TSButtonArray =
+     ((T:cmBACK;     G:-1;    S:'<'),
+      (T:cmTOUCHX;   G:-1;    S:'X-Achse...'),
+      (T:cmTOUCHY;   G:-1;    S:'Y-Achse...'),
+      (T:cmTOUCHZ;   G:-1;    S:'Z-Achse...'),
+      (T:cmTOUCHA;   G:-1;    S:'A-Achse...'),
+      (T:cmTOUCHB;   G:-1;    S:'B-Achse...'),
+      (T:cmTOUCHC;   G:-1;    S:'C-Achse...'),
+      (T:cmZEROALL;  G:-1;    S:'Alle Achsen 0.000'),
+      (T:cmOFFSDLG;  G:-1;    S:'Offsets...'),
+      (T:-1;         G:-1;    S:''));
+
+  BtnDefJogTool: TSButtonArray =
+     ((T:cmBACK;     G:-1;    S:'<'),
+      (T:cmTOOLCHG;  G:-1;    S:'Werkzeug wechseln..'),
+      (T:cmTOOLEDT;  G:-1;    S:'Werkzeuge bearbeiten..'),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''),
+      (T:-1;         G:-1;    S:''));
+
+  BtnDefMDI: TMButtonArray =
+     ((T:cmESTOP;    G:-1;    S:'Notaus'),
+      (T:cmMACHINE;  G:-1;    S:'Maschine'),
+      (T:cmJOG;      G:-1;    S:'Manuell'),
+      (T:cmAUTO;     G:-1;    S:'Satzlauf'),
+      (T:-1;         G:-1;    S:'MDI'),
+      (T:-1;         G:-1;     S:''),
+      (T:-1;         G:-1;     S:''),
+      (T:-1;         G:-1;     S:''),
+      (T:-1;         G:-1;     S:''),
+      (T:-1;         G:-1;     S:''));
+
+   BtnDefMDI1 : TSButtonArray =
+     ((T:cmMDIEXEC; G:-1;       S:'Ausführen'),
       (T:-1;        G:-1;       S:''),
       (T:-1;        G:-1;       S:''),
       (T:-1;        G:-1;       S:''),
@@ -170,27 +237,29 @@ const
       (T:-1;        G:-1;       S:''),
       (T:-1;        G:-1;       S:''));
 
-  BtnDefRun: TButtonArray =
-     ((T:cmESTOP;    G:-1;   S:'Notaus'),
-      (T:cmMACHINE;  G:-1;   S:'Maschine'),
-      (T:cmJOG;      G:-1;   S:'Manuell'),
-      (T:-1;         G:-1;   S:'Satzlauf'),
-      (T:cmMDI;      G:-1;   S:'MDI'),
-      (T:-1;         G:-1;   S:''),
-      (T:-1;          G:-1;   S:''),
-      (T:-1;          G:-1;   S:''),
-      (T:-1;          G:-1;   S:''),
-      (T:-1;          G:-1;   S:''),
-     (T:cmOPEN;  G:-1;      S:'Öffnen'),
-      (T:cmRUN;   G:-1;       S:'Start'),
-      (T:cmSTOP;  G:-1;      S:'Stop'),
-      (T:cmPAUSE; G:-1;     S:'Pause'),
-      (T:cmSTEP;  G:-1;            S:'Schritt'),
-      (T:cmRUNLINE;  G:-1;            S:'Start Zeile'),
-      (T:cmOPTSTOP ;        G:-1;            S:'Opt. Pause'),
-      (T:cmBLOCKDEL;        G:-1;            S:'"/" Blöcke'),
-      (T:-1;        G:-1;            S:''),
-      (T:cmEDITOR;  G:-1;            S:'NC-Editor'));
+  BtnDefRun : TMButtonArray =
+     ((T:cmESTOP;    G:-1;    S:'Notaus'),
+      (T:cmMACHINE;  G:-1;    S:'Maschine'),
+      (T:cmJOG;      G:-1;    S:'Manuell'),
+      (T:-1;         G:-1;    S:'Satzlauf'),
+      (T:cmMDI;      G:-1;    S:'MDI'),
+      (T:cmOPEN;     G:-1;    S:'Öffnen'),
+      (T:cmRELOAD;   G:-1;    S:'Neu Laden'),
+      (T:cmOPTSTOP ; G:-1;    S:'Opt. Pause'),
+      (T:cmBLOCKDEL; G:-1;    S:'"/" Blöcke'),
+      (T:-1;         G:-1;    S:''));
+
+  BtnDefRun1 : TSButtonArray =
+     ((T:cmRUN;      G:-1;      S:'Start'),
+      (T:cmSTOP;     G:-1;      S:'Stop'),
+      (T:cmPAUSE;    G:-1;      S:'Pause'),
+      (T:cmSTEP;     G:-1;      S:'Schritt'),
+      (T:cmRUNLINE;  G:-1;      S:'Start Zeile'),
+      (T:-1;         G:-1;      S:''),
+      (T:-1;         G:-1;      S:''),
+      (T:-1;         G:-1;      S:''),
+      (T:-1;         G:-1;      S:''),
+      (T:-1;         G:-1;      S:''));
 
   ToolsLathe : array[0..8] of string =
     ('Slot',' Id ','Z-Offset','X-Offset','Durchm. ',
@@ -223,6 +292,23 @@ type
     x,y,z,a,b,c,u,v,w: double;
   end;
 
+  TSkewCoord = record
+    x,y,z: double;
+    IsSet: boolean;
+  end;
+
+  TAxisDef = record
+    AxisChar: Char;
+    IsLinear: Boolean;
+  end;
+
+  TAxisDefs = Array[0..MaxAxes - 1] of TAxisDef;
+
+  TScriptDef = record
+    Name: string;
+    Script: string;
+  end;
+
   TEmcVars = record
     IniFile: string;              // inifile set by paramstr(1)
     IniPath: string;
@@ -236,11 +322,13 @@ type
     Extensions: string;
     Geometry: string;
     NumAxes: Integer;             // number of axes in ini
+    Axis: TAxisDefs;
     CoordNames: string;           // the given coordinates (XYZ...)
     CycleTime: Double;            // as defined in [DISPLAY], in seconds
     CycleDelay: Longint;          // cycletime / 1000 in msec
     MaxFeedOverride: integer;     // maximum feed override
-    MaxSpindleOverride: integer;  // maximum spindle override
+    MaxSpORide: integer;  // maximum spindle override
+    MinSpORide: integer;
     LinearJogSpeed: double;
     AngularJogSpeed: double;
     MaxLinearVel: double;
@@ -259,6 +347,7 @@ type
     ActiveAxis: integer;
     StartLine: integer;
     MLimits: TExtents;            // machine limits
+    ScriptDir: string;
   end;
 
   TEmcState = record
@@ -270,6 +359,7 @@ type
     SpBrake: Boolean;
     SpSpeed: Double;
     SpEnabled: Boolean;
+    SpIncreasing: Integer;
     Flood: Boolean;
     Mist: Boolean;
     Lube: Boolean;
@@ -284,7 +374,6 @@ type
     ProgUnits: integer;
     DisplayUnits: integer;
     ORideLimits: Boolean;
-    SpindleOverride: integer;
     CurrentTool: integer;
     ToolPrepared: Boolean;
     ToolOffset: double;
@@ -298,6 +387,7 @@ type
     MaxFeed: integer;
     ActJogVel: integer;
     MaxJogVel: Integer;
+    ActSpORide: integer;
     UnitsChanged: Boolean;
   end;
 

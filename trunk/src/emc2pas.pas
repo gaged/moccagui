@@ -8,6 +8,9 @@ unit emc2pas;
 
 interface
 
+uses
+  emcint;
+
 {$mode objfpc}
 {$H+}
 
@@ -63,11 +66,25 @@ const
   ANGULAR_UNITS_DEG    = 3;
   ANGULAR_UNITS_RAD    = 4;
   ANGULAR_UNITS_GRAD   = 5;
-  
+
+  RCS_DONE = 1;
+  RCS_EXEC = 2;
+  RCS_ERROR = 3;
+
   INTERP_IDLE    = 1;
   INTERP_READING = 2;
   INTERP_PAUSED  = 3;
   INTERP_WAITING = 4;
+
+  EMC_TASK_EXEC_ERROR = 1;
+  EMC_TASK_EXEC_DONE = 2;
+  EMC_TASK_EXEC_WAITING_FOR_MOTION = 3;
+  EMC_TASK_EXEC_WAITING_FOR_MOTION_QUEUE = 4;
+  EMC_TASK_EXEC_WAITING_FOR_IO = 5;
+  EMC_TASK_EXEC_WAITING_FOR_PAUSE = 6;
+  EMC_TASK_EXEC_WAITING_FOR_MOTION_AND_IO = 7;
+  EMC_TASK_EXEC_WAITING_FOR_DELAY = 8;
+  EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD = 9;
   
 var
   ErrorStr: Array[0..LINELEN-1] of Char; external name 'errorString';
@@ -94,6 +111,10 @@ function loadToolTable(const FileName: PChar): integer; cdecl; external;
 function saveToolTable(const FileName: PChar): integer; cdecl; external;
 procedure InitToolTable; cdecl; external;
 procedure FreeToolTable; cdecl; external;
+
+// mocca script stuff
+function GetTaskInterpState: integer; cdecl; external;
+function GetTaskExecState: integer; cdecl; external;
 
 // axis related functions
 function AxisAxisType(Joint: integer): integer cdecl; external; { motion.axis.*.axisType; }
@@ -171,9 +192,9 @@ procedure taskActiveCodes; cdecl; external;
 function  geterror(const msg: PChar): Boolean; cdecl; external;
 
 // ini- related functions C++ wrapper
-function  iniOpen(const filename: PChar): boolean; cdecl; external;
-function  iniClose: boolean; cdecl; external;
-function  iniGet(const gvar,gsec,buffer: PChar): boolean; cdecl; external;
+function  iniOpen(const filename: PChar): boolean; cdecl; external libemcini;
+function  iniClose: boolean; cdecl; external libemcini;
+function  iniGet(const gvar,gsec,buffer: PChar): boolean; cdecl; external libemcini;
 
 function  emcTaskNmlGet: Longint; cdecl; external;
 function  emcErrorNmlGet: Longint; cdecl; external;
@@ -194,6 +215,7 @@ function  updateError: Longint; cdecl; external;
 
 function  emcCommandWaitReceived(Serialnumber: integer): Longint; cdecl; external;
 function  emcCommandWaitDone(Serialnumber: integer): Longint; cdecl; external;
+function  emcPollStatus: integer; cdecl; external;
 
 function  convertLinearUnits(u: Double): Double; cdecl; external;
 

@@ -101,7 +101,7 @@ function IniReadAxes: Boolean;
 var
   Min,Max: Double;
   i: integer;
-  Sec: string;
+  Sec,tmp: string;
 begin
   Result:= False;
   if (Vars.NumAxes < 1) or (Length(Vars.CoordNames) < 1) then
@@ -117,6 +117,15 @@ begin
   for i:= 0 to Vars.NumAxes - 1 do
     begin
       Sec:= 'AXIS_' + IntToStr(i);
+
+      GetIniStr(Sec,'TYPE',tmp,'');
+      tmp:= UpCase(Trim(tmp));
+      Vars.Axis[i].IsLinear:= True;
+      Vars.Axis[i].AxisChar:= Vars.CoordNames[i+1];
+      if Length(tmp) > 0 then
+        if (tmp = 'ANGULAR') or (tmp = 'ANG') then
+          Vars.Axis[i].IsLinear:= False;
+
       GetIniDouble(Sec,'MIN_LIMIT',Min,0);
       GetIniDouble(Sec,'MAX_LIMIT',Max,0);
       if Vars.Metric then
@@ -124,6 +133,7 @@ begin
           Min:= Min / 25.4;
           Max:= Max / 25.4;
         end;
+
       case Vars.CoordNames[i+1] of
         'X': begin
                Vars.MLimits.MinX:= Min;
@@ -140,6 +150,52 @@ begin
       end;
     end;
   Result:= True;
+end;
+
+function IniReadScripts: Boolean;
+var
+  s,n,sec: string;
+  i: integer;
+  NumScripts: integer;
+begin
+  NumScripts:= 0;
+  Result:= False;
+  with BtnDefScripts[0] do
+    begin
+      T:= cmBACK;
+      G:= -1;
+      S:= '<';
+    end;
+  for i:= 1 to NumSButtons - 1 do
+    begin
+      MocScripts[i].Name:= '';
+      MocScripts[i].Script:= '';
+      with BtnDefScripts[i] do
+        begin
+          T:= -1;
+          G:= -1;
+          S:= '';
+        end;
+      Sec:= 'SCRIPT_' + IntToStr(i-1);
+      GetIniStr(Sec,'NAME',n,'');
+      GetIniStr(Sec,'SCRIPT',s,'');
+      writeln(s,n);
+      if (s <> '') and (n <> '') then
+          begin
+            n:= Trim(n);
+            s:= Trim(s);
+            if (Length(s) > 0) and (LEngth(n) > 0) then
+              begin
+                MocScripts[i].Name:= n;
+                MocScripts[i].Script:= s;
+                BtnDefScripts[i].T:= cmSCRIPTBASE + i;
+                BtnDefScripts[i].G:= -1;
+                BtnDefScripts[i].S:= n;
+                Inc(NumScripts);
+              end;
+          end;
+    end;
+  Result:= (NumScripts > 0);
 end;
 
 function IniRead(FileName: string): Boolean;
@@ -175,13 +231,32 @@ begin
   Vars.ToolFile:= '';
   Vars.ParamFile:= '';
   GetIniStr('DISPLAY','PROGRAM_PREFIX',Vars.ProgramPrefix,'');
+  {$ifdef DEBUG_INI}
+  writeln('PROGRAM_PREFIX: ' + Vars.ProgramPrefix);
+  {$endif}
   GetIniStr('EMC','MACHINE',Vars.Machine,'');
   GetIniStr('FILTER','PROGRAM_EXTENSION', Vars.Extensions,'');
   GetIniStr('HAL','POSTGUI_HALFILE',Vars.PostGuiHalfile,'');
   GetIniDouble('DISPLAY','MAX_FEED_OVERRIDE',d,1);
   Vars.MaxFeedOverride:= Round(d * 100);
-  GetIniDouble('DISPLAY','MAX_SPINDLE_OVERRIDE',d,1);
-  Vars.MaxSpindleOverride:= Round(d * 100);
+  GetIniDouble('DISPLAY','MAX_SPINDLE_OVERRIDE',d,0);
+  Vars.MaxSpORide:= Round(d * 100);
+  GetIniDouble('DISPLAY','MIN_SPINDLE_OVERRIDE',d,0);
+  Vars.MinSpORide:= Round(d * 100);
+  if (Vars.MaxSpORide <> 0) and (Vars.MinSpORide <> 0) then
+    begin
+      if Vars.MinSpORide >= Vars.MaxSpORide then
+        begin
+          writeln('Error: MIN_SPINDLE_OVERRIDE > MAX_SPINDLE_OVERRIDE');
+          Exit;
+        end;
+      if Vars.MaxSpORide < 100 then
+        begin
+          writeln('MAX_SPINDLE_OVERRIDE is less than 100%');
+          Exit;
+        end;
+    end;
+  State.ActSpORide:= 100;
   if not GetIniStr('DISPLAY','GEOMETRY',tmp,'XYZBC') then
   if Length(tmp) < 1 then Exit;  // no geometry
   Vars.Geometry:= tmp;
@@ -223,11 +298,11 @@ begin
       if tmp = 'INCH' then LinearUnitConversion:= LINEAR_UNITS_INCH else
       if tmp = 'MM' then LinearUnitConversion:= LINEAR_UNITS_MM;
     end;
-  Vars.Metric:= LinearUnitConversion = LINEAR_UNITS_MM;
   if linearUnitConversion = 0 then
     begin
       writeln('Linear Units not defined.');
-      Exit;
+      writeln('Setting Units to "mm"');
+      LinearUnitConversion:= LINEAR_UNITS_MM;
     end;
   case linearUnitConversion of
     LINEAR_UNITS_MM: Vars.UnitStr:= 'mm';
@@ -297,6 +372,11 @@ begin
     end;
   GetIniStr('DISPLAY','INCREMENTS',tmp,'');
   SetJogIncrements(tmp);
+
+  if not IniReadAxes then
+    Exit;
+
+  // mocca related ini stuff
   GetIniInt('DISPLAY','GLDIRECT',i,1);
   GlSettings.UseDirect:= (i = 1);
   if GlSettings.UseDirect then
@@ -311,12 +391,28 @@ begin
     writeln('OpenGl doublebuffer activated')
   else
     writeln('OpenGl doublebuffer decativated');
-  GetIniInt('DISPLAY','DRO_FONT_SIE',i,DroFontSize);
-  if (i < 10) then i:= 10 else
-    if (i > 72) then i:= 72;
-  DroFontSize:= i;
-  if not IniReadAxes then
-    Exit;
+  GetIniInt('DISPLAY','DRO_FONT_SIZE',i,DroFontSize);
+  if (i <> DroFontSize) and (i > 10) and (i < 73) then
+    DroFontSize:= i;
+  GetIniInt('DISPLAY','FONT_SIZE',i,0);
+  if (i <> MainFontSize) and (i > 7) and (i < 16) then
+    MainFontSize:= i;
+  GetIniInt('DISPLAY','FONT_BOLD',i,0);
+  MainFontBold:= (i = 1);
+  GetIniStr('DISPLAY','BUTTON_SIZE',tmp,'');
+  tmp:= UpCase(Trim(tmp));
+  if Length(tmp) > 0 then
+   begin
+     if (tmp = 'MEDIUM') then
+       GlobalButtonSize:= ButtonSizeMed
+     else
+     if (tmp = 'SMALL') then
+       GlobalButtonSize:= ButtonSizeSmall;
+   end;
+  GetIniStr('DISPLAY','SCRIPT_DIR',Vars.ScriptDir,'');
+  HasScripts:= IniReadScripts;
+  if (Vars.ScriptDir = '') and HasScripts then
+    writeln('warning: scripts defined but scriptdir not set!');
   Result:= True;
 end;
 

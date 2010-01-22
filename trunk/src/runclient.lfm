@@ -1,7 +1,7 @@
 object RunClientForm: TRunClientForm
-  Left = 613
+  Left = 254
   Height = 335
-  Top = 367
+  Top = 158
   Width = 516
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
@@ -11,19 +11,20 @@ object RunClientForm: TRunClientForm
   Caption = 'RunClientForm'
   ClientHeight = 335
   ClientWidth = 516
-  Font.Style = [fsBold]
   OnCreate = FormCreate
+  ParentFont = True
   LCLVersion = '0.9.28.2'
   object LabelInterpState: TLabel
     AnchorSideTop.Control = LabelCaption
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = LB
     AnchorSideRight.Side = asrBottom
-    Left = 388
+    Left = 433
     Height = 18
     Top = 12
-    Width = 124
+    Width = 83
     Anchors = [akTop, akRight]
+    AutoSize = False
     Caption = 'LabelInterpState'
     ParentColor = False
   end
@@ -49,18 +50,14 @@ object RunClientForm: TRunClientForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 4
-    Height = 289
+    Left = 0
+    Height = 293
     Top = 42
-    Width = 508
+    Width = 516
     Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Around = 4
-    ClickOnSelChange = False
     ExtendedSelect = False
     Font.Height = -16
     Font.Name = 'Courier 10 Pitch'
-    Font.Style = [fsBold]
-    IntegralHeight = True
     ItemHeight = 0
     ParentFont = False
     TabOrder = 0

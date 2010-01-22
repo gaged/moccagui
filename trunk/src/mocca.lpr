@@ -20,7 +20,8 @@ uses
   {$IFDEF USEGL}
   simclient,
   {$ENDIF}
-  editordlg, offsetdlg, tooleditdlg, touchoff, toolchange, hal;
+  editordlg, offsetdlg, tooleditdlg, touchoff, toolchange, hal, emcint,
+partaligndlg, scripts;
 
 const
   __LC_CTYPE    = 0;
@@ -35,6 +36,7 @@ Const
   clib = 'c';
 
 function setlocale(category: integer; locale: pchar): pchar; cdecl; external clib name 'setlocale';
+// function nl_langinfo(__item: cint):Pchar; cdecl; external clib name 'nl_langinfo';
 
 function InitEmc: Boolean;
 var
@@ -42,6 +44,8 @@ var
 begin
   Result:= False;
   SetLocale(__LC_NUMERIC,PChar('C'));
+  decimalseparator:='.';
+  if not InitEmcEnvironment then Halt(1);
   if (ParamCount < 2) then
     begin
       writeln('Error starting mocca, check params.');
@@ -59,7 +63,6 @@ begin
       writeln('Error: Cannot connect to emc');
       Exit;
     end;
-  LoadHal;
   if not InitHal('mocca') then
     Exit;
   Result:= True;
@@ -68,25 +71,17 @@ end;
 function QuitEmc: integer;
 begin
   result:= 0;
+  DoneHal;
   emcNmlQuit; // free NML buffers
   iniClose;   // close inifile if open
-  FreeHal;
-end;
-
-procedure InitEnv;
-begin
-  Emc2Home:= '';
-  Emc2Home:= getenvironmentvariable('EMC2_HOME');
+  DoneEmcEnvironment;
 end;
 
 {$IFDEF WINDOWS}{$R mocca.rc}{$ENDIF}
 
 begin
-  {$I mocca.lrs}
+  // {$I mocca.lrs}
   writeln('starting mocca...');
-  InitEnv;
-  // Set8087CW($133F);
-  decimalseparator:='.';
   if not InitEmc then Halt(1);
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);

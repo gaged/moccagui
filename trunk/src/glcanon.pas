@@ -4,8 +4,6 @@ unit glcanon;
 {$H+}
 
 {$link simcanon.o}
-{$link libemcini.so.0}
-{$link librs274.so.0}
 
 {$I mocca.inc}
 
@@ -27,8 +25,8 @@ const
   ACTIVE_M_CODES_MAX = 10;
   ACTIVE_SETTINGS_MAX = 3;
 
-  DEFAULT_TOOL_DIA = 0.1;
-  DEFAULT_TOOL_LENGTH = 0.5;
+  DEFAULT_TOOL_DIA = 0.254;
+  DEFAULT_TOOL_LENGTH = 2.54;
 
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 
@@ -43,7 +41,8 @@ function GetGCodeError(code: integer): string;
 function ToCanonUnits(Value: Double): Double;
 function ToCanonPos(Value: double; Index: integer): double;
 
-procedure GetOffset(var Ofs: tlo);
+procedure GetCanonOffset(var Ofs: tlo);
+procedure CanonInitOffsets;
 
 function GetToolDiameter(i: integer): double;
 function GetToolLength(i: integer): double;
@@ -196,11 +195,16 @@ begin
   y:= ToCanonUnits(GetOrigin(1));
   z:= ToCanonUnits(GetOrigin(2));
   SetCoords(Offset,x,y,z,0,0,0,0,0,0);
+  writeln(Format('%s %f %f',['Canon Offsets: ',x,y]));
 end;
 
-procedure GetOffset(var Ofs: tlo);
+procedure CanonInitOffsets;
 begin
   InitOffsets;
+end;
+
+procedure GetCanonOffset(var Ofs: tlo);
+begin
   ofs:= offset;
 end;
 

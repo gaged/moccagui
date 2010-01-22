@@ -5,11 +5,11 @@ unit hal;
 interface
 
 uses
-  dynlibs,crt,sysutils,classes,ctypes;
+  dynlibs,crt,sysutils,classes,ctypes,emcint;
 
 const
   HAL_SUCCESS = 0;
-  HalLibName = 'libemchal.so';
+
   HalName = 'moc';
 
 type
@@ -43,26 +43,25 @@ type
   end;
 
 function InitHal(Name: string): boolean;
-procedure LoadHal;
-procedure FreeHal;
+procedure DoneHal;
 
-function hal_init(const name: PChar): longint; cdecl; external HalLibName;
-function hal_ready(compid: integer): longint; cdecl; external HalLibName;
-function hal_exit(compid: integer): longint; cdecl; external HalLibName;
-function hal_malloc(size: integer): pointer; cdecl; external HalLibName;
-function halpr_find_pin_by_name(name: pchar): pointer; cdecl; external HalLibName;
+function hal_init(const name: PChar): longint; cdecl; external libemchal;
+function hal_ready(compid: integer): longint; cdecl; external libemchal;
+function hal_exit(compid: integer): longint; cdecl; external libemchal;
+function hal_malloc(size: integer): pointer; cdecl; external libemchal;
+function halpr_find_pin_by_name(name: pchar): pointer; cdecl; external libemchal;
 
 function hal_pin_bit_new(const name: PChar; dir: TPinDir;
-  Data: PPHalBit; comp_id: cint): cint; cdecl; external HalLibName;
+  Data: PPHalBit; comp_id: cint): cint; cdecl; external libemchal;
 
 function hal_pin_float_new(const name: PChar; dir: TPinDir;
-  Data: PPHalFloat; comp_id: cint): cint; cdecl; external HalLibName;
+  Data: PPHalFloat; comp_id: cint): cint; cdecl; external libemchal;
 
 function hal_pin_u32_new(const name: PChar; dir: TPinDir;
-  Data: PPHalU32; comp_id: cint): cint; cdecl; external HalLibName;
+  Data: PPHalU32; comp_id: cint): cint; cdecl; external libemchal;
 
 function hal_pin_s32_new(const name: PChar; dir: TPinDir;
-  Data: PPHalS32; comp_id: cint): cint; cdecl; external HalLibName;
+  Data: PPHalS32; comp_id: cint): cint; cdecl; external libemchal;
 
 procedure SetHalJogAxis(Axis: Char);
 function  GetHalJogAxis: Char;
@@ -72,9 +71,6 @@ function GetSkew(Axis: integer): double;
 procedure SetSkew(Axis: integer; Skew: double);
 
 implementation
-
-uses
-  mocglb;
 
 var
   HalHandle: Pointer;
@@ -168,24 +164,6 @@ begin
   Result:= CheckPin((hal_pin_s32_new(PChar(name),HAL_OUT,pin,compid)));
 end;
 
-procedure LoadHal;
-var
-  LibName: string;
-begin
-  LibName:= emc2home + '/lib/' + HalLibName;
-  HalHandle:= Pointer(LoadLibrary(PChar(LibName)));
-  if HalHandle = nil then
-    raise Exception.Create('cannot find library ' + LibName);
-end;
-
-procedure FreeHal;
-begin
-  if CompId > 0 then hal_exit(CompId);
-  if HalHandle <> nil then
-    FreeLibrary(Cardinal(HalHandle));
-  HalHandle:= nil;
-end;
-
 procedure InitPins;
 begin
   if not ExportPinBit(@HalData^.x,'moc.jog.x') then Exit;
@@ -230,6 +208,12 @@ begin
     end;
   writeln('Hal component "' + Name + '" loaded.');
   Result:= True;
+end;
+
+procedure DoneHal;
+begin
+  if CompId > 0 then
+    hal_exit(CompId);
 end;
 
 {

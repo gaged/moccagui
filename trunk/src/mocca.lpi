@@ -10,7 +10,7 @@
       <TargetFileExt Value=""/>
       <UseAppBundle Value="False"/>
       <Icon Value="0"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="9"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -35,16 +35,14 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="85">
+    <Units Count="92">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocca"/>
-        <CursorPos X="4" Y="38"/>
-        <TopLine Value="38"/>
-        <EditorIndex Value="0"/>
+        <CursorPos X="1" Y="90"/>
+        <TopLine Value="41"/>
         <UsageCount Value="205"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="mocmain.pas"/>
@@ -52,45 +50,51 @@
         <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mocmain"/>
-        <CursorPos X="26" Y="203"/>
-        <TopLine Value="195"/>
+        <CursorPos X="25" Y="164"/>
+        <TopLine Value="112"/>
+        <EditorIndex Value="0"/>
         <UsageCount Value="205"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="emc2pas.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="emc2pas"/>
-        <CursorPos X="45" Y="6"/>
-        <TopLine Value="1"/>
+        <CursorPos X="23" Y="282"/>
+        <TopLine Value="230"/>
+        <EditorIndex Value="5"/>
         <UsageCount Value="205"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="mocemc.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocemc"/>
-        <CursorPos X="35" Y="414"/>
-        <TopLine Value="374"/>
+        <CursorPos X="18" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="6"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="../../emc2-dev/src/emc/usr_intf/touchy/emc_interface.py"/>
         <CursorPos X="23" Y="60"/>
         <TopLine Value="7"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="7"/>
         <SyntaxHighlighter Value="Python"/>
       </Unit4>
       <Unit5>
         <Filename Value="../mocca_main.lfm"/>
         <CursorPos X="43" Y="4"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
         <SyntaxHighlighter Value="LFM"/>
       </Unit5>
       <Unit6>
         <Filename Value="../../emc2-dev/src/emc/usr_intf/touchy/touchy.py"/>
         <CursorPos X="32" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
         <SyntaxHighlighter Value="Python"/>
       </Unit6>
       <Unit7>
@@ -98,20 +102,20 @@
         <UnitName Value="DroPanel"/>
         <CursorPos X="6" Y="13"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit7>
       <Unit8>
         <Filename Value="../../../../usr/lib/lazarus/lcl/extctrls.pp"/>
         <UnitName Value="ExtCtrls"/>
         <CursorPos X="16" Y="1149"/>
         <TopLine Value="1124"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit8>
       <Unit9>
         <Filename Value="../../emc2-dev/src/emc/usr_intf/xemc.cc"/>
         <CursorPos X="15" Y="1736"/>
         <TopLine Value="1744"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="8"/>
         <SyntaxHighlighter Value="C++"/>
       </Unit9>
       <Unit10>
@@ -128,13 +132,13 @@
         <Filename Value="../../../../usr/share/fpcsrc/rtl/objpas/sysutils/syspchh.inc"/>
         <CursorPos X="10" Y="25"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit11>
       <Unit12>
         <Filename Value="../../../../usr/share/fpcsrc/rtl/objpas/sysutils/sysstrh.inc"/>
         <CursorPos X="10" Y="74"/>
         <TopLine Value="48"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="3"/>
       </Unit12>
       <Unit13>
         <Filename Value="homedlg.pas"/>
@@ -142,47 +146,47 @@
         <UnitName Value="HomeDlg"/>
         <CursorPos X="12" Y="55"/>
         <TopLine Value="55"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="22"/>
       </Unit13>
       <Unit14>
         <Filename Value="../../../../usr/lib/lazarus/lcl/controls.pp"/>
         <UnitName Value="Controls"/>
         <CursorPos X="19" Y="1401"/>
         <TopLine Value="1365"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit14>
       <Unit15>
         <Filename Value="softbuttons.pas"/>
         <UnitName Value="softbuttons"/>
         <CursorPos X="1" Y="18"/>
         <TopLine Value="1"/>
-        <UsageCount Value="42"/>
+        <UsageCount Value="37"/>
       </Unit15>
       <Unit16>
         <Filename Value="../../../../usr/lib/lazarus/lcl/buttons.pp"/>
         <UnitName Value="Buttons"/>
         <CursorPos X="3" Y="288"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit16>
       <Unit17>
         <Filename Value="preview.pas"/>
         <UnitName Value="preview"/>
         <CursorPos X="12" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="39"/>
+        <UsageCount Value="34"/>
       </Unit17>
       <Unit18>
         <Filename Value="moctask.pas"/>
         <UnitName Value="moctask"/>
         <CursorPos X="3" Y="11"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit18>
       <Unit19>
         <Filename Value="emcpas.cc"/>
-        <CursorPos X="108" Y="11"/>
-        <TopLine Value="1"/>
+        <CursorPos X="1" Y="347"/>
+        <TopLine Value="333"/>
         <UsageCount Value="32"/>
         <SyntaxHighlighter Value="C++"/>
       </Unit19>
@@ -190,16 +194,18 @@
         <Filename Value="mocjoints.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocjoints"/>
-        <CursorPos X="148" Y="283"/>
-        <TopLine Value="243"/>
+        <CursorPos X="45" Y="142"/>
+        <TopLine Value="106"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
       </Unit20>
       <Unit21>
         <Filename Value="moc_hal.pas"/>
         <UnitName Value="moc_hal"/>
         <CursorPos X="52" Y="31"/>
         <TopLine Value="1"/>
-        <UsageCount Value="74"/>
+        <UsageCount Value="69"/>
       </Unit21>
       <Unit22>
         <Filename Value="moc_haldlg.pas"/>
@@ -207,21 +213,21 @@
         <UnitName Value="moc_haldlg"/>
         <CursorPos X="39" Y="46"/>
         <TopLine Value="3"/>
-        <UsageCount Value="74"/>
+        <UsageCount Value="69"/>
       </Unit22>
       <Unit23>
         <Filename Value="sim.pas"/>
         <UnitName Value="sim"/>
         <CursorPos X="11" Y="143"/>
         <TopLine Value="85"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="62"/>
       </Unit23>
       <Unit24>
         <Filename Value="linecode.pas"/>
         <UnitName Value="linecode"/>
         <CursorPos X="1" Y="13"/>
         <TopLine Value="1"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="62"/>
       </Unit24>
       <Unit25>
         <Filename Value="../sim/unit1.pas"/>
@@ -230,82 +236,78 @@
         <UnitName Value="Unit1"/>
         <CursorPos X="32" Y="30"/>
         <TopLine Value="15"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="3"/>
       </Unit25>
       <Unit26>
         <Filename Value="../sim/project1"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="9"/>
         <SyntaxHighlighter Value="None"/>
       </Unit26>
       <Unit27>
         <Filename Value="mocglb.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocglb"/>
-        <CursorPos X="1" Y="16"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="3"/>
+        <CursorPos X="13" Y="18"/>
+        <TopLine Value="15"/>
         <UsageCount Value="202"/>
-        <Loaded Value="True"/>
       </Unit27>
       <Unit28>
         <Filename Value="moctypes.pas"/>
         <UnitName Value="moctypes"/>
         <CursorPos X="1" Y="4"/>
         <TopLine Value="1"/>
-        <UsageCount Value="47"/>
+        <UsageCount Value="42"/>
       </Unit28>
       <Unit29>
         <Filename Value="mocconsts.pas"/>
         <UnitName Value="mocconsts"/>
         <CursorPos X="1" Y="7"/>
         <TopLine Value="1"/>
-        <UsageCount Value="47"/>
+        <UsageCount Value="42"/>
       </Unit29>
       <Unit30>
         <Filename Value="mocini.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocini"/>
-        <CursorPos X="3" Y="315"/>
-        <TopLine Value="291"/>
-        <EditorIndex Value="1"/>
+        <CursorPos X="19" Y="179"/>
+        <TopLine Value="159"/>
+        <EditorIndex Value="9"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit30>
       <Unit31>
         <Filename Value="mocca.inc"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="17" Y="12"/>
+        <CursorPos X="25" Y="12"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="5"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit31>
       <Unit32>
         <Filename Value="../../../../usr/lib/lazarus/lcl/comctrls.pp"/>
         <UnitName Value="ComCtrls"/>
         <CursorPos X="29" Y="225"/>
         <TopLine Value="204"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit32>
       <Unit33>
         <Filename Value="../../../../usr/lib/lazarus/lcl/include/pagecontrol.inc"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit33>
       <Unit34>
         <Filename Value="../../../../usr/lib/lazarus/lcl/interfaces/gtk/gtkpagecallback.inc"/>
         <CursorPos X="4" Y="41"/>
         <TopLine Value="14"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="1"/>
       </Unit34>
       <Unit35>
         <Filename Value="../../../../usr/lib/lazarus/lcl/interfaces/gtk/gtkcallback.inc"/>
         <CursorPos X="6" Y="2669"/>
         <TopLine Value="2801"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="2"/>
       </Unit35>
       <Unit36>
         <Filename Value="jogclient.pas"/>
@@ -313,9 +315,11 @@
         <ComponentName Value="JogClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="jogclient"/>
-        <CursorPos X="24" Y="280"/>
-        <TopLine Value="240"/>
+        <CursorPos X="13" Y="8"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit36>
       <Unit37>
         <Filename Value="runclient.pas"/>
@@ -323,8 +327,8 @@
         <ComponentName Value="RunClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="runclient"/>
-        <CursorPos X="1" Y="2"/>
-        <TopLine Value="1"/>
+        <CursorPos X="19" Y="226"/>
+        <TopLine Value="174"/>
         <UsageCount Value="200"/>
       </Unit37>
       <Unit38>
@@ -333,8 +337,8 @@
         <ComponentName Value="MDIClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mdiclient"/>
-        <CursorPos X="20" Y="210"/>
-        <TopLine Value="171"/>
+        <CursorPos X="2" Y="1"/>
+        <TopLine Value="1"/>
         <UsageCount Value="200"/>
       </Unit38>
       <Unit39>
@@ -343,8 +347,8 @@
         <ComponentName Value="SimClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="simclient"/>
-        <CursorPos X="59" Y="516"/>
-        <TopLine Value="492"/>
+        <CursorPos X="32" Y="1"/>
+        <TopLine Value="1"/>
         <UsageCount Value="200"/>
       </Unit39>
       <Unit40>
@@ -354,14 +358,14 @@
         <UnitName Value="preview1"/>
         <CursorPos X="19" Y="9"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit40>
       <Unit41>
         <Filename Value="gllist.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="gllist"/>
-        <CursorPos X="12" Y="53"/>
-        <TopLine Value="13"/>
+        <CursorPos X="55" Y="12"/>
+        <TopLine Value="1"/>
         <UsageCount Value="200"/>
       </Unit41>
       <Unit42>
@@ -369,14 +373,14 @@
         <UnitName Value="glview"/>
         <CursorPos X="40" Y="19"/>
         <TopLine Value="4"/>
-        <UsageCount Value="199"/>
+        <UsageCount Value="194"/>
       </Unit42>
       <Unit43>
         <Filename Value="glcanon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="glcanon"/>
-        <CursorPos X="12" Y="36"/>
-        <TopLine Value="1"/>
+        <CursorPos X="29" Y="30"/>
+        <TopLine Value="30"/>
         <UsageCount Value="200"/>
       </Unit43>
       <Unit44>
@@ -386,34 +390,34 @@
         <UnitName Value="glclient"/>
         <CursorPos X="30" Y="63"/>
         <TopLine Value="1"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="3"/>
       </Unit44>
       <Unit45>
         <Filename Value="../../../../usr/share/fpcsrc/packages/extra/opengl/glu.pp"/>
         <UnitName Value="GLu"/>
         <CursorPos X="38" Y="124"/>
         <TopLine Value="103"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="4"/>
       </Unit45>
       <Unit46>
         <Filename Value="../../emc2/configs/sim/mocca.ini"/>
         <CursorPos X="28" Y="26"/>
         <TopLine Value="1"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="3"/>
         <SyntaxHighlighter Value="None"/>
       </Unit46>
       <Unit47>
         <Filename Value="../../emc2/configs/sim/xemc.ini"/>
         <CursorPos X="48" Y="10"/>
         <TopLine Value="13"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="3"/>
         <SyntaxHighlighter Value="None"/>
       </Unit47>
       <Unit48>
         <Filename Value="simcanon.cc"/>
         <CursorPos X="22" Y="160"/>
         <TopLine Value="140"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="22"/>
         <SyntaxHighlighter Value="C++"/>
       </Unit48>
       <Unit49>
@@ -421,13 +425,13 @@
         <UnitName Value="glview"/>
         <CursorPos X="32" Y="95"/>
         <TopLine Value="73"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="3"/>
       </Unit49>
       <Unit50>
         <Filename Value="../../../../usr/share/fpcsrc/rtl/inc/varianth.inc"/>
         <CursorPos X="10" Y="455"/>
         <TopLine Value="426"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="3"/>
       </Unit50>
       <Unit51>
         <Filename Value="touchoff.pas"/>
@@ -435,21 +439,21 @@
         <ComponentName Value="TouchOffDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="touchoff"/>
-        <CursorPos X="55" Y="8"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="94"/>
+        <CursorPos X="57" Y="9"/>
+        <TopLine Value="2"/>
+        <UsageCount Value="201"/>
       </Unit51>
       <Unit52>
         <Filename Value="../../../../usr/share/fpcsrc/2.2.4/rtl/inc/varianth.inc"/>
         <CursorPos X="10" Y="457"/>
         <TopLine Value="62"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="1"/>
       </Unit52>
       <Unit53>
         <Filename Value="../../../../usr/share/fpcsrc/2.2.4/rtl/objpas/sysutils/sysstrh.inc"/>
         <CursorPos X="20" Y="166"/>
         <TopLine Value="193"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="3"/>
       </Unit53>
       <Unit54>
         <Filename Value="editordlg.pas"/>
@@ -466,7 +470,7 @@
         <UnitName Value="Forms"/>
         <CursorPos X="21" Y="54"/>
         <TopLine Value="34"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="7"/>
       </Unit55>
       <Unit56>
         <Filename Value="offsetdlg.pas"/>
@@ -474,234 +478,373 @@
         <ComponentName Value="OffsetsDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="offsetdlg"/>
-        <CursorPos X="27" Y="8"/>
-        <TopLine Value="1"/>
+        <CursorPos X="65" Y="102"/>
+        <TopLine Value="50"/>
+        <EditorIndex Value="4"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit56>
       <Unit57>
-        <Filename Value="../../../../usr/share/fpcsrc/2.2.4/rtl/objpas/classes/classesh.inc"/>
-        <CursorPos X="23" Y="704"/>
-        <TopLine Value="654"/>
-        <UsageCount Value="1"/>
-      </Unit57>
-      <Unit58>
         <Filename Value="emcpas.h"/>
         <CursorPos X="22" Y="17"/>
         <TopLine Value="1"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="1"/>
         <SyntaxHighlighter Value="C++"/>
-      </Unit58>
-      <Unit59>
+      </Unit57>
+      <Unit58>
         <Filename Value="../../mocca.1/src/simcanon.cc"/>
         <CursorPos X="47" Y="16"/>
         <TopLine Value="1"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="7"/>
         <SyntaxHighlighter Value="C++"/>
-      </Unit59>
-      <Unit60>
+      </Unit58>
+      <Unit59>
         <Filename Value="../../emc2/configs/sim/sim_mm.var"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="1"/>
         <SyntaxHighlighter Value="None"/>
-      </Unit60>
-      <Unit61>
+      </Unit59>
+      <Unit60>
         <Filename Value="../opengl/glxcontext.pas"/>
         <UnitName Value="glxcontext"/>
         <CursorPos X="25" Y="17"/>
         <TopLine Value="1"/>
-        <UsageCount Value="12"/>
-      </Unit61>
-      <Unit62>
+        <UsageCount Value="7"/>
+      </Unit60>
+      <Unit61>
         <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/lcl/lconvencoding.pas"/>
         <UnitName Value="LConvEncoding"/>
         <CursorPos X="91" Y="25"/>
         <TopLine Value="4"/>
-        <UsageCount Value="6"/>
-      </Unit62>
-      <Unit63>
+        <UsageCount Value="1"/>
+      </Unit61>
+      <Unit62>
         <Filename Value="../../../../usr/share/fpcsrc/2.2.4/packages/fcl-db/src/sqldb/interbase/ibconnection.pp"/>
         <UnitName Value="IBConnection"/>
         <CursorPos X="3" Y="12"/>
         <TopLine Value="1"/>
-        <UsageCount Value="6"/>
-      </Unit63>
-      <Unit64>
+        <UsageCount Value="1"/>
+      </Unit62>
+      <Unit63>
         <Filename Value="tooleditdlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ToolDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="tooleditdlg"/>
-        <CursorPos X="47" Y="43"/>
-        <TopLine Value="43"/>
-        <UsageCount Value="148"/>
-      </Unit64>
-      <Unit65>
+        <CursorPos X="41" Y="58"/>
+        <TopLine Value="31"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+      </Unit63>
+      <Unit64>
         <Filename Value="../../emc2/configs/sim/sim.tbl"/>
         <CursorPos X="1" Y="2"/>
         <TopLine Value="1"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="7"/>
         <SyntaxHighlighter Value="None"/>
-      </Unit65>
-      <Unit66>
+      </Unit64>
+      <Unit65>
         <Filename Value="../../emc2/configs/sim/lathe.tbl"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="2"/>
         <SyntaxHighlighter Value="None"/>
-      </Unit66>
-      <Unit67>
+      </Unit65>
+      <Unit66>
         <Filename Value="spindleclient.pas"/>
         <ComponentName Value="SpindleClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="spindleclient"/>
         <CursorPos X="49" Y="16"/>
         <TopLine Value="1"/>
-        <UsageCount Value="19"/>
-      </Unit67>
-      <Unit68>
+        <UsageCount Value="14"/>
+      </Unit66>
+      <Unit67>
         <Filename Value="../opengl/glcontext.pas"/>
         <UnitName Value="glcontext"/>
         <CursorPos X="58" Y="112"/>
         <TopLine Value="1"/>
-        <UsageCount Value="29"/>
-      </Unit68>
-      <Unit69>
+        <UsageCount Value="24"/>
+      </Unit67>
+      <Unit68>
         <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/components/opengl/glgtkglxcontext.pas"/>
         <UnitName Value="GLGtkGlxContext"/>
         <CursorPos X="109" Y="9"/>
         <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit69>
-      <Unit70>
+        <UsageCount Value="5"/>
+      </Unit68>
+      <Unit69>
         <Filename Value="../../../../usr/share/fpcsrc/2.2.4/packages/opengl/src/glu.pp"/>
         <UnitName Value="GLu"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="51"/>
-        <UsageCount Value="8"/>
-      </Unit70>
-      <Unit71>
+        <UsageCount Value="3"/>
+      </Unit69>
+      <Unit70>
         <Filename Value="../../../../usr/share/fpcsrc/2.2.4/packages/opengl/src/gl.pp"/>
         <UnitName Value="GL"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="8"/>
-      </Unit71>
-      <Unit72>
+        <UsageCount Value="3"/>
+      </Unit70>
+      <Unit71>
         <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/components/opengl/openglcontext.pas"/>
         <UnitName Value="OpenGLContext"/>
         <CursorPos X="11" Y="60"/>
         <TopLine Value="1"/>
-        <UsageCount Value="8"/>
-      </Unit72>
-      <Unit73>
+        <UsageCount Value="3"/>
+      </Unit71>
+      <Unit72>
         <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/lcl/interfaces/gtk2/gtk2int.pas"/>
         <UnitName Value="Gtk2Int"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="8"/>
-      </Unit73>
-      <Unit74>
+        <UsageCount Value="3"/>
+      </Unit72>
+      <Unit73>
         <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/lcl/interfaces/fpgui/fpguiint.pp"/>
         <UnitName Value="fpguiint"/>
         <CursorPos X="60" Y="6"/>
         <TopLine Value="1"/>
-        <UsageCount Value="8"/>
-      </Unit74>
-      <Unit75>
+        <UsageCount Value="3"/>
+      </Unit73>
+      <Unit74>
         <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/lcl/stdctrls.pp"/>
         <UnitName Value="StdCtrls"/>
         <CursorPos X="14" Y="883"/>
         <TopLine Value="866"/>
-        <UsageCount Value="8"/>
-      </Unit75>
-      <Unit76>
+        <UsageCount Value="3"/>
+      </Unit74>
+      <Unit75>
         <Filename Value="../../../../usr/share/fpcsrc/2.2.4/rtl/objpas/sysutils/sysinth.inc"/>
         <CursorPos X="3" Y="33"/>
         <TopLine Value="1"/>
-        <UsageCount Value="8"/>
-      </Unit76>
-      <Unit77>
+        <UsageCount Value="3"/>
+      </Unit75>
+      <Unit76>
         <Filename Value="glcontext.pas"/>
         <UnitName Value="glcontext"/>
         <CursorPos X="84" Y="167"/>
-        <TopLine Value="127"/>
-        <UsageCount Value="14"/>
-      </Unit77>
-      <Unit78>
+        <TopLine Value="115"/>
+        <UsageCount Value="9"/>
+      </Unit76>
+      <Unit77>
         <Filename Value="toolchange.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ToolChgDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="toolchange"/>
-        <CursorPos X="1" Y="88"/>
-        <TopLine Value="55"/>
-        <UsageCount Value="78"/>
-      </Unit78>
-      <Unit79>
+        <CursorPos X="12" Y="59"/>
+        <TopLine Value="27"/>
+        <UsageCount Value="198"/>
+      </Unit77>
+      <Unit78>
         <Filename Value="mocbtn.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocbtn"/>
-        <UsageCount Value="69"/>
-      </Unit79>
-      <Unit80>
+        <CursorPos X="20" Y="36"/>
+        <TopLine Value="36"/>
+        <UsageCount Value="189"/>
+      </Unit78>
+      <Unit79>
         <Filename Value="glxcontext.pas"/>
         <UnitName Value="glxcontext"/>
-        <CursorPos X="62" Y="13"/>
+        <CursorPos X="21" Y="3"/>
         <TopLine Value="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="6"/>
+      </Unit79>
+      <Unit80>
+        <Filename Value="mocmain.lfm"/>
+        <CursorPos X="12" Y="173"/>
+        <TopLine Value="140"/>
+        <UsageCount Value="8"/>
+        <SyntaxHighlighter Value="LFM"/>
       </Unit80>
       <Unit81>
-        <Filename Value="mocmain.lfm"/>
-        <CursorPos X="17" Y="12"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="9"/>
-        <SyntaxHighlighter Value="LFM"/>
-      </Unit81>
-      <Unit82>
         <Filename Value="../hal/haltest.pas"/>
         <UnitName Value="haltest"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="22"/>
-        <UsageCount Value="17"/>
-      </Unit82>
-      <Unit83>
+        <UsageCount Value="12"/>
+      </Unit81>
+      <Unit82>
         <Filename Value="mocglb.inc"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="9" Y="1"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="4"/>
-        <UsageCount Value="23"/>
+        <CursorPos X="34" Y="172"/>
+        <TopLine Value="141"/>
+        <EditorIndex Value="8"/>
+        <UsageCount Value="143"/>
         <Loaded Value="True"/>
-      </Unit83>
-      <Unit84>
+      </Unit82>
+      <Unit83>
         <Filename Value="hal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="hal"/>
-        <CursorPos X="10" Y="77"/>
-        <TopLine Value="58"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="23"/>
-        <Loaded Value="True"/>
+        <CursorPos X="14" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="143"/>
+      </Unit83>
+      <Unit84>
+        <Filename Value="emcint.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="emcint"/>
+        <CursorPos X="12" Y="15"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="141"/>
       </Unit84>
+      <Unit85>
+        <Filename Value="partaligndlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="PartAlgnDlg"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="partaligndlg"/>
+        <CursorPos X="22" Y="193"/>
+        <TopLine Value="168"/>
+        <UsageCount Value="140"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="scripts.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="scripts"/>
+        <CursorPos X="25" Y="68"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="80"/>
+        <Loaded Value="True"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/lcl/themes.pas"/>
+        <UnitName Value="Themes"/>
+        <CursorPos X="59" Y="2193"/>
+        <TopLine Value="638"/>
+        <UsageCount Value="8"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/lcl/lcltype.pp"/>
+        <UnitName Value="LCLType"/>
+        <CursorPos X="3" Y="210"/>
+        <TopLine Value="185"/>
+        <UsageCount Value="8"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/lcl/include/winapih.inc"/>
+        <CursorPos X="10" Y="87"/>
+        <TopLine Value="62"/>
+        <UsageCount Value="8"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="../../../../usr/lib/lazarus/0.9.28.2/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <CursorPos X="17" Y="1061"/>
+        <TopLine Value="1061"/>
+        <UsageCount Value="9"/>
+      </Unit90>
+      <Unit91>
+        <Filename Value="../../../../usr/share/fpcsrc/2.2.4/rtl/objpas/sysutils/syspchh.inc"/>
+        <CursorPos X="20" Y="26"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit91>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
-        <Filename Value="mocca.lpr"/>
-        <Caret Line="73" Column="8" TopLine="39"/>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="141" Column="8" TopLine="92"/>
       </Position1>
       <Position2>
-        <Filename Value="hal.pas"/>
-        <Caret Line="117" Column="20" TopLine="117"/>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="100" Column="26" TopLine="60"/>
       </Position2>
       <Position3>
-        <Filename Value="hal.pas"/>
-        <Caret Line="172" Column="17" TopLine="153"/>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="141" Column="40" TopLine="107"/>
       </Position3>
       <Position4>
-        <Filename Value="mocini.pas"/>
-        <Caret Line="314" Column="40" TopLine="287"/>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="72" Column="5" TopLine="68"/>
       </Position4>
+      <Position5>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="20" Column="1" TopLine="11"/>
+      </Position5>
+      <Position6>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="88" Column="1" TopLine="59"/>
+      </Position6>
+      <Position7>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="67" Column="13" TopLine="36"/>
+      </Position7>
+      <Position8>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="68" Column="13" TopLine="36"/>
+      </Position8>
+      <Position9>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="77" Column="13" TopLine="36"/>
+      </Position9>
+      <Position10>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="71" Column="19" TopLine="50"/>
+      </Position10>
+      <Position11>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="69" Column="45" TopLine="46"/>
+      </Position11>
+      <Position12>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="70" Column="16" TopLine="61"/>
+      </Position12>
+      <Position13>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="60" Column="16" TopLine="35"/>
+      </Position13>
+      <Position14>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="62" Column="15" TopLine="37"/>
+      </Position14>
+      <Position15>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="61" Column="5" TopLine="37"/>
+      </Position15>
+      <Position16>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="64" Column="1" TopLine="38"/>
+      </Position16>
+      <Position17>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="63" Column="11" TopLine="38"/>
+      </Position17>
+      <Position18>
+        <Filename Value="mocemc.pas"/>
+        <Caret Line="1" Column="23" TopLine="1"/>
+      </Position18>
+      <Position19>
+        <Filename Value="mocemc.pas"/>
+        <Caret Line="37" Column="23" TopLine="1"/>
+      </Position19>
+      <Position20>
+        <Filename Value="emc2pas.pas"/>
+        <Caret Line="27" Column="27" TopLine="1"/>
+      </Position20>
+      <Position21>
+        <Filename Value="emc2pas.pas"/>
+        <Caret Line="111" Column="18" TopLine="85"/>
+      </Position21>
+      <Position22>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="69" Column="11" TopLine="38"/>
+      </Position22>
+      <Position23>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="80" Column="32" TopLine="44"/>
+      </Position23>
+      <Position24>
+        <Filename Value="tooleditdlg.pas"/>
+        <Caret Line="102" Column="3" TopLine="99"/>
+      </Position24>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
