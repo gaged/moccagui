@@ -5,11 +5,12 @@ COMPILEPAS = fpc
 COMPILEMOC = fpc -S2cghi -CX -O1 -TLinux -XX -vewnhi -l -dLCL -dLCL$(WM)
 LINK = gcc -v
 
-EMCDIR = /home/gtom/emc
+#EMCDIR = /home/gtom/emc
 LAZDIR = /usr/lib/lazarus/0.9.28.2
 
-INCLUDES = -I$(EMCDIR)/include
-INCLUDES += -I$/usr/include/emc2
+#INCLUDES = -I$(EMCDIR)/include
+#INCLUDES += -I$/usr/include/emc2
+INCLUDES = -I/usr/include/emc2
 
 LCL = -Fu.
 LCL += -Fu../lib
@@ -19,7 +20,7 @@ LCL += -Fu$(LAZDIR)/components/custom
 LCL += -Fu$(LAZDIR)/components/opengl
 LCL += -Fu$(LAZDIR)/packager/units/i386-linux
 
-LIBDIR = $(EMCDIR)/lib
+#LIBDIR = $(EMCDIR)/lib
 
 emcpas.o: emcpas.cc
 	$(COMPILE) $(INCLUDES) -o../lib/emcpas.o -DDSOHANDLE -l/usr/lib emcpas.cc
@@ -28,7 +29,8 @@ simcanon.o: simcanon.cc
 	$(COMPILE) $(INCLUDES) -o../lib/simcanon.o simcanon.cc
 
 mocca.o: mocca.lpr
-	$(COMPILEMOC) $(LCL) -Fl$(LIBDIR) -Fl../lib -FU../lib -o../lib/mocca mocca.lpr
+	$(COMPILEMOC) $(LCL)  -Fl../lib -FU../lib -o../lib/mocca mocca.lpr
+#	$(COMPILEMOC) $(LCL) -Fl$(LIBDIR) -Fl../lib -FU../lib -o../lib/mocca mocca.lpr
 	
 all: simcanon.o emcpas.o mocca.o
 
