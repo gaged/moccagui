@@ -1,0 +1,19 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
+LazarusResources.Add('TEditorClient','FORMDATA',[
+  'TPF0'#13'TEditorClient'#12'EditorClient'#4'Left'#3#134#1#6'Height'#3'K'#2#3
+  +'Top'#3'\'#1#5'Width'#3#201#2#13'ActiveControl'#7#4'Memo'#11'BorderIcons'#11
+  +#0#11'BorderStyle'#7#6'bsNone'#7'Caption'#6#18'NC-Satz bearbeiten'#12'Client'
+  +'Height'#3'K'#2#11'ClientWidth'#3#201#2#8'OnCreate'#7#10'FormCreate'#10'Pare'
+  +'ntFont'#9#8'Position'#7#9'poDefault'#10'LCLVersion'#6#8'0.9.28.2'#0#6'TLabe'
+  +'l'#12'LabelCaption'#22'AnchorSideLeft.Control'#7#5'Owner'#21'AnchorSideTop.'
+  +'Control'#7#5'Owner'#4'Left'#2#4#6'Height'#2'"'#3'Top'#2#4#5'Width'#3#19#1#20
+  +'BorderSpacing.Around'#2#4#7'Caption'#6#18'NC-Satz bearbeiten'#11'Font.Heigh'
+  +'t'#2#228#10'Font.Pitch'#7#7'fpFixed'#11'ParentColor'#8#10'ParentFont'#8#0#0
+  +#5'TMemo'#4'Memo'#22'AnchorSideLeft.Control'#7#5'Owner'#21'AnchorSideTop.Con'
+  +'trol'#7#12'LabelCaption'#18'AnchorSideTop.Side'#7#9'asrBottom'#23'AnchorSid'
+  +'eRight.Control'#7#5'Owner'#20'AnchorSideRight.Side'#7#9'asrBottom'#24'Ancho'
+  +'rSideBottom.Control'#7#5'Owner'#21'AnchorSideBottom.Side'#7#9'asrBottom'#4
+  +'Left'#2#0#6'Height'#3'!'#2#3'Top'#2'*'#5'Width'#3#201#2#7'Anchors'#11#5'akT'
+  +'op'#6'akLeft'#7'akRight'#8'akBottom'#0#8'TabOrder'#2#0#8'WordWrap'#8#0#0#0
+]);
