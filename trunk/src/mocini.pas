@@ -179,9 +179,9 @@ begin
       Sec:= 'SCRIPT_' + IntToStr(i-1);
       GetIniStr(Sec,'NAME',n,'');
       GetIniStr(Sec,'SCRIPT',s,'');
-      writeln(s,n);
       if (s <> '') and (n <> '') then
           begin
+            writeln(s,n);
             n:= Trim(n);
             s:= Trim(s);
             if (Length(s) > 0) and (LEngth(n) > 0) then
@@ -413,6 +413,9 @@ begin
   HasScripts:= IniReadScripts;
   if (Vars.ScriptDir = '') and HasScripts then
     writeln('warning: scripts defined but scriptdir not set!');
+  GetIniStr('MOCCA','EDITOR_BEGIN_FILE',EditorBeginFile,'');
+  GetIniStr('MOCCA','EDIOTR_END_FILE',EditorEndFile,'');
+
   Result:= True;
 end;
 

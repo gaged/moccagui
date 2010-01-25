@@ -107,6 +107,7 @@ var
   LinearUnitConversion: integer; external name 'linearUnitConversion';
   AngularUnitConversion: integer; external name 'angularUnitConversion';
 
+
 function loadToolTable(const FileName: PChar): integer; cdecl; external;
 function saveToolTable(const FileName: PChar): integer; cdecl; external;
 procedure InitToolTable; cdecl; external;

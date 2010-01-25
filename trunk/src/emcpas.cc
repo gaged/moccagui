@@ -345,6 +345,8 @@ extern "C" bool taskGetCommand(char *msg)
   return false;
 }
 
+// extern "C" int taskInterpSeqNum() { return emcStatus Interp.sequence_number(););
+
 // taskstate read functions
 extern "C" int taskMode() { return emcStatus->task.mode; }
 extern "C" int taskState() { return emcStatus->task.state; }

@@ -1,7 +1,7 @@
 object SimClientForm: TSimClientForm
-  Left = 496
+  Left = 561
   Height = 453
-  Top = 245
+  Top = 236
   Width = 601
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
@@ -89,7 +89,7 @@ object SimClientForm: TSimClientForm
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = LabelL1
     AnchorSideRight.Control = SbZoom
-    Left = 350
+    Left = 353
     Height = 18
     Top = 431
     Width = 77
@@ -105,10 +105,10 @@ object SimClientForm: TSimClientForm
     AnchorSideTop.Control = BtnZ
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = LabelZoom
-    Left = 307
+    Left = 309
     Height = 18
     Top = 431
-    Width = 39
+    Width = 40
     Anchors = [akTop, akRight]
     Caption = 'Zoom'
     ParentColor = False
@@ -118,9 +118,9 @@ object SimClientForm: TSimClientForm
     AnchorSideRight.Control = sbV
     AnchorSideBottom.Control = BtnP
     Left = 0
-    Height = 18
-    Top = 408
-    Width = 581
+    Height = 15
+    Top = 411
+    Width = 584
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
     LargeChange = 10
@@ -135,10 +135,10 @@ object SimClientForm: TSimClientForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = sbH
-    Left = 581
-    Height = 408
+    Left = 584
+    Height = 411
     Top = 0
-    Width = 18
+    Width = 15
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 2
     Kind = sbVertical
@@ -155,14 +155,30 @@ object SimClientForm: TSimClientForm
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = sbH
     AnchorSideRight.Side = asrBottom
-    Left = 437
-    Height = 18
-    Top = 431
+    Left = 440
+    Height = 15
+    Top = 433
     Width = 144
     Anchors = [akTop, akRight]
     BorderSpacing.Left = 10
     PageSize = 0
     TabOrder = 2
     OnChange = SbZoomChange
+  end
+  object BtnCLog: TButton
+    AnchorSideLeft.Control = BtnZ
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BtnZ
+    AnchorSideBottom.Control = BtnZ
+    AnchorSideBottom.Side = asrBottom
+    Left = 108
+    Height = 24
+    Top = 428
+    Width = 70
+    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 8
+    Caption = 'Löschen'
+    OnClick = BtnClearClick
+    TabOrder = 3
   end
 end

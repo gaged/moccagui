@@ -20,7 +20,8 @@ var
   Vars: TEmcVars;
   State: TEmcState;
   GlSettings: TGlSettings;
-  MocBtns: Array[0..NumAllButtons - 1] of TMocButton; // the soft buttons
+
+  MocBtns: Array[0..NumAllButtons - 1] of TMocButton; // the buttons
 
   HasScripts: Boolean;
   MocScripts: Array[0..NumSButtons - 1] of TScriptDef;
@@ -31,6 +32,9 @@ var
   GlobalImageList: TImageList;
   GlobalFontWidth: integer;
   GlobalFontHeight: integer;
+
+  EditorBeginFile: string;
+  EditorEndFile: string;
 
 var
   PartBaseCoord : record

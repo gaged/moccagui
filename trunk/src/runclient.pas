@@ -30,6 +30,7 @@ type
     function  HandleCommand(Cmd: integer): Boolean;
   public
     procedure ActivateSelf;
+    procedure EditorMode(ShowEditor: Boolean);
     procedure UpdateSelf;
     procedure InitControls;
     procedure MapButtons;
@@ -52,7 +53,27 @@ uses
   {$IFDEF USEGL}
   simclient,
   {$ENDIF}
-  glcanon,gllist;
+  glcanon,gllist,
+  editorclient;
+
+procedure TRunClientForm.EditorMode(ShowEditor: Boolean);
+begin
+  if ShowEditor then
+    begin
+      if clEditor.Visible then Exit;
+      UpdateLock:= True;
+      Self.Visible:= False;
+      if IsOpen and (Vars.ProgramFile <> '') then
+        clEditor.LoadInternalFile(LB.Items,Vars.ProgramFile);
+      clEditor.ActivateSelf;
+    end
+  else
+    begin
+      UpdateLock:= False;
+      clEditor.Visible:= False;
+      ActivateSelf;
+    end;
+end;
 
 procedure TRunClientForm.SetCodes;
 var
@@ -96,10 +117,9 @@ begin
   OldActiveLn:= -1;
   OldRunning:= True;
   IsOpen:= False;
-  {$IFNDEF LCLGTK2}
   LB.Enabled:= True;
-  writeln('Gtk Widgetset');
-  {$ENDIF}
+  LB.MultiSelect:= False;
+  LB.ClearSelection;
 end;
 
 procedure TRunClientForm.GotoLine;
@@ -173,6 +193,8 @@ function TRunClientForm.HandleCommand(Cmd: integer): Boolean;
 begin
   Result:= True;
   case Cmd of
+    cmEDITOR: if State.InterpState = INTERP_IDLE then
+      EditorMode(True);
     cmOPEN:
       OpenFile;
 
@@ -196,7 +218,6 @@ begin
     cmRELOAD: begin
       LB.ClearSelection;
       LB.ItemIndex:= -1;
-
     end;
     cmSTOP:
       Emc.TaskStop;
@@ -204,6 +225,7 @@ begin
     cmSTEP:
       begin
         Emc.TaskStep;
+        UpdateLine;
         write('ML:',taskMotionline);
         write('CL:',taskCurrentLine);
         writeln('RL:',taskReadLine);
@@ -326,6 +348,11 @@ var
   FileName: string;
 begin
   writeln('OpenFile');
+  OpenDialog.InitialDir:= Vars.ProgramPrefix;
+  {$ifdef DEBUG_INI}
+  writeln('Initial directory: ',OpenDialog.InitialDir);
+  {$endif}
+
   if OpenDialog.Execute then
     begin
       sendAuto;
@@ -373,7 +400,10 @@ begin
   if InterpState <> INTERP_IDLE then
     begin
       ActiveLn:= taskMotionLine - 1;
-      if ActiveLn < 0 then Exit;
+      if ActiveLn < 0 then
+        ActiveLn:= taskCurrentLine + 1;
+      if ActiveLn < 0 then
+        Exit;
       if ActiveLn <> OldActiveLn then
         begin
           if ActiveLn < LB.Items.Count then

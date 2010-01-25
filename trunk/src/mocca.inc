@@ -9,8 +9,6 @@
 //{$define DEBUG_GL}
 {$define USEGL}
 //{$define VER2_2}
-
-
 {$define HAS_SLEEP}
 
 

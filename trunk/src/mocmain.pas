@@ -120,7 +120,7 @@ implementation
 
 uses
   emc2pas,
-  mocemc,mocbtn;
+  mocemc,mocbtn,editorclient;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -401,11 +401,12 @@ begin
   GlobalFontHeight:= 0;
   GlobalImageList:= Self.ImageList;  // assign the imagelist to the global imagelist
 
+  {$IFDEF LCKGTK2}
   if MainFontSize > 0 then
     Self.Font.Size:= MainFontSize;
-
   if MainFontBold then
     Self.Font.Style:= [fsBold];
+  {$ENDIF}
 
   State.TaskMode:= 0;  // trigger a taskmodechanged
 
@@ -432,6 +433,12 @@ begin
     RaiseError('Error create class "runclient"');
   clRun.Parent:= PanelLeft;
   clRun.Visible:= False;
+
+  clEditor:= TEditorClient.Create(Self);
+  if not Assigned(clEditor) then
+    RaiseError('Error create class "editorclient"');
+  clEditor.Parent:= PanelLeft;
+  clEditor.Visible:= False;
 
   {$IFDEF USEGL}
   clSim:= TSimClientForm.Create(self);
@@ -466,6 +473,7 @@ begin
   if Assigned(clJog) then FreeAndNil(clJog);
   if Assigned(clMDI) then FreeAndNil(clMDI);
   if Assigned(clRun) then FreeAndNil(clRun);
+  if Assigned(clEditor) then FreeAndNil(clEditor);
   {$IFDEF USEGL}
   if Assigned(clSim) then FreeAndNil(clSim);
   {$ENDIF}
@@ -568,6 +576,7 @@ begin
   if Assigned(clJog) then clJog.SetBounds(0,0,w,h);
   if Assigned(clMDI) then clMDI.SetBounds(0,0,w,h);
   if Assigned(clRun) then clRun.SetBounds(0,0,w,h);
+  if Assigned(clEditor) then clEditor.SetBounds(0,0,w,h);
 end;
 
 procedure TMainForm.PanelSoftBtnsResize(Sender: TObject);

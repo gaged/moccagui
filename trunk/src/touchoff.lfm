@@ -1,14 +1,16 @@
 object TouchOffDlg: TTouchOffDlg
-  Left = 532
+  Left = 583
   Height = 189
-  Top = 367
+  Top = 368
   Width = 330
   ActiveControl = EditV
   BorderIcons = [biSystemMenu]
   Caption = 'Antasten'
   ClientHeight = 189
   ClientWidth = 330
+  KeyPreview = True
   OnCloseQuery = FormCloseQuery
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '0.9.28.2'

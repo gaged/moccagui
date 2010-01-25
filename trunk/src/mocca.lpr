@@ -20,8 +20,8 @@ uses
   {$IFDEF USEGL}
   simclient,
   {$ENDIF}
-  editordlg, offsetdlg, tooleditdlg, touchoff, toolchange, hal, emcint,
-partaligndlg, scripts;
+  editorclient, offsetdlg, tooleditdlg, touchoff, toolchange, hal, emcint,
+partaligndlg, scripts, logger;
 
 const
   __LC_CTYPE    = 0;
