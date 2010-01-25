@@ -18,6 +18,7 @@ type
 
   { TSimClientForm }
   TSimClientForm = class(TForm)
+    BtnCLog: TButton;
     LabelZoom: TLabel;
     LabelL1: TLabel;
     sbH: TScrollBar;
@@ -27,10 +28,12 @@ type
     BtnY: TSpeedButton;
     BtnZ: TSpeedButton;
     SbZoom: TScrollBar;
+    procedure BtnClearClick(Sender: TObject);
     procedure BtnPClick(Sender: TObject);
     procedure BtnXClick(Sender: TObject);
     procedure BtnYClick(Sender: TObject);
     procedure BtnZClick(Sender: TObject);
+    procedure BtnCLogClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -100,10 +103,12 @@ var
 implementation
 
 uses
-  mocjoints,emc2pas,glcanon;
+  mocjoints,emc2pas,glcanon,
+  logger;
 
 const
   InitialRotX = -60; InitialRotY = 0; InitialRotZ = 0;
+
 
 procedure TSimClientForm.LoadFile(FileName,UnitCode,InitCode: string);
 begin
@@ -221,6 +226,13 @@ begin
   if AreaInitialized then ViewMode(0);
 end;
 
+procedure TSimClientForm.BtnClearClick(Sender: TObject);
+begin
+  LoggerClear;
+  if Assigned(ogl) then
+    ogl.Invalidate;
+end;
+
 procedure TSimClientForm.BtnXClick(Sender: TObject);
 begin
   if AreaInitialized then ViewMode(1);
@@ -234,6 +246,11 @@ end;
 procedure TSimClientForm.BtnZClick(Sender: TObject);
 begin
   if AreaInitialized then ViewMode(3);
+end;
+
+procedure TSimClientForm.BtnCLogClick(Sender: TObject);
+begin
+
 end;
 
 procedure TSimClientForm.FormDestroy(Sender: TObject);
@@ -409,6 +426,7 @@ end;
 procedure TSimClientForm.MoveCone(x,y,z: Double);
 var
   cx,cy,cz: Double;
+
 begin
   if not AreaInitialized then Exit;
   cx:= ToCanonPos(x,0);
@@ -417,10 +435,10 @@ begin
   if (cx <> ConeX) or (cy <> ConeY) or (cz <> ConeZ) then
     begin
       ConeX:= cx; ConeY:= cy; ConeZ:= cz;
+      LoggerAddPoint(cx,cy,cz);
       ogl.Invalidate;
     end;
 end;
-
 
 procedure TSimClientForm.UpdateView;
 
@@ -573,7 +591,9 @@ begin
   glMatrixMode(GL_MODELVIEW);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   glLoadIdentity;
+  {$IFDEF LINESMOOTH}
   glEnable(GL_LINE_SMOOTH);
+  {$ENDIF}
   glRotatef(RotationX,1.0,0.0,0.0);
   glRotatef(RotationY,0.0,1.0,0.0);
   glRotatef(RotationZ,0.0,0.0,1.0);
@@ -588,6 +608,10 @@ begin
   glTranslatef(ConeX,ConeY,ConeZ);
   glCallList(ConeL);
   glPopMatrix;
+  LoggerCall;
+  {$IFDEF LINESMOOTH}
+  glDisable(GL_LINE_SMOOTH);
+  {$ENDIF}
   ogl.SwapBuffers;
 end;
 
@@ -707,7 +731,6 @@ begin
   d:= ML.MaxZ - ML.MinZ;
   if (W <> 0) and (H <> 0) and (D <> 0) then
     begin
-      //glEnable(GL_BLEND);
       glEnable (GL_BLEND);
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glColor4f(0,0,0.9, 0.1);

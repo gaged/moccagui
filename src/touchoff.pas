@@ -24,6 +24,7 @@ type
     LabelUnit: TLabel;
     procedure EditVKeyPress(Sender: TObject; var Key: char);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
   private
     FValue: double;
@@ -90,7 +91,20 @@ begin
       except
         CanClose:= False;
       end;
-    end;
+    end
+  else
+    CanClose:= True;
+end;
+
+
+procedure TTouchOffDlg.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key = 13) then
+    ModalResult:= mrOk
+  else
+  if (Key = 27) then
+    ModalResult:= mrCancel;
 end;
 
 procedure TTouchOffDlg.FormShow(Sender: TObject);
@@ -108,7 +122,7 @@ begin
   else
     ToolAxis:= 'Z';
   FValue:= GetRelPos(FAxisNo);
-  EditV.Text:= '';
+  EditV.Text:= '0.00';
   LabelPos.Caption:= FloatToStr(FValue);
   cbCoords.Items.Clear;
   for i:= 0 to CoordSysMax do

@@ -1,7 +1,7 @@
 object ToolChgDlg: TToolChgDlg
-  Left = 572
+  Left = 491
   Height = 386
-  Top = 316
+  Top = 351
   Width = 443
   ActiveControl = LbTools
   BorderIcons = [biSystemMenu]
@@ -20,11 +20,7 @@ object ToolChgDlg: TToolChgDlg
     Top = 8
     Width = 425
     ExtendedSelect = False
-    Font.Height = -16
-    Font.Name = 'Courier 10 Pitch'
-    Font.Pitch = fpFixed
     ItemHeight = 0
-    ParentFont = False
     TabOrder = 0
     TopIndex = -1
   end

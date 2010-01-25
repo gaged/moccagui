@@ -172,18 +172,20 @@ begin
 end;
 
 procedure TJogClientForm.UpdateButtons;
+var
+  i,ii: integer;
 begin
-  // if FShifted then Exit;
-  {SetButtonEnabled(cmSPMINUS,State.Machine);
+  for i:= 0 to NumSButtons - 1 do
+    begin
+      ii:= i + NumMButtons;
+      if Assigned(MocBtns[ii]) then
+        MocBtns[ii].Enabled:= State.Machine;
+    end;
+  SetButtonEnabled(cmSPMINUS,State.Machine);
   SetButtonEnabled(cmSPCW,State.Machine);
   SetButtonEnabled(cmSPCCW,State.Machine);
   SetButtonEnabled(cmSPPLUS,State.Machine);
   SetButtonEnabled(cmFLOOD,State.Machine);
-  SetButtonEnabled(cmREFACT,State.Machine);
-  SetButtonEnabled(cmREFALL,State.Machine);
-  SetButtonEnabled(cmZEROACT,State.Machine);
-  SetButtonEnabled(cmZEROALL,State.Machine);
-  SetButtonEnabled(cmTOOLCHG,State.Machine); }
 end;
 
 procedure TJogClientForm.UpdateSelf;
@@ -234,6 +236,7 @@ begin
   if MapAll then
     M:= @BtnDefJog;
   SetButtonMap(M,S,@Self.Click);
+  UpdateButtons;
 end;
 
 procedure TJogClientForm.InitControls;
@@ -306,7 +309,9 @@ begin
   if Vars.JogContinous then
     begin
       Joints.JogStop(Ch);
-      // Sleep(10);
+      {$IFNDEF LCLGTK2}
+      Sleep(10);
+      {$ENDIF}
     end;
   Key:= 0;
 end;
@@ -401,8 +406,6 @@ begin
   Vars.JogContinous:= (i = 0);
   Vars.jogIncrement:= Vars.JogIncrements[i].Value;
 end;
-
-
 
 initialization
   {$I jogclient.lrs}

@@ -43,12 +43,12 @@ type
 var
   Emc: TEMC;                    // the base class of the emc interface
 
+
 implementation
 
 uses
   Forms,
   mocglb,emc2pas,mocjoints,
-  glcanon,
   runclient,
   offsetdlg,
   tooleditdlg,
@@ -132,6 +132,7 @@ begin
     begin
       s:= 'T' + IntToStr(i) + ' M6';
       ExecToolChange(s);
+      clRun.UpdatePreview(True);
     end;
 end;
 
@@ -250,8 +251,7 @@ begin
   S:= Format('%s%d%s%.5f%s%.5f%s%.5f',['G10L2P',i+1,'X',PosX,'Y',PosY,'Z',PosZ]);
   ExecuteSilent(S);
   UpdateError;
-  if Assigned(clRun) then
-    clRun.UpdatePreview(True);
+  clRun.UpdatePreview(True);
 end;
 
 procedure TEmc.TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
@@ -273,6 +273,7 @@ begin
   V:= (GetAbsPos(Joints.AxisByChar(Axis)) / Scale) + Value;
   S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,V]);
   ExecuteSilent(s);
+  clRun.UpdatePreview(True);
 end;
 
 function TEmc.ForceTaskMode(ToMode: integer): Boolean;
@@ -456,6 +457,14 @@ begin
     end;
 end;
 
+procedure TEmc.TouchOff(Axis: Char);
+begin
+  if State.TaskMode <> TASKMODEMANUAL then
+    Exit;
+  DoTouchOff(Axis);
+  clRun.UpdatePreview(True);
+end;
+
 function TEMC.HandleCommand(Cmd: integer): boolean;
 begin
   case Cmd of
@@ -523,7 +532,11 @@ begin
         EditOffsets;
         clRun.UpdatePreview(True);
       end;
-    cmTOOLEDT: EditTools;
+    cmTOOLEDT: 
+       begin
+         EditTools;
+         clRun.UpdatePreview(True);
+       end;
     cmTOOLCHG: ChangeTool;
     cmUNITS: SetDisplayUnits(not Vars.Metric);
     //cmPARTALGN: if State.TaskMode = TASKMODEMANUAL then
@@ -537,14 +550,5 @@ begin
   Result:= true;
 end;
   
-procedure TEmc.TouchOff(Axis: Char);
-begin
-  if State.TaskMode <> TASKMODEMANUAL then
-    Exit;
-  DoTouchOff(Axis);
-  if Assigned(clRun) then
-    clRun.UpdatePreview(True);
-end;
-
 end.
 

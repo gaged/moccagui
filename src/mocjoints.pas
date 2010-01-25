@@ -14,8 +14,11 @@ const
   ZERO_POS_STRING = '+00000.000';
   ZERO_DES_STRING = '0';
 
-  KeyDelayTime = 200;
-
+  {$IFDEF LCLGTK2}
+    KeyDelayTime = 100;
+  {$ELSE}
+    KeyDelayTime = 20;
+  {$ENDIF}
 
 type
   TAxis = class
@@ -74,7 +77,7 @@ type
     FOldActiveAxis: integer;
     FBorderWidth: integer;
     FCoords: string;
-    FBox: TShape;
+    FBox: {$IFDEF LCLGTK2}TShape;{$ELSE}TBevel;{$ENDIF}
     FPanel: TPanel;
     FShowActual: Boolean;
     FShowRelative: Boolean;
@@ -139,7 +142,10 @@ var
 begin
   Result:= '';
   if Value >= 0 then S:= '+';
-  S:= S + FloatToStrF(Value, ffFixed, 8, 4);
+  if Vars.Metric then
+    S:= S + FloatToStrF(Value, ffFixed, 8, 3)
+  else
+    S:= S + FloatToStrF(Value, ffFixed, 8, 4);
   Result:= S;
 end;
 
@@ -306,9 +312,14 @@ begin
   FBorderWidth:= 4;
   FPanel:= APanel;
   FNumAxes:= 0;
+  {$IFDEF LCLGTK2}
   FBox:= TShape.Create(FPanel);
-  FBox.Parent:= FPanel;
   FBox.Shape:= stRectangle;
+  {$ELSE}
+  FBox:= TBevel.Create(FPanel);
+  FBox.Shape:= bsBox;
+  {$ENDIF}
+  FBox.Parent:= FPanel;
   FBox.Visible:= False;
   FOldActiveAxis:= -1;
   FShowActual:= Vars.ShowActual;
@@ -380,13 +391,20 @@ begin
   i:= AxisByChar(Ch);
   if i < 0 then Exit;
   FAxes[i].Jogging:= True;
+  {$IFDEF LCLGTK2}
   d:= GetTickDiff(AxisTicks[i]);
   if d < KeyDelayTime then
     begin
-      writeln('Skipped');
+      {$IFDEF DEBUG_EMC}
+       writeln('key skipped ',d);
+      {$ENDIF}
       Exit;
     end;
+  {$ENDIF}
   Result:= sendJogCont(i,Speed);
+  {$IFNDEF LCLGKT2}
+  Sleep(5);
+  {$ENDIF}
   if i <> Vars.ActiveAxis then
     Vars.ActiveAxis:= i;
 end;
@@ -549,7 +567,7 @@ begin
     end;
   FBox.Left:= 0;
   FBox.Width:= FullWidth; // FPanel.ClientWidth;
-  FBox.Height:= h;
+  FBox.Height:= h + 1;
   //if FPanel.ClientWidth < FullWidth + 1 then
   FPanel.ClientWidth:= FullWidth + 1;
   FPanel.ClientHeight:= y + 1;

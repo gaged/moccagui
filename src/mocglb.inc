@@ -125,6 +125,11 @@ const
   cmMDIHIST   = 281;
 
   cmEDITOR    = 290;
+  cmEDNEW     = 291;
+  cmEDOPEN    = 292;
+  cmEDSAVE    = 293;
+  cmEDSAVEAS  = 294;
+  cmEDCLOSE   = 295;
 
   cmFEEDUP1   = 301;
   cmFEEDUP10  = 302;
@@ -227,7 +232,7 @@ const
 
    BtnDefMDI1 : TSButtonArray =
      ((T:cmMDIEXEC; G:-1;       S:'Ausführen'),
-      (T:-1;        G:-1;       S:''),
+      (T:cmMDIHIST; G:-1;       S:'Einträge löschen'),
       (T:-1;        G:-1;       S:''),
       (T:-1;        G:-1;       S:''),
       (T:-1;        G:-1;       S:''),
@@ -247,7 +252,7 @@ const
       (T:cmRELOAD;   G:-1;    S:'Neu Laden'),
       (T:cmOPTSTOP ; G:-1;    S:'Opt. Pause'),
       (T:cmBLOCKDEL; G:-1;    S:'"/" Blöcke'),
-      (T:-1;         G:-1;    S:''));
+      (T:cmEDITOR;   G:-1;    S:'Editor'));
 
   BtnDefRun1 : TSButtonArray =
      ((T:cmRUN;      G:-1;      S:'Start'),
@@ -260,6 +265,19 @@ const
       (T:-1;         G:-1;      S:''),
       (T:-1;         G:-1;      S:''),
       (T:-1;         G:-1;      S:''));
+
+
+  BtnDefEditor : TSButtonArray =
+     ((T:cmEDNEW;     G:-1;    S:'Neu'),
+      (T:cmEDOPEN;    G:-1;    S:'Öffnen'),
+      (T:cmEDSAVE;    G:-1;    S:'Speichern'),
+      (T:cmEDSAVEAS;  G:-1;    S:'Speichern unter...'),
+      (T:4;           G:-1;    S:''),
+      (T:cmEDCLOSE;   G:-1;    S:'Schliessen'),
+      (T:6;  G:-1;      S:''),
+      (T:7;  G:-1;      S:''),
+      (T:8;  G:-1;      S:''),
+      (T:9;  G:-1;      S:''));
 
   ToolsLathe : array[0..8] of string =
     ('Slot',' Id ','Z-Offset','X-Offset','Durchm. ',

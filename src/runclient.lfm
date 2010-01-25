@@ -1,7 +1,7 @@
 object RunClientForm: TRunClientForm
-  Left = 254
+  Left = 420
   Height = 335
-  Top = 158
+  Top = 396
   Width = 516
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
@@ -64,10 +64,8 @@ object RunClientForm: TRunClientForm
     TopIndex = -1
   end
   object OpenDialog: TOpenDialog
-    DefaultExt = '.*.ngc'
-    FileName = '/home/gtom/Bilder'
+    DefaultExt = '.ngc'
     Filter = 'nc-files|*.ngc|gcode|*.nc'
-    InitialDir = '/home/gtom/'
     left = 24
     top = 16
   end
