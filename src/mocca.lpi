@@ -333,7 +333,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="simclient"/>
         <CursorPos X="20" Y="233"/>
-        <TopLine Value="229"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
