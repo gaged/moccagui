@@ -26,7 +26,7 @@ mocca als Grafikfrontend für EMC2 einstellen:
  # EMC starten, mocca wird geladen 
 
 
-Mocca Ini- Parameter:
+= Mocca Ini- Parameter: =
 
 Sektion DISPLAY
 
@@ -70,6 +70,7 @@ SCRIPT_1
 NAME = Schmierzyklus
 SCRIPT = /home/your_name/lube.mdi
 
+hierbei ist:
 "NAME = Button1"
 Mit Name wird der Text bezeichnet der im Button für das Script angezeigt wird.
 
