@@ -75,3 +75,10 @@ Mit Name wird der Text bezeichnet der im Button für das Script angezeigt wird.
 
 SCRIPT = /home/your_name/script.mdi
 Mit Script wird das ausführbare Script (NC-Code) bezeichnet das beim drücken des Buttons "Button1" ausgeführt wird.
+
+
+= Umschalten zwischen mm/inch =
+
+Hierzu im Infobereich auf die Einheit mm bzw. Inch doppelt klicken.
+
+Duch Doppelklick kann auch die Koordinatenanzeige Relativ/Absolut oder Aktuell/Befohlen umgeschaltet werden.
