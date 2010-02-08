@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces,
   Forms,
-  Dialogs, LResources,
+  Dialogs,
   {$IFNDEF OWNGL}
   OpenGlContext,
   {$ENDIF}
@@ -20,8 +20,8 @@ uses
   {$IFDEF USEGL}
   simclient,
   {$ENDIF}
-  editorclient, offsetdlg, tooleditdlg, touchoff, toolchange, hal, emcint,
-partaligndlg, scripts, logger;
+  offsetdlg, tooleditdlg, touchoff, toolchange, hal, emcint,
+  partaligndlg, scripts, logger, setup, emcmsgbox;
 
 const
   __LC_CTYPE    = 0;
@@ -70,7 +70,7 @@ end;
 
 function QuitEmc: integer;
 begin
-  result:= 0;
+  Result:= 0;
   DoneHal;
   emcNmlQuit; // free NML buffers
   iniClose;   // close inifile if open
@@ -80,8 +80,6 @@ end;
 {$IFDEF WINDOWS}{$R mocca.rc}{$ENDIF}
 
 begin
-  // {$I mocca.lrs}
-  writeln('starting mocca...');
   if not InitEmc then Halt(1);
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);

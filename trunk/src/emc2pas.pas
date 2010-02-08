@@ -113,6 +113,8 @@ function saveToolTable(const FileName: PChar): integer; cdecl; external;
 procedure InitToolTable; cdecl; external;
 procedure FreeToolTable; cdecl; external;
 
+function taskGetFile(ProgFile: PChar): Boolean; cdecl; external;
+
 // mocca script stuff
 function GetTaskInterpState: integer; cdecl; external;
 function GetTaskExecState: integer; cdecl; external;

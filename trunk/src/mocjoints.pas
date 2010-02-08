@@ -15,7 +15,7 @@ const
   ZERO_DES_STRING = '0';
 
   {$IFDEF LCLGTK2}
-    KeyDelayTime = 100;
+    KeyDelayTime = 20;
   {$ELSE}
     KeyDelayTime = 20;
   {$ENDIF}

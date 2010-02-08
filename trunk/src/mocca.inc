@@ -2,8 +2,8 @@
 
 {$H+}
 
-{$define DEBUG_EMC}
-{$define DEBUG_INI}
+//{$define DEBUG_EMC}
+//{$define DEBUG_INI}
 //{$define PRINT_CANON}
 {$define OWNGL}
 //{$define DEBUG_GL}

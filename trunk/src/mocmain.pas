@@ -7,9 +7,11 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   StdCtrls, ExtDlgs, ComCtrls,
-  mocglb,mocjoints,jogclient,runclient,mdiclient
+  mocglb,mocjoints,jogclient,runclient,mdiclient,
+  emcmsgbox
   {$IFDEF USEGL}
-  ,simclient{$ENDIF};
+  ,simclient
+  {$ENDIF};
 
 type
 
@@ -23,6 +25,7 @@ type
     Bevel5: TBevel;
     Bevel6: TBevel;
     ImageList: TImageList;
+    LabelMsg: TLabel;
     LabelR3: TLabel;
     LabelR1: TLabel;
     LabelR2: TLabel;
@@ -46,7 +49,6 @@ type
     LabelTool: TLabel;
     LabelUnits: TLabel;
     LabelView: TLabel;
-    LbMessages: TListBox;
     Panel1: TPanel;
     PanelBars: TPanel;
     PanelDRO: TPanel;
@@ -69,6 +71,7 @@ type
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 
     procedure LabelCoordsClick(Sender: TObject);
+    procedure LabelMsgClick(Sender: TObject);
     procedure LabelUnitsClick(Sender: TObject);
     procedure LabelViewClick(Sender: TObject);
 
@@ -113,14 +116,16 @@ type
 
 var
   MainForm: TMainForm;
-  
+
 implementation
 
 { TMainForm }
 
 uses
   emc2pas,
-  mocemc,mocbtn,editorclient;
+  mocemc,mocbtn,
+  setup;
+  //editorclient;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -129,7 +134,7 @@ end;
 
 procedure TMainForm.TaskModeChanged;  // called by MainForm.UpdateTaskMode
 begin
-  if StateLocked then Exit;
+  if ScriptRunning then Exit;
   clJog.Visible:= (State.TaskMode = TaskModeManual);
   clRun.Visible:= (State.TaskMode = TaskModeAuto);
   clMdi.Visible:= (State.TaskMode = TaskModeMDI);
@@ -163,14 +168,16 @@ begin
 
   if LastError <> '' then
     begin
-      lbMessages.Items.Add(LastError);
+      GlobalErrors.Add(LastError);
+      LabelMsg.Caption:= LastError;
       UpdateMsg:= True;
       LastError:= '';
     end;
 
   if ErrorStr[0] <> #0 then
     begin
-      lbMessages.Items.Add(PChar(ErrorStr));
+      GlobalErrors.Add(PChar(ErrorStr));
+      LabelMsg.Caption:= PChar(ErrorStr);
       UpdateMsg:= True;
       ErrorStr[0]:= #0;
     end;
@@ -189,14 +196,14 @@ begin
 
   if OperatorTextStr[0] <> #0 then
     begin
-      lbMessages.Items.Add(PChar(OperatorTextStr));
+      GlobalErrors.Add(PChar(OperatorTextStr));
       UpdateMsg:= True;
       OperatorTextStr[0]:= #0;
     end;
 
   if OperatorDisplayStr[0] <> #0 then
     begin
-      lbMessages.Items.Add(PChar(OperatorDisplayStr));
+      GlobalErrors.Add(PChar(OperatorDisplayStr));
       UpdateMsg:= True;
       OperatorDisplayStr[0]:= #0;
     end;
@@ -251,15 +258,17 @@ begin
         end;
       LabelTool.Caption:= Format('%d %s %n %s %n %s',
         [OldTool,' D: ',d,' L: ',l,s]);
+      {$IFDEF USEGL}
       if Assigned(clSim) then
         clSim.SetTool(State.CurrentTool);
+      {$ENDIF}
     end;
 
   if OldDTG <> State.Dtg then
     begin
       LabelDtg.Caption:= FloatToStrF(State.Dtg, ffFixed, 6, 3) +
         Vars.UnitStr;
-        OldDtg:= State.Dtg;
+      OldDtg:= State.Dtg;
     end;
 
   if OldVel <> State.Vel then
@@ -311,8 +320,7 @@ begin
 
   if UpdateMsg then
     begin
-      lbMessages.ItemIndex:= lbMessages.Items.Count - 1;
-      lbMessages.MakeCurrentVisible;
+      LabelMsgClick(nil);
       UpdateMsg:= False;
     end;
 
@@ -393,13 +401,30 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
 
-  StateLocked:= False;
+  ScriptRunning:= False;
+  UpdateLock:= True; // prevent from update in on_idle
+
+  Self.Position:= poScreenCenter;
+
+  if (Vars.WindowSize = 0) then
+    Self.WindowState:= wsNormal
+  else
+  if (Vars.WindowSize = 1) then
+    Self.WindowState:= wsMaximized else
+  if (Vars.WindowSize = 2) then
+    begin
+      Self.WindowState:= wsNormal;
+      FullScreen(Self);
+    end;
 
   Caption:='Mocca ' + Vars.Machine;
 
   GlobalFontWidth:= 0;
   GlobalFontHeight:= 0;
   GlobalImageList:= Self.ImageList;  // assign the imagelist to the global imagelist
+
+  GlobalErrors:= TStringList.Create;
+  LabelMsg.Caption:= '';
 
   {$IFDEF LCKGTK2}
   if MainFontSize > 0 then
@@ -410,7 +435,8 @@ begin
 
   State.TaskMode:= 0;  // trigger a taskmodechanged
 
-  UpdateLock:= True; // prevent from update in on_idle
+  MsgForm:= TMsgForm.Create(Self);
+  MsgForm.Parent:= Self;
 
   Emc:= TEmc.Create;
   if not Assigned(Emc) then
@@ -434,11 +460,13 @@ begin
   clRun.Parent:= PanelLeft;
   clRun.Visible:= False;
 
+  {
   clEditor:= TEditorClient.Create(Self);
   if not Assigned(clEditor) then
     RaiseError('Error create class "editorclient"');
   clEditor.Parent:= PanelLeft;
   clEditor.Visible:= False;
+  }
 
   {$IFDEF USEGL}
   clSim:= TSimClientForm.Create(self);
@@ -473,7 +501,7 @@ begin
   if Assigned(clJog) then FreeAndNil(clJog);
   if Assigned(clMDI) then FreeAndNil(clMDI);
   if Assigned(clRun) then FreeAndNil(clRun);
-  if Assigned(clEditor) then FreeAndNil(clEditor);
+  // if Assigned(clEditor) then FreeAndNil(clEditor);
   {$IFDEF USEGL}
   if Assigned(clSim) then FreeAndNil(clSim);
   {$ENDIF}
@@ -482,6 +510,7 @@ begin
   if Assigned(EMC) then FreeAndNil(Emc);
   if Assigned(Joints) then FreeAndNil(Joints);
   GlobalImageList:= nil;
+  if Assigned(GlobalErrors) then GlobalErrors.Free;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -519,12 +548,35 @@ begin
   if Key = 27 then  // handle the escape key first
     begin
       DoAction(cmABORT);
+      ScriptRunning:= false;
       Key:= 0;
       Exit;
-    end;
+    end
+  else
+  if  (ssCtrl in Shift) then
+    begin
+      if (Key = 32) then
+        begin
+          GlobalErrors.Clear;
+          LabelMsg.Caption:= '';
+          if Assigned(MsgForm) then
+          MsgForm.Hide;
 
-  if (Key = 32) and (ssCtrl in Shift) then
-    lbMessages.Items.Clear;
+        end
+      else
+      if (Key = 83) then
+        EditSetup(Self)
+      {$IFDEF LCLGTK2}
+      else
+      if (Key = 123) then
+        begin
+          if IsFullScreen then
+            UnFullScreen(Self)
+          else
+            FullScreen(Self);
+        end
+      {$ENDIF};
+    end;
 
   if (State.TaskMode = TaskModeManual) then
     clJog.FormKeyDown(nil,Key,Shift);
@@ -544,6 +596,17 @@ begin
   UpdateCoords:= True;
 end;
 
+procedure TMainForm.LabelMsgClick(Sender: TObject);
+begin
+  if GlobalErrors.Count > 0 then
+    if Assigned(MsgForm) then
+      begin
+        MsgForm.PopMessages;
+        MsgForm.BringToFront;
+        Self.Activate;
+      end;
+end;
+
 procedure TMainForm.LabelUnitsClick(Sender: TObject);
 begin
   Emc.HandleCommand(cmUNITS);
@@ -558,7 +621,8 @@ end;
 
 procedure TMainForm.OnTimer(Sender: TObject);
 begin
-  if not UpdateLock then Self.UpdateState;
+  //if not UpdateLock then
+  Self.UpdateState;
 end;
 
 procedure TMainForm.PanelDROResize(Sender: TObject);
@@ -576,7 +640,7 @@ begin
   if Assigned(clJog) then clJog.SetBounds(0,0,w,h);
   if Assigned(clMDI) then clMDI.SetBounds(0,0,w,h);
   if Assigned(clRun) then clRun.SetBounds(0,0,w,h);
-  if Assigned(clEditor) then clEditor.SetBounds(0,0,w,h);
+  // if Assigned(clEditor) then clEditor.SetBounds(0,0,w,h);
 end;
 
 procedure TMainForm.PanelSoftBtnsResize(Sender: TObject);
@@ -620,12 +684,25 @@ end;
 
 procedure TMainForm.PanelRightResize(Sender: TObject);
 begin
-{$IFDEF USEGL}
+  {$IFDEF USEGL}
   if Assigned(clSim) then
     begin
       clSim.SetBounds(0,0,PanelRight.ClientWidth,PanelRight.ClientHeight);
       if not clSim.Visible then
         clSim.Visible:= True;
+    end;
+  if Assigned(MsgForm) then
+    begin
+      MsgForm.Left:= PanelRight.Left;
+      MsgForm.Top:= PanelBars.Top - MsgForm.Height;
+      MsgForm.Width:= PanelRight.Width;
+    end;
+  {$ELSE}
+  if Assigned(MsgForm) then
+    begin
+      MsgForm.Left:= PanelBars.Left;
+      MsgForm.Top:= PanelBars.Top - MsgForm.Height;
+      MsgForm.Width:= PanelBars.Width;
     end;
   {$ENDIF}
 end;
@@ -647,7 +724,6 @@ begin
   if UpdateLock then Exit;
   Emc.SetMaxVel(sbVel.Position);
 end;
-
 
 initialization
   {$I mocmain.lrs}

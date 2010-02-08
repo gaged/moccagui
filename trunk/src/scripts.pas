@@ -45,6 +45,8 @@ begin
   while emcPollStatus = RCS_EXEC do
     begin
       Application.ProcessMessages;
+      if (ErrorStr[0] <> #0) or (State.EStop) or
+        (not State.Machine) then Break;
     end;
 end;
 
@@ -53,19 +55,22 @@ var
   s: string;
   i: integer;
 begin
-  StateLocked:= True;
+  ScriptRunning:= True;
   try
     sendMDI;
     Emc.WaitDone;
     for i:= 0 to StrListScript.Count - 1 do
       begin
         s:= StrListScript[i];
+        if (ErrorStr[0] <> #0) or (State.EStop) or
+        (not State.Machine) then Break;
+        if not ScriptRunning then Break;
         if s <> '' then
           ExecuteLine(s);
       end;
   finally
     SendManual;
-    StateLocked:= False;
+    ScriptRunning:= False;
   end;
 end;
 

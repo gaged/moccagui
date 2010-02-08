@@ -30,12 +30,12 @@ type
     function  HandleCommand(Cmd: integer): Boolean;
   public
     procedure ActivateSelf;
-    procedure EditorMode(ShowEditor: Boolean);
     procedure UpdateSelf;
     procedure InitControls;
     procedure MapButtons;
     procedure UpdatePreview(Reload: Boolean);
     procedure OpenFile;
+    procedure ReloadFile;
     procedure UpdateLine;
     procedure SetCodes;
     procedure GotoLine;
@@ -53,26 +53,44 @@ uses
   {$IFDEF USEGL}
   simclient,
   {$ENDIF}
-  glcanon,gllist,
-  editorclient;
+  glcanon,gllist;
 
-procedure TRunClientForm.EditorMode(ShowEditor: Boolean);
+
+procedure TRunClientForm.ReloadFile;
+var
+  Buffer: Array[0..128] of Char;
+  S: string;
 begin
-  if ShowEditor then
+  IsOpen:= False;
+  S:= '';
+  sendAuto;
+  Emc.WaitDone;
+  sendAbort;
+  Emc.WaitDone;
+  sendProgramOpen(PChar(Vars.ProgramFile));
+  Emc.WaitDone;
+
+  if TaskGetFile(Buffer) then
+    S:= PChar(Buffer);
+
+  if S <> Vars.ProgramFile then
     begin
-      if clEditor.Visible then Exit;
-      UpdateLock:= True;
-      Self.Visible:= False;
-      if IsOpen and (Vars.ProgramFile <> '') then
-        clEditor.LoadInternalFile(LB.Items,Vars.ProgramFile);
-      clEditor.ActivateSelf;
-    end
-  else
-    begin
-      UpdateLock:= False;
-      clEditor.Visible:= False;
-      ActivateSelf;
+      GlobalErrors.Add('Error loading file');
+      GlobalErrors.Add('Expected ' + Vars.ProgramFile);
+      GlobalErrors.Add('Got ' + S);
+      Exit;
     end;
+
+  LB.Items.LoadFromFile(Vars.ProgramFile);
+  LB.ClearSelection;
+  if State.Machine then
+    begin
+      Vars.StartLine:= -1; // verify
+      Emc.TaskRun;
+    end;
+  Vars.StartLine:= 1;
+  IsOpen:= True;
+  UpdatePreview(False);
 end;
 
 procedure TRunClientForm.SetCodes;
@@ -119,6 +137,7 @@ begin
   IsOpen:= False;
   LB.Enabled:= True;
   LB.MultiSelect:= False;
+  LB.ExtendedSelect:= False;
   LB.ClearSelection;
 end;
 
@@ -193,10 +212,7 @@ function TRunClientForm.HandleCommand(Cmd: integer): Boolean;
 begin
   Result:= True;
   case Cmd of
-    cmEDITOR: if State.InterpState = INTERP_IDLE then
-      EditorMode(True);
-    cmOPEN:
-      OpenFile;
+    cmOPEN: OpenFile;
 
     cmPAUSE:
       if State.InterpState = INTERP_PAUSED then
@@ -204,7 +220,9 @@ begin
       else
         Emc.TaskPause;
 
-    cmRUN: Emc.TaskRun;
+    cmRUN:
+      if State.InterpState <> INTERP_WAITING then
+        Emc.TaskRun;
 
     cmRUNLINE :
       if LB.ItemIndex < 0 then
@@ -215,21 +233,20 @@ begin
           Emc.TaskRun;
         end;
 
-    cmRELOAD: begin
-      LB.ClearSelection;
-      LB.ItemIndex:= -1;
-    end;
-    cmSTOP:
-      Emc.TaskStop;
+    cmRELOAD: ReloadFile;
+    cmSTOP: Emc.TaskStop;
 
     cmSTEP:
       begin
         Emc.TaskStep;
         UpdateLine;
+        {$IFDEF DEBUG_EMC}
         write('ML:',taskMotionline);
         write('CL:',taskCurrentLine);
         writeln('RL:',taskReadLine);
+        {$ENDIF}
       end;
+
     cmOPTSTOP:
       sendSetOptionalStop(not State.OptStop);
 
@@ -271,6 +288,7 @@ begin
       SetButtonEnabled(cmPAUSE,IsOpen);
       SetButtonEnabled(cmRUN,IsOpen);
       SetButtonEnabled(cmRUNLINE,IsOpen);
+      SetButtonEnabled(cmRELOAD,IsOpen);
       OldIsOpen:= IsOpen;
     end;
 
@@ -303,6 +321,8 @@ begin
               SetButtonEnabled(cmMDI,not Running);
               SetButtonEnabled(cmJOG,not Running);
               SetButtonEnabled(cmOPEN,not Running);
+              SetButtonEnabled(cmEDITOR,not Running);
+              SetButtonEnabled(cmRELOAD,not Running);
               SetButtonEnabled(cmEDITOR,not Running);
               {$IFDEF LCLGTK2}  //looks better in Gtk2 :)
               // LB.Enabled:= not Running;
@@ -344,51 +364,21 @@ begin
 end;
 
 procedure TRunClientForm.OpenFile;
-var
-  FileName: string;
 begin
-  writeln('OpenFile');
   OpenDialog.InitialDir:= Vars.ProgramPrefix;
   {$ifdef DEBUG_INI}
   writeln('Initial directory: ',OpenDialog.InitialDir);
   {$endif}
-
   if OpenDialog.Execute then
     begin
-      sendAuto;
-      sendAbort;
       Vars.ProgramFile:= '';
       IsOpen:= False;
       {$IFDEF USEGL}
       if Assigned(clSim) then
         clSim.ClearFile;
       {$ENDIF}
-      FileName:= OpenDialog.FileName;
-      if Length(FileName) > 0 then
-        begin
-          LB.Items.LoadFromFile(FileName);
-          if sendProgramOpen(PChar(FileName)) = 0 then
-            begin
-              LB.ClearSelection;
-              Emc.WaitDone;
-              Vars.ProgramFile:= FileName;
-              if State.Machine then
-                begin
-                  Vars.StartLine:= -1; // verify
-                  Emc.TaskRun;
-                end;
-              Vars.StartLine:= 1;
-              IsOpen:= True;
-            end
-          else
-            begin
-              Vars.ProgramFile:= '';
-              LastError:= 'Error opening file: ' + FileName;
-              IsOpen:= False;
-            end;
-          if IsOpen then
-            UpdatePreview(False);
-        end;
+      Vars.ProgramFile:= OpenDialog.FileName;
+      ReloadFile;
     end;
 end;
 
