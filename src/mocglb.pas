@@ -15,7 +15,12 @@ var
   LastError: string;
 
   UpdateLock: Boolean;
-  StateLocked: Boolean;
+
+  ScriptRunning: Boolean;
+
+  {$IFDEF LCLGTK2}
+  IsFullScreen: Boolean;
+  {$ENDIF}
 
   Vars: TEmcVars;
   State: TEmcState;
@@ -32,6 +37,8 @@ var
   GlobalImageList: TImageList;
   GlobalFontWidth: integer;
   GlobalFontHeight: integer;
+
+  GlobalErrors: TStringList;
 
   EditorBeginFile: string;
   EditorEndFile: string;
@@ -52,7 +59,50 @@ function  SetExtents(xa,xb,ya,yb,za,zb: double): TExtents;
 
 procedure RaiseError(const Msg: string);
 
+{$IFDEF LCLGTK2}
+procedure FullScreen(WinControl: TWinControl);
+procedure UnFullScreen(WinControl: TWinControl);
+{$ENDIF}
+
+procedure CallEditor;
+
 implementation
+
+
+{$IFDEF LCLGTK2}
+uses
+  GtkDef, gdk2x, glib2, gdk2, gtk2, Gtk2Int,
+  Process;
+{$ENDIF}
+
+procedure CallEditor;
+var
+  Process: TProcess;
+begin
+  if Vars.Editor = '' then
+    raise Exception.Create('No Editor defined!');
+  Process:= TProcess.Create(nil);
+  try
+    Process.CommandLine:= Vars.Editor + #32 + Vars.ProgramFile;
+    Process.Execute;
+  finally
+    Process.Free;
+  end;
+end;
+
+{$IFDEF LCLGTK2}
+procedure FullScreen(WinControl: TWinControl);
+begin
+  gtk_window_fullscreen(PGtkWindow(WinControl.Handle));
+  IsFullScreen:= True;
+end;
+
+procedure UnFullScreen(WinControl: TWinControl);
+begin
+  gtk_window_unfullscreen(PGtkWindow(WinControl.Handle));
+  IsFullScreen:= False;
+end;
+{$ENDIF}
 
 procedure SetCoords(var l: Tlo; x,y,z,a,b,c,u,v,w: double);
 begin

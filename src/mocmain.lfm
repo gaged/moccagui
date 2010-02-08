@@ -1,14 +1,14 @@
 object MainForm: TMainForm
-  Left = 185
-  Height = 709
-  Top = 219
-  Width = 1056
+  Left = 264
+  Height = 527
+  Top = 156
+  Width = 907
   HorzScrollBar.Page = 985
   VertScrollBar.Page = 792
   ActiveControl = PanelLeft
   Caption = 'Mocca'
-  ClientHeight = 709
-  ClientWidth = 1056
+  ClientHeight = 527
+  ClientWidth = 907
   Color = clForm
   KeyPreview = True
   OnCreate = FormCreate
@@ -20,13 +20,31 @@ object MainForm: TMainForm
   Position = poScreenCenter
   LCLVersion = '0.9.28.2'
   WindowState = wsMaximized
+  object LabelMsg: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = PanelMainBtns
+    AnchorSideBottom.Control = PanelSoftBtns
+    Left = 0
+    Height = 18
+    Top = 461
+    Width = 839
+    Alignment = taCenter
+    Anchors = [akLeft, akRight, akBottom]
+    Caption = 'LabelMsg'
+    Font.Color = clRed
+    Font.Style = [fsBold]
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+    OnClick = LabelMsgClick
+  end
   object PanelMainBtns: TPanel
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = PanelSoftBtns
-    Left = 988
-    Height = 661
+    Left = 839
+    Height = 479
     Top = 0
     Width = 68
     Anchors = [akTop, akRight, akBottom]
@@ -43,8 +61,8 @@ object MainForm: TMainForm
     AnchorSideBottom.Side = asrBottom
     Left = 0
     Height = 48
-    Top = 661
-    Width = 1056
+    Top = 479
+    Width = 907
     Anchors = [akLeft, akRight, akBottom]
     BevelOuter = bvNone
     FullRepaint = False
@@ -57,12 +75,12 @@ object MainForm: TMainForm
     AnchorSideRight.Control = PanelMainBtns
     AnchorSideBottom.Control = PanelInf
     Left = 0
-    Height = 504
+    Height = 355
     Top = 0
     Width = 480
     Anchors = [akTop, akLeft, akBottom]
     BevelOuter = bvNone
-    ClientHeight = 504
+    ClientHeight = 355
     ClientWidth = 480
     FullRepaint = False
     TabOrder = 2
@@ -72,7 +90,7 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = Panel1
       Left = 0
       Height = 172
-      Top = 300
+      Top = 151
       Width = 368
       Anchors = [akLeft, akBottom]
       BevelOuter = bvNone
@@ -95,13 +113,13 @@ object MainForm: TMainForm
       AnchorSideBottom.Side = asrBottom
       Left = 0
       Height = 32
-      Top = 472
+      Top = 323
       Width = 480
       Anchors = [akLeft, akRight, akBottom]
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 28
-      ClientWidth = 476
+      ClientHeight = 30
+      ClientWidth = 478
       Color = clWhite
       ParentColor = False
       TabOrder = 1
@@ -110,7 +128,7 @@ object MainForm: TMainForm
         Left = 2
         Height = 18
         Top = 7
-        Width = 28
+        Width = 29
         BorderSpacing.Left = 2
         Caption = 'DTG'
         Color = clWhite
@@ -131,7 +149,7 @@ object MainForm: TMainForm
         Left = 168
         Height = 18
         Top = 7
-        Width = 53
+        Width = 55
         Caption = 'Geschw.'
         ParentColor = False
       end
@@ -153,41 +171,28 @@ object MainForm: TMainForm
     AnchorSideRight.Control = PanelMainBtns
     AnchorSideBottom.Control = PanelInf
     Left = 480
-    Height = 504
+    Height = 355
     Top = 0
-    Width = 508
+    Width = 359
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvNone
     TabOrder = 3
     OnResize = PanelRightResize
   end
-  object LbMessages: TListBox
-    AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = PanelMainBtns
-    AnchorSideBottom.Control = PanelSoftBtns
-    Left = 0
-    Height = 51
-    Top = 610
-    Width = 988
-    Anchors = [akLeft, akRight, akBottom]
-    ItemHeight = 0
-    TabOrder = 4
-    TopIndex = -1
-  end
   object PanelInf: TPanel
     AnchorSideLeft.Control = PanelLeft
-    AnchorSideBottom.Control = LbMessages
+    AnchorSideBottom.Control = LabelMsg
     Left = 0
     Height = 106
-    Top = 504
+    Top = 355
     Width = 480
     Anchors = [akLeft, akBottom]
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 102
-    ClientWidth = 476
+    ClientHeight = 104
+    ClientWidth = 478
     FullRepaint = False
-    TabOrder = 5
+    TabOrder = 4
     object Bevel6: TBevel
       AnchorSideTop.Control = Bevel1
       AnchorSideTop.Side = asrBottom
@@ -465,17 +470,17 @@ object MainForm: TMainForm
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = PanelInf
     AnchorSideRight.Control = PanelMainBtns
-    AnchorSideBottom.Control = LbMessages
+    AnchorSideBottom.Control = LabelMsg
     Left = 480
     Height = 106
-    Top = 504
-    Width = 508
+    Top = 355
+    Width = 359
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 104
-    ClientWidth = 506
-    TabOrder = 6
+    ClientWidth = 357
+    TabOrder = 5
     object LabelR1: TLabel
       AnchorSideLeft.Control = PanelBars
       AnchorSideTop.Control = LabelR3
@@ -510,7 +515,7 @@ object MainForm: TMainForm
       AnchorSideTop.Control = LabelR1
       AnchorSideRight.Control = PanelBars
       AnchorSideRight.Side = asrBottom
-      Left = 383
+      Left = 234
       Height = 18
       Top = 61
       Width = 119
@@ -524,7 +529,7 @@ object MainForm: TMainForm
       AnchorSideTop.Control = LabelR2
       AnchorSideRight.Control = PanelBars
       AnchorSideRight.Side = asrBottom
-      Left = 383
+      Left = 234
       Height = 18
       Top = 83
       Width = 119
@@ -544,7 +549,7 @@ object MainForm: TMainForm
       Left = 187
       Height = 18
       Top = 7
-      Width = 71
+      Width = 72
       Alignment = taCenter
       BorderSpacing.Left = 4
       BorderSpacing.Around = 2
@@ -572,7 +577,7 @@ object MainForm: TMainForm
       Left = 4
       Height = 18
       Top = 7
-      Width = 148
+      Width = 155
       BorderSpacing.Left = 4
       Caption = 'Spindelgeschwindigkeit'
       ParentColor = False
@@ -584,7 +589,7 @@ object MainForm: TMainForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = PanelBars
       AnchorSideRight.Side = asrBottom
-      Left = 383
+      Left = 234
       Height = 18
       Top = 39
       Width = 119
@@ -601,7 +606,7 @@ object MainForm: TMainForm
       Left = 4
       Height = 18
       Top = 39
-      Width = 142
+      Width = 143
       BorderSpacing.Left = 4
       Caption = 'Spindelübersteuerung'
       ParentColor = False
@@ -613,9 +618,9 @@ object MainForm: TMainForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = LabelMaxVel
       Left = 162
-      Height = 15
-      Top = 63
-      Width = 217
+      Height = 18
+      Top = 61
+      Width = 68
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
@@ -630,9 +635,9 @@ object MainForm: TMainForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = LabelFeed
       Left = 162
-      Height = 15
-      Top = 85
-      Width = 217
+      Height = 18
+      Top = 83
+      Width = 68
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
@@ -647,9 +652,9 @@ object MainForm: TMainForm
       AnchorSideRight.Control = SbFeed
       AnchorSideRight.Side = asrBottom
       Left = 162
-      Height = 15
-      Top = 41
-      Width = 217
+      Height = 18
+      Top = 39
+      Width = 68
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
       PageSize = 0

@@ -38,6 +38,7 @@ type
     procedure ChangeTool;
     procedure PartAlign;
     procedure TouchOff(Axis: Char);
+    procedure EditCurrent;
   end;
 
 var
@@ -55,6 +56,11 @@ uses
   toolchange,
   touchoff,
   partaligndlg;
+
+procedure TEmc.EditCurrent;
+begin
+  CallEditor;
+end;
 
 procedure TEmc.PartAlign;
 var
@@ -91,29 +97,29 @@ begin
   {$IFDEF DEBUG_EMC}
   writeln('ExecToolChange: ',Cmd);
   {$ENDIF}
-  StateLocked:= True;
+  ScriptRunning:= True;
   try
     sendMDI;
     Emc.WaitDone;
     if sendMDICmd(PChar(Cmd)) <> 0 then
     begin
       LastError:= 'Error executing toolchange- command 1';
-      StateLocked:= False;
+      ScriptRunning:= False;
       Exit;
     end;
     if emcCommandWaitReceived(emcCommandSerialNumber) <> 0 then
       begin
         LastError:= 'Error executing toolchange- command 2';
-        StateLocked:= False;
+        ScriptRunning:= False;
         Exit;
       end;
-    while emcPollStatus = RCS_EXEC do
+    while (emcPollStatus = RCS_EXEC) and (ScriptRunning) do
       begin
         Application.ProcessMessages;
       end;
   finally
       SendManual;
-      StateLocked:= False;
+      ScriptRunning:= False;
   end;
 end;
 
@@ -270,7 +276,7 @@ begin
     UVal:= Value / Scale
   else
     UVal:= Value;
-  V:= (GetAbsPos(Joints.AxisByChar(Axis)) / Scale) + Value;
+  V:= (GetAbsPos(Joints.AxisByChar(Axis)) / Scale) - Value;
   S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,V]);
   ExecuteSilent(s);
   clRun.UpdatePreview(True);
@@ -539,6 +545,7 @@ begin
        end;
     cmTOOLCHG: ChangeTool;
     cmUNITS: SetDisplayUnits(not Vars.Metric);
+    cmEditor: EditCurrent;
     //cmPARTALGN: if State.TaskMode = TASKMODEMANUAL then
     //  PartAlign;
   else
