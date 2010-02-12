@@ -5,6 +5,7 @@ object SimClientForm: TSimClientForm
   Width = 601
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
+  ActiveControl = BtnCLog
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SimClientForm'

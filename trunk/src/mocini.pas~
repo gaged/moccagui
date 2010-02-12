@@ -221,8 +221,6 @@ begin
   Vars.IniFile:= FileName;
   Vars.IniPath:= ExtractFilePath(Vars.IniFile);
 
-  writeln('mocca reads from :',Vars.IniPath);
-
   // first we try to find the nml-file
   if GetIniStr('EMC','NML_FILE',tmp,'') then
     EMC_NMLFILE:= PChar(tmp)
@@ -460,9 +458,6 @@ begin
 
   GetIniStr('MOCCA','EDITOR_BEGIN_FILE',EditorBeginFile,'');
   GetIniStr('MOCCA','EDIOTR_END_FILE',EditorEndFile,'');
-
-  GetIniInt('DISPLAY','GL',i,1);
-  ShowGlPreview:= Boolean(i = 1);
 
   Result:= True;
 end;

@@ -140,13 +140,15 @@ end;
 procedure TPartAlgnDlg.PBPaint(Sender: TObject);
 var
   i: integer;
+  ts: TTextStyle;
 begin
   if Sender = nil then ;
   if FTextHeight = 0 then
     begin
       FTextHeight:= PB.Canvas.TextHeight('X');
-      PB.Canvas.TextStyle.Alignment:= taCenter;
-      PB.Canvas.TextStyle.Layout:= tlCenter;
+      ts.Alignment:= taCenter;
+      ts.Layout:= tlCenter;
+      PB.Canvas.TextStyle:= ts;
     end;
   with PB.Canvas do
     begin

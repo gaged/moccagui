@@ -1,0 +1,20 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
+LazarusResources.Add('TSetupDlg','FORMDATA',[
+  'TPF0'#9'TSetupDlg'#8'SetupDlg'#4'Left'#3#147#1#6'Height'#3#211#1#3'Top'#3'R'
+  +#1#5'Width'#3'|'#2#13'ActiveControl'#7#12'PageControl1'#11'BorderIcons'#11#12
+  +'biSystemMenu'#0#11'BorderStyle'#7#8'bsDialog'#7'Caption'#6#13'Einstellungen'
+  +#12'ClientHeight'#3#211#1#11'ClientWidth'#3'|'#2#8'OnCreate'#7#10'FormCreate'
+  +#10'LCLVersion'#6#8'0.9.28.2'#0#12'TPageControl'#12'PageControl1'#4'Left'#2#8
+  +#6'Height'#3#128#1#3'Top'#2#24#5'Width'#3'H'#2#10'ActivePage'#7#5'PgOpt'#8'T'
+  +'abIndex'#2#0#8'TabOrder'#2#0#0#9'TTabSheet'#5'PgOpt'#7'Caption'#6#9'Allgeme'
+  +'in'#12'ClientHeight'#3'a'#1#11'ClientWidth'#3'D'#2#0#6'TLabel'#6'Label1'#4
+  +'Left'#2#14#6'Height'#2#18#3'Top'#2#11#5'Width'#3#158#0#7'Caption'#6#25'Schr'
+  +'iftart (Hauptfenster)'#11'ParentColor'#8#0#0#5'TEdit'#6'EdFont'#4'Left'#2#14
+  +#6'Height'#2#27#3'Top'#2'#'#5'Width'#3#232#0#8'TabOrder'#2#0#4'Text'#6#7'ABC'
+  +'DEFG'#0#0#7'TButton'#7'BtnFont'#4'Left'#3#254#0#6'Height'#2#27#3'Top'#2'#'#5
+  +'Width'#2' '#7'Caption'#6#3'...'#7'OnClick'#7#12'BtnFontClick'#8'TabOrder'#2
+  +#1#0#0#0#9'TTabSheet'#4'PgGl'#7'Caption'#6#6'Grafik'#0#0#0#11'TFontDialog'#7
+  +'FontDlg'#11'MinFontSize'#2#0#11'MaxFontSize'#2#0#4'left'#2'+'#3'top'#2'p'#0
+  +#0#0
+]);

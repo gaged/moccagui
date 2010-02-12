@@ -1,7 +1,7 @@
 object RunClientForm: TRunClientForm
-  Left = 406
+  Left = 442
   Height = 335
-  Top = 257
+  Top = 600
   Width = 516
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
