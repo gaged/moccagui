@@ -15,11 +15,10 @@ const
   ZERO_DES_STRING = '0';
 
   {$IFDEF LCLGTK2}
-  KeyDelayTime = 20;
+    KeyDelayTime = 100;
   {$ELSE}
-  KeyDelayTime = 20;
+    KeyDelayTime = 20;
   {$ENDIF}
-  KeySleepAfterUp = 10;
 
 type
   TAxis = class
@@ -105,7 +104,6 @@ type
     procedure JogStopAll;
     procedure HomeAll;
     procedure HomeActive;
-    procedure UnHomeActive;
     procedure HomeAxis(Ax: Char);
     property  ShowActual: Boolean read FShowActual write FShowActual;
     property  ShowRelative: Boolean read FShowRelative write FShowRelative;
@@ -374,13 +372,6 @@ begin
   if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then
     sendHome(Vars.ActiveAxis);
 end;
-
-procedure TJoints.UnHomeActive;
-begin
-  if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then
-    sendUnHome(Vars.ActiveAxis);
-end;
-
 
 procedure TJoints.HomeAxis(Ax: Char);
 var

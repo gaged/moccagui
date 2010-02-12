@@ -71,8 +71,7 @@ uses
   mocemc,
   mocglb,mocjoints,
   emc2pas,runclient,
-  mocbtn,scripts,
-  LCLIntf;
+  mocbtn,scripts;
 
 procedure TJogClientForm.HandleCommand(Cmd: integer);
 begin
@@ -309,9 +308,7 @@ begin
   if Vars.JogContinous then
     begin
       Joints.JogStop(Ch);
-      {$IFNDEF LCLGTK2}
-      Sleep(10);
-      {$ENDIF}
+      Sleep(KeySleepAfterUp);
     end;
   Key:= 0;
 end;
@@ -365,6 +362,7 @@ begin
   Self.Tag:= TASKMODEMANUAL;
   FCurrentMap:= 0;
   FBtnDown:= 0;
+  // LabelCaption.Caption:=
 end;
 
 procedure TJogClientForm.BJogMouseDown(Sender: TObject;

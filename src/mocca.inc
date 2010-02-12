@@ -7,7 +7,6 @@
 //{$define PRINT_CANON}
 {$define OWNGL}
 //{$define DEBUG_GL}
-{$define USEGL}
 //{$define VER2_2}
 {$define HAS_SLEEP}
 

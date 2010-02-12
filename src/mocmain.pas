@@ -8,10 +8,7 @@ uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   StdCtrls, ExtDlgs, ComCtrls,
   mocglb,mocjoints,jogclient,runclient,mdiclient,
-  emcmsgbox
-  {$IFDEF USEGL}
-  ,simclient
-  {$ENDIF};
+  emcmsgbox,simclient;
 
 type
 
@@ -80,6 +77,7 @@ type
 
     procedure PanelLeftResize(Sender: TObject);
     procedure PanelMainBtnsResize(Sender: TObject);
+    procedure PanelRightClick(Sender: TObject);
     procedure PanelRightResize(Sender: TObject);
     procedure PanelSoftBtnsResize(Sender: TObject);
 
@@ -103,6 +101,8 @@ type
     OldSpORide: integer;
     UpdateCoords: Boolean;
 
+    procedure InitLang;
+
     procedure InitPanels;
     procedure InitButtons;
 
@@ -124,7 +124,7 @@ implementation
 uses
   emc2pas,
   mocemc,mocbtn,
-  setup;
+  setup, lang;
   //editorclient;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
@@ -190,9 +190,8 @@ begin
   LabelF.Caption:= TrimLeft(PChar(ACTIVEFWORDS));
   LabelS.Caption:= TrimLeft(PChar(ACTIVESWORDS));
 
-  {$IFDEF USEGL}
-  clSim.UpdateSelf;
-  {$ENDIF}
+  if ShowGlPreview then
+    clSim.UpdateSelf;
 
   if OperatorTextStr[0] <> #0 then
     begin
@@ -258,10 +257,9 @@ begin
         end;
       LabelTool.Caption:= Format('%d %s %n %s %n %s',
         [OldTool,' D: ',d,' L: ',l,s]);
-      {$IFDEF USEGL}
-      if Assigned(clSim) then
-        clSim.SetTool(State.CurrentTool);
-      {$ENDIF}
+      if ShowGlPreview then
+        if Assigned(clSim) then
+          clSim.SetTool(State.CurrentTool);
     end;
 
   if OldDTG <> State.Dtg then
@@ -398,8 +396,14 @@ begin
   PanelSoftBtns.ClientHeight:= GlobalButtonSize;  // size the panel
 end;
 
+procedure TMainForm.InitLang;
+begin
+
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  InitLang;
 
   ScriptRunning:= False;
   UpdateLock:= True; // prevent from update in on_idle
@@ -410,12 +414,15 @@ begin
     Self.WindowState:= wsNormal
   else
   if (Vars.WindowSize = 1) then
-    Self.WindowState:= wsMaximized else
+    Self.WindowState:= wsMaximized
+  {$IFDEF LCLGTK2}
+  else
   if (Vars.WindowSize = 2) then
     begin
       Self.WindowState:= wsNormal;
       FullScreen(Self);
-    end;
+    end
+  {$ENDIF};
 
   Caption:='Mocca ' + Vars.Machine;
 
@@ -468,13 +475,16 @@ begin
   clEditor.Visible:= False;
   }
 
-  {$IFDEF USEGL}
-  clSim:= TSimClientForm.Create(self);
-  if not Assigned(clSim) then
-    RaiseError('Error create class "simclient"');
-  clSim.Parent:= PanelRight;
-  clSim.Visible:= False;
-  {$ENDIF}
+  if ShowGlPreview then
+    begin
+      clSim:= TSimClientForm.Create(self);
+      if not Assigned(clSim) then
+        RaiseError('Error create class "simclient"');
+      clSim.Parent:= PanelRight;
+      clSim.Visible:= False;
+    end
+  else
+    clSim:= nil;
 
   InitPanels;
   InitButtons;
@@ -502,9 +512,7 @@ begin
   if Assigned(clMDI) then FreeAndNil(clMDI);
   if Assigned(clRun) then FreeAndNil(clRun);
   // if Assigned(clEditor) then FreeAndNil(clEditor);
-  {$IFDEF USEGL}
   if Assigned(clSim) then FreeAndNil(clSim);
-  {$ENDIF}
   for i:= 0 to NumAllButtons - 1 do
     if Assigned(MocBtns[i]) then FreeAndNil(MocBtns[i]);
   if Assigned(EMC) then FreeAndNil(Emc);
@@ -545,6 +553,8 @@ begin
 end;
 
 begin
+  //LastError:= IntToStr(Key);
+
   if Key = 27 then  // handle the escape key first
     begin
       DoAction(cmABORT);
@@ -682,29 +692,37 @@ begin
       end;
 end;
 
+procedure TMainForm.PanelRightClick(Sender: TObject);
+begin
+
+end;
+
 procedure TMainForm.PanelRightResize(Sender: TObject);
 begin
-  {$IFDEF USEGL}
-  if Assigned(clSim) then
+  if ShowGlPreview then
     begin
-      clSim.SetBounds(0,0,PanelRight.ClientWidth,PanelRight.ClientHeight);
-      if not clSim.Visible then
-        clSim.Visible:= True;
-    end;
-  if Assigned(MsgForm) then
+      if Assigned(clSim) then
+      begin
+        clSim.SetBounds(0,0,PanelRight.ClientWidth,PanelRight.ClientHeight);
+        if not clSim.Visible then
+          clSim.Visible:= True;
+      end;
+    if Assigned(MsgForm) then
+      begin
+        MsgForm.Left:= PanelRight.Left;
+        MsgForm.Top:= PanelBars.Top - MsgForm.Height;
+        MsgForm.Width:= PanelRight.Width;
+      end;
+    end
+  else
     begin
-      MsgForm.Left:= PanelRight.Left;
-      MsgForm.Top:= PanelBars.Top - MsgForm.Height;
-      MsgForm.Width:= PanelRight.Width;
+      if Assigned(MsgForm) then
+      begin
+        MsgForm.Left:= PanelBars.Left;
+        MsgForm.Top:= PanelBars.Top - MsgForm.Height;
+        MsgForm.Width:= PanelBars.Width;
+      end;
     end;
-  {$ELSE}
-  if Assigned(MsgForm) then
-    begin
-      MsgForm.Left:= PanelBars.Left;
-      MsgForm.Top:= PanelBars.Top - MsgForm.Height;
-      MsgForm.Width:= PanelBars.Width;
-    end;
-  {$ENDIF}
 end;
 
 procedure TMainForm.sbFeedChange(Sender: TObject);

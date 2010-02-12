@@ -1,0 +1,27 @@
+object MsgForm: TMsgForm
+  Left = 425
+  Height = 198
+  Top = 312
+  Width = 648
+  ActiveControl = LBox
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Meldungen'
+  ClientHeight = 198
+  ClientWidth = 648
+  KeyPreview = True
+  OnKeyPress = FormKeyPress
+  Position = poScreenCenter
+  LCLVersion = '0.9.28.2'
+  object LBox: TListBox
+    Left = 0
+    Height = 198
+    Top = 0
+    Width = 648
+    Align = alClient
+    ItemHeight = 0
+    OnClick = LBoxClick
+    TabOrder = 0
+    TopIndex = -1
+  end
+end

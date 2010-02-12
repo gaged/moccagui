@@ -50,9 +50,7 @@ uses
   strutils,mocbtn,
   mocglb,mocemc,
   emc2pas,
-  {$IFDEF USEGL}
   simclient,
-  {$ENDIF}
   glcanon,gllist;
 
 
@@ -187,10 +185,9 @@ var
 begin
   if Reload then
     begin
-      {$IFDEF USEGL}
-      if Assigned(clSim) then
-        clSim.ReloadFile;
-      {$ENDIF}
+      if ShowGlPreview then
+        if Assigned(clSim) then
+          clSim.ReloadFile;
       Exit;
     end;
   if (Length(Vars.ProgramFile) < 1) or (not IsOpen) then Exit;
@@ -199,13 +196,12 @@ begin
   if Metric then
     UnitCode:= 'G21' else UnitCode:= 'G20';
   InitCode:= '';
-  {$IFDEF USEGL}
-  if Assigned(clSim) then
-    begin
-      clSim.ClearFile;
-      clSim.LoadFile(Vars.ProgramFile,UnitCode,InitCode);
-    end;
-  {$ENDIF}
+  if ShowGlPreview then
+    if Assigned(clSim) then
+      begin
+        clSim.ClearFile;
+        clSim.LoadFile(Vars.ProgramFile,UnitCode,InitCode);
+      end;
 end;
 
 function TRunClientForm.HandleCommand(Cmd: integer): Boolean;
@@ -373,10 +369,9 @@ begin
     begin
       Vars.ProgramFile:= '';
       IsOpen:= False;
-      {$IFDEF USEGL}
-      if Assigned(clSim) then
-        clSim.ClearFile;
-      {$ENDIF}
+      if ShowGlPreview then
+        if Assigned(clSim) then
+          clSim.ClearFile;
       Vars.ProgramFile:= OpenDialog.FileName;
       ReloadFile;
     end;

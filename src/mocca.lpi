@@ -18,7 +18,6 @@
       <OutDir Value="../po"/>
     </i18n>
     <VersionInfo>
-      <UseVersionInfo Value="True"/>
       <CurrentMajorRevNr Value="2"/>
       <CurrentMinorRevNr Value="1"/>
       <CurrentBuildNr Value="2"/>
@@ -46,7 +45,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="28">
+    <Units Count="29">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -211,6 +210,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="emcmsgbox"/>
       </Unit27>
+      <Unit28>
+        <Filename Value="lang.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="lang"/>
+      </Unit28>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

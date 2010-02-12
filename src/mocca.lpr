@@ -17,11 +17,9 @@ uses
   mocmain,
   mocglb, mocini, jogclient,
   runclient, mdiclient,
-  {$IFDEF USEGL}
   simclient,
-  {$ENDIF}
   offsetdlg, tooleditdlg, touchoff, toolchange, hal, emcint,
-  partaligndlg, scripts, logger, setup, emcmsgbox;
+  partaligndlg, scripts, logger, setup, emcmsgbox, lang;
 
 const
   __LC_CTYPE    = 0;
@@ -76,8 +74,6 @@ begin
   iniClose;   // close inifile if open
   DoneEmcEnvironment;
 end;
-
-{$IFDEF WINDOWS}{$R mocca.rc}{$ENDIF}
 
 begin
   if not InitEmc then Halt(1);

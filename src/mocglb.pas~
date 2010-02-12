@@ -11,10 +11,6 @@ uses
 
 {$I mocglb.inc}
 
-const
-  LangFile: string = '';
-  ShowGlPreview: Boolean = True;
-
 var
   LastError: string;
 
@@ -73,11 +69,11 @@ procedure CallEditor;
 implementation
 
 
+{$IFDEF LCLGTK2}
 uses
- {$IFDEF LCLGTK2}
- GtkDef, gdk2x, glib2, gdk2, gtk2, Gtk2Int,
- {$ENDIF}
- Process;
+  GtkDef, gdk2x, glib2, gdk2, gtk2, Gtk2Int,
+  Process;
+{$ENDIF}
 
 procedure CallEditor;
 var

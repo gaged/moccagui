@@ -24,7 +24,7 @@ object PartAlgnDlg: TPartAlgnDlg
     Left = 8
     Height = 18
     Top = 160
-    Width = 43
+    Width = 45
     Caption = 'LabelX'
     ParentColor = False
   end
@@ -32,7 +32,7 @@ object PartAlgnDlg: TPartAlgnDlg
     Left = 8
     Height = 18
     Top = 184
-    Width = 42
+    Width = 44
     Caption = 'LabelY'
     ParentColor = False
   end

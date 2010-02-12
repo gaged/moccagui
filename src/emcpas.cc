@@ -13,7 +13,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
 #include "emcpas.h"
 
 #define EMC_COMMAND_DELAY   0.1	// how long to sleep between checks

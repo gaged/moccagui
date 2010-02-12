@@ -16,7 +16,6 @@ type
     FDetails: TThemedElementDetails;
     FDown: Boolean;
     FShowClicks: Boolean;
-    FTextStyle: TTextStyle;
     procedure CMEnabledChanged(var Message: TLMessage); message CM_ENABLEDCHANGED;
   private
     procedure DoMouseUp(var Message: TLMMouse; Button: TMouseButton);
@@ -44,6 +43,11 @@ type
 
   TMocButton = class(TCustomMocButton)
   published
+    property Align;
+    property Anchors;
+    property AutoSize;
+    property BorderSpacing;
+    property Constraints;
     property Caption;
     property Color;
     property Down;
@@ -52,9 +56,19 @@ type
     property Visible;
     property OnClick;
     property OnDblClick;
+    property OnMouseDown;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnPaint;
+    property OnResize;
+    property OnChangeBounds;
     property ShowClicks;
     property ShowHint;
     property ParentFont;
+    property ParentShowHint;
+    property PopupMenu;
   end;
 
 implementation
@@ -62,16 +76,22 @@ implementation
 uses
   WSButtons;
 
+{$IFOPT C-}
+// Uncomment for local trace
+//  {$C+}
+//  {$DEFINE ASSERT_IS_ON}
+{$ENDIF}
+
 constructor TCustomMocButton.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   SetInitialBounds(0,0,GetControlClassDefaultSize.X,GetControlClassDefaultSize.Y);
   ControlStyle := ControlStyle + [csCaptureMouse]-[csSetCaption, csClickEvents, csOpaque];
   Color:= clBtnFace;
-  FTextStyle.Wordbreak:= True;
-  FTextStyle.Alignment:= taCenter;
-  FTextStyle.Layout:= tlCenter;
-  FTextStyle.SingleLine:= False;
+  Canvas.TextStyle.Wordbreak:= True;
+  Canvas.TextStyle.Alignment:= taCenter;
+  Canvas.TextStyle.Layout:= tlCenter;
+  Canvas.TextStyle.SingleLine:= False;
 end;
 
 procedure TCustomMocButton.SetDown(Value : Boolean);
@@ -158,7 +178,6 @@ begin
   PaintBackground(R);
   if Caption <> '' then
     begin
-      Canvas.TextStyle:= FTextStyle;
       OldColor := Canvas.Font.Color;
       if ThemeServices.IsDisabled(FDetails) then
         begin
@@ -239,6 +258,13 @@ procedure TCustomMocButton.CMEnabledChanged(var Message: TLMEssage);
 Begin
   UpdateState(True);
 end;
+
+
+{$IFDEF ASSERT_IS_ON}
+  {$UNDEF ASSERT_IS_ON}
+  {$C-}
+{$ENDIF}
+
 
 initialization
 

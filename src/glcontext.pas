@@ -9,7 +9,12 @@ interface
 
 uses
   Classes, SysUtils, LCLProc, Forms, Controls, LCLType, LCLIntf, LResources,
-  Graphics, LMessages, WSLCLClasses, glxcontext;
+  Graphics, LMessages, WSLCLClasses,
+  {$IFDEF LCLGTK2}
+  gtk2context;
+  {$ELSE}
+  gtk1context;
+  {$ENDIF}
 
 type
   TGLControl = class(TWinControl)

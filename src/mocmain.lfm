@@ -1,14 +1,14 @@
 object MainForm: TMainForm
-  Left = 264
-  Height = 527
-  Top = 156
-  Width = 907
+  Left = 159
+  Height = 709
+  Top = 40
+  Width = 1056
   HorzScrollBar.Page = 985
   VertScrollBar.Page = 792
   ActiveControl = PanelLeft
   Caption = 'Mocca'
-  ClientHeight = 527
-  ClientWidth = 907
+  ClientHeight = 709
+  ClientWidth = 1056
   Color = clForm
   KeyPreview = True
   OnCreate = FormCreate
@@ -26,8 +26,8 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = PanelSoftBtns
     Left = 0
     Height = 18
-    Top = 461
-    Width = 839
+    Top = 643
+    Width = 988
     Alignment = taCenter
     Anchors = [akLeft, akRight, akBottom]
     Caption = 'LabelMsg'
@@ -43,8 +43,8 @@ object MainForm: TMainForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = PanelSoftBtns
-    Left = 839
-    Height = 479
+    Left = 988
+    Height = 661
     Top = 0
     Width = 68
     Anchors = [akTop, akRight, akBottom]
@@ -61,8 +61,8 @@ object MainForm: TMainForm
     AnchorSideBottom.Side = asrBottom
     Left = 0
     Height = 48
-    Top = 479
-    Width = 907
+    Top = 661
+    Width = 1056
     Anchors = [akLeft, akRight, akBottom]
     BevelOuter = bvNone
     FullRepaint = False
@@ -75,12 +75,12 @@ object MainForm: TMainForm
     AnchorSideRight.Control = PanelMainBtns
     AnchorSideBottom.Control = PanelInf
     Left = 0
-    Height = 355
+    Height = 537
     Top = 0
     Width = 480
     Anchors = [akTop, akLeft, akBottom]
     BevelOuter = bvNone
-    ClientHeight = 355
+    ClientHeight = 537
     ClientWidth = 480
     FullRepaint = False
     TabOrder = 2
@@ -90,7 +90,7 @@ object MainForm: TMainForm
       AnchorSideBottom.Control = Panel1
       Left = 0
       Height = 172
-      Top = 151
+      Top = 333
       Width = 368
       Anchors = [akLeft, akBottom]
       BevelOuter = bvNone
@@ -113,13 +113,13 @@ object MainForm: TMainForm
       AnchorSideBottom.Side = asrBottom
       Left = 0
       Height = 32
-      Top = 323
+      Top = 505
       Width = 480
       Anchors = [akLeft, akRight, akBottom]
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 30
-      ClientWidth = 478
+      ClientHeight = 28
+      ClientWidth = 476
       Color = clWhite
       ParentColor = False
       TabOrder = 1
@@ -128,7 +128,7 @@ object MainForm: TMainForm
         Left = 2
         Height = 18
         Top = 7
-        Width = 29
+        Width = 28
         BorderSpacing.Left = 2
         Caption = 'DTG'
         Color = clWhite
@@ -149,7 +149,7 @@ object MainForm: TMainForm
         Left = 168
         Height = 18
         Top = 7
-        Width = 55
+        Width = 53
         Caption = 'Geschw.'
         ParentColor = False
       end
@@ -171,12 +171,13 @@ object MainForm: TMainForm
     AnchorSideRight.Control = PanelMainBtns
     AnchorSideBottom.Control = PanelInf
     Left = 480
-    Height = 355
+    Height = 537
     Top = 0
-    Width = 359
+    Width = 508
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvNone
     TabOrder = 3
+    OnClick = PanelRightClick
     OnResize = PanelRightResize
   end
   object PanelInf: TPanel
@@ -184,13 +185,13 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = LabelMsg
     Left = 0
     Height = 106
-    Top = 355
+    Top = 537
     Width = 480
     Anchors = [akLeft, akBottom]
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 104
-    ClientWidth = 478
+    ClientHeight = 102
+    ClientWidth = 476
     FullRepaint = False
     TabOrder = 4
     object Bevel6: TBevel
@@ -473,13 +474,13 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = LabelMsg
     Left = 480
     Height = 106
-    Top = 355
-    Width = 359
+    Top = 537
+    Width = 508
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvNone
     BorderStyle = bsSingle
     ClientHeight = 104
-    ClientWidth = 357
+    ClientWidth = 506
     TabOrder = 5
     object LabelR1: TLabel
       AnchorSideLeft.Control = PanelBars
@@ -515,7 +516,7 @@ object MainForm: TMainForm
       AnchorSideTop.Control = LabelR1
       AnchorSideRight.Control = PanelBars
       AnchorSideRight.Side = asrBottom
-      Left = 234
+      Left = 383
       Height = 18
       Top = 61
       Width = 119
@@ -529,7 +530,7 @@ object MainForm: TMainForm
       AnchorSideTop.Control = LabelR2
       AnchorSideRight.Control = PanelBars
       AnchorSideRight.Side = asrBottom
-      Left = 234
+      Left = 383
       Height = 18
       Top = 83
       Width = 119
@@ -589,7 +590,7 @@ object MainForm: TMainForm
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = PanelBars
       AnchorSideRight.Side = asrBottom
-      Left = 234
+      Left = 383
       Height = 18
       Top = 39
       Width = 119
@@ -620,7 +621,7 @@ object MainForm: TMainForm
       Left = 162
       Height = 18
       Top = 61
-      Width = 68
+      Width = 217
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
@@ -637,7 +638,7 @@ object MainForm: TMainForm
       Left = 162
       Height = 18
       Top = 83
-      Width = 68
+      Width = 217
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
@@ -654,7 +655,7 @@ object MainForm: TMainForm
       Left = 162
       Height = 18
       Top = 39
-      Width = 68
+      Width = 217
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 4
       PageSize = 0

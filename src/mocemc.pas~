@@ -276,7 +276,7 @@ begin
     UVal:= Value / Scale
   else
     UVal:= Value;
-  V:= (GetAbsPos(Joints.AxisByChar(Axis)) / Scale) - Value;
+  V:= (GetAbsPos(Joints.AxisByChar(Axis)) / Scale) + Value;
   S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,V]);
   ExecuteSilent(s);
   clRun.UpdatePreview(True);
@@ -526,8 +526,6 @@ begin
     cmREFB: Joints.HomeAxis('B');
     cmREFC: Joints.HomeAxis('C');
     cmREFALL: Joints.HomeAll;
-    cmUNREF: Joints.UnHomeActive;
-
     cmZEROALL: SetCoordsZero;
     cmTOUCHX: TouchOff('X');
     cmTOUCHY: TouchOff('Y');

@@ -1,5 +1,3 @@
-{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
-
 LazarusResources.Add('TPartAlgnDlg','FORMDATA',[
   'TPF0'#12'TPartAlgnDlg'#11'PartAlgnDlg'#4'Left'#3#12#2#6'Height'#3'9'#1#3'Top'
   +#3'i'#1#5'Width'#3'n'#1#13'ActiveControl'#7#5'BtnOk'#11'BorderIcons'#11#12'b'
@@ -8,9 +6,9 @@ LazarusResources.Add('TPartAlgnDlg','FORMDATA',[
   +#10'FormCreate'#8'OnResize'#7#10'FormResize'#8'Position'#7#14'poScreenCenter'
   +#10'LCLVersion'#6#8'0.9.28.2'#0#9'TPaintBox'#2'PB'#4'Left'#2#8#6'Height'#3
   +#136#0#3'Top'#2#8#5'Width'#3#163#0#7'OnPaint'#7#7'PBPaint'#0#0#6'TLabel'#6'L'
-  +'abelX'#4'Left'#2#8#6'Height'#2#18#3'Top'#3#160#0#5'Width'#2'+'#7'Caption'#6
+  +'abelX'#4'Left'#2#8#6'Height'#2#18#3'Top'#3#160#0#5'Width'#2'-'#7'Caption'#6
   +#6'LabelX'#11'ParentColor'#8#0#0#6'TLabel'#6'LabelY'#4'Left'#2#8#6'Height'#2
-  +#18#3'Top'#3#184#0#5'Width'#2'*'#7'Caption'#6#6'LabelY'#11'ParentColor'#8#0#0
+  +#18#3'Top'#3#184#0#5'Width'#2','#7'Caption'#6#6'LabelY'#11'ParentColor'#8#0#0
   +#6'TLabel'#6'LabelZ'#4'Left'#2#8#6'Height'#2#18#3'Top'#3#208#0#5'Width'#2'-'
   +#7'Caption'#6#6'LabelZ'#11'ParentColor'#8#0#0#6'TLabel'#9'LabelSkew'#4'Left'
   +#2#8#6'Height'#2#18#3'Top'#3#240#0#5'Width'#2#29#7'Caption'#6#4'0.00'#11'Par'
