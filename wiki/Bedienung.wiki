@@ -27,8 +27,8 @@ In der Sektion DISPLAY muss `DISPLAY = mocca` eingetragen werden. Weitere option
 ||WINDOW_SIZE ||1-3 ||1 ||1=normal, 2=Vollbild, 3=Maximiert|| 
 ||FONT_SIZE ||8-16 ||10 ||Schriftgröße allgemein || 
 ||FONT_BOLD ||0-1 ||0 ||Fettschrift || 
-||DRO_FONT_SIZE ||10-72 ||18 ||Schriftgröße der Achsanzeige || 
-||BUTTON_SIZE ||small,medium,large ||medium ||Größe der Buttons (Rechte und untere Leiste) || 
+||DRO_FONT_SIZE ||10-72 ||36 ||Schriftgröße der Achsanzeige || 
+||BUTTON_SIZE ||small,medium,large ||large ||Größe der Buttons (Rechte und untere Leiste) || 
 ||GLRGBA  ||0-1 ||1 ||RGBA Parameter der OpenGl Erweiterung || 
 ||GLDOUBLEBUFFERED ||0-1 ||1 ||DOUBLEBUFFERED Parameter der OpenGl Erweiterung || 
 ||GLDIRECT ||0-1 ||1 ||GLDIRECT Parameter der OpenGl Erweiterung || 
