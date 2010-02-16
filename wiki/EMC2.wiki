@@ -1,4 +1,4 @@
-#summary Anbindung an EMC2
+#summary Interface to EMC2
 
 = Introduction =
 
