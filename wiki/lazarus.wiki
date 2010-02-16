@@ -1,5 +1,7 @@
 #summary lazarus installieren und konfigurieren
 
+Diese wiki Seite richtet sich an alle die mocca selbst kompilieren. Sie beschreibt die Einrichtung der Entwicklungsumgebeung lazarus.
+
 = Systemvoraussetzungen =
 
 Auf dem System sollte eine Standard c/c++ Entwicklungsumgebung installiert sein mit den erforderlichen Libraries.
