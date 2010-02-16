@@ -1,0 +1,15 @@
+#summary mocca binary installieren
+
+Unter dem Register "Downloads" befndet sich ein fertiges binary, kompiliert für Ubuntu 8.04 mit GTK2. 
+
+  * Das komprimierte binary vom Register "Downloads" herunterladen
+  * in einem beliebigen ordner entpacken
+  * dort folgendes eingeben
+{{{
+chmod a+x mocca
+sudo cp mocca /usr/bin/
+}}}
+
+Fertig !!!
+
+Weiter mit Einrichten.
