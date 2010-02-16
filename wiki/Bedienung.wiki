@@ -4,13 +4,9 @@
 
 Using mocca as a GUI for EMC2:
 
- # Get mocca compiled (see wiki comiling mocca)
- # Goto ../lib: `cd ../lib`
- # make mocca executeable: `chmod a+x mocca`
- # Add a symbilic link in /usr/bin: `sudo ln -s mocca /usr/bin/mocca`
- # edit your EMC ini file: `DISPLAY = mocca`
- # start emc using the ini- file mentioned above 
-
+ # Get mocca compiled (see wiki comiling mocca) and installed or download and install the binary
+ # edit your EMC ini file: `DISPLAY = mocca`, see below for more details
+ # start emc using the ini-file mentioned above 
 
 
 
@@ -18,48 +14,37 @@ Using mocca as a GUI for EMC2:
 
 mocca als Grafikfrontend für EMC2 einstellen:
 
- # Mocca gemäß Wiki kompilieren
- # Gehe zu ../lib: `cd ../lib`
- # Mocca ausführbar machen: `chmod a+x mocca`
- # Einen symbolischen Link in /usr/bin einfügen: `sudo ln -s mocca /usr/bin/mocca`
- # Die ini Datei der Maschine bearbeiten: `DISPLAY = mocca` 
+ # Mocca gemäß Wiki kompilieren und installieren oder Binary herunterladen und installieren
+ # Die ini Datei der Maschine bearbeiten: `DISPLAY = mocca`, weitere Einträge siehe unten
  # EMC starten, mocca wird geladen 
 
 
 = Mocca Ini- Parameter: =
 
-Sektion DISPLAY
+In der Sektion DISPLAY muss `DISPLAY = mocca` eingetragen werden. Weitere optionale Parameter:
 
-"DRO_FONT_SIZE = 18"
-Mit DRO_FONT_SIZE wird der Größe der Schriftart der Achsanzeige eingestellt.
-Minimaler Wert sind 10 Punkt, Maximaler Wert sind 72 Punkt.
+|| *Parameter* || *Bereich* || *Default* || *Bedeutung* ||
+||WINDOW_SIZE ||1-3 ||1 ||1=normal, 2=Maximiert, 3=Vollbild || 
+||FONT_SIZE ||8-16 ||10 ||Schriftgröße allgemein || 
+||FONT_BOLD ||0-1 ||0 ||Fettschrift || 
+||DRO_FONT_SIZE ||10-72 ||18 ||Schriftgröße der Achsanzeige || 
+||BUTTON_SIZE ||small,medium,large ||medium ||Größe der Buttons (Rechte und untere Leiste) || 
+||GLRGBA  ||0-1 ||1 ||RGBA Parameter der OpenGl Erweiterung || 
+||GLDOUBLEBUFFERED ||0-1 ||1 ||DOUBLEBUFFERED Parameter der OpenGl Erweiterung || 
+||GLDIRECT ||0-1 ||1 ||GLDIRECT Parameter der OpenGl Erweiterung || 
+||SCRIPT_DIR ||Pfad || ||Suchpfad für Scripts || 
 
-"FONT_SIZE = 10"
-Mit FONT_SIZE wird die Mocca Fensterschriftart eingestellt.
-Mögliche Werte sind 8 - 16 Punkt.
 
-"BUTTON_SIZE = small" Optionen: medium,large
-Mit BUTTON_SIZE wird die größe der Buttons (Rechte und untere Leiste) eingestellt.
-Mögliche Werte sind small,medium,large
+Bei Problemen mit MesaGl Treibern und Grafikkarten, die OpenGl Directbuffer nicht unterstützen kann der Wert GLDIRECT entsprechend verändert werden.
 
-"GLRGBA = 1"
-Mit GLRGBA wird der RGBA Parameter der OpenGl Erweiterung eingestellt.
-Mögliche Werte sind 0 (Disabled) und 1 (Enabled)
+== Scripte ==
 
-"GLDOUBLEBUFFERED = 1"
-Damit wird der DOUBLEBUFFERED Parameter der OpenGl Erweiterung eingestellt.
-Std. Einstellung ist 1 (Enabled);
-Mögliche Werte sind 0 (Disabled) und 1 (Enabled) 
-
-"GLDIRECT = 1"
-Mit GLDIRECT wird der GLDIRECT Parameter der OpenGl Erweiterung eingestellt.
-Bei Problemen mit MesaGl Treibern und Grafikkarten die OpenGl Directbuffer nicht unterstützen kann hier der Wert entsprechend verändert werden.
-Mögliche Werte sind 0 (Disabled) und 1 (Enabled)
+Beispiel:
 
 "SCRIPT_DIR = /home/your_name/myscripts"
-Mit SCRIPT_DIR wird der Suchpfad für Scripts angegeben. Mocca lädt Scripts aus diesem Verzeichniss. Scripts haben die Datei- Endung .mdi Beispiel: toolchange.mdi
+Mit SCRIPT_DIR wird der Suchpfad für Scripts angegeben. Mocca lädt Scripts aus diesem Verzeichniss. Scripts haben die Datei-Endung .mdi Beispiel: toolchange.mdi
 
-Scripts werden in der Ini- Datei fortlaufend mit SCRIPT_0 .. SCRIPT_9 definiert.
+Scripts werden in der Ini-Datei fortlaufend mit SCRIPT_0 .. SCRIPT_9 definiert.
 Beispiel:
 
 SCRIPT_0
@@ -77,9 +62,16 @@ Mit Name wird der Text bezeichnet der im Button für das Script angezeigt wird.
 SCRIPT = /home/your_name/script.mdi
 Mit Script wird das ausführbare Script (NC-Code) bezeichnet das beim drücken des Buttons "Button1" ausgeführt wird.
 
+= Bedienung von mocca =
 
-= Umschalten zwischen mm/inch =
+== Umschalten zwischen mm/inch ==
 
-Hierzu im Infobereich auf die Einheit mm bzw. Inch doppelt klicken.
+Im Infobereich auf die Einheit mm bzw. Inch (doppelt) klicken.
 
-Duch Doppelklick kann auch die Koordinatenanzeige Relativ/Absolut oder Aktuell/Befohlen umgeschaltet werden.
+== Umschalten zwischen Relativ/Absolut ==
+
+Im Infobereich auf Relativ bzw. Absolut (doppelt) klicken.
+
+== Umschalten zwischen Aktuell/Befohlen ==
+
+Im Infobereich auf Aktuell bzw. Befohlen (doppelt) klicken.
