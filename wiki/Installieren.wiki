@@ -4,7 +4,7 @@ Unter dem Register "Downloads" befndet sich ein fertiges binary, kompiliert für
 
   * Das komprimierte binary vom Register "Downloads" herunterladen
   * in einem beliebigen ordner entpacken
-  * dort folgendes eingeben
+  * dort Terminal öffnen und folgendes eingeben
 {{{
 chmod a+x mocca
 sudo cp mocca /usr/bin/
