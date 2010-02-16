@@ -1,4 +1,4 @@
- # summary EMC2 für mocca einrichten
+#summary EMC2 für mocca einrichten
 
 Diese wiki Seite ist für Einrichter bestimmt. Hier sollte alles stehen, was zum Einrichten von EMC2 mit mocca Oberfläche notwendig ist, insbesondere die Ergänzungen zum ini file.
 
