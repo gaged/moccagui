@@ -1,12 +1,13 @@
 #summary mocca kompilieren und installieren
 
+Hier sollte alles stehen was zum kompilieren von mocca aus den sourcen erforderlich ist.
+Wer das fertige binary nicht verwenden kann/will bzw eigene Änderungen am source code vornehmen will, ist hier richtig.
+
 == Übersicht ==
 
 Voraussetzungen:
   * Installiertes EMC2 2.3.4, einschließlich -dev
   * Installiertes lazarus, siehe wiki seite "lazarus"
-
-Derzeit wird kein binary package veröffentlicht, da die Änderungsrate noch zu groß ist.
 
 Kompilieren und Installieren erfordert folgende Schritte
   # Source code herunterladen bzw. aktualisieren
@@ -39,31 +40,7 @@ Das Makefile muss den lokalen Gegebenheiten angepasst werden.
 
 Dies betrifft insbesondere die Pfade zu EMCDIR und ggf. zu lazarus.
 
-Zusätzlich kann es erforderlich sein, die Include Verzeichnisse zu erweitern, ein guter Ansatz ist folgende Konfiguration (Pfade ggf. anpassen):
-
-{{{
-INCLUDES = -I$(EMCDIR)/include
-INCLUDES += -I$(EMCDIR)/src
-INCLUDES += -I$(EMCDIR)/lib
-INCLUDES += -I$(EMCDIR)/bin
-INCLUDES += -I$(EMCDIR)/src/emc/ini
-INCLUDES += -I/usr/lib
-INCLUDES += -I/lib
-
-INCLUDES += -I$(EMCDIR)/src/emc/iotask
-INCLUDES += -I$(EMCDIR)/src/emc/kinematics
-INCLUDES += -I$(EMCDIR)/src/emc/motion
-INCLUDES += -I$(EMCDIR)/src/emc/nml_intf
-INCLUDES += -I$(EMCDIR)/src/emc/usr_intf
-INCLUDES += -I$(EMCDIR)/src/emc/rs274ngc
-INCLUDES += -I$(EMCDIR)/src/emc/task
-INCLUDES += -I$(EMCDIR)/src/libnml/posemath
-INCLUDES += -I$(EMCDIR)/src/libnml/inifile
-INCLUDES += -I$(EMCDIR)/src/libnml/os_intf
-INCLUDES += -I$(EMCDIR)/src/libnml/nml
-INCLUDES += -I$(EMCDIR)/src/libnml/cms
-INCLUDES += -I$(EMCDIR)/src/libnml/rcs
-}}}
+Zusätzlich kann es erforderlich sein, die Include Verzeichnisse zu erweitern (Pfade ggf. anpassen).
 
 Sollte es beim Start von Mocca zu einem X-Server Fehler kommen, so ist im Makefile die Zeile 
 
