@@ -77,24 +77,52 @@ begin
     i:= defval;
 end;
 
-procedure SetJogIncrements(s: string);
+(* modified for issue #13, Gx *)
+function SetJogIncrements(s: string) : Boolean;
+var
+  i: integer; ii: integer; l : integer;
+  s1 : string;
 begin
+  Result:= False;
+  s1 := s;
+  ii := 1;
   with Vars do
     begin
       JogIncrements[0].Text:= 'Durchgehend'; // continous
+      repeat
+         TrimLeft (s1);
+         TrimRight (s1);
+         i := Pos (' ', s1);	// blank is delimiter
+         l := Length (s1);
+         if i > 0 then begin
+            JogIncrements[ii].Text := LeftStr (s1, i-1);     // item to store
+            s1 := RightStr (s1, l-i);    // remaining part
+         end
+         else begin
+            JogIncrements[ii].Text := s1;     // last item
+         end;
+         ii := ii+1;
+      until (ii>MAXJOGINCS) or (i=0);     
       JogIncrements[0].Value:=  0;
-      JogIncrements[1].Text:= '0.001 mm';
-      JogIncrements[1].Value:= 0.001;
-      JogIncrements[2].Text:= '0.01 mm';
-      JogIncrements[2].Value:=  0.01;
-      JogIncrements[3].Text:= '0.1 mm';
-      JogIncrements[3].Value:=  0.1;
-      JogIncrements[4].Text:= '1.0 mm';
-      JogIncrements[4].Value:=  1;
-      JogIncrements[5].Text:= '10.0 mm';
-      JogIncrements[5].Value:=  10;
-      JogIncMax:= 5;
-    end;
+      for i:=1 to (ii-1) do
+        begin
+          s1 := JogIncrements[i].Text;
+          l := Pos('mm',s1) - 1;       // other units to add
+          try
+            if l > 0 then begin
+             JogIncrements[i].Value:= StrToFloat(LeftStr(s1,l));
+            end
+            else begin
+             JogIncrements[i].Value:= StrToFloat(s1);  // no known unit found
+            end
+          except // unknown unit
+             writeln('unknown unit in INCREMENTS');
+             Exit;
+          end;
+        end;
+      JogIncMax:= ii-1;
+      Result:= True;
+    end
 end;
 
 function IniReadAxes: Boolean;
@@ -284,10 +312,22 @@ begin
       GetIniDouble('TRAJ', 'DEFAULT_VELOCITY',d,1);
   Vars.AngularJogSpeed:= d * 60;
 
-  if not GetIniDouble('DISPLAY','MAX_LINEAR_VELOCITY',d,1) then
-    if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d,1) then
-      GetIniDouble('TRAJ','MAX_VELOCITY',d,1);
+(* some modification from Gerhard Gleixner
+   to seperate between max jog and max speed
+   added member MaxLinearJogVel to Vars record
+   issue #17
+*)
+  if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d,1) then
+    if not GetIniDouble('TRAJ','MAX_VELOCITY',d,1) then
+      GetIniDouble('DISPLAY','MAX_LINEAR_VELOCITY',d,1); (* not final sol., eval AXIS *)
   Vars.MaxLinearVel:= d * 60;
+
+  if not GetIniDouble('DISPLAY','MAX_LINEAR_VELOCITY',d,1) then
+    if not GetIniDouble('DISPLAY','MAX_VELOCITY',d,1) then
+     if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d,1) then
+      GetIniDouble('TRAJ','MAX_VELOCITY',d,1);
+  Vars.MaxLinearJogVel:= d * 60;
+(* end mod *)
 
   {$ifdef DEBUG_INI}
   writeln('Ini: MaxLinearVel ' + FloatToStr(Vars.MaxLinearVel));
@@ -298,7 +338,7 @@ begin
   if Vars.LinearJogSpeed > Vars.MaxLinearVel then
     Vars.LinearJogSpeed:= Vars.MaxLinearVel;
 
-  State.MaxJogVel:= Round(Vars.MaxLinearVel);
+  State.MaxJogVel:= Round(Vars.MaxLinearJogVel); // Gx, issue #17
   State.ActJogVel:= Round(Vars.LinearJogSpeed);
   State.MaxVel:= Round(Vars.MaxLinearVel);
   State.ActVel:= State.MaxVel;
@@ -403,7 +443,8 @@ begin
     end;
 
   GetIniStr('DISPLAY','INCREMENTS',tmp,'');
-  SetJogIncrements(tmp);
+  if not SetJogIncrements(tmp) then 
+    Exit;
 
   GetIniStr('DISPLAY','EDITOR',tmp,'');
   Vars.Editor:= Trim(tmp);
