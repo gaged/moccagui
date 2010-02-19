@@ -337,6 +337,7 @@ type
     LinearJogSpeed: double;
     AngularJogSpeed: double;
     MaxLinearVel: double;
+    MaxLinearJogVel: double;
     MaxAngularVel: double;
     Metric: Boolean;            // metric, default true **FIXME
     UnitVelStr: string;           // linear velocitystr i.e. "inch/min"

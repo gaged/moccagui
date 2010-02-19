@@ -5,12 +5,12 @@ COMPILEPAS = fpc
 COMPILEMOC = fpc -S2cghi -CX -O1 -TLinux -XX -vewnhi -l -dLCL -dLCL$(WM)
 LINK = gcc -v
 
-EMCDIR = /home/gtom/emc
+EMCDIR = /home/gerd/emc2/emc2-2.3.4
 LAZDIR = /usr/lib/lazarus/0.9.28.2
 
-INCLUDES = -I$(EMCDIR)/include
+#INCLUDES = -I$(EMCDIR)/include
 #INCLUDES += -I$/usr/include/emc2
-#INCLUDES = -I/usr/include/emc2
+INCLUDES = -I/usr/include/emc2
 
 LCL = -Fu.
 LCL += -Fu../lib
@@ -23,7 +23,7 @@ LCL += -Fu$(LAZDIR)/packager/units/i386-linux
 #LIBDIR = $(EMCDIR)/lib
 
 emcpas.o: emcpas.cc
-	$(COMPILE) $(INCLUDES) -o../lib/emcpas.o -UDSOHANDLE -l/usr/lib emcpas.cc
+	$(COMPILE) $(INCLUDES) -o../lib/emcpas.o -DDSOHANDLE -l/usr/lib emcpas.cc
 
 simcanon.o: simcanon.cc
 	$(COMPILE) $(INCLUDES) -o../lib/simcanon.o simcanon.cc
