@@ -1,3 +1,11 @@
+// do not modify the following by hand
+// use svn propset svn:keywords "Author Date Revision" *.pas
+//
+// $Author$
+// $Date$
+// $Revision$
+// 
+
 unit mocini;
 
 
@@ -319,7 +327,7 @@ begin
 *)
   if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d,1) then
     if not GetIniDouble('TRAJ','MAX_VELOCITY',d,1) then
-      GetIniDouble('DISPLAY','MAX_LINEAR_VELOCITY',d,1); (* not final sol., eval AXIS *)
+      GetIniDouble('AXIS_0','MAX_VELOCITY',d,1);      // shall be axis compatible
   Vars.MaxLinearVel:= d * 60;
 
   if not GetIniDouble('DISPLAY','MAX_LINEAR_VELOCITY',d,1) then
