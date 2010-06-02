@@ -1,15 +1,17 @@
 object JogClientForm: TJogClientForm
-  Left = 539
-  Height = 423
-  Top = 252
-  Width = 516
+  Left = 694
+  Height = 415
+  Top = 113
+  Width = 553
   HorzScrollBar.Page = 476
   VertScrollBar.Page = 361
+  ActiveControl = SliderJog
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'JogClientForm'
-  ClientHeight = 423
-  ClientWidth = 516
+  ClientHeight = 415
+  ClientWidth = 553
+  Color = clMedGray
   KeyPreview = True
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
@@ -17,87 +19,219 @@ object JogClientForm: TJogClientForm
   ParentFont = True
   ShowInTaskBar = stNever
   LCLVersion = '0.9.28.2'
-  object LabelL1: TLabel
-    Left = 12
+  object LabelJ1: TLabel
+    Left = 8
     Height = 18
-    Top = 52
-    Width = 73
-    BorderSpacing.Left = 6
-    BorderSpacing.Top = 8
+    Top = 12
+    Width = 76
+    AutoSize = False
     Caption = 'Joggeschw.'
     ParentColor = False
   end
-  object LabelJogVel: TLabel
-    AnchorSideLeft.Control = sbJogVel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = LabelL1
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 264
+  object LabelJ2: TLabel
+    Left = 8
     Height = 18
-    Top = 52
-    Width = 252
-    Anchors = [akTop, akLeft, akRight]
+    Top = 68
+    Width = 108
     AutoSize = False
-    BorderSpacing.Left = 4
-    Caption = 'Label'
-    ParentColor = False
-  end
-  object LabelL2: TLabel
-    AnchorSideTop.Control = CbInc
-    Left = 12
-    Height = 18
-    Top = 84
-    Width = 79
-    BorderSpacing.Left = 6
-    BorderSpacing.Top = 8
     Caption = 'Schrittweite'
     ParentColor = False
   end
-  object LabelCaption: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    Left = 4
-    Height = 34
-    Top = 4
-    Width = 251
-    BorderSpacing.Around = 4
-    Caption = 'Manueller Betrieb'
-    Font.Height = -28
-    Font.Pitch = fpFixed
-    ParentColor = False
+  object LedORide: TMocLed
+    Left = 16
+    Height = 32
+    Top = 292
+    Width = 16
+    LedColor = clRed
+    IsOn = False
+  end
+  object BXMinus: TMocButton
+    Tag = -1
+    Left = 8
+    Height = 48
+    Top = 180
+    Width = 48
+    ShowClicks = True
+    Caption = '- X'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
     ParentFont = False
   end
-  object sbJogVel: TScrollBar
-    AnchorSideLeft.Control = LabelL2
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = LabelL1
-    AnchorSideTop.Side = asrCenter
-    Left = 97
-    Height = 18
-    Top = 52
-    Width = 161
-    BorderSpacing.Left = 6
-    BorderSpacing.Right = 6
-    LargeChange = 10
-    PageSize = 1
-    TabOrder = 0
-    OnChange = sbJogVelChange
+  object BXPlus: TMocButton
+    Tag = 1
+    Left = 104
+    Height = 48
+    Top = 180
+    Width = 48
+    ShowClicks = True
+    Caption = 'X +'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BYPlus: TMocButton
+    Tag = 2
+    Left = 56
+    Height = 48
+    Top = 132
+    Width = 48
+    ShowClicks = True
+    Caption = '+ Y'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BZPlus: TMocButton
+    Tag = 3
+    Left = 104
+    Height = 48
+    Top = 132
+    Width = 48
+    ShowClicks = True
+    Caption = '+ Z'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BYMinus: TMocButton
+    Tag = -2
+    Left = 56
+    Height = 48
+    Top = 228
+    Width = 48
+    ShowClicks = True
+    Caption = '- Y'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BZMinus: TMocButton
+    Tag = -3
+    Left = 8
+    Height = 48
+    Top = 228
+    Width = 48
+    ShowClicks = True
+    Caption = '- Z'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BAMinus: TMocButton
+    Tag = -4
+    Left = 152
+    Height = 48
+    Top = 132
+    Width = 48
+    ShowClicks = True
+    Caption = '- A'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BAPlus: TMocButton
+    Tag = 4
+    Left = 200
+    Height = 48
+    Top = 132
+    Width = 48
+    ShowClicks = True
+    Caption = 'A +'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BBMinus: TMocButton
+    Tag = -5
+    Left = 152
+    Height = 48
+    Top = 180
+    Width = 48
+    ShowClicks = True
+    Caption = '- B'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BBPlus: TMocButton
+    Tag = 5
+    Left = 200
+    Height = 48
+    Top = 180
+    Width = 48
+    ShowClicks = True
+    Caption = 'B +'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BCMinus: TMocButton
+    Tag = -6
+    Left = 152
+    Height = 48
+    Top = 228
+    Width = 48
+    ShowClicks = True
+    Caption = '- C'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BCPlus: TMocButton
+    Tag = 6
+    Left = 200
+    Height = 48
+    Top = 228
+    Width = 48
+    ShowClicks = True
+    Caption = 'C +'
+    Color = clBtnFace
+    Font.Style = [fsBold]
+    OnMouseDown = BJogMouseDown
+    OnMouseUp = BJogMouseUp
+    ParentFont = False
+  end
+  object BtnORideLimits: TMocButton
+    Left = 32
+    Height = 32
+    Top = 292
+    Width = 208
+    ShowClicks = True
+    Caption = 'Grenzwerte An/Aus'
+    Color = clBtnFace
+    OnClick = BtnORideLimitsClick
   end
   object CbInc: TComboBox
-    AnchorSideLeft.Control = LabelL2
     AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = sbJogVel
     AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = sbJogVel
     AnchorSideRight.Side = asrBottom
-    Left = 97
+    Left = 8
     Height = 31
-    Top = 76
-    Width = 161
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 6
-    BorderSpacing.Top = 6
+    Top = 92
+    Width = 169
+    AutoSize = False
     ItemHeight = 0
     Items.Strings = (
       'Durchgehend'
@@ -110,174 +244,17 @@ object JogClientForm: TJogClientForm
     OnChange = CbIncClick
     OnClick = CbIncClick
     Style = csDropDownList
-    TabOrder = 1
+    TabOrder = 0
   end
-  object BXMinus: TButton
-    Tag = -1
+  object SliderJog: TSlider
     Left = 8
-    Height = 48
-    Top = 160
-    Width = 48
-    Caption = '- X'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 2
-    TabStop = False
-  end
-  object BXPlus: TButton
-    Tag = 1
-    Left = 104
-    Height = 48
-    Top = 160
-    Width = 48
-    Caption = 'X +'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 3
-    TabStop = False
-  end
-  object BYPlus: TButton
-    Tag = 2
-    Left = 56
-    Height = 48
-    Top = 112
-    Width = 48
-    Caption = '+ Y'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 4
-    TabStop = False
-  end
-  object BZPlus: TButton
-    Tag = 3
-    Left = 104
-    Height = 48
-    Top = 112
-    Width = 48
-    Caption = '+ Z'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 5
-    TabStop = False
-  end
-  object BYMinus: TButton
-    Tag = -2
-    Left = 56
-    Height = 48
-    Top = 208
-    Width = 48
-    Caption = '- Y'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 6
-    TabStop = False
-  end
-  object BZMinus: TButton
-    Tag = -3
-    Left = 8
-    Height = 48
-    Top = 208
-    Width = 48
-    Caption = '- Z'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 7
-    TabStop = False
-  end
-  object BAMinus: TButton
-    Tag = -4
-    Left = 160
-    Height = 48
-    Top = 112
-    Width = 48
-    Caption = '- A'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 8
-    TabStop = False
-  end
-  object BAPlus: TButton
-    Tag = 4
-    Left = 208
-    Height = 48
-    Top = 112
-    Width = 48
-    Caption = 'A +'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 9
-    TabStop = False
-  end
-  object BBMinus: TButton
-    Tag = -5
-    Left = 160
-    Height = 48
-    Top = 160
-    Width = 48
-    Caption = '- B'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 10
-    TabStop = False
-  end
-  object BBPlus: TButton
-    Tag = 5
-    Left = 208
-    Height = 48
-    Top = 160
-    Width = 48
-    Caption = 'B +'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 11
-    TabStop = False
-  end
-  object BCMinus: TButton
-    Tag = -6
-    Left = 160
-    Height = 48
-    Top = 208
-    Width = 48
-    Caption = '- C'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 12
-    TabStop = False
-  end
-  object BCPlus: TButton
-    Tag = 6
-    Left = 208
-    Height = 48
-    Top = 208
-    Width = 48
-    Caption = 'C +'
-    Font.Style = [fsBold]
-    OnMouseDown = BJogMouseDown
-    OnMouseUp = BJogMouseUp
-    ParentFont = False
-    TabOrder = 13
-    TabStop = False
+    Height = 24
+    Top = 36
+    Width = 240
+    Position = 0
+    BarColor = clYellow
+    Vertical = False
+    Smooth = True
+    PositionChanged = SliderJogPositionChanged
   end
 end

@@ -21,11 +21,11 @@ var
 begin
   Result:= '';
   if not HasScripts then Exit;
-  for i:= 0 to NumSButtons - 1 do
+  for i:= 0 to NumButtons - 1 do
     if BtnDefScripts[i].T = C then
       begin
         b:= C - cmSCRIPTBASE;
-        if (b >= 0) and (b < NumSButtons) then
+        if (b >= 0) and (b < NumButtons) then
           begin
             Result:= MocScripts[b].Script;
             Exit;

@@ -6,48 +6,40 @@ interface
 
 uses
   Graphics,Classes, SysUtils, LResources, Forms, Controls, Dialogs, ExtCtrls,
-  ExtDlgs, ComCtrls,
-  mocemc,mocbtn;
+  ExtDlgs, ComCtrls, mocbtn;
 
 {$I mocglb.inc}
 
 const
-  LangFile: string = '';
   ShowGlPreview: Boolean = True;
 
 var
   LastError: string;
-
   UpdateLock: Boolean;
-
   ScriptRunning: Boolean;
-
   {$IFDEF LCLGTK2}
   IsFullScreen: Boolean;
   {$ENDIF}
-
   Vars: TEmcVars;
   State: TEmcState;
   GlSettings: TGlSettings;
-
-  MocBtns: Array[0..NumAllButtons - 1] of TMocButton; // the buttons
-
+  GlColors: TGlColors;
   HasScripts: Boolean;
-  MocScripts: Array[0..NumSButtons - 1] of TScriptDef;
 
-  BtnDefScripts: TSButtonArray;
+  MocBtns: Array[0..NumButtons - 1] of TMocButton;
+  MocScripts: Array[0..NumButtons - 1] of TScriptDef;
+
+  BtnDefScripts: TButtonArray;
   StrListScript: TStringList;
-
-  GlobalImageList: TImageList;
-  GlobalFontWidth: integer;
-  GlobalFontHeight: integer;
-
+  GlobalBitmaps: TStringList;
   GlobalErrors: TStringList;
 
-  EditorBeginFile: string;
-  EditorEndFile: string;
+  ConfigDir: string;
 
-var
+  BackGroundImage: string;
+
+  ToolCfg : array[0..8] of ToolDef;
+
   PartBaseCoord : record
     x,y,z: double;
     IsSet: Boolean;
@@ -56,12 +48,12 @@ var
 procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
 procedure SetButtonDown(ACmd: integer; SetDown: Boolean);
 procedure SetButtonText(ACmd: integer; AText: string);
-procedure SetButtonMap(M: PMButtonArray; S: PSButtonArray; ObjClick: TOnClick);
-
+procedure SetButtonMap(M: PButtonArray; ObjClick: TOnClick);
 procedure SetCoords(var l: Tlo; x,y,z,a,b,c,u,v,w: double);
 function  SetExtents(xa,xb,ya,yb,za,zb: double): TExtents;
-
 procedure RaiseError(const Msg: string);
+
+function AddBitmap(const AName: string): integer;
 
 {$IFDEF LCLGTK2}
 procedure FullScreen(WinControl: TWinControl);
@@ -70,14 +62,43 @@ procedure UnFullScreen(WinControl: TWinControl);
 
 procedure CallEditor;
 
+procedure ReadStyle(const Form: TForm);
+
 implementation
 
 
 uses
  {$IFDEF LCLGTK2}
- GtkDef, gdk2x, glib2, gdk2, gtk2, Gtk2Int,
+ GtkDef, gdk2x, gtk2,
  {$ENDIF}
- Process;
+ Process,
+ stylereader;
+
+procedure ReadStyle(const Form: TForm);
+var
+  FileName: string;
+  FormName: string;
+begin
+  if not Assigned(Form) then
+    begin
+      writeln('Invalid call to "readstyle", Form = nil!');
+      Exit;
+    end;
+  if ConfigDir = '' then
+    begin
+      writeln('Error reading layout for: ' + Form.Name);
+      writeln('Path to xml-styles not set');
+      Exit;
+    end;
+  FormName:= LowerCase(Form.Name);
+  FileName:= ConfigDir + FormName + '.xml';
+  writeln('Reading layout ' + FileName);
+  try
+    ReadXMLStyle(Form,FileName);
+  except
+    writeln('Error reading style: ' + Filename);
+  end;
+end;
 
 procedure CallEditor;
 var
@@ -127,43 +148,29 @@ begin
   raise Exception.Create(Msg);
 end;
 
-procedure SetButtonMap(M: PMButtonArray; S: PSButtonArray; ObjClick: TOnClick);
+procedure SetButtonMap(M: PButtonArray; ObjClick: TOnClick);
 var
   i,ii: Integer;
+  iBmp: Integer;
 begin
   if M <> nil then
-    for i:= 0 to NumMButtons - 1 do
+    for i:= 0 to NumButtons - 1 do
       begin
         if M^[i].T < 0 then
           MocBtns[i].OnClick:= nil
         else
           MocBtns[i].OnClick:= ObjClick;
-        //if M^[i].G < 0 then MocBtns[i].Glyph:= nil
-        //else
-        //  GlobalImageList.GetBitmap(M^[i].G,MocBtns[i].Glyph);
         MocBtns[i].Tag:= M^[i].T;
         MocBtns[i].Caption:= M^[i].S;
         MocBtns[i].Enabled:= not (M^[i].T < 0);
         MocBtns[i].ShowClicks:= (M^[i].T > 99);
         MocBtns[i].Down:= False;
-      end;
-  if S <> nil then
-    for i:= 0 to NumSButtons - 1 do
-      begin
-        ii:= i + NumMButtons;
-        if S^[i].T < 0 then
-          MocBtns[ii].OnClick:= nil
-        else
-          MocBtns[ii].OnClick:= ObjClick;
-        //if S^[i].G < 0 then
-        //  MocBtns[ii].Glyph:= nil
-        //else
-        //  GlobalImageList.GetBitmap(S^[i].G,MocBtns[ii].Glyph);
-        MocBtns[ii].Tag:= S^[i].T;
-        MocBtns[ii].Caption:= S^[i].S;
-        MocBtns[ii].Enabled:= not (S^[i].T < 0);
-        MocBtns[ii].ShowClicks:= (S^[i].T > 99);
-        MocBtns[ii].Down:= False;
+        MocBtns[i].Glyph:= nil;
+        iBmp:= M^[i].G;
+        // writeln('Bitmapindex: ',iBmp);
+        if (iBmp >= 0) and Assigned(GlobalBitmaps) then
+          if Assigned(GlobalBitmaps.Objects[iBmp]) then
+            MocBtns[i].Glyph.Assign(TBitmap(GlobalBitmaps.Objects[iBmp]));
       end;
 end;
 
@@ -171,7 +178,7 @@ procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
 var
   i: integer;
 begin
-  for i:= 0 to NumAllButtons - 1 do
+  for i:= 0 to NumButtons - 1 do
     if Assigned(MocBtns[i]) then
       if MocBtns[i].Tag = ACmd then
         begin
@@ -184,7 +191,7 @@ procedure SetButtonDown(ACmd: integer; SetDown: Boolean);
 var
   i: integer;
 begin
-  for i:= 0 to NumAllButtons - 1 do
+  for i:= 0 to NumButtons - 1 do
     if Assigned(MocBtns[i]) then
       if MocBtns[i].Tag = ACmd then
         begin
@@ -197,7 +204,7 @@ procedure SetButtonText(ACmd: integer; AText: string);
 var
   i: integer;
 begin
-  for i:= 0 to NumAllButtons - 1 do
+  for i:= 0 to NumButtons - 1 do
     if Assigned(MocBtns[i]) then
       if MocBtns[i].Tag = ACmd then
         begin
@@ -206,9 +213,72 @@ begin
         end;
 end;
 
+function AddBitmap(const AName: string): integer;
+var
+  i: integer;
+  B: TBitmap;
+  S,S1: string;
+begin
+  Result:= -1;
+  S1:= Trim(LowerCase(AName));
+  if S1 = '' then Exit;
+  S:= ConfigDir + S1;
+  if not Assigned(GlobalBitmaps) then
+    GlobalBitmaps:= TStringList.Create;
+  i:= GlobalBitmaps.IndexOf(AName);
+  if (i >= 0) then
+    begin
+      {$ifdef DEBUG_CONFIG}
+      writeln('Bitmap already exists in cache.');
+      {$endif}
+      Result:= i;
+      Exit;
+    end;
+  B:= TBitmap.Create;
+  if not Assigned(B) then
+    begin
+      writeln('Error: cannot create bitmap.');
+      Exit;
+    end;
+  try
+    B.LoadFromFile(S);
+  except
+    B.Free;
+    writeln('error loading Bitmap: ' + S);
+    Exit;
+  end;
+  i:= GlobalBitmaps.Add(AName);
+  if i < 0 then Exit;
+  GlobalBitmaps.Objects[i]:= B;
+  Result:= i;
+end;
+
+
 initialization
 
-GlobalImageList:= nil;
+GlobalBitmaps:= nil;
 LastError:= '';
+BackGroundImage:= '';
+
+GlSettings.UseDirect:= True;
+GlSettings.UseDoubleBuffered:= True;
+GlSettings.UseRGBA:= True;
+
+with GlColors do
+  begin
+    feed.r:= 0; feed.g:= 0; feed.b:= 1;
+    traverse.r:= 0.5; traverse.g:= 0.5; traverse.b:= 0.5;
+    cone.r:= 1; cone.g:= 0.5; cone.b:= 0; cone.a:= 0.5;
+    limits.r:= 0.7; limits.g:= 0.7; limits.b:= 0.6;
+    bg.r:= 1; bg.g:= 1; bg.b:= 1;
+    table.r:= 0; table.g:= 0; table.b:= 0.9; table.a:= 0.5;
+  end;
+
+with Vars.JogIncrements[0] do
+  begin
+    Value:= 0;
+    Text:= 'Continous';
+  end;
+
 end.
 

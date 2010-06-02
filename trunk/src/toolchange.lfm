@@ -1,7 +1,7 @@
 object ToolChgDlg: TToolChgDlg
-  Left = 491
+  Left = 489
   Height = 386
-  Top = 351
+  Top = 341
   Width = 443
   ActiveControl = LbTools
   BorderIcons = [biSystemMenu]

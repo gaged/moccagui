@@ -1,11 +1,11 @@
 { Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
 
 LazarusResources.Add('TOffsetsDlg','FORMDATA',[
-  'TPF0'#11'TOffsetsDlg'#10'OffsetsDlg'#4'Left'#3#229#1#6'Height'#3'_'#1#3'Top'
-  +#3'l'#1#5'Width'#3'M'#2#13'ActiveControl'#7#4'Grid'#11'BorderIcons'#11#12'bi'
-  +'SystemMenu'#0#11'BorderStyle'#7#8'bsDialog'#7'Caption'#6#22'Koordinaten bea'
-  +'rbeiten'#12'ClientHeight'#3'_'#1#11'ClientWidth'#3'M'#2#8'OnCreate'#7#10'Fo'
-  +'rmCreate'#9'OnDestroy'#7#11'FormDestroy'#8'Position'#7#14'poScreenCenter'#13
+  'TPF0'#11'TOffsetsDlg'#10'OffsetsDlg'#4'Left'#3#20#1#6'Height'#3'_'#1#3'Top'#3
+  +'R'#1#5'Width'#3'M'#2#13'ActiveControl'#7#4'Grid'#11'BorderIcons'#11#12'biSy'
+  +'stemMenu'#0#11'BorderStyle'#7#8'bsDialog'#7'Caption'#6#22'Koordinaten bearb'
+  +'eiten'#12'ClientHeight'#3'_'#1#11'ClientWidth'#3'M'#2#8'OnCreate'#7#10'Form'
+  +'Create'#9'OnDestroy'#7#11'FormDestroy'#8'Position'#7#14'poScreenCenter'#13
   +'ShowInTaskBar'#7#7'stNever'#10'LCLVersion'#6#8'0.9.28.2'#0#11'TStringGrid'#4
   +'Grid'#22'AnchorSideLeft.Control'#7#5'Owner'#21'AnchorSideTop.Control'#7#5'O'
   +'wner'#4'Left'#2#0#6'Height'#3#128#0#3'Top'#2#0#5'Width'#3#232#1#11'Font.Hei'

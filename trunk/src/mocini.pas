@@ -1,11 +1,3 @@
-// do not modify the following by hand
-// use svn propset svn:keywords "Author Date Revision" *.pas
-//
-// $Author$
-// $Date$
-// $Revision$
-// 
-
 unit mocini;
 
 
@@ -75,6 +67,7 @@ var
   s: string;
 begin
   Result:= False;
+  S:= '';
   if GetIniStr(secstr,varstr,s,'') then
     if s <> '' then
       begin
@@ -83,54 +76,6 @@ begin
       end;
   if Result = false then
     i:= defval;
-end;
-
-(* modified for issue #13, Gx *)
-function SetJogIncrements(s: string) : Boolean;
-var
-  i: integer; ii: integer; l : integer;
-  s1 : string;
-begin
-  Result:= False;
-  s1 := s;
-  ii := 1;
-  with Vars do
-    begin
-      JogIncrements[0].Text:= 'Durchgehend'; // continous
-      repeat
-         TrimLeft (s1);
-         TrimRight (s1);
-         i := Pos (' ', s1);	// blank is delimiter
-         l := Length (s1);
-         if i > 0 then begin
-            JogIncrements[ii].Text := LeftStr (s1, i-1);     // item to store
-            s1 := RightStr (s1, l-i);    // remaining part
-         end
-         else begin
-            JogIncrements[ii].Text := s1;     // last item
-         end;
-         ii := ii+1;
-      until (ii>MAXJOGINCS) or (i=0);     
-      JogIncrements[0].Value:=  0;
-      for i:=1 to (ii-1) do
-        begin
-          s1 := JogIncrements[i].Text;
-          l := Pos('mm',s1) - 1;       // other units to add
-          try
-            if l > 0 then begin
-             JogIncrements[i].Value:= StrToFloat(LeftStr(s1,l));
-            end
-            else begin
-             JogIncrements[i].Value:= StrToFloat(s1);  // no known unit found
-            end
-          except // unknown unit
-             writeln('unknown unit in INCREMENTS');
-             Exit;
-          end;
-        end;
-      JogIncMax:= ii-1;
-      Result:= True;
-    end
 end;
 
 function IniReadAxes: Boolean;
@@ -164,7 +109,8 @@ begin
 
       GetIniDouble(Sec,'MIN_LIMIT',Min,0);
       GetIniDouble(Sec,'MAX_LIMIT',Max,0);
-      if Vars.Metric then
+
+      if Vars.Metric and (Vars.Axis[i].IsLinear) then
         begin
           Min:= Min / 25.4;
           Max:= Max / 25.4;
@@ -202,7 +148,7 @@ begin
       G:= -1;
       S:= '<';
     end;
-  for i:= 1 to NumSButtons - 1 do
+  for i:= 1 to NumButtons - 1 do
     begin
       MocScripts[i].Name:= '';
       MocScripts[i].Script:= '';
@@ -320,22 +266,10 @@ begin
       GetIniDouble('TRAJ', 'DEFAULT_VELOCITY',d,1);
   Vars.AngularJogSpeed:= d * 60;
 
-(* some modification from Gerhard Gleixner
-   to seperate between max jog and max speed
-   added member MaxLinearJogVel to Vars record
-   issue #17
-*)
-  if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d,1) then
-    if not GetIniDouble('TRAJ','MAX_VELOCITY',d,1) then
-      GetIniDouble('AXIS_0','MAX_VELOCITY',d,1);      // shall be axis compatible
-  Vars.MaxLinearVel:= d * 60;
-
   if not GetIniDouble('DISPLAY','MAX_LINEAR_VELOCITY',d,1) then
-    if not GetIniDouble('DISPLAY','MAX_VELOCITY',d,1) then
-     if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d,1) then
+    if not GetIniDouble('TRAJ','MAX_LINEAR_VELOCITY',d,1) then
       GetIniDouble('TRAJ','MAX_VELOCITY',d,1);
-  Vars.MaxLinearJogVel:= d * 60;
-(* end mod *)
+  Vars.MaxLinearVel:= d * 60;
 
   {$ifdef DEBUG_INI}
   writeln('Ini: MaxLinearVel ' + FloatToStr(Vars.MaxLinearVel));
@@ -346,7 +280,7 @@ begin
   if Vars.LinearJogSpeed > Vars.MaxLinearVel then
     Vars.LinearJogSpeed:= Vars.MaxLinearVel;
 
-  State.MaxJogVel:= Round(Vars.MaxLinearJogVel); // Gx, issue #17
+  State.MaxJogVel:= Round(Vars.MaxLinearVel);
   State.ActJogVel:= Round(Vars.LinearJogSpeed);
   State.MaxVel:= Round(Vars.MaxLinearVel);
   State.ActVel:= State.MaxVel;
@@ -450,9 +384,8 @@ begin
       GetIniInt(tmp,'JOGGING_POLARITY',Vars.jogPolarity[i],0);
     end;
 
-  GetIniStr('DISPLAY','INCREMENTS',tmp,'');
-  if not SetJogIncrements(tmp) then 
-    Exit;
+  // GetIniStr('DISPLAY','INCREMENTS',tmp,'');
+  // SetJogIncrements(tmp);
 
   GetIniStr('DISPLAY','EDITOR',tmp,'');
   Vars.Editor:= Trim(tmp);
@@ -460,59 +393,18 @@ begin
   if not IniReadAxes then
     Exit;
 
-  // mocca related ini stuff
-  GetIniInt('DISPLAY','GLDIRECT',i,1);
-  GlSettings.UseDirect:= (i = 1);
-  if GlSettings.UseDirect then
-    writeln('direct OpenGl rendering activated')
-  else
-    writeln('direct OpenGl rendering decativated');
+  GetIniStr('MOCCA','CONFIG',tmp,'');
+  ConfigDir:= Trim(tmp);
 
-  GetIniInt('DISPLAY','GLRGBA',i,1);
-  GlSettings.UseRGBA:=  (i = 1);
+  i:= Length(ConfigDir);
+  if i > 0 then
+    begin
+      if ConfigDir[i] <> '/' then
+        ConfigDir:= ConfigDir + '/';
+    end;
+  writeln('Config directory = "' + ConfigDir + '"');
 
-  GetIniInt('DISPLAY','GLDOUBLEBUFFERED',i,1);
-  GlSettings.UseDoubleBuffered:= (i = 1);
-  if GlSettings.UseDoubleBuffered then
-    writeln('OpenGl doublebuffer activated')
-  else
-    writeln('OpenGl doublebuffer decativated');
-
-  GetIniInt('DISPLAY','DRO_FONT_SIZE',i,DroFontSize);
-  if (i <> DroFontSize) and (i > 10) and (i < 73) then
-    DroFontSize:= i;
-
-  GetIniInt('DISPLAY','FONT_SIZE',i,0);
-  if (i <> MainFontSize) and (i > 7) and (i < 16) then
-    MainFontSize:= i;
-
-  GetIniInt('DISPLAY','FONT_BOLD',i,0);
-  MainFontBold:= (i = 1);
-
-  GetIniStr('DISPLAY','BUTTON_SIZE',tmp,'');
-  tmp:= UpCase(Trim(tmp));
-  if Length(tmp) > 0 then
-   begin
-     if (tmp = 'MEDIUM') then
-       GlobalButtonSize:= ButtonSizeMed
-     else
-     if (tmp = 'SMALL') then
-       GlobalButtonSize:= ButtonSizeSmall;
-   end;
-
-  GetIniInt('DISPLAY','WINDOW_SIZE',Vars.WindowSize,0);
-  GetIniStr('DISPLAY','SCRIPT_DIR',Vars.ScriptDir,'');
-
-  HasScripts:= IniReadScripts;
-  if (Vars.ScriptDir = '') and HasScripts then
-    writeln('warning: scripts defined but scriptdir not set!');
-
-  GetIniStr('MOCCA','EDITOR_BEGIN_FILE',EditorBeginFile,'');
-  GetIniStr('MOCCA','EDIOTR_END_FILE',EditorEndFile,'');
-
-  GetIniInt('DISPLAY','GL',i,1);
-  ShowGlPreview:= Boolean(i = 1);
-
+  IniClose;
   Result:= True;
 end;
 

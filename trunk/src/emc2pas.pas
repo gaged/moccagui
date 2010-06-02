@@ -137,6 +137,9 @@ function AxisMaxHardLimit(Joint: integer): Double; cdecl; external; { motion.axi
 function AxisOverrideLimits(Joint: integer): Boolean; cdecl; external; { motion.axis.*.overrideLimits; }
 
 // traj related functions
+
+function trajAxes: integer; cdecl; external; { return emcStatus->motion.traj.axes; }
+function trajAxisMask: integer; cdecl; external; { return emcStatus->motion.traj.axis_mask; }
 function trajMode: integer;  cdecl; external; { motion.traj.scale}
 function trajlinearUnits: Double;  cdecl; external; { motion.traj.linearUnits}
 function trajangularUnits: Double; cdecl; external; { motion.traj.angularUnits}

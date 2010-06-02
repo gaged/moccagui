@@ -5,12 +5,12 @@ COMPILEPAS = fpc
 COMPILEMOC = fpc -S2cghi -CX -O1 -TLinux -XX -vewnhi -l -dLCL -dLCL$(WM)
 LINK = gcc -v
 
-EMCDIR = /home/gerd/emc2/emc2-2.3.4
+EMCDIR = /home/gtom/emc
 LAZDIR = /usr/lib/lazarus/0.9.28.2
 
-#INCLUDES = -I$(EMCDIR)/include
+INCLUDES = -I$(EMCDIR)/include
 #INCLUDES += -I$/usr/include/emc2
-INCLUDES = -I/usr/include/emc2
+#INCLUDES = -I/usr/include/emc2
 
 LCL = -Fu.
 LCL += -Fu../lib

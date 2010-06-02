@@ -7,18 +7,18 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls;
+  ComCtrls, MocLister, MocBtn;
 
 type
 
   { TRunClientForm }
   TRunClientForm = class(TForm)
-    LabelCaption: TLabel;
-    LabelInterpState: TLabel;
-    LB: TListBox;
+    MocLister: TMocLister;
     OpenDialog: TOpenDialog;
+    ScrollBar: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure Click(Sender: TObject);
+    procedure ScrollBarChange(Sender: TObject);
   private
     OldInterpState: integer;
     OldActiveLn: integer;
@@ -28,6 +28,7 @@ type
     OldIsOpen: Boolean;
     IsOpen: Boolean;
     function  HandleCommand(Cmd: integer): Boolean;
+    procedure UpdateScrollBar;
   public
     procedure ActivateSelf;
     procedure UpdateSelf;
@@ -47,7 +48,7 @@ var
 implementation
 
 uses
-  strutils,mocbtn,
+  strutils,
   mocglb,mocemc,
   emc2pas,
   simclient,
@@ -61,6 +62,10 @@ var
 begin
   IsOpen:= False;
   S:= '';
+
+  MocLister.Items.Clear;
+  ScrollBar.Enabled:= False;
+
   sendAuto;
   Emc.WaitDone;
   sendAbort;
@@ -79,8 +84,15 @@ begin
       Exit;
     end;
 
-  LB.Items.LoadFromFile(Vars.ProgramFile);
-  LB.ClearSelection;
+  Writeln('Loading file: ' + Vars.ProgramFile);
+
+  MocLister.Items.LoadFromFile(Vars.ProgramFile);
+  MocLister.SelectedItem:= 0;
+  ScrollBar.Enabled:= True;
+  ScrollBar.SetParams(0,0,MocLister.Items.Count-1);
+  MocLister.Invalidate;
+
+  // LB.ClearSelection;
   if State.Machine then
     begin
       Vars.StartLine:= -1; // verify
@@ -122,8 +134,6 @@ end;
 
 procedure TRunClientForm.FormCreate(Sender: TObject);
 begin
-  if MainFontSize > 0 then
-    Self.Font.Size:= MainFontSize;
   OpenDialog.InitialDir:= Vars.ProgramPrefix;
   {$ifdef DEBUG_INI}
   writeln(OpenDialog.InitialDir);
@@ -133,10 +143,7 @@ begin
   OldActiveLn:= -1;
   OldRunning:= True;
   IsOpen:= False;
-  LB.Enabled:= True;
-  LB.MultiSelect:= False;
-  LB.ExtendedSelect:= False;
-  LB.ClearSelection;
+  ScrollBar.Enabled:= False;
 end;
 
 procedure TRunClientForm.GotoLine;
@@ -147,11 +154,11 @@ var
   Cmd: string;
   SaveGlList: TGlList;
 begin
-  if (LB.Items.Count > 0) and (LB.ItemIndex > 0) then
+  if (MocLister.Items.Count > 0) and (MocLister.SelectedItem > 0) then
     begin
       StartLine:= 0;
       CurrentLine:= StartLine;
-      EndLine:= LB.ItemIndex;
+      EndLine:= MocLister.SelectedItem;
       InterpResult:= interpreter_exec(PChar('M2'));
       InterpResult:= 0;
       SaveGlList:= MyGlList;
@@ -159,7 +166,7 @@ begin
         MyGlList:= nil;
         while (CurrentLine < EndLine) and (InterpResult = 0) do
           begin
-            Cmd:= LB.Items[CurrentLine];
+            Cmd:= MocLister.Items[CurrentLine];
             if Cmd <> '' then
               InterpResult:= interpreter_exec(PChar(Cmd));
             Inc(CurrentLine);
@@ -191,7 +198,7 @@ begin
       Exit;
     end;
   if (Length(Vars.ProgramFile) < 1) or (not IsOpen) then Exit;
-  //Metric:= Pos('G21',ActiveGCodes) > 0;
+  // Metric:= Pos('G21',ActiveGCodes) > 0;
   Metric:= Vars.Metric;
   if Metric then
     UnitCode:= 'G21' else UnitCode:= 'G20';
@@ -221,11 +228,11 @@ begin
         Emc.TaskRun;
 
     cmRUNLINE :
-      if LB.ItemIndex < 0 then
+      if MocLister.SelectedItem < 0 then
         LastError:= 'Need a selected line'
       else
         begin
-          Vars.StartLine:= LB.ItemIndex + 2;
+          Vars.StartLine:= MocLister.SelectedItem + 2;
           Emc.TaskRun;
         end;
 
@@ -258,9 +265,19 @@ procedure TRunClientForm.ActivateSelf;
 begin
   if State.TaskMode <> TASKMODEAUTO then Exit;
   if not Visible then
-    Visible:= true;
+    Visible:= True;
   MapButtons;
   InitControls;
+end;
+
+procedure TRunClientForm.UpdateScrollBar;
+begin
+  if OldActiveLn <> ScrollBar.Position then
+    begin
+      if (OldActiveLn < 0) or (OldActiveLn > ScrollBar.Max) then
+        Exit;
+      ScrollBar.Position:= OldActiveLn;
+    end;
 end;
 
 procedure TRunClientForm.UpdateSelf;
@@ -311,6 +328,9 @@ begin
           SetButtonDown(cmPAUSE,InterpState = INTERP_PAUSED);
           SetButtonDown(cmRUN,Running);
 
+          if (InterpState = INTERP_IDLE) or (InterpState = INTERP_PAUSED) then
+            UpdateScrollBar;
+
           // disable the taskmode- buttons if not idle
           if OldRunning <> Running then
             begin
@@ -321,14 +341,14 @@ begin
               SetButtonEnabled(cmRELOAD,not Running);
               SetButtonEnabled(cmEDITOR,not Running);
               {$IFDEF LCLGTK2}  //looks better in Gtk2 :)
-              // LB.Enabled:= not Running;
-              if not Running then
-                LB.ClearSelection;
+              ScrollBar.Enabled:= not Running;
+              //if not Running then
+              //  LB.ClearSelection;
               {$ENDIF}
               OldRunning:= Running;
             end;
 
-          if InterpState = INTERP_IDLE then
+          {if InterpState = INTERP_IDLE then
             LabelInterpState.Caption:= 'Idle'
           else
           if InterpState = INTERP_PAUSED then
@@ -337,7 +357,7 @@ begin
           if InterpState = INTERP_READING then
             LabelInterpState.Caption:= 'Reading'
           else
-            LabelInterpState.Caption:= 'Waiting';
+            LabelInterpState.Caption:= 'Waiting';}
         OldInterpState:= InterpState;
       end;
     end;
@@ -345,7 +365,7 @@ end;
 
 procedure TRunClientForm.MapButtons;
 begin
-  SetButtonMap(@BtnDefRun,@BtnDefRun1,@Self.Click);
+  SetButtonMap(@BtnDefRun,@Self.Click);
 end;
 
 procedure TRunClientForm.InitControls;
@@ -391,13 +411,9 @@ begin
         Exit;
       if ActiveLn <> OldActiveLn then
         begin
-          if ActiveLn < LB.Items.Count then
-            begin
-              LB.ItemIndex:= ActiveLn;
-              if (ActiveLn > 0) then
-                LB.MakeCurrentVisible;
-            end;
+          MocLister.SelectedItem:= ActiveLn;
           OldActiveLn:= ActiveLn;
+          UpdateScrollBar;
         end;
     end;
 end;
@@ -410,6 +426,11 @@ begin
         if not Self.HandleCommand(Tag) then
           Emc.HandleCommand(Tag);
       end;
+end;
+
+procedure TRunClientForm.ScrollBarChange(Sender: TObject);
+begin
+  MocLister.SelectedItem:= ScrollBar.Position;
 end;
 
 initialization

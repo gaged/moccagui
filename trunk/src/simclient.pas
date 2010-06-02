@@ -18,22 +18,8 @@ type
 
   { TSimClientForm }
   TSimClientForm = class(TForm)
-    BtnCLog: TButton;
-    LabelZoom: TLabel;
-    LabelL1: TLabel;
     sbH: TScrollBar;
     sbV: TScrollBar;
-    BtnP: TSpeedButton;
-    BtnX: TSpeedButton;
-    BtnY: TSpeedButton;
-    BtnZ: TSpeedButton;
-    SbZoom: TScrollBar;
-    procedure BtnClearClick(Sender: TObject);
-    procedure BtnPClick(Sender: TObject);
-    procedure BtnXClick(Sender: TObject);
-    procedure BtnYClick(Sender: TObject);
-    procedure BtnZClick(Sender: TObject);
-    procedure BtnCLogClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -50,7 +36,6 @@ type
       Y: Integer);
     procedure OglMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure SbZoomChange(Sender: TObject);
   private
     {$IFNDEF OWNGL}
     ogl: TOpenGlControl;
@@ -63,13 +48,13 @@ type
     CenterX,CenterY,CenterZ: double;
     EyeX,EyeY,EyeZ: Double;
     ConeX,ConeY,ConeZ: Double;
-    LimX,LimY,LimZ: double;
+    ExtX,ExtY,ExtZ: double;
     L: TExtents;
     Offset: tlo;
     ConeL,LimitsL,CoordsL,ListL: gluInt;
     MouseX,MouseY: integer;
     Moving: Boolean;
-    Mode: integer;
+    FViewMode: integer;
     ToolRad,ToolLen: double;
     AreaInitialized: Boolean;
     ZoomMax: integer;
@@ -82,19 +67,21 @@ type
     procedure MakeList;
     procedure Pan(DX,DY: integer);
     procedure UpdateView;
-    procedure UpdateLabels;
     procedure MoveCone(X,Y,Z: Double);
     procedure ResetView;
     procedure RotateZ(Angle: integer);
     procedure RotateX(Angle: integer);
-    procedure ViewMode(AMode: integer);
+    procedure SetViewMode(AMode: integer);
   public
     procedure LoadFile(FileName,UnitCode,InitCode: string);
     procedure ReloadFile;
     procedure ClearFile;
     procedure SetTool(ToolNo: integer);
+    procedure Zoom(ADir: Integer);
+    procedure ClearPlot;
     procedure UpdateSelf;
     property  ShowLivePlot: Boolean read FShowLivePlot write FShowLivePlot;
+    property  ViewMode: integer read FViewMode write SetViewMode;
   end;
   
 var
@@ -109,6 +96,22 @@ uses
 const
   InitialRotX = -60; InitialRotY = 0; InitialRotZ = 0;
 
+procedure SetGlColor3(const c: TGlColorItem);
+begin
+  glColor3f(c.r,c.g,c.b);
+end;
+
+procedure SetGlColor4(const c: TGlColorItem);
+begin
+  glColor4f(c.r,c.g,c.b,c.a);
+end;
+
+procedure TSimClientForm.ClearPlot;
+begin
+  LoggerClear;
+  if Assigned(ogl) then
+    ogl.Invalidate;
+end;
 
 procedure TSimClientForm.LoadFile(FileName,UnitCode,InitCode: string);
 begin
@@ -145,17 +148,12 @@ begin
   Ogl.Invalidate;
  end;
 
-procedure TSimClientForm.UpdateLabels;
-begin
-  LabelZoom.Caption:= FloatToStr(EyeZ);
-end;
-
 procedure TSimClientForm.UpdateSelf;
 var
   ix,iy,iz: integer;
   X,Y,Z: double;
 begin
-  if Visible and FShowLivePlot and AreaInitialized then
+  if Visible and AreaInitialized then
     if Assigned(Joints) then
       begin
         ix:= Joints.AxisByChar('X');
@@ -180,8 +178,9 @@ end;
 
 procedure TSimClientForm.FormCreate(Sender: TObject);
 begin
+  // ReadStyle(Self);
   AreaInitialized:= False;
-  Mode:= 0;
+  FViewMode:= 0;
   ConeL:= 1;
   LimitsL:= 2;
   CoordsL:= 3;
@@ -199,7 +198,7 @@ begin
     RaiseError('could not create gllist');
   {$IFNDEF OWNGL}
   ogl:= TOpenGlControl.Create(Self);
-  ogl.AutoResizeViewPort:= true;
+  ogl.AutoResizeViewPort:= True;
   ogl.RGBA:= GlSettings.UseRGBA;
   ogl.DoubleBuffered:= GlSettings.UseDoubleBuffered;
   {$ELSE}
@@ -221,38 +220,6 @@ begin
   GetCanonOffset(Offset);
 end;
 
-procedure TSimClientForm.BtnPClick(Sender: TObject);
-begin
-  if AreaInitialized then ViewMode(0);
-end;
-
-procedure TSimClientForm.BtnClearClick(Sender: TObject);
-begin
-  LoggerClear;
-  if Assigned(ogl) then
-    ogl.Invalidate;
-end;
-
-procedure TSimClientForm.BtnXClick(Sender: TObject);
-begin
-  if AreaInitialized then ViewMode(1);
-end;
-
-procedure TSimClientForm.BtnYClick(Sender: TObject);
-begin
-  if AreaInitialized then ViewMode(2);
-end;
-
-procedure TSimClientForm.BtnZClick(Sender: TObject);
-begin
-  if AreaInitialized then ViewMode(3);
-end;
-
-procedure TSimClientForm.BtnCLogClick(Sender: TObject);
-begin
-
-end;
-
 procedure TSimClientForm.FormDestroy(Sender: TObject);
 begin
   if Assigned(ogl) then
@@ -262,18 +229,16 @@ begin
 end;
 
 procedure TSimClientForm.FormResize(Sender: TObject);
-var
-  CW,CH: integer;
 begin
   if (sbV.Height > 0) and (sbH.Width > 0) then
     Ogl.SetBounds(sbH.Left,sbV.Top,sbH.Width,sbV.Height);
+  OglResize(nil);
 end;
 
 procedure TSimClientForm.FormShow(Sender: TObject);
 begin
+  FormResize(nil);
   UpdateView;
-  AreaInitialized:= False;
-  Ogl.Invalidate;
 end;
 
 procedure TSimClientForm.RotateZ(Angle: integer);
@@ -294,35 +259,37 @@ begin
     end;
 end;
 
-procedure TSimClientForm.ViewMode(AMode: integer);
+procedure TSimClientForm.SetViewMode(AMode: integer);
 begin
   if (not Assigned(ogl)) or (not AreaInitialized) then
     Exit;
-  if AMode <> Mode then
+  if AMode <> FViewMode then
     begin
-      Mode:= AMode;
+      if (AMode < 0) or (AMode > 3) then
+        Exit;
+      FViewMode:= AMode;
       ResetView;
-      if Mode = 0 then
+      if AMode = 0 then
         begin
           rotationX:= -45;
           rotationY:= 0;
           rotationZ:= 0;
         end
       else
-      if Mode = 1 then
+      if AMode = 1 then
         begin
           rotationX:= 0;
           rotationY:= 0;
           rotationZ:= 0;
         end
       else
-      if Mode = 2 then
+      if AMode = 2 then
         begin
           rotationX:= -90;
           rotationY:= 0;
           rotationZ:= 0;
         end;
-      if Mode = 3 then
+      if AMode = 3 then
         begin
           rotationX:= -90;
           rotationY:= 0;
@@ -413,12 +380,19 @@ begin
   PanY:= 0;
 end;
 
-procedure TSimClientForm.SbZoomChange(Sender: TObject);
+procedure TSimClientForm.Zoom(ADir: integer);
 begin
   if Assigned(Ogl) and AreaInitialized then
     begin
-      EyeZ:= SbZoom.Position;
-      UpdateLabels;
+      if ADir < 0 then
+        EyeZ:= EyeZ / 0.8
+      else
+      if ADir > 0 then
+        EyeZ:= EyeZ * 0.8
+      else
+        EyeZ:= 1;
+      if EyeZ < 0.1 then EyeZ:= 0.1;
+      if EyeZ > ZoomMax then EyeZ:= ZoomMax;
       Ogl.Invalidate;
     end;
 end;
@@ -435,7 +409,8 @@ begin
   if (cx <> ConeX) or (cy <> ConeY) or (cz <> ConeZ) then
     begin
       ConeX:= cx; ConeY:= cy; ConeZ:= cz;
-      LoggerAddPoint(cx,cy,cz);
+      if FShowLivePlot then
+        LoggerAddPoint(cx,cy,cz);
       ogl.Invalidate;
     end;
 end;
@@ -444,9 +419,9 @@ procedure TSimClientForm.UpdateView;
 
   procedure CalcExtents;
   begin
-    LimX:= (L.maxX - L.minX);
-    LimY:= (L.maxY - L.minY);
-    LimZ:= (L.maxZ - L.minZ);
+    ExtX:= (L.maxX - L.minX);
+    ExtY:= (L.maxY - L.minY);
+    ExtZ:= (L.maxZ - L.minZ);
   end;
 
 begin
@@ -456,8 +431,9 @@ begin
   else
     L:= Vars.MLimits;
   CalcExtents;
-  if (LimX < 0.0001) and (LimY < 0.0001) and (LimZ < 0.0001) then
+  if (ExtX < 0.0001) and (ExtY < 0.0001) and (ExtZ < 0.0001) then
     begin
+      Writeln('Using Machine Limits...');
       L:= Vars.MLimits;
       CalcExtents;
     end;
@@ -467,34 +443,36 @@ end;
 
 procedure TSimClientForm.ResetView;
 begin
-  Centerx:= L.maxX - (limX / 2); //  + offset.x;
-  Centery:= L.maxY - (limY / 2); // + offset.y;
-  Centerz:= L.maxZ - (limZ / 2); // + offset.z;
-  //writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
-  //writeln(Format('%s %f %f %f',['Extents: ',LimX,LimY,LimZ]));
+  Centerx:= L.maxX - (ExtX / 2); //  + offset.x;
+  Centery:= L.maxY - (ExtY / 2); // + offset.y;
+  Centerz:= L.maxZ - (ExtZ / 2); // + offset.z;
+  writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
+  writeln(Format('%s %f %f %f',['Extents: ',ExtX,ExtY,ExtZ]));
   PanX:= 0; PanY:= 0; PanZ:= 0; EyeX:= 0; EyeY:= 0;
-  if Mode = 0 then
+  if FViewMode = 0 then
     begin
       RotationX:= InitialRotX;
       RotationY:= InitialRotY;
       RotationZ:= InitialRotZ;
-    end;
-  if Mode = 0 then
-    begin
-      if limX < limY then EyeZ:= (CenterZ + LimY) * 1.2
-        else EyeZ:= (CenterZ + LimX) * 1.2;
-      ZoomMax:= Round(EyeZ*10);
+      if ExtX < ExtY then
+        EyeZ:= (CenterZ + ExtY) * 1.2
+      else
+        EyeZ:= (CenterZ + ExtX) * 1.2;
+      ZoomMax:= Round(EyeZ*100);
     end
   else
     begin
-      if limX < limY then EyeZ:= CenterZ + Sqr(LimY)
-        else EyeZ:= CenterZ + Sqr(LimX);
-      ZoomMax:= Round(EyeZ*2);
+      if ExtX < ExtY then
+        EyeZ:= CenterZ + Sqr(ExtY)
+      else
+        EyeZ:= CenterZ + Sqr(ExtX);
+      ZoomMax:= Round(EyeZ*20);
     end;
   if ZoomMax > 10000 then ZoomMax:= 10000 else
     if ZoomMax < 10 then ZoomMax:= 10;
   if Round(EyeZ) < 1 then EyeZ:= 1;
-  SbZoom.SetParams(Round(EyeZ),1,ZoomMax,1);
+
+  // SbZoom.SetParams(Round(EyeZ),1,ZoomMax,1);
 
   if Ogl.MakeCurrent then
     begin
@@ -503,7 +481,6 @@ begin
       MakeLimits;
       MakeList;
     end;
-  UpdateLabels;
   Ogl.Invalidate;
 end;
 
@@ -524,7 +501,8 @@ begin
           if (P^.ltype = ltFeed) or (P^.ltype = ltArcFeed) then
             begin
               glBegin(GL_LINES);
-              glColor3f(0,0,1);
+              SetGlColor3(GlColors.feed);
+              // with GlSettings.clFeed do glColor3f(r,g,b);
               glVertex3f(P^.l1.x,P^.l1.y,P^.l1.z);
               glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
               glEnd();
@@ -539,7 +517,8 @@ begin
           if (P^.ltype = ltTraverse) or (P^.ltype = ltDwell) then
             begin
               glBegin(GL_LINES);
-              glColor3f(0.5,0.5,0.5);
+              SetGlColor3(GlColors.traverse);
+              //with GlSettings.clTraverse do glColor3f(r,g,b);
               glVertex3f(P^.l1.x,P^.l1.y,P^.l1.z);
               glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
               glEnd();
@@ -561,8 +540,14 @@ procedure InitGL;
 begin
   if GLInitialized then Exit;
   GLInitialized:= True;
-  glClearColor(1,1,1,1);
+  with GlColors.bg do
+    glClearColor(r,g,b,1);
   glClearDepth(1.0);
+
+  if Assigned(Ogl) then
+    if (ogl.Height > 0) and (ogl.Width > 0) then
+      glViewPort(0,0,ogl.Width,ogl.Height);
+
   EyeX:= 0;
   EyeY:= 0;
   MakeCone;
@@ -579,8 +564,8 @@ begin
     end;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity;
-  if Mode = 0 then
-    gluPerspective(60,ogl.Width/ogl.Height,0.1,LimZ * 100)
+  if FViewMode = 0 then
+    gluPerspective(60,ogl.Width/ogl.Height,0.1,ExtZ * 100)
   else
     begin
       k:= sqrt(abs(EyeZ));
@@ -608,7 +593,9 @@ begin
   glTranslatef(ConeX,ConeY,ConeZ);
   glCallList(ConeL);
   glPopMatrix;
-  LoggerCall;
+  SetGlColor3(GlColors.toolpath);
+  if FShowLivePlot then
+    LoggerCall;
   {$IFDEF LINESMOOTH}
   glDisable(GL_LINE_SMOOTH);
   {$ENDIF}
@@ -630,20 +617,20 @@ begin
         else
         if EyeZ < 1 then EyeZ:= 1;
         Handled:= True;
-        UpdateLabels;
-        SbZoom.Position:= Round(EyeZ);
+        // UpdateLabels;
+        // SbZoom.Position:= Round(EyeZ);
         ogl.Invalidate;
       end;
 end;
 
 procedure TSimClientForm.OglResize(Sender: TObject);
 begin
-  if Sender = nil then ;
-  if AreaInitialized then
-    if Assigned(ogl) then
-      if ogl.Visible then
-        if ogl.Height > 0 then
-          glViewport(0,0,ogl.Width,ogl.Height);
+  if Assigned(ogl) then
+    if ogl.Height > 0 then
+      if AreaInitialized then
+        glViewport(0,0,ogl.Width,ogl.Height);
+      //else
+      //  ogl.MakeCurrent;
 end;
 
 procedure TSimClientForm.SetTool(ToolNo: integer);
@@ -664,7 +651,8 @@ begin
   glNewList(ConeL, GL_COMPILE);
   glEnable (GL_BLEND);
   //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glColor4f(1,0.5,0,0.5);
+  SetGlColor4(GlColors.cone);
+  // glColor4f(r,g,b,0.5);
   gluCylinder(q,ToolRad/10,ToolRad,ToolLen,12,1);
   glBegin(GL_LINES);
     glVertex3f(0,0,0);
@@ -733,6 +721,7 @@ begin
     begin
       glEnable (GL_BLEND);
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      SetGlColor4(GlColors.table);
       glColor4f(0,0,0.9, 0.1);
       glBegin(GL_QUADS);
         glVertex3f(ML.minX,ML.minY,ML.minZ);
@@ -741,11 +730,13 @@ begin
         glVertex3f(ML.minX,ML.maxY,ML.minZ);
       glEnd();
 
-      glEnable(GL_LINE_STIPPLE);
-      glLineStipple(10, pattern);
+      if GlSettings.UseStipple then
+        begin
+          glEnable(GL_LINE_STIPPLE);
+          glLineStipple(10, pattern);
+        end;
       glBegin(GL_LINE_STRIP);
-        // glColor3f(0.7,0.1,0.1);
-        glColor3f(0.7,0.7,0.6);
+        SetGlColor3(GlColors.limits);
         glVertex3f(ML.minX,ML.minY,ML.minZ);
         glVertex3f(ML.maxX,ML.minY,ML.minZ);
         glVertex3f(ML.maxX,ML.maxY,ML.minZ);
@@ -765,7 +756,8 @@ begin
         glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
         glVertex3f(ML.maxX,ML.maxY,ML.minZ);
       glEnd;
-      glDisable(GL_LINE_STIPPLE);
+      if GlSettings.UseStipple then
+        glDisable(GL_LINE_STIPPLE);
     end;
   glEndList;
 end;

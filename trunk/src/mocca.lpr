@@ -12,23 +12,24 @@ uses
   {$IFNDEF OWNGL}
   OpenGlContext,
   {$ENDIF}
+  moccapkg,
   emc2pas,
-  mocbtn, SysUtils,
+  SysUtils,
   mocmain,
   mocglb, mocini, jogclient,
   runclient, mdiclient,
   simclient,
   offsetdlg, tooleditdlg, touchoff, toolchange, hal, emcint,
-  partaligndlg, scripts, logger, setup, emcmsgbox, lang;
+  partaligndlg, scripts, logger, setup, emcmsgbox, configreader;
 
 const
-  __LC_CTYPE    = 0;
+//  __LC_CTYPE    = 0;
   __LC_NUMERIC  = 1;
-  __LC_TIME     = 2;
-  __LC_COLLATE  = 3;
-  __LC_MONETARY = 4;
-  __LC_MESSAGES = 5;
-  __LC_ALL      = 6;
+//  __LC_TIME     = 2;
+//  __LC_COLLATE  = 3;
+//  __LC_MONETARY = 4;
+//  __LC_MESSAGES = 5;
+//  __LC_ALL      = 6;
 
 Const
   clib = 'c';
@@ -56,6 +57,11 @@ begin
       Exit;
     end;
   Vars.IniFile:= s;
+  if not ReadConfig(ConfigDir + 'config.xml') then
+    begin
+      writeln('Cannot find a config- file in "' + ConfigDir + '"');
+      Exit;
+    end;
   if (emcNmlInit <> 0) then
     begin
       writeln('Error: Cannot connect to emc');
@@ -71,7 +77,7 @@ begin
   Result:= 0;
   DoneHal;
   emcNmlQuit; // free NML buffers
-  iniClose;   // close inifile if open
+  // iniClose;   // close inifile if open
   DoneEmcEnvironment;
 end;
 

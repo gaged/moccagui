@@ -62,14 +62,15 @@ end;
 
 procedure TToolChgDlg.FormCreate(Sender: TObject);
 begin
-  {$IFDEF LCLGKT2}
+  ReadStyle(Self);
+  {{$IFDEF LCLGKT2}
   with LbTools.Font do
     begin
       Size:= 10;
       Name:= 'Courier 10 Pitch'
       Pitch:= fpFixed;
     end;
-  {$ENDIF}
+  {$ENDIF}}
   InitControls;
   Font.Pitch:= fpFixed;
 end;

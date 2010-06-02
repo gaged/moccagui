@@ -64,9 +64,9 @@ var
   i: integer;
 begin
   if Last < 2 then Exit;
-  glLineWidth(3);
+  // glLineWidth(3);
   glBegin(GL_LINE_STRIP);
-  glColor3f(0,1,0);
+  // glColor3f(0,1,0);
   i:= Current + 1;
   while i < Last do
     begin

@@ -5,42 +5,44 @@ unit jogclient;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, ComCtrls;
+  Classes, mocslider, mocbtn, mocled, SysUtils, LResources, Forms, Controls, Graphics,
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls;
 
 type
 
   { TJogClientForm }
 
   TJogClientForm = class(TForm)
-    BXMinus: TButton;
-    BBPlus: TButton;
-    BCMinus: TButton;
-    BCPlus: TButton;
-    BXPlus: TButton;
-    BYPlus: TButton;
-    BZPlus: TButton;
-    BYMinus: TButton;
-    BZMinus: TButton;
-    BAMinus: TButton;
-    BAPlus: TButton;
-    BBMinus: TButton;
+    BtnORideLimits: TMocButton;
+    BXMinus: TMocButton;
+    BBPlus: TMocButton;
+    BCMinus: TMocButton;
+    BCPlus: TMocButton;
+    BXPlus: TMocButton;
+    BYPlus: TMocButton;
+    BZPlus: TMocButton;
+    BYMinus: TMocButton;
+    BZMinus: TMocButton;
+    BAMinus: TMocButton;
+    BAPlus: TMocButton;
+    BBMinus: TMocButton;
     CbInc: TComboBox;
-    LabelL1: TLabel;
-    LabelCaption: TLabel;
-    LabelJogVel: TLabel;
-    LabelL2: TLabel;
-    sbJogVel: TScrollBar;
+    LabelJ1: TLabel;
+    LabelJ2: TLabel;
+    LedORide: TMocLed;
+    SliderJog: TSlider;
     procedure BJogMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure BJogMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure BtnORideLimitsClick(Sender: TObject);
+    procedure cbLimitsChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure CbIncClick(Sender: TObject);
-    procedure sbJogVelChange(Sender: TObject);
     procedure Click(Sender: TObject);
+    procedure SliderJogPositionChanged(Sender: TObject; NewPos: integer);
   private
     OldORideLimits: Boolean;
     OldJogVel: integer;
@@ -71,7 +73,7 @@ uses
   mocemc,
   mocglb,mocjoints,
   emc2pas,runclient,
-  mocbtn,scripts;
+  scripts;
 
 procedure TJogClientForm.HandleCommand(Cmd: integer);
 begin
@@ -92,7 +94,8 @@ begin
   else
     begin
       Emc.HandleCommand(Cmd);
-      ChangeButtons(0);  // Back to default
+      if not (Cmd in [cmREFX..cmREFC,cmTOUCHX..cmTOUCHC]) then
+        ChangeButtons(0);  // Back to default
     end;
   end;
 end;
@@ -172,13 +175,12 @@ end;
 
 procedure TJogClientForm.UpdateButtons;
 var
-  i,ii: integer;
+  i: integer;
 begin
-  for i:= 0 to NumSButtons - 1 do
+  for i:= 0 to NumButtons - 1 do
     begin
-      ii:= i + NumMButtons;
-      if Assigned(MocBtns[ii]) then
-        MocBtns[ii].Enabled:= State.Machine;
+      if Assigned(MocBtns[i]) then
+        MocBtns[i].Enabled:= State.Machine;
     end;
   SetButtonEnabled(cmSPMINUS,State.Machine);
   SetButtonEnabled(cmSPCW,State.Machine);
@@ -206,14 +208,14 @@ begin
 
   if OldORideLimits <> State.ORideLimits then
     begin
-      SetButtonDown(cmLIMITS,State.ORideLimits);
       OldORideLimits:= State.ORideLimits;
+      LedOride.IsOn:= OldORideLimits;
     end;
 
   if (OldJogVel <> State.ActJogVel) or (State.UnitsChanged) then
     begin
       i:= Round(Emc.ToLinearUnits(State.ActJogVel));
-      LabelJogVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
+      SliderJog.Caption:= IntToStr(i) + Vars.UnitVelStr;
       OldJogVel:= State.ActJogVel;
     end;
 
@@ -221,20 +223,21 @@ end;
 
 procedure TJogClientForm.MapButtons(MapAll: Boolean);
 var
-  S: PSButtonArray;
-  M: PMButtonArray;
+  V: PButtonArray;
+  //S: PSButtonArray;
+  //M: PMButtonArray;
 begin
-  S:= nil; M:= nil;
+  V:= nil; // M:= nil;
   case FCurrentMap of
-    0: S:= @BtnDefJogMain;
-    1: S:= @BtnDefJogRef;
-    2: S:= @BtnDefJogTouch;
-    3: S:= @BtnDefJogTool;
-    4: S:= @BtnDefScripts;
+    0: V:= @BtnDefJog;
+    1: V:= @BtnDefJogRef;
+    2: V:= @BtnDefJogTouch;
+    3: V:= @BtnDefJogTool;
+    4: V:= @BtnDefScripts;
   end;
-  if MapAll then
-    M:= @BtnDefJog;
-  SetButtonMap(M,S,@Self.Click);
+  //if MapAll then
+  //  M:= @BtnDefJog;
+  SetButtonMap(V,@Self.Click);
   UpdateButtons;
 end;
 
@@ -244,7 +247,7 @@ var
 begin
   SetButtonDown(cmJOG,True);
   SetButtonEnabled(cmREFALL,Vars.HomingOrderDefined);
-  sbJogVel.SetParams(State.ActJogVel,0,State.MaxJogVel,1);
+  SliderJog.SetParams(0,State.MaxJogVel,State.ActJogVel);
   CbInc.Items.Clear;
   for i:= 0 to Vars.JogIncMax do
     CbInc.Items.Add(Vars.JogIncrements[i].Text);
@@ -343,26 +346,26 @@ begin
     HandleCommand(Tag)
 end;
 
-procedure TJogClientForm.sbJogVelChange(Sender: TObject);
+procedure TJogClientForm.SliderJogPositionChanged(Sender: TObject; NewPos: integer);
 var
   Vel: integer;
 begin
   if UpdateLock then Exit;
-  Vel:= sbJogVel.Position;
+  Vel:= SliderJog.Position;
   if Vel <> State.ActJogVel then
     begin
       if Vel < 1 then Vel:= 1;
       State.ActJogVel:= Vel;
-      LabelJogVel.Caption:= IntToStr(State.ActJogVel)+ Vars.UnitVelStr;
+      SliderJog.Caption:= IntToStr(State.ActJogVel)+ Vars.UnitVelStr;
     end;
 end;
 
 procedure TJogClientForm.FormCreate(Sender: TObject);
 begin
+  // ReadStyle(Self);
   Self.Tag:= TASKMODEMANUAL;
   FCurrentMap:= 0;
   FBtnDown:= 0;
-  // LabelCaption.Caption:=
 end;
 
 procedure TJogClientForm.BJogMouseDown(Sender: TObject;
@@ -381,6 +384,16 @@ procedure TJogClientForm.BJogMouseUp(Sender: TObject; Button: TMouseButton;
 begin
   UpdateBtnState(False);
   FBtnDown:= 0;
+end;
+
+procedure TJogClientForm.BtnORideLimitsClick(Sender: TObject);
+begin
+  Emc.SetORideLimits(not State.ORideLimits);
+end;
+
+procedure TJogClientForm.cbLimitsChange(Sender: TObject);
+begin
+
 end;
 
 procedure TJogClientForm.FormKeyDown(Sender: TObject; var Key: Word;

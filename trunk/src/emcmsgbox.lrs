@@ -1,12 +1,12 @@
 { Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
 
 LazarusResources.Add('TMsgForm','FORMDATA',[
-  'TPF0'#8'TMsgForm'#7'MsgForm'#4'Left'#3#169#1#6'Height'#3#198#0#3'Top'#3'8'#1
+  'TPF0'#8'TMsgForm'#7'MsgForm'#4'Left'#3#207#1#6'Height'#3#198#0#3'Top'#3#168#1
   +#5'Width'#3#136#2#13'ActiveControl'#7#4'LBox'#11'BorderIcons'#11#12'biSystem'
   +'Menu'#0#11'BorderStyle'#7#8'bsDialog'#7'Caption'#6#9'Meldungen'#12'ClientHe'
-  +'ight'#3#198#0#11'ClientWidth'#3#136#2#10'KeyPreview'#9#10'OnKeyPress'#7#12
-  +'FormKeyPress'#8'Position'#7#14'poScreenCenter'#10'LCLVersion'#6#8'0.9.28.2'
-  +#0#8'TListBox'#4'LBox'#4'Left'#2#0#6'Height'#3#198#0#3'Top'#2#0#5'Width'#3
-  +#136#2#5'Align'#7#8'alClient'#10'ItemHeight'#2#0#7'OnClick'#7#9'LBoxClick'#8
-  +'TabOrder'#2#0#8'TopIndex'#2#255#0#0#0
+  +'ight'#3#198#0#11'ClientWidth'#3#136#2#10'KeyPreview'#9#8'OnCreate'#7#10'For'
+  +'mCreate'#10'OnKeyPress'#7#12'FormKeyPress'#8'Position'#7#14'poScreenCenter'
+  +#10'LCLVersion'#6#8'0.9.28.2'#0#8'TListBox'#4'LBox'#4'Left'#2#0#6'Height'#3
+  +#198#0#3'Top'#2#0#5'Width'#3#136#2#5'Align'#7#8'alClient'#10'ItemHeight'#2#0
+  +#7'OnClick'#7#9'LBoxClick'#8'TabOrder'#2#0#8'TopIndex'#2#255#0#0#0
 ]);

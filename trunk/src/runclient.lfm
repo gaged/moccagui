@@ -1,67 +1,49 @@
 object RunClientForm: TRunClientForm
-  Left = 442
-  Height = 335
-  Top = 600
-  Width = 516
+  Left = 542
+  Height = 454
+  Top = 240
+  Width = 560
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
-  ActiveControl = LB
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'RunClientForm'
-  ClientHeight = 335
-  ClientWidth = 516
+  ClientHeight = 454
+  ClientWidth = 560
+  Color = clMedGray
   OnCreate = FormCreate
   ParentFont = True
   LCLVersion = '0.9.28.2'
-  object LabelInterpState: TLabel
-    AnchorSideTop.Control = LabelCaption
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = LB
-    AnchorSideRight.Side = asrBottom
-    Left = 433
-    Height = 18
-    Top = 12
-    Width = 83
-    Anchors = [akTop, akRight]
-    AutoSize = False
-    Caption = 'LabelInterpState'
-    ParentColor = False
-  end
-  object LabelCaption: TLabel
+  object MocLister: TMocLister
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
-    Left = 4
-    Height = 34
-    Top = 4
-    Width = 115
-    BorderSpacing.Around = 4
-    Caption = 'Satzlauf'
-    Font.Height = -28
-    Font.Pitch = fpFixed
-    ParentColor = False
-    ParentFont = False
+    AnchorSideRight.Control = ScrollBar
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 454
+    Top = 0
+    Width = 545
+    SelectedItem = 0
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = clSilver
+    ActiveColor = clYellow
   end
-  object LB: TListBox
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = LabelCaption
-    AnchorSideTop.Side = asrBottom
+  object ScrollBar: TScrollBar
+    AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 0
-    Height = 293
-    Top = 42
-    Width = 516
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    ExtendedSelect = False
-    Font.Height = -16
-    Font.Name = 'Courier 10 Pitch'
-    ItemHeight = 0
-    ParentFont = False
+    Left = 545
+    Height = 454
+    Top = 0
+    Width = 15
+    Anchors = [akTop, akRight, akBottom]
+    Kind = sbVertical
+    PageSize = 0
     TabOrder = 0
-    TopIndex = -1
+    OnChange = ScrollBarChange
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.ngc'

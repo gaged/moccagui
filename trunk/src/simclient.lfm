@@ -1,129 +1,33 @@
 object SimClientForm: TSimClientForm
-  Left = 474
-  Height = 453
-  Top = 253
-  Width = 601
+  Left = 435
+  Height = 377
+  Top = 414
+  Width = 685
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
-  ActiveControl = BtnCLog
+  Align = alClient
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'SimClientForm'
-  ClientHeight = 453
-  ClientWidth = 601
+  ClientHeight = 377
+  ClientWidth = 685
+  Color = clMedGray
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
   ParentFont = True
   LCLVersion = '0.9.28.2'
-  object BtnP: TSpeedButton
-    AnchorSideLeft.Control = Owner
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 1
-    Height = 24
-    Top = 428
-    Width = 24
-    Anchors = [akLeft, akBottom]
-    BorderSpacing.Around = 1
-    Caption = 'P'
-    Color = clBtnFace
-    Down = True
-    GroupIndex = 1
-    NumGlyphs = 0
-    OnClick = BtnPClick
-  end
-  object BtnX: TSpeedButton
-    AnchorSideLeft.Control = BtnP
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 26
-    Height = 24
-    Top = 428
-    Width = 24
-    Anchors = [akLeft, akBottom]
-    BorderSpacing.Around = 1
-    Caption = 'D'
-    Color = clBtnFace
-    GroupIndex = 1
-    NumGlyphs = 0
-    OnClick = BtnXClick
-  end
-  object BtnY: TSpeedButton
-    AnchorSideLeft.Control = BtnX
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = BtnP
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 51
-    Height = 24
-    Top = 428
-    Width = 24
-    Anchors = [akLeft, akBottom]
-    BorderSpacing.Around = 1
-    Caption = 'V'
-    Color = clBtnFace
-    GroupIndex = 1
-    NumGlyphs = 0
-    OnClick = BtnYClick
-  end
-  object BtnZ: TSpeedButton
-    AnchorSideLeft.Control = BtnY
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 76
-    Height = 24
-    Top = 428
-    Width = 24
-    Anchors = [akLeft, akBottom]
-    BorderSpacing.Around = 1
-    Caption = 'R'
-    Color = clBtnFace
-    GroupIndex = 1
-    NumGlyphs = 0
-    OnClick = BtnZClick
-  end
-  object LabelZoom: TLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = LabelL1
-    AnchorSideRight.Control = SbZoom
-    Left = 353
-    Height = 18
-    Top = 431
-    Width = 77
-    Anchors = [akTop, akRight]
-    AutoSize = False
-    BorderSpacing.Left = 4
-    BorderSpacing.Right = 4
-    Caption = 'LabelZ'
-    ParentColor = False
-  end
-  object LabelL1: TLabel
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = BtnZ
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = LabelZoom
-    Left = 309
-    Height = 18
-    Top = 431
-    Width = 40
-    Anchors = [akTop, akRight]
-    Caption = 'Zoom'
-    ParentColor = False
-  end
   object sbH: TScrollBar
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = sbV
-    AnchorSideBottom.Control = BtnP
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
     Left = 0
     Height = 15
-    Top = 411
-    Width = 584
+    Top = 362
+    Width = 670
     Anchors = [akLeft, akRight, akBottom]
-    BorderSpacing.Bottom = 2
     LargeChange = 10
     Max = 90
     Min = -90
@@ -136,12 +40,11 @@ object SimClientForm: TSimClientForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = sbH
-    Left = 584
-    Height = 411
+    Left = 670
+    Height = 362
     Top = 0
     Width = 15
     Anchors = [akTop, akRight, akBottom]
-    BorderSpacing.Right = 2
     Kind = sbVertical
     LargeChange = 10
     Max = 90
@@ -149,37 +52,5 @@ object SimClientForm: TSimClientForm
     PageSize = 10
     TabOrder = 1
     OnChange = sbVChange
-  end
-  object SbZoom: TScrollBar
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = LabelZoom
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = sbH
-    AnchorSideRight.Side = asrBottom
-    Left = 440
-    Height = 15
-    Top = 433
-    Width = 144
-    Anchors = [akTop, akRight]
-    BorderSpacing.Left = 10
-    PageSize = 0
-    TabOrder = 2
-    OnChange = SbZoomChange
-  end
-  object BtnCLog: TButton
-    AnchorSideLeft.Control = BtnZ
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = BtnZ
-    AnchorSideBottom.Control = BtnZ
-    AnchorSideBottom.Side = asrBottom
-    Left = 108
-    Height = 24
-    Top = 428
-    Width = 70
-    Anchors = [akTop, akLeft, akBottom]
-    BorderSpacing.Left = 8
-    Caption = 'Löschen'
-    OnClick = BtnClearClick
-    TabOrder = 3
   end
 end

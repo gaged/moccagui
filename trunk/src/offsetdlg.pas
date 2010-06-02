@@ -65,6 +65,7 @@ end;
 
 procedure TOffsetsDlg.FormCreate(Sender: TObject);
 begin
+  ReadStyle(Self);
   VarFile:= TStringList.Create;
   VOffs:= -1;
   InitControls;
