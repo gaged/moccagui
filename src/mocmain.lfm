@@ -1,15 +1,20 @@
 object MainForm: TMainForm
-  Left = 159
-  Height = 709
-  Top = 40
-  Width = 1056
-  HorzScrollBar.Page = 985
-  VertScrollBar.Page = 792
-  ActiveControl = PanelLeft
+  Left = 233
+  Height = 724
+  Top = 96
+  Width = 967
+  HorzScrollBar.Page = 1278
+  HorzScrollBar.Range = 1272
+  HorzScrollBar.Visible = False
+  VertScrollBar.Page = 948
+  VertScrollBar.Range = 932
+  VertScrollBar.Visible = False
+  ActiveControl = PanelDRO
   Caption = 'Mocca'
-  ClientHeight = 709
-  ClientWidth = 1056
-  Color = clForm
+  ClientHeight = 724
+  ClientWidth = 967
+  Color = clGray
+  Font.Height = -13
   KeyPreview = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -17,662 +22,898 @@ object MainForm: TMainForm
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
   OnResize = FormResize
+  OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '0.9.28.2'
-  WindowState = wsMaximized
-  object LabelMsg: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = PanelMainBtns
-    AnchorSideBottom.Control = PanelSoftBtns
+  object BgImage: TImage
     Left = 0
-    Height = 18
-    Top = 643
-    Width = 988
-    Alignment = taCenter
-    Anchors = [akLeft, akRight, akBottom]
-    Caption = 'LabelMsg'
-    Font.Color = clRed
+    Height = 36
+    Top = 0
+    Width = 40
+  end
+  object Label9: TLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Side = asrBottom
+    Left = 264
+    Height = 24
+    Top = 468
+    Width = 101
+    Caption = 'Vorschub'
+    Font.Height = -19
     Font.Style = [fsBold]
-    Layout = tlCenter
     ParentColor = False
     ParentFont = False
-    OnClick = LabelMsgClick
   end
-  object PanelMainBtns: TPanel
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Owner
+  object Label10: TLabel
+    AnchorSideTop.Side = asrBottom
+    Left = 420
+    Height = 24
+    Top = 468
+    Width = 156
+    AutoSize = False
+    Caption = 'Max. Geschw.'
+    Font.Height = -19
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label11: TLabel
+    AnchorSideTop.Side = asrBottom
+    Left = 584
+    Height = 24
+    Top = 468
+    Width = 84
+    Caption = 'Spindel'
+    Font.Height = -19
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object LabelSpVel: TLabel
+    AnchorSideLeft.Side = asrCenter
+    AnchorSideTop.Side = asrCenter
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = PanelSoftBtns
-    Left = 988
-    Height = 661
-    Top = 0
-    Width = 68
-    Anchors = [akTop, akRight, akBottom]
+    AnchorSideBottom.Side = asrBottom
+    Left = 688
+    Height = 28
+    Top = 524
+    Width = 71
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'LabelSpVel'
+    Layout = tlCenter
+    ParentColor = False
+  end
+  object LabelTool: TLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Side = asrBottom
+    Left = 420
+    Height = 18
+    Top = 436
+    Width = 252
+    AutoSize = False
+    BorderSpacing.Left = 4
+    Caption = 'LabelTool'
+    Color = clWhite
+    Layout = tlCenter
+    ParentColor = False
+    Transparent = False
+  end
+  object LabelMCodes: TLabel
+    AnchorSideTop.Side = asrBottom
+    Left = 4
+    Height = 18
+    Top = 488
+    Width = 252
+    AutoSize = False
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 4
+    Caption = 'LabelMCodes'
+    Color = clWhite
+    Layout = tlCenter
+    ParentColor = False
+    Transparent = False
+  end
+  object LabelGCodes: TLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Side = asrBottom
+    Left = 4
+    Height = 52
+    Top = 512
+    Width = 252
+    AutoSize = False
+    Caption = 'LabelGCodes'
+    Color = clWhite
+    ParentColor = False
+    Transparent = False
+    WordWrap = True
+  end
+  object LabelS: TLabel
+    AnchorSideLeft.Side = asrBottom
+    Left = 192
+    Height = 18
+    Top = 468
+    Width = 64
+    AutoSize = False
+    BorderSpacing.Left = 4
+    Caption = 'LabelS'
+    Color = clWhite
+    Layout = tlCenter
+    ParentColor = False
+    Transparent = False
+  end
+  object LabelF: TLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideRight.Side = asrBottom
+    Left = 56
+    Height = 18
+    Top = 468
+    Width = 52
+    AutoSize = False
+    BorderSpacing.Left = 4
+    Caption = 'LabelF'
+    Color = clWhite
+    Layout = tlCenter
+    ParentColor = False
+    Transparent = False
+  end
+  object LabelToolNo: TLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideBottom.Side = asrBottom
+    Left = 680
+    Height = 18
+    Top = 436
+    Width = 79
+    AutoSize = False
+    BorderSpacing.Left = 4
+    Caption = '0'
+    Color = clWhite
+    Layout = tlCenter
+    ParentColor = False
+    Transparent = False
+  end
+  object LabelToolDia: TLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Side = asrBottom
+    Left = 764
+    Height = 18
+    Top = 436
+    Width = 80
+    AutoSize = False
+    BorderSpacing.Left = 4
+    BorderSpacing.Right = 4
+    Caption = '0'
+    Color = clWhite
+    Layout = tlCenter
+    ParentColor = False
+    Transparent = False
+  end
+  object LabelToolLen: TLabel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideBottom.Side = asrBottom
+    Left = 852
+    Height = 18
+    Top = 436
+    Width = 80
+    AutoSize = False
+    BorderSpacing.Left = 4
+    Caption = '0'
+    Color = clWhite
+    Layout = tlCenter
+    ParentColor = False
+    Transparent = False
+  end
+  object Label1: TLabel
+    Left = 420
+    Height = 24
+    Top = 388
+    Width = 108
+    Caption = 'Werkzeug'
+    Font.Height = -19
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 852
+    Height = 18
+    Top = 416
+    Width = 80
+    AutoSize = False
+    Caption = 'Länge'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 764
+    Height = 18
+    Top = 416
+    Width = 80
+    AutoSize = False
+    Caption = 'Durchm.'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 680
+    Height = 18
+    Top = 416
+    Width = 80
+    AutoSize = False
+    Caption = 'Wkz. Nr.'
+    ParentColor = False
+  end
+  object Label5: TLabel
+    Left = 420
+    Height = 18
+    Top = 416
+    Width = 252
+    AutoSize = False
+    Caption = 'Bezeichnung'
+    ParentColor = False
+  end
+  object Label6: TLabel
+    Left = 4
+    Height = 18
+    Top = 468
+    Width = 48
+    AutoSize = False
+    Caption = 'F-Wert'
+    ParentColor = False
+  end
+  object Label7: TLabel
+    Left = 144
+    Height = 18
+    Top = 468
+    Width = 44
+    AutoSize = False
+    Caption = 'S-Wert'
+    ParentColor = False
+  end
+  object LabelCurrentVel: TLabel
+    Left = 480
+    Height = 24
+    Top = 524
+    Width = 96
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = '0.000 m/s'
+    Color = clWhite
+    Layout = tlCenter
+    ParentColor = False
+    Transparent = False
+  end
+  object Label8: TLabel
+    Left = 420
+    Height = 22
+    Top = 526
+    Width = 52
+    AutoSize = False
+    Caption = 'Aktuell'
+    Layout = tlCenter
+    ParentColor = False
+  end
+  object LedModeMDI: TMocLed
+    Left = 564
+    Height = 12
+    Top = 616
+    Width = 128
+    LedColor = clYellow
+    IsOn = False
+    Color = clMedGray
+  end
+  object LedModeAuto: TMocLed
+    Left = 424
+    Height = 12
+    Top = 616
+    Width = 128
+    LedColor = clYellow
+    IsOn = False
+    Color = clMedGray
+  end
+  object LedMachineOn: TMocLed
+    Left = 148
+    Height = 12
+    Top = 616
+    Width = 140
+    LedColor = clLime
+    IsOn = False
+    Color = clRed
+  end
+  object LedModeManual: TMocLed
+    Left = 292
+    Height = 12
+    Top = 616
+    Width = 128
+    LedColor = clYellow
+    IsOn = False
+    Color = clMedGray
+  end
+  object ButtonModeRun: TMocButton
+    Left = 424
+    Height = 24
+    Top = 588
+    Width = 128
+    ShowClicks = True
+    Caption = 'Satzlauf'
+    Color = clBtnFace
+    OnClick = BtnRunClick
+  end
+  object ButtonModeMDI: TMocButton
+    Left = 564
+    Height = 24
+    Top = 588
+    Width = 128
+    ShowClicks = True
+    Caption = 'MDI'
+    Color = clBtnFace
+    OnClick = BtnMDIClick
+  end
+  object ButtonModeAuto: TMocButton
+    Left = 292
+    Height = 24
+    Top = 588
+    Width = 128
+    ShowClicks = True
+    Caption = 'Manuell'
+    Color = clBtnFace
+    OnClick = BtnManClick
+  end
+  object ButtonMachine: TMocButton
+    Left = 148
+    Height = 24
+    Top = 588
+    Width = 140
+    ShowClicks = True
+    Caption = 'Maschine'
+    Color = clBtnFace
+    OnClick = BtnMachineClick
+  end
+  object ButtonEStop: TMocButton
+    Left = 4
+    Height = 24
+    Top = 588
+    Width = 140
+    ShowClicks = True
+    Caption = 'Notaus'
+    Color = clBtnFace
+    OnClick = BtnEStopClick
+  end
+  object ButtonSpindle: TMocButton
+    Left = 600
+    Height = 28
+    Top = 524
+    Width = 82
+    ShowClicks = True
+    Caption = 'Spindel An'
+    Color = clBtnFace
+    OnClick = BtnSpClick
+  end
+  object ButtonSpCCW: TMocButton
+    Left = 832
+    Height = 28
+    Top = 492
+    Width = 102
+    ShowClicks = True
+    Caption = 'Rückw.'
+    Color = clBtnFace
+    OnClick = BtnSpDirClick
+  end
+  object ButtonCoolant: TMocButton
+    Left = 828
+    Height = 24
+    Top = 588
+    Width = 124
+    ShowClicks = True
+    Caption = 'Kühlung'
+    Color = clBtnFace
+    OnClick = ButtonCoolantClick
+  end
+  object ButtonMist: TMocButton
+    Left = 696
+    Height = 24
+    Top = 588
+    Width = 124
+    ShowClicks = True
+    Caption = 'Nebel'
+    Color = clBtnFace
+    OnClick = ButtonMistClick
+  end
+  object LedSpindleCCW: TMocLed
+    Left = 812
+    Height = 28
+    Top = 492
+    Width = 18
+    LedColor = clRed
+    IsOn = False
+    Color = clMedGray
+  end
+  object LedSpindleOn: TMocLed
+    Left = 584
+    Height = 28
+    Top = 524
+    Width = 14
+    LedColor = clYellow
+    IsOn = False
+    Color = clMedGray
+  end
+  object LedEStop: TMocLed
+    Left = 4
+    Height = 12
+    Top = 616
+    Width = 140
+    LedColor = clLime
+    IsOn = False
+    Color = clRed
+  end
+  object LedMist: TMocLed
+    Left = 696
+    Height = 12
+    Top = 616
+    Width = 124
+    LedColor = clYellow
+    IsOn = False
+    Color = clMedGray
+  end
+  object LedFlood: TMocLed
+    Left = 828
+    Height = 12
+    Top = 616
+    Width = 124
+    LedColor = clYellow
+    IsOn = False
+    Color = clMedGray
+  end
+  object LedShowMM: TMocLed
+    Left = 316
+    Height = 12
+    Top = 32
+    Width = 96
+    LedColor = clYellow
+    IsOn = False
+  end
+  object LedShowRelative: TMocLed
+    Left = 316
+    Height = 12
+    Top = 152
+    Width = 96
+    LedColor = clYellow
+    IsOn = False
+  end
+  object LedShowDtg: TMocLed
+    Left = 316
+    Height = 12
+    Top = 88
+    Width = 96
+    LedColor = clYellow
+    IsOn = False
+  end
+  object LedSpindlebrake: TMocLed
+    Left = 812
+    Height = 28
+    Top = 524
+    Width = 18
+    LedColor = clYellow
+    IsOn = False
+    Color = clMedGray
+  end
+  object ButtonUnitsMM: TMocButton
+    Left = 316
+    Height = 24
+    Top = 8
+    Width = 96
+    ShowClicks = True
+    Caption = 'mm'
+    Color = clBtnFace
+    OnClick = LabelUnitsClick
+  end
+  object ButtonShowRelative: TMocButton
+    Left = 316
+    Height = 24
+    Top = 128
+    Width = 96
+    ShowClicks = True
+    Caption = 'Masch.Koord'
+    Color = clBtnFace
+    OnClick = BtnCoordsClick
+  end
+  object ButtonShowDtg: TMocButton
+    Left = 316
+    Height = 24
+    Top = 64
+    Width = 96
+    ShowClicks = True
+    Caption = 'Restweg'
+    Color = clBtnFace
+    OnClick = ButtonShowDtgClick
+  end
+  object ButtonSpindlebrake: TMocButton
+    Left = 832
+    Height = 28
+    Top = 524
+    Width = 100
+    ShowClicks = True
+    Caption = 'Spindelbremse'
+    Color = clBtnFace
+    OnClick = BtnSpindleBrakeClick
+  end
+  object ButtonFeedReset: TMocButton
+    Left = 264
+    Height = 24
+    Top = 524
+    Width = 148
+    ShowClicks = True
+    Caption = 'Vorschb. 100%'
+    Color = clBtnFace
+    OnClick = BtnFeedRstClick
+  end
+  object ButtonSpindlePlus: TMocButton
+    Left = 768
+    Height = 28
+    Top = 492
+    Width = 32
+    ShowClicks = True
+    Caption = '+'
+    Color = clBtnFace
+    OnClick = ButtonSpindlePlusClick
+  end
+  object ButtonSpindleMinus: TMocButton
+    Left = 768
+    Height = 28
+    Top = 524
+    Width = 32
+    ShowClicks = True
+    Caption = '-'
+    Color = clBtnFace
+    OnClick = ButtonSpindleMinusClick
+  end
+  object OEMLabel1: TLabel
+    Left = 44
+    Height = 18
+    Top = 228
+    Width = 111
+    AutoSize = False
+    Caption = 'OEMLabel1'
+    ParentColor = False
+    Visible = False
+  end
+  object OEMLabel2: TLabel
+    Left = 44
+    Height = 18
+    Top = 252
+    Width = 111
+    AutoSize = False
+    Caption = 'Label12'
+    ParentColor = False
+    Visible = False
+  end
+  object OEMLabel3: TLabel
+    Left = 160
+    Height = 18
+    Top = 188
+    Width = 111
+    AutoSize = False
+    Caption = 'Label12'
+    ParentColor = False
+    Visible = False
+  end
+  object OEMLabel4: TLabel
+    Left = 160
+    Height = 18
+    Top = 208
+    Width = 111
+    AutoSize = False
+    Caption = 'Label12'
+    ParentColor = False
+    Visible = False
+  end
+  object OEMLabel5: TLabel
+    Left = 160
+    Height = 18
+    Top = 232
+    Width = 111
+    AutoSize = False
+    Caption = 'Label12'
+    ParentColor = False
+    Visible = False
+  end
+  object OEMLabel6: TLabel
+    Left = 160
+    Height = 18
+    Top = 256
+    Width = 111
+    AutoSize = False
+    Caption = 'Label12'
+    ParentColor = False
+    Visible = False
+  end
+  object OEMLabel7: TLabel
+    Left = 44
+    Height = 18
+    Top = 276
+    Width = 111
+    AutoSize = False
+    Caption = 'Label12'
+    ParentColor = False
+    Visible = False
+  end
+  object OEMLabel9: TLabel
+    Left = 44
+    Height = 18
+    Top = 188
+    Width = 111
+    AutoSize = False
+    Caption = 'Label12'
+    ParentColor = False
+    Visible = False
+  end
+  object OEMLabel10: TLabel
+    Left = 44
+    Height = 18
+    Top = 208
+    Width = 111
+    AutoSize = False
+    Caption = 'Label12'
+    ParentColor = False
+    Visible = False
+  end
+  object LedFOREnabled: TMocLed
+    Left = 264
+    Height = 12
+    Top = 552
+    Width = 144
+    LedColor = clYellow
+    IsOn = False
+  end
+  object LedSOREnabled: TMocLed
+    Left = 748
+    Height = 28
+    Top = 492
+    Width = 11
+    LedColor = clYellow
+    IsOn = False
+  end
+  object ButtonView0: TMocButton
+    Left = 420
+    Height = 34
+    Top = 344
+    Width = 34
+    Glyph.Data = {
+      B6020000424DB602000000000000A60000002800000016000000160000000100
+      08000000000010020000130B0000130B00001C0000001C000000000000006642
+      0200976C29009C722F00A0793600A47E3C00A9854400AA884700AD8C4B00B292
+      5100B7985800BB9F5F00B99B6100BCA16700C0A56500C4AB6C00C8B17200CDB8
+      7900D1BD8100D0BC8900D2C08900D7C69100DFCF9600DBCB9800E0D09B00E1D3
+      A200E6D9A900E9DDAE0000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000010101010100
+      0000000000000000000000000000000000010302020202010000000000000000
+      0000000000000000000105030303030100000000000000000000000000000000
+      0001070404040401000000000000000000000000000000000001080505050501
+      0000000000000000000000000001010101010806060606010101010100000000
+      00000000010C0808080708080808080808080808010000000000000001130909
+      090909090909090909090909010000000000000001170B0A0A0A0A0A0A0A0A0A
+      0A0A0A0A010000000000000001190B0B0B0C0B0B0B0B0B0B0B0B0B0B01000000
+      00000000011A1A1A1A17140D0D0E0E101516130C010000000000000000010101
+      0101160F0F0F0F01010101010000000000000000000000000001191010101001
+      0000000000000000000000000000000000011A11111111010000000000000000
+      000000000000000000011A141112120100000000000000000000000000000000
+      00011B1919181601000000000000000000000000000000000000010101010100
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000
+    }
+    ShowClicks = True
+    Caption = 'P'
+    Color = clBtnFace
+    OnClick = ButtonView0Click
+  end
+  object ButtonView1: TMocButton
+    Left = 460
+    Height = 34
+    Top = 344
+    Width = 34
+    ShowClicks = True
+    Caption = 'D'
+    Color = clBtnFace
+    OnClick = ButtonView1Click
+  end
+  object ButtonView2: TMocButton
+    Left = 500
+    Height = 34
+    Top = 344
+    Width = 34
+    ShowClicks = True
+    Caption = 'V'
+    Color = clBtnFace
+    OnClick = ButtonView2Click
+  end
+  object ButtonView3: TMocButton
+    Left = 540
+    Height = 34
+    Top = 344
+    Width = 34
+    ShowClicks = True
+    Caption = 'R'
+    Color = clBtnFace
+    OnClick = ButtonView3Click
+  end
+  object ButtonViewPlus: TMocButton
+    Left = 628
+    Height = 34
+    Top = 344
+    Width = 34
+    ShowClicks = True
+    Caption = '+'
+    Color = clBtnFace
+    OnClick = ButtonViewPlusClick
+  end
+  object ButtonViewMinus: TMocButton
+    Left = 668
+    Height = 34
+    Top = 344
+    Width = 34
+    ShowClicks = True
+    Caption = '-'
+    Color = clBtnFace
+    OnClick = ButtonViewMinusClick
+  end
+  object ButtonToolPath: TMocButton
+    Left = 782
+    Height = 24
+    Top = 344
+    Width = 84
+    ShowClicks = True
+    Caption = 'Wkz Pfad'
+    Color = clBtnFace
+    OnClick = ButtonToolPathClick
+  end
+  object ButtonClear: TMocButton
+    Left = 870
+    Height = 34
+    Top = 344
+    Width = 84
+    ShowClicks = True
+    Caption = 'Löschen'
+    Color = clBtnFace
+    OnClick = ButtonClearClick
+  end
+  object MocLedToolpath: TMocLed
+    Left = 782
+    Height = 10
+    Top = 368
+    Width = 84
+    LedColor = clRed
+    IsOn = False
+  end
+  object PanelDRO: TPanel
+    Left = 8
+    Height = 164
+    Top = 8
+    Width = 272
     BevelOuter = bvNone
+    Color = clSilver
+    Font.Color = clBlue
+    Font.Height = -40
+    Font.Name = 'Monospace'
+    Font.Pitch = fpFixed
+    FullRepaint = False
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 4
+  end
+  object PanelButtons: TPanel
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Side = asrBottom
+    Left = 4
+    Height = 56
+    Top = 660
+    Width = 952
+    BevelOuter = bvNone
+    BevelWidth = 5
+    BorderStyle = bsSingle
     FullRepaint = False
     TabOrder = 0
-    OnResize = PanelMainBtnsResize
+    OnClick = PanelButtonsClick
+    OnResize = PanelButtonsResize
   end
-  object PanelSoftBtns: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = Owner
+  object PanelMaster: TPanel
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 0
-    Height = 48
-    Top = 661
-    Width = 1056
-    Anchors = [akLeft, akRight, akBottom]
+    Left = 4
+    Height = 284
+    Top = 176
+    Width = 408
     BevelOuter = bvNone
+    Color = clSilver
     FullRepaint = False
+    ParentColor = False
     TabOrder = 1
-    OnResize = PanelSoftBtnsResize
+    OnResize = PanelMasterResize
   end
-  object PanelLeft: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = PanelMainBtns
-    AnchorSideBottom.Control = PanelInf
-    Left = 0
-    Height = 537
-    Top = 0
-    Width = 480
-    Anchors = [akTop, akLeft, akBottom]
+  object PanelPreview: TPanel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideRight.Side = asrBottom
+    Left = 420
+    Height = 328
+    Top = 8
+    Width = 532
     BevelOuter = bvNone
-    ClientHeight = 537
-    ClientWidth = 480
-    FullRepaint = False
+    Color = clMedGray
+    ParentColor = False
     TabOrder = 2
-    OnResize = PanelLeftResize
-    object PanelDRO: TPanel
-      AnchorSideLeft.Control = PanelLeft
-      AnchorSideBottom.Control = Panel1
-      Left = 0
-      Height = 172
-      Top = 333
-      Width = 368
-      Anchors = [akLeft, akBottom]
-      BevelOuter = bvNone
-      BorderStyle = bsSingle
-      Font.Color = clBlue
-      Font.Height = -43
-      Font.Name = 'Courier 10 Pitch'
-      Font.Pitch = fpFixed
-      Font.Style = [fsBold]
-      FullRepaint = False
-      ParentFont = False
-      TabOrder = 0
-      OnResize = PanelDROResize
-    end
-    object Panel1: TPanel
-      AnchorSideLeft.Control = PanelLeft
-      AnchorSideRight.Control = PanelLeft
-      AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = PanelLeft
-      AnchorSideBottom.Side = asrBottom
-      Left = 0
-      Height = 32
-      Top = 505
-      Width = 480
-      Anchors = [akLeft, akRight, akBottom]
-      BevelOuter = bvNone
-      BorderStyle = bsSingle
-      ClientHeight = 28
-      ClientWidth = 476
-      Color = clWhite
-      ParentColor = False
-      TabOrder = 1
-      object LabelV0: TLabel
-        AnchorSideLeft.Control = Panel1
-        Left = 2
-        Height = 18
-        Top = 7
-        Width = 28
-        BorderSpacing.Left = 2
-        Caption = 'DTG'
-        Color = clWhite
-        ParentColor = False
-        Transparent = False
-      end
-      object LabelDTG: TLabel
-        Left = 39
-        Height = 18
-        Top = 7
-        Width = 104
-        Alignment = taRightJustify
-        AutoSize = False
-        Caption = 'LabelDTG'
-        ParentColor = False
-      end
-      object LabelV1: TLabel
-        Left = 168
-        Height = 18
-        Top = 7
-        Width = 53
-        Caption = 'Geschw.'
-        ParentColor = False
-      end
-      object LabelVel: TLabel
-        Left = 239
-        Height = 18
-        Top = 7
-        Width = 117
-        AutoSize = False
-        Caption = 'LabelVel'
-        ParentColor = False
-      end
-    end
+    OnResize = PanelPreviewResize
   end
-  object PanelRight: TPanel
-    AnchorSideLeft.Control = PanelLeft
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = PanelMainBtns
-    AnchorSideBottom.Control = PanelInf
-    Left = 480
-    Height = 537
-    Top = 0
-    Width = 508
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BevelOuter = bvNone
+  object PanelMsg: TPanel
+    AnchorSideRight.Side = asrBottom
+    Left = 4
+    Height = 24
+    Top = 632
+    Width = 948
+    ClientHeight = 24
+    ClientWidth = 948
+    Color = clMedGray
+    ParentColor = False
     TabOrder = 3
-    OnClick = PanelRightClick
-    OnResize = PanelRightResize
-  end
-  object PanelInf: TPanel
-    AnchorSideLeft.Control = PanelLeft
-    AnchorSideBottom.Control = LabelMsg
-    Left = 0
-    Height = 106
-    Top = 537
-    Width = 480
-    Anchors = [akLeft, akBottom]
-    BevelOuter = bvNone
-    BorderStyle = bsSingle
-    ClientHeight = 102
-    ClientWidth = 476
-    FullRepaint = False
-    TabOrder = 4
-    object Bevel6: TBevel
-      AnchorSideTop.Control = Bevel1
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = PanelInf
+    object LabelMsg: TLabel
+      AnchorSideLeft.Control = PanelMsg
+      AnchorSideTop.Control = PanelMsg
+      AnchorSideRight.Control = PanelMsg
       AnchorSideRight.Side = asrBottom
-      Left = 352
-      Height = 28
-      Top = 28
-      Width = 122
-      Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Left = 2
-      BorderSpacing.Right = 2
-    end
-    object Bevel5: TBevel
-      AnchorSideLeft.Control = Bevel4
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Bevel1
-      AnchorSideTop.Side = asrBottom
-      Left = 142
-      Height = 28
-      Top = 28
-      Width = 208
-      BorderSpacing.Left = 2
-    end
-    object Bevel4: TBevel
-      AnchorSideLeft.Control = PanelInf
-      AnchorSideTop.Control = Bevel1
-      AnchorSideTop.Side = asrBottom
-      Left = 2
-      Height = 28
-      Top = 28
-      Width = 138
-      BorderSpacing.Left = 2
-    end
-    object Bevel1: TBevel
-      AnchorSideLeft.Control = PanelInf
-      AnchorSideTop.Control = PanelInf
-      Left = 2
-      Height = 28
-      Top = 0
-      Width = 330
-      BorderSpacing.Left = 2
-    end
-    object LabelTool: TLabel
-      AnchorSideLeft.Control = LabelL0
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Bevel1
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Bevel1
-      AnchorSideRight.Side = asrBottom
-      Left = 72
-      Height = 18
-      Top = 5
-      Width = 256
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Left = 4
-      BorderSpacing.Right = 4
-      Caption = 'LabelTool'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-    end
-    object LabelUnits: TLabel
-      AnchorSideLeft.Control = LabelL1
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Bevel4
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Bevel4
-      AnchorSideRight.Side = asrBottom
-      Left = 74
-      Height = 18
-      Top = 33
-      Width = 62
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Right = 4
-      Caption = 'LabelUnits'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-      OnClick = LabelUnitsClick
-    end
-    object LabelMCodes: TLabel
-      AnchorSideLeft.Control = PanelInf
-      AnchorSideTop.Control = Bevel6
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = PanelInf
-      AnchorSideRight.Side = asrBottom
-      Left = 4
-      Height = 18
-      Top = 60
-      Width = 468
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Left = 4
-      BorderSpacing.Top = 4
-      BorderSpacing.Right = 4
-      Caption = 'LabelMCodes'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-    end
-    object LabelGCodes: TLabel
-      AnchorSideLeft.Control = PanelInf
-      AnchorSideTop.Control = LabelMCodes
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = PanelInf
-      AnchorSideRight.Side = asrBottom
-      Left = 4
-      Height = 18
-      Top = 82
-      Width = 468
-      Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Left = 4
-      BorderSpacing.Top = 4
-      BorderSpacing.Right = 4
-      Caption = 'LabelGCodes'
-      Color = clForm
-      ParentColor = False
-      Transparent = False
-      WordWrap = True
-    end
-    object LabelS: TLabel
-      AnchorSideLeft.Control = Bevel2
-      AnchorSideTop.Control = Bevel2
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Bevel2
-      AnchorSideRight.Side = asrBottom
-      Left = 338
-      Height = 18
-      Top = 5
-      Width = 84
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Left = 4
-      BorderSpacing.Right = 4
-      Caption = 'LabelS'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-    end
-    object LabelF: TLabel
-      AnchorSideLeft.Control = Bevel3
-      AnchorSideTop.Control = Bevel3
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Bevel3
-      AnchorSideRight.Side = asrBottom
-      Left = 430
-      Height = 18
-      Top = 5
-      Width = 42
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Left = 2
-      BorderSpacing.Right = 2
-      Caption = 'LabelF'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-    end
-    object LabelCoords: TLabel
-      AnchorSideLeft.Control = LabelL2
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Bevel5
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Bevel5
-      AnchorSideRight.Side = asrBottom
-      Left = 235
-      Height = 18
-      Top = 33
-      Width = 111
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Right = 4
-      Caption = 'LabelCoords'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-      OnClick = LabelCoordsClick
-    end
-    object LabelView: TLabel
-      AnchorSideLeft.Control = Bevel6
-      AnchorSideTop.Control = Bevel6
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Bevel6
-      AnchorSideRight.Side = asrBottom
-      Left = 356
-      Height = 18
-      Top = 33
-      Width = 114
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Left = 4
-      BorderSpacing.Right = 4
-      Caption = 'LabelView'
-      Color = clForm
-      Layout = tlCenter
-      ParentColor = False
-      Transparent = False
-      OnClick = LabelViewClick
-    end
-    object LabelL1: TLabel
-      AnchorSideLeft.Control = Bevel4
-      AnchorSideTop.Control = Bevel4
-      AnchorSideTop.Side = asrCenter
-      Left = 6
-      Height = 18
-      Top = 33
-      Width = 68
-      BorderSpacing.Left = 4
-      Caption = 'Einheiten: '
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object LabelL2: TLabel
-      AnchorSideLeft.Control = Bevel5
-      AnchorSideTop.Control = Bevel5
-      AnchorSideTop.Side = asrCenter
-      Left = 146
-      Height = 18
-      Top = 33
-      Width = 85
-      BorderSpacing.Left = 4
-      BorderSpacing.Right = 4
-      Caption = 'Koordinaten: '
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object LabelL0: TLabel
-      AnchorSideLeft.Control = Bevel1
-      AnchorSideTop.Control = Bevel1
-      AnchorSideTop.Side = asrCenter
-      Left = 6
-      Height = 18
-      Top = 5
-      Width = 62
-      BorderSpacing.Left = 4
-      Caption = 'Werkzeug'
-      ParentColor = False
-    end
-    object Bevel2: TBevel
-      AnchorSideLeft.Control = Bevel1
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = PanelInf
-      Left = 334
-      Height = 28
-      Top = 0
-      Width = 92
-      BorderSpacing.Left = 2
-    end
-    object Bevel3: TBevel
-      AnchorSideLeft.Control = Bevel2
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = PanelInf
-      AnchorSideRight.Control = PanelInf
-      AnchorSideRight.Side = asrBottom
-      Left = 428
-      Height = 28
-      Top = 0
-      Width = 46
-      Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Left = 2
-      BorderSpacing.Right = 2
-    end
-  end
-  object PanelBars: TPanel
-    AnchorSideLeft.Control = PanelInf
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = PanelInf
-    AnchorSideRight.Control = PanelMainBtns
-    AnchorSideBottom.Control = LabelMsg
-    Left = 480
-    Height = 106
-    Top = 537
-    Width = 508
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BevelOuter = bvNone
-    BorderStyle = bsSingle
-    ClientHeight = 104
-    ClientWidth = 506
-    TabOrder = 5
-    object LabelR1: TLabel
-      AnchorSideLeft.Control = PanelBars
-      AnchorSideTop.Control = LabelR3
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = LabelR2
-      AnchorSideRight.Side = asrBottom
-      Left = 4
-      Height = 18
-      Top = 61
-      Width = 154
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Left = 4
-      BorderSpacing.Top = 4
-      Caption = 'Max. Geschwindigkeit'
-      ParentColor = False
-    end
-    object LabelR2: TLabel
-      AnchorSideLeft.Control = PanelBars
-      AnchorSideTop.Control = LabelR1
-      AnchorSideTop.Side = asrBottom
-      Left = 4
-      Height = 18
-      Top = 83
-      Width = 154
-      BorderSpacing.Left = 4
-      BorderSpacing.Top = 4
-      Caption = 'Vorschubübersteuerung'
-      ParentColor = False
-    end
-    object LabelMaxVel: TLabel
-      AnchorSideTop.Control = LabelR1
-      AnchorSideRight.Control = PanelBars
-      AnchorSideRight.Side = asrBottom
-      Left = 383
-      Height = 18
-      Top = 61
-      Width = 119
-      Anchors = [akTop, akRight]
-      AutoSize = False
-      BorderSpacing.Right = 4
-      Caption = 'LabelMaxVel'
-      ParentColor = False
-    end
-    object LabelFeed: TLabel
-      AnchorSideTop.Control = LabelR2
-      AnchorSideRight.Control = PanelBars
-      AnchorSideRight.Side = asrBottom
-      Left = 383
-      Height = 18
-      Top = 83
-      Width = 119
-      Anchors = [akTop, akRight]
-      AutoSize = False
-      BorderSpacing.Right = 4
-      Caption = 'LabelFeed'
-      ParentColor = False
-    end
-    object LabelSpVel: TLabel
-      AnchorSideLeft.Control = ShAtSpeed
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = ShAtSpeed
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = PanelMsg
       AnchorSideBottom.Side = asrBottom
-      Left = 187
-      Height = 18
-      Top = 7
-      Width = 72
+      Left = 6
+      Height = 12
+      Top = 6
+      Width = 936
       Alignment = taCenter
-      BorderSpacing.Left = 4
-      BorderSpacing.Around = 2
-      Caption = 'LabelSpVel'
-      Color = clForm
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      AutoSize = False
+      BorderSpacing.Around = 6
+      Caption = 'LabelMsg'
+      Font.Color = clRed
+      Font.Style = [fsBold]
       Layout = tlCenter
       ParentColor = False
-      Transparent = False
-    end
-    object ShAtSpeed: TShape
-      AnchorSideLeft.Control = SbFeed
-      AnchorSideTop.Control = LabelR0
-      AnchorSideTop.Side = asrCenter
-      Left = 162
-      Height = 14
-      Top = 9
-      Width = 19
-      BorderSpacing.Right = 2
-      Brush.Color = clRed
-      Shape = stRoundSquare
-    end
-    object LabelR0: TLabel
-      AnchorSideLeft.Control = PanelBars
-      AnchorSideTop.Side = asrCenter
-      Left = 4
-      Height = 18
-      Top = 7
-      Width = 155
-      BorderSpacing.Left = 4
-      Caption = 'Spindelgeschwindigkeit'
-      ParentColor = False
-    end
-    object LabelSpORide: TLabel
-      AnchorSideLeft.Control = SbSpORide
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = SbSpORide
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = PanelBars
-      AnchorSideRight.Side = asrBottom
-      Left = 383
-      Height = 18
-      Top = 39
-      Width = 119
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Left = 4
-      BorderSpacing.Right = 4
-      Caption = 'LabelSpORide'
-      ParentColor = False
-    end
-    object LabelR3: TLabel
-      AnchorSideLeft.Control = PanelBars
-      AnchorSideTop.Side = asrBottom
-      Left = 4
-      Height = 18
-      Top = 39
-      Width = 143
-      BorderSpacing.Left = 4
-      Caption = 'Spindelübersteuerung'
-      ParentColor = False
-    end
-    object SbVel: TScrollBar
-      AnchorSideLeft.Control = LabelR1
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabelR1
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = LabelMaxVel
-      Left = 162
-      Height = 18
-      Top = 61
-      Width = 217
-      Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Left = 4
-      BorderSpacing.Right = 4
-      PageSize = 0
-      TabOrder = 0
-      OnChange = sbVelChange
-    end
-    object SbFeed: TScrollBar
-      AnchorSideLeft.Control = LabelR2
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabelR2
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = LabelFeed
-      Left = 162
-      Height = 18
-      Top = 83
-      Width = 217
-      Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Left = 4
-      BorderSpacing.Right = 4
-      PageSize = 0
-      TabOrder = 1
-      OnChange = sbFeedChange
-    end
-    object SbSpORide: TScrollBar
-      AnchorSideLeft.Control = SbFeed
-      AnchorSideTop.Control = LabelR3
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = SbFeed
-      AnchorSideRight.Side = asrBottom
-      Left = 162
-      Height = 18
-      Top = 39
-      Width = 217
-      Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Top = 4
-      PageSize = 0
-      TabOrder = 2
-      OnChange = SbSpORideChange
+      ParentFont = False
+      OnClick = LabelMsgClick
     end
   end
-  object ImageList: TImageList
-    DrawingStyle = dsTransparent
-    Height = 40
-    ShareImages = True
-    Width = 40
-    left = 24
-    top = 32
+  object SliderSOR: TSlider
+    Left = 584
+    Height = 28
+    Top = 492
+    Width = 160
+    Position = 0
+    BarColor = clYellow
+    Vertical = False
+    Smooth = True
+    PositionChanged = SliderSORPositionChanged
+  end
+  object SliderVel: TSlider
+    Left = 420
+    Height = 28
+    Top = 492
+    Width = 156
+    Position = 0
+    BarColor = clYellow
+    Vertical = False
+    Smooth = False
+    PositionChanged = SliderVelPositionChanged
+  end
+  object SliderFeed: TSlider
+    Left = 264
+    Height = 28
+    Top = 492
+    Width = 148
+    Position = 0
+    BarColor = clYellow
+    Vertical = False
+    Smooth = True
+    PositionChanged = SliderFeedPositionChanged
+    Caption = '100 %'
   end
   object Timer: TTimer
-    left = 56
-    top = 32
+    left = 688
+    top = 24
   end
 end

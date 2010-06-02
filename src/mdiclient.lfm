@@ -1,7 +1,7 @@
 object MDIClientForm: TMDIClientForm
-  Left = 532
+  Left = 742
   Height = 300
-  Top = 363
+  Top = 320
   Width = 400
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
@@ -18,51 +18,33 @@ object MDIClientForm: TMDIClientForm
   OnKeyDown = FormKeyDown
   ParentFont = True
   LCLVersion = '0.9.28.2'
-  object LabelCaption: TLabel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    Left = 4
-    Height = 34
-    Top = 4
-    Width = 166
-    BorderSpacing.Around = 4
-    Caption = 'MDI Betrieb'
-    Font.Height = -28
-    Font.Pitch = fpFixed
-    ParentColor = False
-    ParentFont = False
-  end
   object MDIHistListBox: TListBox
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = LabelCaption
-    AnchorSideTop.Side = asrBottom
+    AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = MDIEdit
-    Left = 4
-    Height = 225
-    Top = 42
-    Width = 392
+    Left = 0
+    Height = 273
+    Top = 0
+    Width = 400
     Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Around = 4
     ItemHeight = 0
     OnClick = MDIHistListBoxClick
     TabOrder = 0
     TopIndex = -1
   end
   object MDIEdit: TEdit
-    AnchorSideLeft.Control = MDIHistListBox
-    AnchorSideRight.Control = MDIHistListBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 4
+    Left = 0
     Height = 27
-    Top = 271
-    Width = 392
+    Top = 273
+    Width = 400
     Anchors = [akLeft, akRight, akBottom]
-    BorderSpacing.Top = 4
-    BorderSpacing.Bottom = 2
     TabOrder = 1
   end
 end

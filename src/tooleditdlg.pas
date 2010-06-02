@@ -99,6 +99,7 @@ end;
 
 procedure TToolDlg.FormCreate(Sender: TObject);
 begin
+  // ReadStyle(Self);
   SetupGrid;
   UpdateGrid;
   Grid.Editor.OnKeyPress:= @Self.EditorKeyPress;
@@ -113,20 +114,24 @@ end;
 procedure TToolDlg.SetupGrid;
 var
   w,i: integer;
+  S: string;
 begin
   Grid.ColCount:= 4;
-  for i:= 0 to 3 do
-    Grid.Cells[i,0]:= ToolsMill[i+1];
   Grid.RowCount:= CANON_TOOL_MAX + 1;
-  w:= Grid.Canvas.TextWidth('X');
-  if w < 8 then w:= 8;
-  Grid.ColWidths[0]:= w * 3;
-  Grid.ColWidths[1]:= w * 10;
-  Grid.ColWidths[2]:= w * 10;
-  Grid.ColWidths[3]:= w * 20;
+  for i:= 0 to 3 do
+    begin
+      S:= ToolCfg[i].Name;
+      if S = '' then
+        S:= 'Col' + IntToStr(i);
+      Grid.Cells[i,0]:= S;
+      w:= ToolCfg[i].Width;
+      if w < 1 then
+        w:= Grid.Canvas.TextExtent(S).cx;
+      Grid.ColWidths[i]:= w + 4;
+    end;
   w:= 0;
   for i:= 0 to Grid.ColCount - 1 do
-    w:= w + Grid.ColWidths[i]; //   + Grid.GridLineWidth;
+    w:= w + Grid.ColWidths[i] + Grid.GridLineWidth;
   Grid.ClientWidth:= w + Grid.GridLineWidth;
 end;
 

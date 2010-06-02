@@ -24,6 +24,7 @@ type
     LabelUnit: TLabel;
     procedure EditVKeyPress(Sender: TObject; var Key: char);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
   private
@@ -96,6 +97,11 @@ begin
     CanClose:= True;
 end;
 
+procedure TTouchOffDlg.FormCreate(Sender: TObject);
+begin
+  ReadStyle(Self);
+end;
+
 
 procedure TTouchOffDlg.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -131,7 +137,7 @@ begin
   if FCoord < 0 then FCoord:= 0;
   cbCoords.ItemIndex:= FCoord;
   LabelUnit.Caption:= Vars.UnitStr;
-  Caption:= 'Antasten Achse ' + FAxisCh;
+  Caption:= Caption + #32 + FAxisCh;
 end;
 
 initialization

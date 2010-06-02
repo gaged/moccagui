@@ -316,6 +316,9 @@ extern "C" bool AxisOverrideLimits(int joint) { return emcStatus->motion.axis[jo
  */
 // trajstate read functions
 
+extern "C" int trajAxes() { return emcStatus->motion.traj.axes; }
+extern "C" int trajAxisMask() { return emcStatus->motion.traj.axis_mask; }
+
 extern "C" int trajMode() { return emcStatus->motion.traj.scale; }
 extern "C" double trajlinearUnits() { return emcStatus->motion.traj.linearUnits; }
 extern "C" double trajangularUnits() { return emcStatus->motion.traj.angularUnits; }

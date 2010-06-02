@@ -75,6 +75,7 @@ var
   CanonTool: TTool; external name 'canontool';
   ParameterFileName: array[0..LINELEN] of Char; external name '_parameter_file_name';
   glMetric: boolean; external name 'metric';
+  axisMask: integer; external name 'axis_mask';
 
   glSettings: array[0..ACTIVE_SETTINGS_MAX-1] of double; external name 'settings';
   glGCodes: array[0..ACTIVE_G_CODES_MAX-1] of integer; external name 'gcodes';
@@ -220,6 +221,7 @@ begin
   lineno:= 0;
   Plane:= 1;
   glMetric:= False;
+  axisMask:= trajAxisMask;
   s:= Vars.IniPath + 'moc.var';
   ParameterFileName:= PChar(s);
   InitOffsets;

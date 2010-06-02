@@ -230,31 +230,29 @@ end;
 
 procedure TEmc.SetCoordsZero;
 var
-  i: integer;
+  i,G: integer;
   S: string;
-  PosX,PosY,PosZ: Double;
+  d: double;
   Scale: double;
   IsInch: Boolean;
 begin
-  i:= GetActiveCoordSys;
+  G:= GetActiveCoordSys + 1;
+  if G < 1 then
+    raise Exception.Create('Invalid Coord System Index:' + IntToStr(G));
   IsInch:= GetActiveIsInch;
   if IsInch then
     Scale:= 25.4
   else
     Scale:= 1;
-  if i < 0 then
+  S:= 'G10L2P' + IntToStr(G);
+  for i:= 1 to Length(Vars.CoordNames) do
     begin
-      LastError:= 'invalid call too coord system';
-      Exit;
+      if Vars.Axis[i].IsLinear then
+        d:= GetAbsPos(i-1) / Scale
+      else
+        d:= GetAbsPos(i-1);
+      S:= S + Format('%s%.5f',[Vars.CoordNames[i],d]);
     end;
-  PosX:= GetAbsPos(Joints.AxisByChar('X')) / Scale;
-  PosY:= GetAbsPos(Joints.AxisByChar('Y')) / scale;
-  PosZ:= GetAbsPos(Joints.AxisByChar('Z')) / scale;
-  if taskTloIsAlongW then
-    begin
-      // fixme
-    end;
-  S:= Format('%s%d%s%.5f%s%.5f%s%.5f',['G10L2P',i+1,'X',PosX,'Y',PosY,'Z',PosZ]);
   ExecuteSilent(S);
   UpdateError;
   clRun.UpdatePreview(True);
@@ -266,9 +264,16 @@ var
   IsInch: Boolean;
   Scale,V: Double;
   UVal: Double;
+  i: integer;
+  IsLinear: Boolean;
 begin
   IsInch:= GetActiveIsInch;
-  if IsInch then
+  i:= Pos(Axis,Vars.CoordNames);
+  if i > 0 then
+    IsLinear:= Vars.Axis[i-1].IsLinear
+  else
+    raise Exception.Create('Touchoff: invalid Axis: ' + Axis);
+  if IsInch and IsLinear then
     Scale:= 25.4
   else
     Scale:= 1;
@@ -392,6 +397,7 @@ begin
       LubeLevel:= emc2pas.lubeLevel;
       Dtg:= trajDtg;
       Vel:= trajVel;
+      CurrentVel:= trajCurrentVel;
       Acc:= trajAcceleration;
       Probing:= trajProbing;
       ORideLimits:= AxisOverrideLimits(0);
@@ -400,6 +406,8 @@ begin
       ToolOffset:= toolLengthOffset;
       ORideLimits:= AxisOverrideLimits(0);
       TloAlongW:=  taskTloIsAlongW;
+      FeedORideEnabled:= trajFeedORideEnabled;
+      SpindleORideEnabled:= trajSpindleORideEnabled;
       if TaskMode = TASKMODEAUTO then
         begin
           InterpState:= taskInterpState;
@@ -547,9 +555,7 @@ begin
        end;
     cmTOOLCHG: ChangeTool;
     cmUNITS: SetDisplayUnits(not Vars.Metric);
-    cmEditor: EditCurrent;
-    //cmPARTALGN: if State.TaskMode = TASKMODEMANUAL then
-    //  PartAlign;
+    cmEDITOR: EditCurrent;
   else
     begin
       Result:= False;

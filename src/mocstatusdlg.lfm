@@ -1,7 +1,7 @@
 object StatusDlgForm: TStatusDlgForm
-  Left = 411
+  Left = 554
   Height = 433
-  Top = 296
+  Top = 427
   Width = 459
   HorzScrollBar.Page = 458
   VertScrollBar.Page = 432

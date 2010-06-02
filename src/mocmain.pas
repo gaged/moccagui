@@ -5,60 +5,118 @@ unit mocmain;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, ExtDlgs, ComCtrls,
-  mocglb,mocjoints,jogclient,runclient,mdiclient,
-  emcmsgbox,simclient;
+  Buttons, Classes, mocbtn, mocled, mocslider, SysUtils, LResources, Forms,
+  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ExtDlgs, ComCtrls, mocglb,
+  mocjoints, jogclient, runclient, mdiclient, emcmsgbox, simclient;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
-    Bevel4: TBevel;
-    Bevel5: TBevel;
-    Bevel6: TBevel;
-    ImageList: TImageList;
-    LabelMsg: TLabel;
-    LabelR3: TLabel;
-    LabelR1: TLabel;
-    LabelR2: TLabel;
-    LabelR0: TLabel;
-    LabelMaxVel: TLabel;
-    LabelFeed: TLabel;
-    LabelSpORide: TLabel;
-    LabelSpVel: TLabel;
-    LabelVel: TLabel;
-    LabelV1: TLabel;
-    LabelDTG: TLabel;
-    LabelV0: TLabel;
-    LabelL0: TLabel;
-    LabelL2: TLabel;
-    LabelL1: TLabel;
-    LabelCoords: TLabel;
+    BgImage: TImage;
+    ButtonView1: TMocButton;
+    ButtonView2: TMocButton;
+    ButtonView3: TMocButton;
+    ButtonToolPath: TMocButton;
+    ButtonClear: TMocButton;
+    ButtonViewMinus: TMocButton;
+    ButtonViewPlus: TMocButton;
+    Label1: TLabel;
+    LedFOREnabled: TMocLed;
+    LedSOREnabled: TMocLed;
+    ButtonView0: TMocButton;
+    MocLedToolpath: TMocLed;
+    OEMLabel1: TLabel;
+    OEMLabel2: TLabel;
+    OEMLabel3: TLabel;
+    OEMLabel4: TLabel;
+    OEMLabel5: TLabel;
+    OEMLabel6: TLabel;
+    OEMLabel7: TLabel;
+    OEMLabel9: TLabel;
+    Label2: TLabel;
+    OEMLabel10: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    LabelCurrentVel: TLabel;
     LabelF: TLabel;
     LabelGCodes: TLabel;
     LabelMCodes: TLabel;
     LabelS: TLabel;
     LabelTool: TLabel;
-    LabelUnits: TLabel;
-    LabelView: TLabel;
-    Panel1: TPanel;
-    PanelBars: TPanel;
+    LabelToolDia: TLabel;
+    LabelToolLen: TLabel;
+    LabelToolNo: TLabel;
+    Label9: TLabel;
+    Label10: TLabel;
+    LabelMsg: TLabel;
+    Label11: TLabel;
+    LabelSpVel: TLabel;
+    ButtonSpindleMinus: TMocButton;
+    ButtonSpindlePlus: TMocButton;
+    ButtonFeedReset: TMocButton;
+    ButtonSpindlebrake: TMocButton;
+    ButtonUnitsMM: TMocButton;
+    ButtonModeMDI: TMocButton;
+    ButtonCoolant: TMocButton;
+    ButtonMist: TMocButton;
+    ButtonSpCCW: TMocButton;
+    ButtonSpindle: TMocButton;
+    ButtonEStop: TMocButton;
+    ButtonMachine: TMocButton;
+    ButtonModeRun: TMocButton;
+    ButtonModeAuto: TMocButton;
+    ButtonShowRelative: TMocButton;
+    ButtonShowDtg: TMocButton;
+    LedSpindlebrake: TMocLed;
+    LedShowMM: TMocLed;
+    LedModeMDI: TMocLed;
+    LedEStop: TMocLed;
+    LedFlood: TMocLed;
+    LedMist: TMocLed;
+    LedSpindleCCW: TMocLed;
+    LedSpindleOn: TMocLed;
+    LedMachineOn: TMocLed;
+    LedModeAuto: TMocLed;
+    LedModeManual: TMocLed;
+    LedShowRelative: TMocLed;
+    LedShowDtg: TMocLed;
     PanelDRO: TPanel;
-    PanelInf: TPanel;
-    PanelRight: TPanel;
-    PanelLeft: TPanel;
-    PanelSoftBtns: TPanel;
-    PanelMainBtns: TPanel;
-    SbVel: TScrollBar;
-    SbFeed: TScrollBar;
-    SbSpORide: TScrollBar;
-    ShAtSpeed: TShape;
+    PanelMsg: TPanel;
+    PanelPreview: TPanel;
+    PanelMaster: TPanel;
+    PanelButtons: TPanel;
+    SliderFeed: TSlider;
+    SliderVel: TSlider;
+    SliderSOR: TSlider;
     Timer: TTimer;
+
+    procedure BtnRunClick(Sender: TObject);
+    procedure BtnCoordsClick(Sender: TObject);
+    procedure BtnEStopClick(Sender: TObject);
+    procedure BtnManClick(Sender: TObject);
+    procedure BtnMDIClick(Sender: TObject);
+    procedure BtnSpCCWClick(Sender: TObject);
+    procedure BtnSpClick(Sender: TObject);
+    procedure BtnSpDirClick(Sender: TObject);
+    procedure BtnFeedRstClick(Sender: TObject);
+    procedure BtnMachineClick(Sender: TObject);
+    procedure ButtonClearClick(Sender: TObject);
+    procedure ButtonSpindleMinusClick(Sender: TObject);
+    procedure ButtonSpindlePlusClick(Sender: TObject);
+    procedure BtnSpindleBrakeClick(Sender: TObject);
+    procedure ButtonToolPathClick(Sender: TObject);
+    procedure ButtonView0Click(Sender: TObject);
+    procedure ButtonView1Click(Sender: TObject);
+    procedure ButtonView2Click(Sender: TObject);
+    procedure ButtonView3Click(Sender: TObject);
+    procedure ButtonViewMinusClick(Sender: TObject);
+    procedure ButtonViewPlusClick(Sender: TObject);
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -66,48 +124,54 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
 
-    procedure LabelCoordsClick(Sender: TObject);
     procedure LabelMsgClick(Sender: TObject);
     procedure LabelUnitsClick(Sender: TObject);
     procedure LabelViewClick(Sender: TObject);
+    procedure ButtonCoolantClick(Sender: TObject);
+    procedure ButtonMistClick(Sender: TObject);
+    procedure ButtonShowDtgClick(Sender: TObject);
 
     procedure OnTimer(Sender: TObject);
-    procedure PanelDROResize(Sender: TObject);
+    procedure PanelButtonsClick(Sender: TObject);
 
-    procedure PanelLeftResize(Sender: TObject);
-    procedure PanelMainBtnsResize(Sender: TObject);
-    procedure PanelRightClick(Sender: TObject);
-    procedure PanelRightResize(Sender: TObject);
-    procedure PanelSoftBtnsResize(Sender: TObject);
+    procedure PanelMasterResize(Sender: TObject);
+    procedure PanelPreviewResize(Sender: TObject);
+    procedure PanelButtonsResize(Sender: TObject);
 
-    procedure sbFeedChange(Sender: TObject);
-    procedure SbSpORideChange(Sender: TObject);
-    procedure sbVelChange(Sender: TObject);
+    procedure SliderFeedPositionChanged(Sender: TObject; NewPos: integer);
+    procedure SliderSORPositionChanged(Sender: TObject; NewPos: integer);
+    procedure SliderVelPositionChanged(Sender: TObject; NewPos: integer);
+
 
   private
-
-    OldFeed: integer;
-    OldMaxVel: integer;
-    OldDtg: double;
-    OldVel: double;
-    OldTool: integer;
-    // OldLube: Boolean;
-    OldFlood: Boolean;
-    OldMist: Boolean;
-    OldSpDir: integer;
-    OldSpVel: double;
-    OldAtSpeed: Boolean;
-    OldSpORide: integer;
-    UpdateCoords: Boolean;
-
-    procedure InitLang;
+    FEStop: Boolean;
+    FOn: Boolean;
+    FFeed: integer;
+    FMaxVel: integer;
+    FDtg: double;
+    FAcc: double;
+    FTool: integer;
+    FFlood: Boolean;
+    FMist: Boolean;
+    FSpDir: integer;
+    FSpVel: double;
+    FSpORide: integer;
+    FSpReverse: Boolean;
+    FShowRelative: Boolean;
+    FShowDtg: Boolean;
+    FCurrentVel: Double;
+    FFOREnabled: Boolean;
+    FSOREnabled: Boolean;
 
     procedure InitPanels;
     procedure InitButtons;
 
     procedure UpdateState;
-    procedure UpdateButtons;
+
+    procedure UpdateSpindle;
+    procedure UpdateView(Mode: integer);
 
     procedure TaskModeChanged;  // this is called after the taskmode was changed
 
@@ -123,9 +187,9 @@ implementation
 
 uses
   emc2pas,
-  mocemc,mocbtn,
-  setup, lang;
-  //editorclient;
+  mocemc,
+  setup,
+  mocstatusdlg;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -141,16 +205,16 @@ begin
   if Assigned(Joints) then
     Joints.ShowBox:= (State.TaskMode = TaskModeManual);
   case State.TaskMode of
-    TaskModeManual: clJog.ActivateSelf;
-    TaskModeAuto: clRun.ActivateSelf;
-    TaskModeMDI: clMDI.ActivateSelf;
+    TaskModeManual:
+      clJog.ActivateSelf;
+    TaskModeAuto:
+      clRun.ActivateSelf;
+    TaskModeMDI:
+      clMDI.ActivateSelf;
   end;
-end;
-
-procedure TMainForm.UpdateButtons; // called by Main_Form.UpdateState
-begin
-  MocBtns[0].Down:= State.EStop;
-  MocBtns[1].Down:= State.Machine;
+  LedModeManual.IsOn:= State.TaskMode = TaskModeManual;
+  LedModeAuto.IsOn:= State.TaskMode = TaskModeAuto;
+  LedModeMDI.IsOn:= State.TaskMode = TaskModeMDI;
 end;
 
 procedure TMainForm.UpdateState;
@@ -158,19 +222,19 @@ var
   i: integer;
   d,l,Scale: double;
   s: string;
-  UpdateMsg: Boolean;
+  // UpdateMsg: Boolean;
 begin
 
   if EMC.UpdateState then
     TaskModeChanged;
 
-  UpdateMsg:= False;
+  // UpdateMsg:= False;
 
   if LastError <> '' then
     begin
       GlobalErrors.Add(LastError);
       LabelMsg.Caption:= LastError;
-      UpdateMsg:= True;
+      // UpdateMsg:= True;
       LastError:= '';
     end;
 
@@ -178,12 +242,11 @@ begin
     begin
       GlobalErrors.Add(PChar(ErrorStr));
       LabelMsg.Caption:= PChar(ErrorStr);
-      UpdateMsg:= True;
+      // UpdateMsg:= True;
       ErrorStr[0]:= #0;
     end;
 
-  UpdateButtons;  // Update the Buttons;
-  Joints.Update;  // update the joints
+  Joints.Update;
 
   LabelGCodes.Caption:= TrimLeft(PChar(ACTIVEGCODES));
   LabelMCodes.Caption:= TrimLeft(PChar(ACTIVEMCODES));
@@ -196,14 +259,14 @@ begin
   if OperatorTextStr[0] <> #0 then
     begin
       GlobalErrors.Add(PChar(OperatorTextStr));
-      UpdateMsg:= True;
+      // UpdateMsg:= True;
       OperatorTextStr[0]:= #0;
     end;
 
   if OperatorDisplayStr[0] <> #0 then
     begin
       GlobalErrors.Add(PChar(OperatorDisplayStr));
-      UpdateMsg:= True;
+      // UpdateMsg:= True;
       OperatorDisplayStr[0]:= #0;
     end;
 
@@ -217,160 +280,207 @@ begin
 
   if State.UnitsChanged then
     begin
-      OldMaxVel:= 0;
-      if LinearUnitConversion = linear_units_mm then
-        LabelUnits.Caption:= 'mm'
-      else
-        LabelUnits.Caption:= 'Inch';
+      // FMaxVel:= 0;
+      LedShowMM.IsOn:= (LinearUnitConversion = linear_units_mm);
       State.UnitsChanged:= False;
     end;
 
-  if OldFeed <> State.ActFeed then
+  if FFeed <> State.ActFeed then
     begin
-      LabelFeed.Caption:= IntToStr(State.ActFeed) + '%';
-      OldFeed:= State.ActFeed;
+      SliderFeed.Caption:= IntToStr(State.ActFeed) + '%';
+      FFeed:= State.ActFeed;
     end;
 
-  if OldMaxVel <> State.ActVel then
+  if FMaxVel <> State.ActVel then
     begin
       i:= Round(Emc.ToLinearUnits(State.ActVel));
-      LabelMaxVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
-      OldMaxVel:= State.ActVel;
+      SliderVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
+      FMaxVel:= State.ActVel;
     end;
 
-  if OldTool <> State.CurrentTool then
+  if FTool <> State.CurrentTool then
     begin
-      OldTool:= State.CurrentTool;
+      FTool:= State.CurrentTool;
       if Vars.Metric then Scale:= 1 else Scale:= 25.4;
-      if (OldTool < 0) or (OldTool > CANON_TOOL_MAX) then
+      if (FTool < 0) or (FTool > CANON_TOOL_MAX) then
         begin
           d:= 0;
           l:= 0;
-          s:= 'Kein Werkzeug';
+          s:= MSG_NOTOOL;
         end
       else
         begin
-          d:= Tools[OldTool].diameter / Scale;
-          l:= Tools[OldTool].zoffset / Scale;
-          s:= PChar(ToolComments[OldTool]);
-          if Length(s) < 1 then s:= 'Werkzeug?';
+          d:= Tools[FTool].diameter / Scale;
+          l:= Tools[FTool].zoffset / Scale;
+          s:= PChar(ToolComments[FTool]);
+          if Length(s) < 1 then s:= MSG_NOTOOL + '?';
         end;
-      LabelTool.Caption:= Format('%d %s %n %s %n %s',
-        [OldTool,' D: ',d,' L: ',l,s]);
+      LabelTool.Caption:= s;
+      LabelToolDia.Caption:= FloatToStr(d);
+      LabelToolLen.Caption:= FloatToStr(l);
+      LabelToolNo.Caption:= IntToStr(FTool);
       if ShowGlPreview then
         if Assigned(clSim) then
           clSim.SetTool(State.CurrentTool);
     end;
 
-  if OldDTG <> State.Dtg then
+  {
+  if FDTG <> State.Dtg then
     begin
       LabelDtg.Caption:= FloatToStrF(State.Dtg, ffFixed, 6, 3) +
         Vars.UnitStr;
-      OldDtg:= State.Dtg;
+      FDtg:= State.Dtg;
     end;
 
-  if OldVel <> State.Vel then
+  if FAcc <> State.Acc then
     begin
-      LabelVel.Caption:= FloatToStrF(State.Vel, ffFixed, 6, 3) +
-        Vars.UnitVelStr;
-      OldVel:= State.Vel;
+      LabelAcc.Caption:= FloatToStrF(State.Acc, ffFixed, 6, 3);
+      FAcc:= State.Acc;
+    end;
+  }
+
+  if FCurrentVel <> State.CurrentVel then
+    begin
+      LabelCurrentVel.Caption:= FloatToStrF(State.CurrentVel, ffFixed, 6, 3);
+      FCurrentVel:= State.CurrentVel;
     end;
 
-  if OldFlood <> State.Flood then
+  if FFOREnabled <> State.FeedORideEnabled then
     begin
-      SetButtonDown(cmFLOOD,State.Flood);
-      OldFlood:= State.Flood;
+      FFOREnabled:= State.FeedORideEnabled;
+      LedFOREnabled.IsOn:= FFOREnabled;
     end;
 
-  if OldMist <> State.Mist then
+  if FSOREnabled <> State.SpindleORideEnabled then
     begin
-      SetButtonDown(cmMIST,State.Mist);
-      OldMist:= State.Mist;
+      FSOREnabled:= State.SpindleORideEnabled;
+      LedSOREnabled.IsOn:= FSOREnabled;
     end;
 
-  if (OldSpVel <> State.SpSpeed) then
+  if FShowRelative <> Joints.ShowRelative then
     begin
-      LabelSpVel.Caption:= FloatToStr(State.SpSpeed) + ' U/min';
-      OldSpVel:= State.SpSpeed;
+      FShowRelative:= Joints.ShowRelative;
+      LedShowRelative.IsOn:= not FShowRelative;
     end;
 
-  if (OldSpORide <> State.ActSpORide) then
+  if FShowDtg <> Joints.ShowDtg then
     begin
-      LabelSpORide.Caption:= IntToStr(State.ActSpORide) + '%';
-      OldSpORide:= State.ActSpORide;
+      FShowDtg:= Joints.ShowDtg;
+      LedShowDtg.IsOn:= FShowDtg;
     end;
 
-  if OldAtSpeed <> (State.SpIncreasing = 0) then
+  if FFlood <> State.Flood then
     begin
-      OldAtSpeed:= (State.SpIncreasing = 0);
-      if OldAtSpeed then
-        ShAtSpeed.Brush.Color:= clGreen
+      FFlood:= State.Flood;
+      LedFlood.IsOn:= FFlood;
+    end;
+
+  if FMist <> State.Mist then
+    begin
+      FMist:= State.Mist;
+      LedMist.IsOn:= FMist;
+    end;
+
+  if (FSpVel <> State.SpSpeed) then
+    begin
+      LabelSpVel.Caption:= FloatToStr(State.SpSpeed) + Vars.UnitRotStr;
+      FSpVel:= State.SpSpeed;
+    end;
+
+  if (FSpORide <> State.ActSpORide) then
+    begin
+      SliderSOR.Caption:= IntToStr(State.ActSpORide) + '%';
+      FSpORide:= State.ActSpORide;
+    end;
+
+  {
+  if FAtSpeed <> (State.SpIncreasing = 0) then
+    begin
+      FAtSpeed:= (State.SpIncreasing = 0);
+      if FAtSpeed then
+        LedSpAtSpeed.Brush.Color:= clGreen
       else
-        ShAtSpeed.Brush.Color:= clRed;
+        LedSpAtSpeed.Brush.Color:= clRed;
+    end;
+  }
+
+  if FSpDir <> State.SpDir then
+    begin
+      FSpDir:= State.SpDir;
+      if FSpDir <> 0 then
+        FSpReverse:= (FSpDir < 0);
+      UpdateSpindle;
+      //BtnSpCW.Enabled:= (FSpDir = 0);
+      //BtnSpCCW.Enabled:= (FSpDir = 0);
     end;
 
-  if OldSpDir <> State.SpDir then
+  if FEStop <> State.EStop then
     begin
-      SetButtonDown(cmSPCW,State.SpDir > 0);
-      SetButtonDown(cmSPCCW,State.SpDir < 0);
-      OldSpDir:= State.SpDir;
+      FEStop:= State.EStop;
+      LedEStop.IsOn:= not FEStop;
+      ButtonMachine.Enabled:= not State.EStop;
     end;
 
-  if UpdateMsg then
+  if FOn <> State.Machine then
     begin
-      LabelMsgClick(nil);
-      UpdateMsg:= False;
-    end;
-
-  if UpdateCoords then
-    begin
-      if Assigned(Joints) then
-      with Joints do
-        begin
-        if ShowActual then
-          LabelView.Caption:= 'Aktuell' else
-          LabelView.Caption:= 'Befohlen';
-        if ShowRelative then
-          LabelCoords.Caption:= 'Relativ' else
-          LabelCoords.Caption:= 'Absolut';
-        end;
-      UpdateCoords:= False;
+      FOn:= State.Machine;
+      LedMachineOn.IsOn:= FOn;
     end;
 
  end;
 
-procedure TMainForm.InitPanels;  // init the panels, clients, joints
-var
-  h: integer;
+procedure TMainForm.UpdateSpindle;
 begin
-  PanelDro.Font.Size:= DroFontSize; // from mocglb.pas
+  LedSpindleCCW.IsOn:= FSpReverse;
+  LedSpindleOn.IsOn:= FSpDir <> 0;
+end;
+
+procedure TMainForm.InitPanels;  // init the panels, clients, joints
+begin
+  if Assigned(MsgForm) then
+    begin
+      MsgForm.Left:= PanelMsg.Left;
+      MsgForm.Top:= PanelMsg.Top - MsgForm.Height;
+    end;
   Joints:= TJoints.Create(PanelDRO);  // create the joints here
   if not Assigned(Joints) then
     RaiseError('joints not initialized.');
   Joints.CreateJoints(Vars.CoordNames,Vars.NumAxes);  // setup joints
-  h:= (Joints.BorderWidth + Abs(PanelDro.Font.Height)); // size the joints
   Joints.ShowActual:= Vars.ShowActual;
   Joints.ShowRelative:= Vars.ShowRelative;
+
   with Vars,State do  // setup mainforms controls
     begin
       ActFeed:= 100;
-      SbFeed.SetParams(ActFeed,1,MaxFeedOverride,1);
-      SbVel.SetParams(ActVel,0,MaxVel,1);
+      SliderFeed.SetParams(1,MaxFeedOverride,ActFeed);
+      SliderVel.SetParams(0,MaxVel,ActVel);
       if Vars.MaxSpORide > 100 then
-        SbSpORide.SetParams(ActSpORide,MinSpORide,MaxSpORide,1)
+        SliderSOR.SetParams(MinSpORide,MaxSpORide,ActSpORide)
       else
-        SbSpoRide.Enabled:= False;
+        SliderSOR.Enabled:= False;
      end;
-  OldMaxVel:= 0;
-  OldFeed:= 0;
-  OldTool:= -1;
-  OldVel:= -1;
-  OldDtg:= -1;
-  OldSpDir:= State.SpDir - 1;
-  OldSpVel:= -1;
-  OldSpORide:= -1;
+
+  if Assigned(clSim) then
+    with clSim do
+      begin
+        MocLedToolPath.IsOn:= ShowLivePlot;
+        ButtonView0.Down:= ViewMode = 0;
+        ButtonView1.Down:= ViewMode = 1;
+        ButtonView2.Down:= ViewMode = 2;
+        ButtonView3.Down:= ViewMode = 3;
+      end;
+
+  FOn:= not State.Machine;
+  FMaxVel:= 0;
+  FFeed:= 0;
+  FTool:= -1;
+  FAcc:= -1;
+  FDtg:= -1;
+  FSpDir:= State.SpDir - 1;
+  FSpVel:= -1;
+  FSpORide:= -1;
+  FShowRelative:= not Joints.ShowRelative;
   State.UnitsChanged:= True;
-  UpdateCoords:= True;
 end;
 
 procedure TMainForm.InitButtons; // This creates the buttons used by mocca
@@ -378,67 +488,72 @@ var
   S: TMocButton;
   i: Integer;
 begin
-  for i:= 0 to NumAllButtons - 1 do  // create the buttons
+  for i:= 0 to NumButtons - 1 do  // create the buttons
     begin
       S:= TMocButton.Create(self);
       if not Assigned(S) then
         raiseError('Error creating buttons');
-      if i < NumSButtons then
-        S.Parent:= PanelMainBtns
-      else
-        S.Parent:= PanelSoftBtns;
-      S.Width:= 64;
-      S.Height:= 64;
+      S.Parent:= PanelButtons;
       S.Tag:= -1;
       S.OnClick:= nil;
       MocBtns[i]:= S;
     end;
-  PanelSoftBtns.ClientHeight:= GlobalButtonSize;  // size the panel
+  PanelButtonsResize(nil);
 end;
 
-procedure TMainForm.InitLang;
+procedure TMainForm.UpdateView(Mode: integer);
+var
+  OldMode: integer;
 begin
-
+  if Assigned(clSim) then
+    begin
+      OldMode:= clSim.ViewMode;
+      if OldMode = Mode then
+        Exit;
+      clSim.ViewMode:= Mode;
+      ButtonView0.Down:= Mode = 0;
+      ButtonView1.Down:= Mode = 1;
+      ButtonView2.Down:= Mode = 2;
+      ButtonView3.Down:= Mode = 3;
+    end;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
+var
+  cw,ch: integer;
 begin
-  InitLang;
-
+  ReadStyle(Self);
   ScriptRunning:= False;
   UpdateLock:= True; // prevent from update in on_idle
-
-  Self.Position:= poScreenCenter;
-
-  if (Vars.WindowSize = 0) then
-    Self.WindowState:= wsNormal
-  else
-  if (Vars.WindowSize = 1) then
-    Self.WindowState:= wsMaximized
-  {$IFDEF LCLGTK2}
-  else
-  if (Vars.WindowSize = 2) then
+  if BackGroundImage <> '' then
     begin
-      Self.WindowState:= wsNormal;
-      FullScreen(Self);
-    end
-  {$ENDIF};
+      try
+        BgImage.Picture.LoadFromFile(BackGroundImage);
+        cw:= BgImage.Picture.Bitmap.Width;
+        ch:= BgImage.Picture.Bitmap.Height;
+        if (cw > 100) and (ch > 100) then
+          begin
+            Self.ClientWidth:= cw;
+            Self.ClientHeight:= ch;
+          end
+        else
+          writeln('Background imgage seems to be too small!');
+      except
+        writeln('Error loading background- image: ' + BackGroundImage);
+      end;
+    end;
+//  {$IFDEF LCLGTK2}
+//  if (Vars.WindowSize = 2) then
+//    begin
+//      Self.WindowState:= wsNormal;
+//      FullScreen(Self);
+//    end
+//  {$ENDIF};
 
   Caption:='Mocca ' + Vars.Machine;
 
-  GlobalFontWidth:= 0;
-  GlobalFontHeight:= 0;
-  GlobalImageList:= Self.ImageList;  // assign the imagelist to the global imagelist
-
   GlobalErrors:= TStringList.Create;
   LabelMsg.Caption:= '';
-
-  {$IFDEF LCKGTK2}
-  if MainFontSize > 0 then
-    Self.Font.Size:= MainFontSize;
-  if MainFontBold then
-    Self.Font.Style:= [fsBold];
-  {$ENDIF}
 
   State.TaskMode:= 0;  // trigger a taskmodechanged
 
@@ -452,35 +567,28 @@ begin
   clJog:= TJogClientForm.Create(self); // create the client forms
   if not Assigned(clJog) then
     RaiseError('Error create class "jogclient"');
-  clJog.Parent:= PanelLeft;
+  clJog.Parent:= PanelMaster;
   clJog.Visible:= False;
 
   clMDI:= TMDIClientForm.Create(self);
   if not Assigned(clMDI) then
     RaiseError('Error create class "mdiclient"');
-  clMDI.Parent:= PanelLeft;
+  clMDI.Parent:= PanelMaster;
   clMDI.Visible:= False;
 
   clRun:= TRunClientForm.Create(self);
   if not Assigned(clRun) then
     RaiseError('Error create class "runclient"');
-  clRun.Parent:= PanelLeft;
+  clRun.Parent:= PanelMaster;
   clRun.Visible:= False;
 
-  {
-  clEditor:= TEditorClient.Create(Self);
-  if not Assigned(clEditor) then
-    RaiseError('Error create class "editorclient"');
-  clEditor.Parent:= PanelLeft;
-  clEditor.Visible:= False;
-  }
 
   if ShowGlPreview then
     begin
       clSim:= TSimClientForm.Create(self);
       if not Assigned(clSim) then
         RaiseError('Error create class "simclient"');
-      clSim.Parent:= PanelRight;
+      clSim.Parent:= PanelPreview;
       clSim.Visible:= False;
     end
   else
@@ -488,6 +596,8 @@ begin
 
   InitPanels;
   InitButtons;
+
+  FormResize(nil);
 
   Timer.Interval:= Vars.CycleDelay;
   Timer.OnTimer:= @Self.OnTimer;
@@ -502,6 +612,128 @@ begin
   end;
 end;
 
+procedure TMainForm.BtnManClick(Sender: TObject);
+begin
+  Emc.HandleCommand(cmJOG);
+end;
+
+procedure TMainForm.BtnMDIClick(Sender: TObject);
+begin
+  Emc.HandleCommand(cmMDI);
+end;
+
+procedure TMainForm.BtnSpCCWClick(Sender: TObject);
+begin
+  if FSpDir <> 0 then Exit;
+  FSpReverse:= True;
+  UpdateSpindle;
+end;
+
+procedure TMainForm.BtnSpClick(Sender: TObject);
+begin
+  if FSpReverse then
+    HandleCommand(cmSPCCW)
+  else
+    HandleCommand(cmSPCW);
+end;
+
+procedure TMainForm.BtnSpDirClick(Sender: TObject);
+begin
+  if FSpDir <> 0 then Exit;
+  FSpReverse:= not FSpReverse;
+  UpdateSpindle;
+end;
+
+procedure TMainForm.BtnFeedRstClick(Sender: TObject);
+begin
+  SliderFeed.Position:= 100;
+  State.ActFeed:= 100;
+  SliderFeed.Invalidate;
+end;
+
+procedure TMainForm.BtnMachineClick(Sender: TObject);
+begin
+  Emc.HandleCommand(cmMACHINE);
+end;
+
+procedure TMainForm.ButtonClearClick(Sender: TObject);
+begin
+  if Assigned(clSim) then
+    clSim.ClearPlot;
+end;
+
+procedure TMainForm.ButtonSpindleMinusClick(Sender: TObject);
+begin
+  HandleCommand(cmSPMINUS);
+end;
+
+procedure TMainForm.ButtonSpindlePlusClick(Sender: TObject);
+begin
+  HandleCommand(cmSPPLUS);
+end;
+
+procedure TMainForm.BtnSpindleBrakeClick(Sender: TObject);
+begin
+  HandleCommand(cmSPBRAKE);
+end;
+
+procedure TMainForm.ButtonToolPathClick(Sender: TObject);
+begin
+  if not Assigned(clSim) then
+    Exit;
+  clSim.ShowLivePlot:= not clSim.ShowLivePlot;
+  MocLedToolPath.IsOn:= clSim.ShowLivePlot;
+  if not clSim.ShowLivePlot then
+    clSim.ClearPlot;
+end;
+
+procedure TMainForm.ButtonView0Click(Sender: TObject);
+begin
+  UpdateView(0);
+end;
+
+procedure TMainForm.ButtonView1Click(Sender: TObject);
+begin
+  UpdateView(1);
+end;
+
+procedure TMainForm.ButtonView2Click(Sender: TObject);
+begin
+  UpdateView(2);
+end;
+
+procedure TMainForm.ButtonView3Click(Sender: TObject);
+begin
+  UpdateView(3);
+end;
+
+procedure TMainForm.ButtonViewMinusClick(Sender: TObject);
+begin
+  if Assigned(clSim) then
+    clSim.Zoom(-1);
+end;
+
+procedure TMainForm.ButtonViewPlusClick(Sender: TObject);
+begin
+  if Assigned(clSim) then
+    clSim.Zoom(1);
+end;
+
+procedure TMainForm.BtnRunClick(Sender: TObject);
+begin
+  Emc.HandleCommand(cmAUTO);
+end;
+
+procedure TMainForm.BtnCoordsClick(Sender: TObject);
+begin
+  Joints.ShowRelative:= not Joints.ShowRelative;
+end;
+
+procedure TMainForm.BtnEStopClick(Sender: TObject);
+begin
+  Emc.HandleCommand(cmESTOP);
+end;
+
 procedure TMainForm.FormDestroy(Sender: TObject);
 var
   i: integer;
@@ -511,24 +743,29 @@ begin
   if Assigned(clJog) then FreeAndNil(clJog);
   if Assigned(clMDI) then FreeAndNil(clMDI);
   if Assigned(clRun) then FreeAndNil(clRun);
-  // if Assigned(clEditor) then FreeAndNil(clEditor);
   if Assigned(clSim) then FreeAndNil(clSim);
-  for i:= 0 to NumAllButtons - 1 do
+  for i:= 0 to NumButtons - 1 do
     if Assigned(MocBtns[i]) then FreeAndNil(MocBtns[i]);
   if Assigned(EMC) then FreeAndNil(Emc);
   if Assigned(Joints) then FreeAndNil(Joints);
-  GlobalImageList:= nil;
+  if Assigned(GlobalBitmaps) then
+    begin
+      for i:= 0 to GlobalBitmaps.Count - 1 do
+        begin
+          if Assigned(GlobalBitmaps.Objects[i]) then
+            GlobalBitmaps.Objects[i].Free;
+        end;
+      GlobalBitmaps.Free;
+    end;
   if Assigned(GlobalErrors) then GlobalErrors.Free;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
-  GlobalFontHeight:= Self.Canvas.TextHeight('Üy');
-  GlobalFontWidth:= Self.Canvas.TextWidth('X');
   if Assigned(Joints) then
     Joints.DoResize(nil);
-  PanelRightResize(nil);
-  PanelInf.Width:= (Self.ClientWidth - PanelMainBtns.Width) div 2;
+  PanelPreviewResize(nil);
+  PanelMasterResize(nil);
 end;
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
@@ -553,8 +790,6 @@ begin
 end;
 
 begin
-  //LastError:= IntToStr(Key);
-
   if Key = 27 then  // handle the escape key first
     begin
       DoAction(cmABORT);
@@ -575,7 +810,7 @@ begin
         end
       else
       if (Key = 83) then
-        EditSetup(Self)
+        ShowStatusDlg
       {$IFDEF LCLGTK2}
       else
       if (Key = 123) then
@@ -599,11 +834,10 @@ begin
       clJog.FormKeyUp(nil,Key,Shift)
 end;
 
-procedure TMainForm.LabelCoordsClick(Sender: TObject);
+procedure TMainForm.FormShow(Sender: TObject);
 begin
-   if Assigned(Joints) then
-    Joints.ShowRelative:= not Joints.ShowRelative;
-  UpdateCoords:= True;
+  if Assigned(clSim) then
+    clSim.FormResize(nil);
 end;
 
 procedure TMainForm.LabelMsgClick(Sender: TObject);
@@ -624,127 +858,98 @@ end;
 
 procedure TMainForm.LabelViewClick(Sender: TObject);
 begin
-if Assigned(Joints) then
+  if Assigned(Joints) then
     Joints.ShowActual:= not Joints.ShowActual;
-  UpdateCoords:= True;
+end;
+
+procedure TMainForm.ButtonCoolantClick(Sender: TObject);
+begin
+  Emc.HandleCommand(cmFLOOD);
+end;
+
+procedure TMainForm.ButtonMistClick(Sender: TObject);
+begin
+  Emc.HandleCommand(cmMIST);
+end;
+
+procedure TMainForm.ButtonShowDtgClick(Sender: TObject);
+begin
+  Joints.ShowDtg:= not Joints.ShowDtg;
 end;
 
 procedure TMainForm.OnTimer(Sender: TObject);
 begin
-  //if not UpdateLock then
   Self.UpdateState;
 end;
 
-procedure TMainForm.PanelDROResize(Sender: TObject);
+procedure TMainForm.PanelButtonsClick(Sender: TObject);
 begin
-  PanelLeft.Width:= PanelDro.Width;
+
 end;
 
-procedure TMainForm.PanelLeftResize(Sender: TObject);
+procedure TMainForm.PanelMasterResize(Sender: TObject);
 var
   w,h: integer;
 begin
   if Sender <> nil then ;
-  h:= PanelDro.Top - 1;
-  w:= PanelLeft.ClientWidth;
+  h:= PanelMaster.ClientHeight;
+  w:= PanelMaster.ClientWidth;
   if Assigned(clJog) then clJog.SetBounds(0,0,w,h);
   if Assigned(clMDI) then clMDI.SetBounds(0,0,w,h);
   if Assigned(clRun) then clRun.SetBounds(0,0,w,h);
-  // if Assigned(clEditor) then clEditor.SetBounds(0,0,w,h);
 end;
 
-procedure TMainForm.PanelSoftBtnsResize(Sender: TObject);
+procedure TMainForm.PanelButtonsResize(Sender: TObject);
 var
-  x,i,dx: integer;
-  w: single;
+  w,h,x,i: integer;
 begin
-  w:= PanelSoftBtns.ClientWidth / NumSButtons;
-  if w < GlobalButtonSize then
-    w:= GlobalButtonSize;
+  w:= PanelButtons.ClientWidth div NumButtons;
+  h:= PanelButtons.ClientHeight;
+  if w < 10 then w:= 10;
   x:= 0;
-  dx:= trunc(w);
-  for i:= 0 to NumSButtons - 1 do
-    if Assigned(MocBtns[i+NumMButtons]) then
-      begin
-        x:= round(w * i);
-        MocBtns[i+NumMButtons].SetBounds(x,0,dx,GlobalButtonSize);
-      end;
-  PanelMainBtns.Left:= x;
-  PanelMainBtns.ClientWidth:= dx;
-end;
-
-procedure TMainForm.PanelMainBtnsResize(Sender: TObject);
-var
-  y,i,w: integer;
-  h: integer;
-begin
-  h:= PanelMainBtns.ClientHeight div NumMButtons;
-  if h < GlobalButtonSize then
-    h := GlobalButtonSize;
-  y:= (h div 2) - (GlobalButtonSize div 2);
-  if y < 0 then y:= 0;
-  w:= PanelMainBtns.ClientWidth;
-  for i:= 0 to NumMButtons - 1 do
+  for i:= 0 to NumButtons - 1 do
     if Assigned(MocBtns[i]) then
       begin
-        MocBtns[i].SetBounds(0,y,w,GlobalButtonSize);
-        y:= y + h;
+        MocBtns[i].SetBounds(x,0,w,h);
+        x:= x + w;
       end;
 end;
 
-procedure TMainForm.PanelRightClick(Sender: TObject);
-begin
-
-end;
-
-procedure TMainForm.PanelRightResize(Sender: TObject);
+procedure TMainForm.PanelPreviewResize(Sender: TObject);
 begin
   if ShowGlPreview then
-    begin
-      if Assigned(clSim) then
+    if Assigned(clSim) then
       begin
-        clSim.SetBounds(0,0,PanelRight.ClientWidth,PanelRight.ClientHeight);
+        clSim.SetBounds(0,0,PanelPreview.ClientWidth,PanelPreview.ClientHeight);
         if not clSim.Visible then
           clSim.Visible:= True;
+        clSim.FormResize(nil);
       end;
-    if Assigned(MsgForm) then
-      begin
-        MsgForm.Left:= PanelRight.Left;
-        MsgForm.Top:= PanelBars.Top - MsgForm.Height;
-        MsgForm.Width:= PanelRight.Width;
-      end;
-    end
-  else
-    begin
-      if Assigned(MsgForm) then
-      begin
-        MsgForm.Left:= PanelBars.Left;
-        MsgForm.Top:= PanelBars.Top - MsgForm.Height;
-        MsgForm.Width:= PanelBars.Width;
-      end;
-    end;
 end;
 
-procedure TMainForm.sbFeedChange(Sender: TObject);
+procedure TMainForm.SliderFeedPositionChanged(Sender: TObject; NewPos: integer);
 begin
   if UpdateLock then Exit;
-  Emc.SetFeedORide(sbFeed.Position);
+  Emc.SetFeedORide(NewPos);
 end;
 
-procedure TMainForm.SbSpORideChange(Sender: TObject);
+procedure TMainForm.SliderSORPositionChanged(Sender: TObject; NewPos: integer);
 begin
   if UpdateLock then Exit;
-  Emc.SetSpORide(SbSpORide.Position);
+  Emc.SetSpORide(NewPos);
 end;
 
-procedure TMainForm.sbVelChange(Sender: TObject);
+procedure TMainForm.SliderVelPositionChanged(Sender: TObject; NewPos: integer);
 begin
   if UpdateLock then Exit;
-  Emc.SetMaxVel(sbVel.Position);
+  Emc.SetMaxVel(NewPos);
 end;
+
+
 
 initialization
-  {$I mocmain.lrs}
+{$I mocmain.lrs}
 
+  MocButtonFrameWidth:= 1;
 end.
 

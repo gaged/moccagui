@@ -1,7 +1,7 @@
 object TouchOffDlg: TTouchOffDlg
-  Left = 583
+  Left = 569
   Height = 189
-  Top = 368
+  Top = 432
   Width = 330
   ActiveControl = EditV
   BorderIcons = [biSystemMenu]
@@ -10,6 +10,7 @@ object TouchOffDlg: TTouchOffDlg
   ClientWidth = 330
   KeyPreview = True
   OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   Position = poScreenCenter

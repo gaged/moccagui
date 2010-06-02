@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <PathDelim Value="\"/>
+    <Name Value="moccapkg"/>
+    <Author Value="Thomas Guenther"/>
+    <AutoUpdate Value="Manually"/>
+    <CompilerOptions>
+      <Version Value="8"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Controls for mocca, GUI for EMC2"/>
+    <License Value="gpl"/>
+    <Version Major="1" Minor="20" Release="3"/>
+    <Files Count="4">
+      <Item1>
+        <Filename Value="mocslider.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="mocslider"/>
+      </Item1>
+      <Item2>
+        <Filename Value="mocbtn.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="mocbtn"/>
+      </Item2>
+      <Item3>
+        <Filename Value="mocled.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="mocled"/>
+      </Item3>
+      <Item4>
+        <Filename Value="moclister.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="moclister"/>
+      </Item4>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="IDEIntf"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

@@ -53,6 +53,7 @@ int plane;
 bool metric;
 double _pos_x, _pos_y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w;
 double tool_xoffset, tool_zoffset, tool_woffset;
+int axis_mask;
 
 extern "C" void nextline();
 extern "C" void arcfeed(double first_end, double second_end, double first_axis, 
@@ -400,7 +401,7 @@ int GET_EXTERNAL_ADAPTIVE_FEED_ENABLE() {return 0;}
 int GET_EXTERNAL_FEED_HOLD_ENABLE() {return 1;}
 
 int GET_EXTERNAL_AXIS_MASK() {
-  return 7;
+  return axis_mask;
 }
 
 double GET_EXTERNAL_TOOL_LENGTH_XOFFSET() {

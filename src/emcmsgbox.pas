@@ -14,6 +14,7 @@ type
 
   TMsgForm = class(TForm)
     LBox: TListBox;
+    procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure LBoxClick(Sender: TObject);
   private
@@ -43,6 +44,11 @@ begin
         LBox.Items.Clear;
         Hide;
       end;
+end;
+
+procedure TMsgForm.FormCreate(Sender: TObject);
+begin
+  // ReadStyle(Self);
 end;
 
 procedure TMsgForm.LBoxClick(Sender: TObject);

@@ -13,7 +13,6 @@ type
 
   TMDIClientForm = class(TForm)
     MDIEdit: TEdit;
-    LabelCaption: TLabel;
     MDIHistListBox: TListBox;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -41,12 +40,13 @@ const
 implementation
 
 uses
-  mocglb,mocemc,mocjoints,
+  mocglb,mocemc,
   emc2pas,
   mocbtn;
 
 procedure TMDIClientForm.FormCreate(Sender: TObject);
 begin
+  ReadStyle(Self);
   Self.Tag:= TASKMODEMDI;
   try
     MDIHistListBox.Items.LoadFromFile(Vars.IniPath + MDI_HIST_FILENAME);
@@ -86,7 +86,7 @@ end;
 
 procedure TMDIClientForm.MapButtons;
 begin
-  SetButtonMap(@BtnDefMDI,@BtnDefMDI1,@Self.Click);
+  SetButtonMap(@BtnDefMDI,@Self.Click);
 end;
 
 procedure TMDIClientForm.InitControls;
@@ -129,7 +129,7 @@ function TMDIClientForm.FormatMdi(S0: string): string;
 var
   i: integer;
   S,SF: string;
-  c  : char;
+  c: char;
  begin
   result:= '';
   if S0 = '' then Exit;

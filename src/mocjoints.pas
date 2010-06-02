@@ -26,19 +26,19 @@ type
     constructor Create(APanel: TWinControl; Id: integer; Des: Char);
     destructor Destroy;
   private
-    //FActive: Boolean;
     FAxisChar: Char;
     FAxisNumber: Integer;
     FDesLabel: TLabel;
     FHomed: Boolean;
     FJogging: Boolean;
+    FLinear: Boolean;
     FPanel: TWinControl;
     FPosLabel: TLabel;
     FValue: Double;
     FTop: integer;
     procedure SetHomed(const Value: Boolean);
-    procedure SizeLabels(ActTop,FontHeight,BorderWidth: integer);
-    procedure Update(ShowActual,ShowRelative: Boolean);
+    procedure SizeLabels(y,w,h: integer);
+    procedure Update(ShowActual,ShowRelative,ShowDtg: Boolean);
     function GetAxisType: integer;
     function GetUnits: double;
     function GetBacklash: double;
@@ -55,6 +55,7 @@ type
     property AxisChar: Char read FAxisChar;
     property AxisNumber: Integer read FAxisNumber;
     property Jogging: Boolean read FJogging write FJogging;
+    property Linear: Boolean read FLinear;
     property Panel: TWinControl read FPanel write FPanel;
     property Top: integer read FTop;
     property Homed: Boolean read FHomed write SetHomed;
@@ -82,6 +83,7 @@ type
     FPanel: TPanel;
     FShowActual: Boolean;
     FShowRelative: Boolean;
+    FShowDtg: Boolean;
     FNumAxes: Integer;
     FShowBox: Boolean;
     FAxes: Array[0..MAX_JOINTS-1] of TAxis;
@@ -90,7 +92,7 @@ type
    public
     constructor Create(APanel: TPanel);
     destructor Destroy;
-    procedure AddAxis(Id: Integer; Des: Char);
+    function  AddAxis(Id: Integer; Des: Char): TAxis;
     procedure CreateJoints(CoordNames: string; NumAxes: Integer);
     function  GetAxis(Index: integer): TAxis;
     function  GetAxisChar(Index: integer): Char;
@@ -109,6 +111,7 @@ type
     procedure HomeAxis(Ax: Char);
     property  ShowActual: Boolean read FShowActual write FShowActual;
     property  ShowRelative: Boolean read FShowRelative write FShowRelative;
+    property  ShowDtg: Boolean read FShowDtg write FShowDtg;
     property  BorderWidth: integer read FBorderWidth write FBorderWidth;
     property  ShowBox: Boolean write SetShowBox;
 
@@ -123,7 +126,6 @@ uses
   emc2pas,mocglb,mocemc,hal,LCLIntf;
 
 var
-  FullWidth: integer;
   AxisTicks: Array[0..MAX_JOINTS - 1] of longint;
 
 function GetTickDiff(var t: longint): longint;
@@ -191,19 +193,15 @@ begin
   inherited;
 end;
 
-procedure TAxis.SizeLabels(ActTop,FontHeight,BorderWidth: integer);
+procedure TAxis.SizeLabels(y,w,h: integer);
 var
-  X,CellW,W,i: integer;
+  x1: integer;
 begin
-  CellW:= Round(FontHeight * 0.7);
-  X:= (2*CellW) + BorderWidth;
-  W:= 9 * CellW;
-  FDesLabel.SetBounds(BorderWidth,ActTop,CellW,FontHeight);
-  FPosLabel.SetBounds(X,ActTop,W,FontHeight);
-  FTop:= ActTop;
-  i:= X + W + BorderWidth;
-  if FullWidth < i then
-    FullWidth:= i;
+  x1:= round(w * 0.1);
+  if x1 < 10 then x1:= 10;
+  FDesLabel.SetBounds(1,y,x1 - 1,h - 1);
+  FPosLabel.SetBounds(x1,y,w - x1 - 1,h - 1);
+  FTop:= y;
 end;
 
 procedure TAxis.SetHomed(const Value: Boolean);
@@ -212,22 +210,20 @@ begin
     sendHome(FAxisNumber);
 end;
 
-procedure TAxis.Update(ShowActual,ShowRelative: Boolean);
+procedure TAxis.Update(ShowActual,ShowRelative,ShowDtg: Boolean);
 var
   NewPos: Double;
   IsHomed: Boolean;
 begin
+  if ShowDtg then
+    NewPos:= getDtgPos(FAxisNumber)
+  else
   if ShowActual then
     begin
       if ShowRelative then
         NewPos:= getRelPos(FAxisNumber)
       else
         NewPos:= getAbsPos(FAxisNumber);
-      if NewPos <> FValue then
-        begin
-          FValue:= NewPos;
-          FPosLabel.Caption:= PosToString(FValue);
-        end;
     end
   else
     begin
@@ -235,13 +231,14 @@ begin
         NewPos:= getRelCmdPos(FAxisNumber)
       else
         NewPos:= getAbsCmdPos(FAxisNumber);
-      if NewPos <> FValue then
-        begin
-          FValue:= NewPos;
-          FPosLabel.Caption:= PosToString(FValue);
-        end;
     end;
-    
+
+  if NewPos <> FValue then
+    begin
+      FValue:= NewPos;
+      FPosLabel.Caption:= PosToString(FValue);
+    end;
+
   isHomed:= AxisHomed(FAxisNumber);
   if isHomed <> FHomed then
     begin
@@ -277,18 +274,22 @@ function TAxis.GetMaxPosLimit: double;
 begin
   Result:= AxisMaxPositionLimit(FAxisNumber);
 end;
+
 function TAxis.GetMinSoftLimit: double;
 begin
   Result:= AxisMinSoftLimit(FAxisNumber);
 end;
+
 function TAxis.GetMaxSoftLimit: double;
 begin
   Result:= AxisMaxSoftLimit(FAxisNumber);
 end;
+
 function TAxis.GetMinHardLimit: double;
 begin
   Result:= AxisMinHardLimit(FAxisNumber);
 end;
+
 function TAxis.GetMaxHardLimit: double;
 begin
   Result:= AxisMaxHardLimit(FAxisNumber);
@@ -326,6 +327,7 @@ begin
   FOldActiveAxis:= -1;
   FShowActual:= Vars.ShowActual;
   FShowRelative:= Vars.ShowRelative;
+  FShowDtg:= False;
 end;
 
 destructor TJoints.Destroy;
@@ -469,10 +471,11 @@ begin
     end;
 end;
 
-procedure TJoints.AddAxis(Id: Integer; Des: Char);
+function TJoints.AddAxis(Id: Integer; Des: Char): TAxis;
 var
   A: TAxis;
 begin
+  Result:= nil;
   if FNumAxes < MAX_JOINTS then
     begin
       A:= TAxis.Create(FPanel,Id,Des);
@@ -486,6 +489,7 @@ begin
       FAxes[FNumAxes]:= A;
       Inc(FNumAxes);
     end;
+  Result:= A;
 end;
 
 function TJoints.GetAxis(index: integer): TAxis;
@@ -530,6 +534,8 @@ procedure TJoints.CreateJoints(CoordNames: string; NumAxes: integer);
 var
   i: integer;
   c: Char;
+  IsLinear: Boolean;
+  Ax: TAxis;
 begin
   if (Length(CoordNames) < 1) or (Length(CoordNames) > MAX_JOINTS) or
    (Length(CoordNames) <> NumAxes) then
@@ -538,7 +544,9 @@ begin
   for i:= 1 to Length(CoordNames) do
     begin
       c:= CoordNames[i];
-      AddAxis(i-1,c);
+      Ax:= AddAxis(i-1,c);
+      if Ax <> nil then
+        Ax.FLinear:= Vars.Axis[i-1].IsLinear;
     end;
 end;
 
@@ -549,7 +557,7 @@ begin
   if FNumAxes < 1 then Exit;
   for i:= 0 to FNumAxes - 1 do
     begin
-      FAxes[i].Update(FShowActual,FShowRelative);
+      FAxes[i].Update(FShowActual,FShowRelative,FShowDtg);
     end;
   if FShowBox then
     if FOldActiveAxis <> Vars.ActiveAxis then
@@ -563,23 +571,23 @@ end;
 
 procedure TJoints.DoResize(Sender: TObject);
 var
-  i,y,h: Integer;
+  w,h,Y,i: integer;
 begin
   if (FNumAxes < 1) or (not Assigned(FPanel)) then
     Exit;
-  h:= Abs(FPanel.Font.Height);
-  y:= FBorderWidth;
+  h:= FPanel.ClientHeight div FNumAxes;
+  w:= FPanel.ClientWidth - 2;
+  y:= (FPanel.CLientHeight - (h * FNumAxes)) div 2;
+  y:= y + 1;
+  if y < 0 then y:= 0;
   for i:= 0 to FNumAxes - 1 do
     begin
-      FAxes[i].SizeLabels(Y,H,FBorderWidth);
-      y:= y + BorderWidth + h;
+      FAxes[i].SizeLabels(y,w,h);
+      y:= y + h + 1;
     end;
   FBox.Left:= 0;
-  FBox.Width:= FullWidth; // FPanel.ClientWidth;
-  FBox.Height:= h + 1;
-  //if FPanel.ClientWidth < FullWidth + 1 then
-  FPanel.ClientWidth:= FullWidth + 1;
-  FPanel.ClientHeight:= y + 1;
+  FBox.Width:= FPanel.ClientWidth;
+  FBox.Height:= h;
 end;
 
 end.
