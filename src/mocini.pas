@@ -134,51 +134,7 @@ begin
   Result:= True;
 end;
 
-function IniReadScripts: Boolean;
-var
-  s,n,sec: string;
-  i: integer;
-  NumScripts: integer;
-begin
-  NumScripts:= 0;
-  Result:= False;
-  with BtnDefScripts[0] do
-    begin
-      T:= cmBACK;
-      G:= -1;
-      S:= '<';
-    end;
-  for i:= 1 to NumButtons - 1 do
-    begin
-      MocScripts[i].Name:= '';
-      MocScripts[i].Script:= '';
-      with BtnDefScripts[i] do
-        begin
-          T:= -1;
-          G:= -1;
-          S:= '';
-        end;
-      Sec:= 'SCRIPT_' + IntToStr(i-1);
-      GetIniStr(Sec,'NAME',n,'');
-      GetIniStr(Sec,'SCRIPT',s,'');
-      if (s <> '') and (n <> '') then
-          begin
-            writeln(s,n);
-            n:= Trim(n);
-            s:= Trim(s);
-            if (Length(s) > 0) and (LEngth(n) > 0) then
-              begin
-                MocScripts[i].Name:= n;
-                MocScripts[i].Script:= s;
-                BtnDefScripts[i].T:= cmSCRIPTBASE + i;
-                BtnDefScripts[i].G:= -1;
-                BtnDefScripts[i].S:= n;
-                Inc(NumScripts);
-              end;
-          end;
-    end;
-  Result:= (NumScripts > 0);
-end;
+
 
 function IniRead(FileName: string): Boolean;
 var

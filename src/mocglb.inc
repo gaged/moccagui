@@ -84,6 +84,8 @@ const
   cmBACK       = 999;
   cmSCRIPTBASE = 1000;
   cmSCRIPTS    = 1099;
+  cmCLOSE      = 360;
+  cmFEEDRESET  = 400;
 
 //const
   MSG_NOTOOL : string = 'No Tool';
@@ -95,7 +97,7 @@ type
   end;
 
 const
-  CmdNamesMax = 62;
+  CmdNamesMax = 64;
 
 const
   CmdNames: Array[0..CmdNamesMax] of TCmdNames = (
@@ -159,9 +161,11 @@ const
   (S:'cmSHIFTDN'   ; i:331),
   (S:'cmPARTALGN'  ; i:340),
   (S:'cmUNITS'     ; i:350),
+  (S:'cmCLOSE'     ; i:360),
   (S:'cmBACK'      ; i:999),
   (S:'cmSCRIPTBASE'; i:1000),
-  (S:'cmSCRIPTS'   ; i:1099));
+  (S:'cmSCRIPTS'   ; i:1099),
+  (S:'cmFEEDRESET' ; i:cmFEEDRESET));
 
 var
   BtnDefJog: TButtonArray;

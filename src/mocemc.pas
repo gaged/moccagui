@@ -482,6 +482,10 @@ end;
 function TEMC.HandleCommand(Cmd: integer): boolean;
 begin
   case Cmd of
+    cmClose:
+      begin
+        Application.MainForm.Close;
+      end;
     cmAbort: sendAbort;
     cmESTOP:
       if not State.EStop then
@@ -496,6 +500,12 @@ begin
     cmJOG: ForceTaskMode(TASKMODEMANUAL);
     cmAUTO: ForceTaskMode(TASKMODEAUTO);
     cmMDI: ForceTaskMode(TASKMODEMDI);
+    cmFEEDRESET:
+      begin
+        SetFeedORide(100);
+        State.ActFeed:= 100;
+        Writeln('Feed Reset');
+      end;
     cmSPCW:
       if State.SpDir <> 0 then
         sendSpindleOff

@@ -61,7 +61,7 @@ begin
   if Length(Vars.ToolFile) < 1 then Exit;
   for i:= 1 to CANON_TOOL_MAX - 1 do
     begin
-      s:= Grid.Cells[3,i];
+      s:= Grid.Cells[4,i];
       if ToolComments[i] <> nil then
         StrLCopy(ToolComments[i],PChar(s),CANON_TOOL_ENTRY_LEN - 1);
     end;
@@ -71,7 +71,7 @@ end;
 
 procedure TToolDlg.EditorKeyPress(Sender: TObject; var Key: char);
 begin
-  if (Grid.Col > 2) or (Ord(Key) = 8) then Exit;  // BkSpace
+  if (Grid.Col > 3) or (Ord(Key) = 8) then Exit;  // BkSpace
   if Key = ',' then Key:= '.';
   if not (Key in ['0'..'9','.','-','+']) then
     begin
@@ -84,12 +84,13 @@ procedure TToolDlg.GridSetEditText(Sender: TObject; ACol, ARow: Integer;
   const Value: string);
 begin
   if Value = '' then Exit;
-  if (ACol < 1) or (ACol > 2) or (ARow < 1) then Exit;
+  if (ACol < 1) or (ACol > 3) or (ARow < 1) then Exit;
   if (Value = '?') or (Value = '-') or (Value = '+') then Exit;
   try
     case ACol of
-      1: Tools[ARow].ZOffset:= StrToFloat(Value);
-      2: Tools[ARow].Diameter:= StrToFloat(Value);
+      1: Tools[ARow].id:= StrToInt(Value);
+      2: Tools[ARow].ZOffset:= StrToFloat(Value);
+      3: Tools[ARow].Diameter:= StrToFloat(Value);
     end;
   except
     Grid.Cells[ACol,ARow]:= '?';
@@ -101,6 +102,7 @@ procedure TToolDlg.FormCreate(Sender: TObject);
 begin
   // ReadStyle(Self);
   SetupGrid;
+  Self.ClientWidth:= (2 *Grid.Left) + Grid.Width;
   UpdateGrid;
   Grid.Editor.OnKeyPress:= @Self.EditorKeyPress;
 end;
@@ -116,9 +118,9 @@ var
   w,i: integer;
   S: string;
 begin
-  Grid.ColCount:= 4;
+  Grid.ColCount:= 5;
   Grid.RowCount:= CANON_TOOL_MAX + 1;
-  for i:= 0 to 3 do
+  for i:= 0 to 4 do
     begin
       S:= ToolCfg[i].Name;
       if S = '' then
@@ -146,10 +148,11 @@ begin
       if Tools[i].Id >= 0 then
         begin
           inc(r);
-          Cells[0,r]:= IntToStr(Id);
-          Cells[1,r]:= FloatToStrF(ZOffset, ffFixed, 6, 3);
-          Cells[2,r]:= FloatToStrF(Diameter, ffFixed, 6, 3);
-          Cells[3,r]:= PChar(ToolComments[i]);
+          Cells[0,r]:= IntToStr(i);
+          Cells[1,r]:= IntToStr(Id);
+          Cells[2,r]:= FloatToStrF(ZOffset, ffFixed, 6, 3);
+          Cells[3,r]:= FloatToStrF(Diameter, ffFixed, 6, 3);
+          Cells[4,r]:= PChar(ToolComments[i]);
         end;
     end;
 end;

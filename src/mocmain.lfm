@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 235
+  Left = 169
   Height = 724
-  Top = 126
+  Top = 167
   Width = 967
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -335,50 +335,55 @@ object MainForm: TMainForm
     Height = 24
     Top = 588
     Width = 128
+    Command = 'cmAUTO'
     ShowClicks = True
     Caption = 'Satzlauf'
     Color = clBtnFace
-    OnClick = BtnRunClick
+    OnClick = ButtonClick
   end
   object ButtonModeMDI: TMocButton
     Left = 564
     Height = 24
     Top = 588
     Width = 128
+    Command = 'cmMDI'
     ShowClicks = True
     Caption = 'MDI'
     Color = clBtnFace
-    OnClick = BtnMDIClick
+    OnClick = ButtonClick
   end
   object ButtonModeAuto: TMocButton
     Left = 292
     Height = 24
     Top = 588
     Width = 128
+    Command = 'cmJOG'
     ShowClicks = True
     Caption = 'Manuell'
     Color = clBtnFace
-    OnClick = BtnManClick
+    OnClick = ButtonClick
   end
   object ButtonMachine: TMocButton
     Left = 148
     Height = 24
     Top = 588
     Width = 140
+    Command = 'cmMACHINE'
     ShowClicks = True
     Caption = 'Maschine'
     Color = clBtnFace
-    OnClick = BtnMachineClick
+    OnClick = ButtonClick
   end
   object ButtonEStop: TMocButton
     Left = 4
     Height = 24
     Top = 588
     Width = 140
+    Command = 'cmESTOP'
     ShowClicks = True
     Caption = 'Notaus'
     Color = clBtnFace
-    OnClick = BtnEStopClick
+    OnClick = ButtonClick
   end
   object ButtonSpindle: TMocButton
     Left = 600
@@ -390,7 +395,7 @@ object MainForm: TMainForm
     Color = clBtnFace
     OnClick = BtnSpClick
   end
-  object ButtonSpCCW: TMocButton
+  object ButtonSpReverse: TMocButton
     Left = 832
     Height = 28
     Top = 492
@@ -398,27 +403,29 @@ object MainForm: TMainForm
     ShowClicks = True
     Caption = 'Rückw.'
     Color = clBtnFace
-    OnClick = BtnSpDirClick
+    OnClick = BtnSpReverseClick
   end
   object ButtonCoolant: TMocButton
     Left = 828
     Height = 24
     Top = 588
     Width = 124
+    Command = 'cmFLOOD'
     ShowClicks = True
     Caption = 'Kühlung'
     Color = clBtnFace
-    OnClick = ButtonCoolantClick
+    OnClick = ButtonClick
   end
   object ButtonMist: TMocButton
     Left = 696
     Height = 24
     Top = 588
     Width = 124
+    Command = 'cmMIST'
     ShowClicks = True
     Caption = 'Nebel'
     Color = clBtnFace
-    OnClick = ButtonMistClick
+    OnClick = ButtonClick
   end
   object LedSpindleCCW: TMocLed
     Left = 812
@@ -543,10 +550,11 @@ object MainForm: TMainForm
     Height = 24
     Top = 524
     Width = 148
+    Command = 'cmFEEDRESET'
     ShowClicks = True
     Caption = 'Vorschb. 100%'
     Color = clBtnFace
-    OnClick = BtnFeedRstClick
+    OnClick = ButtonClick
   end
   object ButtonSpindlePlus: TMocButton
     Left = 768
@@ -790,7 +798,6 @@ object MainForm: TMainForm
     BorderStyle = bsSingle
     FullRepaint = False
     TabOrder = 0
-    OnClick = PanelButtonsClick
     OnResize = PanelButtonsResize
   end
   object PanelMaster: TPanel

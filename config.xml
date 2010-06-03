@@ -2,10 +2,14 @@
 <CONFIG>
   <tools>
     <item index="0" title="Nr." width="20"/>
-    <item index="1" title="Durchmesser" width="90"/>
-    <item index="2" title="Länge" width="90"/>
-    <item index="3" title="Bezeichnung" width="120"/>
+    <item index="1" title="Id" width="20"/>
+    <item index="2" title="Durchmesser" width="90"/>
+    <item index="3" title="Länge" width="90"/>
+    <item index="4" title="Bezeichnung" width="120"/>
   </tools>
+  <scripts>
+    <item index="0" name="test" script="test.nc"/>
+  </scripts>
   <background bitmap=""/>
   <glcolors>
     <item name="bg" r="1" g="1" b="1"/>
@@ -17,53 +21,52 @@
     <item name="toolpath" r="0" g="0" b="0"/>
   </glcolors> 
   <menujog>
-    <item index="0" cmd="cmREF" glyph="" text="Home"/>
-    <item index="1" cmd="cmTOUCHOFF" glyph="" text="Touchoff"/>    
-    <item index="2" cmd="cmTOOLS" glyph="" text="Tools"/>
-    <item index="3" cmd="cmSCRIPTS" glyph="" text="Scripts"/>
-    <item index="4" cmd="cmSETUP" glyph="" text="Setup..."/>    
-    <item index="8" cmd="cmINCRDN" glyph="" text="Incr. -"/>
-    <item index="9" cmd="cmINCRUP" glyph="" text="Incr. +"/>
+    <item index="0" cmd="cmREF" glyph="" text="Ref.-Fahrt..."/>
+    <item index="1" cmd="cmTOUCHOFF" glyph="" text="Antasten..."/>    
+    <item index="2" cmd="cmTOOLS" glyph="" text="Werkzg."/>
+    <item index="3" cmd="cmSCRIPTS" glyph="" text="Scripts..."/>
+    <item index="9" cmd="cmCLOSE" glyph="" text="Beenden"/>
   </menujog>
   <menuref>
-    <item index="1" cmd="cmREFALL" glyph="" text="All Axes"/>    
-    <item index="2" cmd="cmREFX" glyph="" text="X-Axis"/>
-    <item index="3" cmd="cmREFY" glyph="" text="Y-Axis"/>
-    <item index="4" cmd="cmREFZ" glyph="" text="Z-Axis"/>    
-    <item index="5" cmd="cmREFA" glyph="" text="A-Axis"/>
-    <item index="6" cmd="cmREFB" glyph="" text="B-Axis"/>
-    <item index="7" cmd="cmREFC" glyph="" text="C-Axis"/>
-    <item index="8" cmd="cmUNREF" glyph="" text="Unhome"/>
+    <item index="0" cmd="cmBACK" glyph="" text="&lt;"/>
+    <item index="1" cmd="cmREFALL" glyph="" text="Alle Achsen"/>    
+    <item index="2" cmd="cmREFX" glyph="" text="X-Achse"/>
+    <item index="3" cmd="cmREFY" glyph="" text="Y-Achse"/>
+    <item index="4" cmd="cmREFZ" glyph="" text="Z-Achse"/>    
+    <item index="5" cmd="cmREFA" glyph="" text="A-Achse"/>
+    <item index="6" cmd="cmREFB" glyph="" text="B-Achse"/>
+    <item index="7" cmd="cmREFC" glyph="" text="C-Achse"/>
+    <item index="8" cmd="cmUNREF" glyph="" text="Ref.Aufheben"/>
   </menuref>
   <menutouchoff>
     <item index="0" cmd="cmBACK" glyph="" text="&lt;"/>
-    <item index="1" cmd="cmTOUCHX" glyph="" text="X-Axis"/>
-    <item index="2" cmd="cmTOUCHY" glyph="" text="Y-Axis"/>    
-    <item index="3" cmd="cmTOUCHZ" glyph="" text="Z-Axis"/>
-    <item index="4" cmd="cmTOUCHA" glyph="" text="A-Axis"/>
-    <item index="5" cmd="cmTOUCHB" glyph="" text="B-Axis"/>    
-    <item index="6" cmd="cmTOUCHC" glyph="" text="C-Axis"/>
-    <item index="7" cmd="cmZEROALL" glyph="" text="All Axes 0.00"/>
+    <item index="1" cmd="cmTOUCHX" glyph="" text="X-Achse"/>
+    <item index="2" cmd="cmTOUCHY" glyph="" text="Y-Achse"/>    
+    <item index="3" cmd="cmTOUCHZ" glyph="" text="Z-Achse"/>
+    <item index="4" cmd="cmTOUCHA" glyph="" text="A-Achse"/>
+    <item index="5" cmd="cmTOUCHB" glyph="" text="B-Achse"/>    
+    <item index="6" cmd="cmTOUCHC" glyph="" text="C-Achse"/>
+    <item index="7" cmd="cmZEROALL" glyph="" text="Alle 0.00"/>
   </menutouchoff>
   <menutool>
-    <item index="1" cmd="cmTOOLCHG" glyph="" text="Change Tool.."/>
-    <item index="2" cmd="cmTOOLEDT" glyph="" text="Edit Tools..."/>    
+    <item index="0" cmd="cmBACK" glyph="" text="&lt;"/>
+    <item index="1" cmd="cmTOOLCHG" glyph="" text="Wkz-Wechsel"/>
+    <item index="2" cmd="cmTOOLEDT" glyph="" text="Wkz bearbeiten..."/>    
   </menutool>
   <menumdi>
-    <item index="0" cmd="cmESTOP" glyph="" text="E-Stop"/>
-    <item index="1" cmd="cmMACHINE" glyph="" text="Machine"/>    
-    <item index="2" cmd="cmJOG" glyph="" text="Manual"/>
-    <item index="3" cmd="cmAUTO" glyph="" text="Auto"/>
-    <item index="4" cmd="" glyph="" text="MDI"/>
+    <item index="0" cmd="cmMDIEXEC" glyph="" text="Ausführen"/>
+    <item index="2" cmd="cmMDIHIST" glyph="" text="Hist.-Löschen"/>    
   </menumdi>
   <menurun>
-    <item index="0" cmd="cmESTOP" glyph="" text="E-Stop"/>    
-    <item index="1" cmd="cmMACHINE" glyph="" text="Machine"/>
-    <item index="2" cmd="cmJOG" glyph="" text="Manual"/>
-    <item index="3" cmd="" glyph="" text="Auto"/>    
-    <item index="4" cmd="cmMDI" glyph="" text="MDI"/>
-    <item index="5" cmd="cmOPEN" glyph="" text="Open file..."/>
-    <item index="6" cmd="cmRELOAD" glyph="" text="Reload file"/>
-    <item index="7" cmd="cmOPTSTOP" glyph="" text="Opt. Stops"/>
+    <item index="0" cmd="cmRUN" glyph="" text="Start"/>    
+    <item index="1" cmd="cmSTOP" glyph="" text="Stop"/>
+    <item index="2" cmd="cmSTEP" glyph="" text="Schritt"/>
+    <item index="3" cmd="cmPAUSE" glyph="" text="Pause"/>    
+    <item index="4" cmd="cmRUNLINE" glyph="" text="Start ab Zeile"/>
+    <item index="5" cmd="cmOPTSTOP" glyph="" text="Opt.-Stops"/>
+    <item index="6" cmd="cmBLOCKDEL" glyph="" text="/ Blöcke"/>
+    <item index="7" cmd="cmRELOAD" glyph="" text="Neu Laden"/>
+    <item index="8" cmd="cmOPEN" glyph="" text="Öffnen..."/>
+    <item index="9" cmd="cmEDITOR" glyph="" text="Editor..."/>
   </menurun>
 </CONFIG>

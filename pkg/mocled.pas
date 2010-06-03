@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, LCLType, LCLProc, LCLIntf,
-  GraphType, Graphics, ImgList, ActnList, Controls, LMessages, Forms,
+  GraphType, Graphics, ActnList, Controls, Forms,
   Themes, Buttons, Menus, LResources, mocbtn;
 
 type
@@ -65,9 +65,7 @@ end;
 
 procedure TMocLed.Paint;
 var
-  R,LedRect: TRect;
-  cw,ch,gw,gh: Integer;
-  Offset: TPoint;
+  R: TRect;
 begin
   R:= ClientRect;
   Canvas.Frame(R);

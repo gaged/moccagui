@@ -50,6 +50,9 @@ type
     ConeX,ConeY,ConeZ: Double;
     ExtX,ExtY,ExtZ: double;
     L: TExtents;
+    LimitIsPart: Boolean;
+    TextScale: Double;
+    TextWidth: Double;
     Offset: tlo;
     ConeL,LimitsL,CoordsL,ListL: gluInt;
     MouseX,MouseY: integer;
@@ -61,12 +64,15 @@ type
     FFileName: string;
     FUnitCode: string;
     FInitCode: string;
+
     procedure MakeLimits;
     procedure MakeCoords;
     procedure MakeCone;
     procedure MakeList;
     procedure Pan(DX,DY: integer);
     procedure UpdateView;
+    procedure UpdatePart;
+    procedure DrawPart;
     procedure MoveCone(X,Y,Z: Double);
     procedure ResetView;
     procedure RotateZ(Angle: integer);
@@ -91,7 +97,7 @@ implementation
 
 uses
   mocjoints,emc2pas,glcanon,
-  logger;
+  logger, glfont;
 
 const
   InitialRotX = -60; InitialRotY = 0; InitialRotZ = 0;
@@ -415,6 +421,32 @@ begin
     end;
 end;
 
+procedure TSimClientForm.UpdatePart;
+var
+  ExtMax: Double;
+begin
+  if not LimitIsPart then Exit;
+  ExtMax:= 1;
+  if ExtX > ExtMax then ExtMax:= ExtX;
+  if ExtY > ExtMax then ExtMax:= ExtY;
+  if ExtZ > ExtMax then ExtMax:= ExtZ;
+  TextScale:= ExtMax / 10;
+  TextWidth:= 6 * TextScale;
+end;
+
+
+procedure TSimClientForm.DrawPart;
+const
+  Dist = 1.2;
+var
+  x,y,z: Double;
+begin
+  if not LimitIsPart then Exit;
+  x:= L.MinX + (ExtX / 2) - (TextWidth / 2);
+  y:= L.MinY - (1.2 * TextScale);
+  DrawGlText(X,Y,L.MinZ,TextScale,'123456');
+end;
+
 procedure TSimClientForm.UpdateView;
 
   procedure CalcExtents;
@@ -426,18 +458,24 @@ procedure TSimClientForm.UpdateView;
 
 begin
   L:= SetExtents(0,0,0,0,0,0);
+  LimitIsPart:= False;
   if (Assigned(MyGlList)) and (FFileName <> '') then
-    MyGlList.GetExtents(L)
+    begin
+      MyGlList.GetExtents(L);
+      LimitIsPart:= True;
+    end
   else
     L:= Vars.MLimits;
   CalcExtents;
   if (ExtX < 0.0001) and (ExtY < 0.0001) and (ExtZ < 0.0001) then
     begin
-      Writeln('Using Machine Limits...');
+      Writeln('Preview is too small. Using Machine Limits...');
       L:= Vars.MLimits;
       CalcExtents;
+      LimitIsPart:= False;
     end;
   GetCanonOffset(Offset);
+  UpdatePart;
   ResetView;
 end;
 
@@ -446,8 +484,8 @@ begin
   Centerx:= L.maxX - (ExtX / 2); //  + offset.x;
   Centery:= L.maxY - (ExtY / 2); // + offset.y;
   Centerz:= L.maxZ - (ExtZ / 2); // + offset.z;
-  writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
-  writeln(Format('%s %f %f %f',['Extents: ',ExtX,ExtY,ExtZ]));
+  //writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
+  //writeln(Format('%s %f %f %f',['Extents: ',ExtX,ExtY,ExtZ]));
   PanX:= 0; PanY:= 0; PanZ:= 0; EyeX:= 0; EyeY:= 0;
   if FViewMode = 0 then
     begin
@@ -471,8 +509,6 @@ begin
   if ZoomMax > 10000 then ZoomMax:= 10000 else
     if ZoomMax < 10 then ZoomMax:= 10;
   if Round(EyeZ) < 1 then EyeZ:= 1;
-
-  // SbZoom.SetParams(Round(EyeZ),1,ZoomMax,1);
 
   if Ogl.MakeCurrent then
     begin
@@ -543,16 +579,15 @@ begin
   with GlColors.bg do
     glClearColor(r,g,b,1);
   glClearDepth(1.0);
-
   if Assigned(Ogl) then
     if (ogl.Height > 0) and (ogl.Width > 0) then
       glViewPort(0,0,ogl.Width,ogl.Height);
-
   EyeX:= 0;
   EyeY:= 0;
   MakeCone;
   MakeCoords;
   MakeLimits;
+  BuildGlFont;
 end;
 
 begin
@@ -596,6 +631,8 @@ begin
   SetGlColor3(GlColors.toolpath);
   if FShowLivePlot then
     LoggerCall;
+  // DrawPart;
+  // DrawText(1,0,0,0.05,'0123456789');
   {$IFDEF LINESMOOTH}
   glDisable(GL_LINE_SMOOTH);
   {$ENDIF}

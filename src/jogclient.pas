@@ -54,7 +54,7 @@ type
     procedure UpdateBtnState(Down: Boolean);
     procedure UpdateSelf;
     procedure InitControls;
-    procedure MapButtons(MapAll: Boolean);
+    procedure MapButtons;
     procedure UpdateButtons;
     procedure ChangeButtons(ToMap: integer);
     procedure ChangeIncrements(i: integer);
@@ -157,7 +157,7 @@ begin
   if ToMap <> FCurrentMap then
     begin
       FCurrentMap:= ToMap;
-      MapButtons(False);
+      MapButtons;
       UpdateButtons;
     end;
 end;
@@ -169,15 +169,13 @@ begin
   if not Visible then
     Visible:= true;
   FCurrentMap:= 0;
-  MapButtons(True);
+  MapButtons;
   InitControls;
 end;
 
 procedure TJogClientForm.UpdateButtons;
-var
-  i: integer;
 begin
-  for i:= 0 to NumButtons - 1 do
+  {for i:= 0 to NumButtons - 1 do
     begin
       if Assigned(MocBtns[i]) then
         MocBtns[i].Enabled:= State.Machine;
@@ -186,7 +184,7 @@ begin
   SetButtonEnabled(cmSPCW,State.Machine);
   SetButtonEnabled(cmSPCCW,State.Machine);
   SetButtonEnabled(cmSPPLUS,State.Machine);
-  SetButtonEnabled(cmFLOOD,State.Machine);
+  SetButtonEnabled(cmFLOOD,State.Machine);}
 end;
 
 procedure TJogClientForm.UpdateSelf;
@@ -221,13 +219,11 @@ begin
 
 end;
 
-procedure TJogClientForm.MapButtons(MapAll: Boolean);
+procedure TJogClientForm.MapButtons;
 var
   V: PButtonArray;
-  //S: PSButtonArray;
-  //M: PMButtonArray;
 begin
-  V:= nil; // M:= nil;
+  V:= nil;
   case FCurrentMap of
     0: V:= @BtnDefJog;
     1: V:= @BtnDefJogRef;
@@ -235,8 +231,6 @@ begin
     3: V:= @BtnDefJogTool;
     4: V:= @BtnDefScripts;
   end;
-  //if MapAll then
-  //  M:= @BtnDefJog;
   SetButtonMap(V,@Self.Click);
   UpdateButtons;
 end;
