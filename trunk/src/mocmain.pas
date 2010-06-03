@@ -65,7 +65,7 @@ type
     ButtonModeMDI: TMocButton;
     ButtonCoolant: TMocButton;
     ButtonMist: TMocButton;
-    ButtonSpCCW: TMocButton;
+    ButtonSpReverse: TMocButton;
     ButtonSpindle: TMocButton;
     ButtonEStop: TMocButton;
     ButtonMachine: TMocButton;
@@ -96,17 +96,14 @@ type
     SliderSOR: TSlider;
     Timer: TTimer;
 
-    procedure BtnRunClick(Sender: TObject);
     procedure BtnCoordsClick(Sender: TObject);
-    procedure BtnEStopClick(Sender: TObject);
-    procedure BtnManClick(Sender: TObject);
-    procedure BtnMDIClick(Sender: TObject);
+    procedure ButtonClick(Sender: TObject);
     procedure BtnSpCCWClick(Sender: TObject);
     procedure BtnSpClick(Sender: TObject);
-    procedure BtnSpDirClick(Sender: TObject);
+    procedure BtnSpReverseClick(Sender: TObject);
     procedure BtnFeedRstClick(Sender: TObject);
-    procedure BtnMachineClick(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
+
     procedure ButtonSpindleMinusClick(Sender: TObject);
     procedure ButtonSpindlePlusClick(Sender: TObject);
     procedure BtnSpindleBrakeClick(Sender: TObject);
@@ -129,12 +126,9 @@ type
     procedure LabelMsgClick(Sender: TObject);
     procedure LabelUnitsClick(Sender: TObject);
     procedure LabelViewClick(Sender: TObject);
-    procedure ButtonCoolantClick(Sender: TObject);
-    procedure ButtonMistClick(Sender: TObject);
     procedure ButtonShowDtgClick(Sender: TObject);
 
     procedure OnTimer(Sender: TObject);
-    procedure PanelButtonsClick(Sender: TObject);
 
     procedure PanelMasterResize(Sender: TObject);
     procedure PanelPreviewResize(Sender: TObject);
@@ -143,7 +137,6 @@ type
     procedure SliderFeedPositionChanged(Sender: TObject; NewPos: integer);
     procedure SliderSORPositionChanged(Sender: TObject; NewPos: integer);
     procedure SliderVelPositionChanged(Sender: TObject; NewPos: integer);
-
 
   private
     FEStop: Boolean;
@@ -198,7 +191,11 @@ end;
 
 procedure TMainForm.TaskModeChanged;  // called by MainForm.UpdateTaskMode
 begin
-  if ScriptRunning then Exit;
+  if ScriptRunning then
+    begin
+      writeln('ignore taskmode');
+      Exit;
+    end;
   clJog.Visible:= (State.TaskMode = TaskModeManual);
   clRun.Visible:= (State.TaskMode = TaskModeAuto);
   clMdi.Visible:= (State.TaskMode = TaskModeMDI);
@@ -288,7 +285,9 @@ begin
   if FFeed <> State.ActFeed then
     begin
       SliderFeed.Caption:= IntToStr(State.ActFeed) + '%';
+      SliderFeed.Position:= State.ActFeed;
       FFeed:= State.ActFeed;
+
     end;
 
   if FMaxVel <> State.ActVel then
@@ -436,6 +435,8 @@ begin
 end;
 
 procedure TMainForm.InitPanels;  // init the panels, clients, joints
+var
+  i: integer;
 begin
   if Assigned(MsgForm) then
     begin
@@ -469,6 +470,16 @@ begin
         ButtonView2.Down:= ViewMode = 2;
         ButtonView3.Down:= ViewMode = 3;
       end;
+
+  for i:= 0 to Self.ComponentCount - 1 do
+    begin
+      if Self.Components[i] is TMocButton then
+        with Self.Components[i] as tMocButton do
+          begin
+            if Command <> '' then
+              Tag:= GetCmdNumber(Command);
+          end;
+    end;
 
   FOn:= not State.Machine;
   FMaxVel:= 0;
@@ -610,16 +621,7 @@ begin
   except
     LastError:= 'Could not load Toolfile';
   end;
-end;
 
-procedure TMainForm.BtnManClick(Sender: TObject);
-begin
-  Emc.HandleCommand(cmJOG);
-end;
-
-procedure TMainForm.BtnMDIClick(Sender: TObject);
-begin
-  Emc.HandleCommand(cmMDI);
 end;
 
 procedure TMainForm.BtnSpCCWClick(Sender: TObject);
@@ -637,7 +639,7 @@ begin
     HandleCommand(cmSPCW);
 end;
 
-procedure TMainForm.BtnSpDirClick(Sender: TObject);
+procedure TMainForm.BtnSpReverseClick(Sender: TObject);
 begin
   if FSpDir <> 0 then Exit;
   FSpReverse:= not FSpReverse;
@@ -646,14 +648,9 @@ end;
 
 procedure TMainForm.BtnFeedRstClick(Sender: TObject);
 begin
-  SliderFeed.Position:= 100;
-  State.ActFeed:= 100;
-  SliderFeed.Invalidate;
-end;
-
-procedure TMainForm.BtnMachineClick(Sender: TObject);
-begin
-  Emc.HandleCommand(cmMACHINE);
+  //SliderFeed.Position:= 100;
+  //State.ActFeed:= 100;
+  //SliderFeed.Invalidate;
 end;
 
 procedure TMainForm.ButtonClearClick(Sender: TObject);
@@ -719,19 +716,20 @@ begin
     clSim.Zoom(1);
 end;
 
-procedure TMainForm.BtnRunClick(Sender: TObject);
-begin
-  Emc.HandleCommand(cmAUTO);
-end;
-
 procedure TMainForm.BtnCoordsClick(Sender: TObject);
 begin
   Joints.ShowRelative:= not Joints.ShowRelative;
 end;
 
-procedure TMainForm.BtnEStopClick(Sender: TObject);
+procedure TMainForm.ButtonClick(Sender: TObject);
+var
+  Cmd: integer;
 begin
-  Emc.HandleCommand(cmESTOP);
+  if Sender = nil then ;
+  with Sender as TMocButton do
+    Cmd:= Tag;
+  if Cmd > 0 then
+    Emc.HandleCommand(Cmd);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -862,16 +860,6 @@ begin
     Joints.ShowActual:= not Joints.ShowActual;
 end;
 
-procedure TMainForm.ButtonCoolantClick(Sender: TObject);
-begin
-  Emc.HandleCommand(cmFLOOD);
-end;
-
-procedure TMainForm.ButtonMistClick(Sender: TObject);
-begin
-  Emc.HandleCommand(cmMIST);
-end;
-
 procedure TMainForm.ButtonShowDtgClick(Sender: TObject);
 begin
   Joints.ShowDtg:= not Joints.ShowDtg;
@@ -880,11 +868,6 @@ end;
 procedure TMainForm.OnTimer(Sender: TObject);
 begin
   Self.UpdateState;
-end;
-
-procedure TMainForm.PanelButtonsClick(Sender: TObject);
-begin
-
 end;
 
 procedure TMainForm.PanelMasterResize(Sender: TObject);

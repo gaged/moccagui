@@ -114,7 +114,7 @@ begin
   P:= Get;
   if P <> nil then
   begin
-    E:= SetExtents(P^.l1.x,P^.l1.y,P^.l1.z,0,0,0);
+    E:= SetExtents(P^.l1.x,P^.l1.x,P^.l1.y,P^.l1.y,P^.l1.z,P^.l1.z);
     Check(P^.l2);
     P:= Get;
   end;

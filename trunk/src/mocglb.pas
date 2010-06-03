@@ -64,6 +64,8 @@ procedure CallEditor;
 
 procedure ReadStyle(const Form: TForm);
 
+function GetCmdNumber(const C: string): integer;
+
 implementation
 
 
@@ -73,6 +75,21 @@ uses
  {$ENDIF}
  Process,
  stylereader;
+
+function GetCmdNumber(const C: string): integer;
+var
+  i: integer;
+begin
+  Result:= -2;
+  for i:= 0 to CmdNamesMax do
+    begin
+      if C = CmdNames[i].S then
+        begin
+          Result:= CmdNames[i].i;
+          Exit;
+        end;
+    end;
+end;
 
 procedure ReadStyle(const Form: TForm);
 var
@@ -167,7 +184,6 @@ begin
         MocBtns[i].Down:= False;
         MocBtns[i].Glyph:= nil;
         iBmp:= M^[i].G;
-        // writeln('Bitmapindex: ',iBmp);
         if (iBmp >= 0) and Assigned(GlobalBitmaps) then
           if Assigned(GlobalBitmaps.Objects[iBmp]) then
             MocBtns[i].Glyph.Assign(TBitmap(GlobalBitmaps.Objects[iBmp]));

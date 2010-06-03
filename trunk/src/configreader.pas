@@ -27,20 +27,91 @@ begin
   raise Exception.Create(Msg);
 end;
 
-
-function GetCmdNumber(const C: string): integer;
+procedure ReadScripts(Node: TDomNode);
 var
+  N: TDomNode;
+  nn,nv: string;
   i: integer;
+  iNr: integer;
+  sName,sFile: string;
+  iBmp: integer;
+  NumScripts: integer;
 begin
-  Result:= -2;
-  for i:= 0 to CmdNamesMax do
+  NumScripts:= 0;
+  HasScripts:= False;
+  with BtnDefScripts[0] do
     begin
-      if C = CmdNames[i].S then
+      T:= cmBACK;
+      G:= -1;
+      S:= '<';
+    end;
+  for i:= 1 to NumButtons - 1 do
+    begin
+      MocScripts[i].Name:= '';
+      MocScripts[i].Script:= '';
+      with BtnDefScripts[i] do
         begin
-          Result:= CmdNames[i].i;
-          Exit;
+          T:= -1;
+          G:= -1;
+          S:= '';
         end;
     end;
+  if Node = nil then
+    begin
+      writeln('No Scripts found in config-file.');
+      Exit;
+    end;
+  N:= Node.FirstChild;
+  while N <> nil do
+    begin
+      if not N.HasAttributes then Exit;
+      if N.Attributes.Length < 1 then Exit;
+      iNr:= -1;
+      iBmp:= -1;
+      sName:= '';
+      sFile:= '';
+      for i:= 0 to N.Attributes.Length - 1 do
+        begin
+          nn:= LowerCase(N.Attributes[i].NodeName);
+          nv:= N.Attributes[i].NodeValue;
+          if nn = 'index' then
+            try
+              iNr:= StrToInt(nv);
+            except
+              iNr:= -1;
+              writeln('Error in Configfile, Scripts: ' + NV +
+                'is not a valid integer');
+              Exit;
+            end;
+          if nn = 'name' then
+            sName:= nv;
+          if nn = 'script' then
+            sFile:= nv;
+          if nn = 'bitmap' then
+            begin
+               iBmp:= -1;
+               if nv <> '' then
+                 begin
+                   iBmp:= AddBitmap(nv);
+                   if iBmp = -1 then
+                     writeln('error adding bitmap:',nv);
+                 end;
+            end;
+         end;
+      if (sName <> '') and (sFile <> '') then
+        if (iNr >= 0) and (iNr < NumButtons) then
+          begin
+            MocScripts[iNr+1].Name:= sName;
+            MocScripts[iNr+1].Script:= sFile;
+            BtnDefScripts[iNr+1].T:= cmSCRIPTBASE + iNr + 1;
+            BtnDefScripts[iNr+1].G:= iBmp;
+            BtnDefScripts[iNr+1].S:= sName;
+            writeln('Added Script: ' + sName +' ,File: '+ sFile);
+            Inc(NumScripts);
+          end;
+      N:= N.NextSibling;
+    end;
+  HasScripts:= (NumScripts > 0);
 end;
 
 procedure ReadTools(Node: TDomNode);
@@ -321,6 +392,7 @@ begin
   try
     ReadGlColors(GetNode('glcolors'));
     ReadTools(GetNode('tools'));
+    ReadScripts(GetNode('scripts'));
     ReadMenu(GetNode('menujog'),@BtnDefJog);
     ReadMenu(GetNode('menumdi'),@BtnDefMdi);
     ReadMenu(GetNode('menurun'),@BtnDefRun);

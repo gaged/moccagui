@@ -20,7 +20,11 @@ var
   i,b: integer;
 begin
   Result:= '';
-  if not HasScripts then Exit;
+  if not HasScripts then
+    begin
+      writeln('Called "GetScriptFile" but no Scripts available');
+      Exit;
+    end;
   for i:= 0 to NumButtons - 1 do
     if BtnDefScripts[i].T = C then
       begin
@@ -55,6 +59,7 @@ var
   s: string;
   i: integer;
 begin
+  writeln('executing script');
   ScriptRunning:= True;
   try
     sendMDI;
@@ -63,13 +68,23 @@ begin
       begin
         s:= StrListScript[i];
         if (ErrorStr[0] <> #0) or (State.EStop) or
-        (not State.Machine) then Break;
-        if not ScriptRunning then Break;
+        (not State.Machine) then
+          begin
+            writeln('Script aborted.');
+            Break;
+          end;
+        if not ScriptRunning then
+          begin
+            writeln('Script halted.');
+            Break;
+          end;
+        writeln('script: ' + S);
         if s <> '' then
           ExecuteLine(s);
       end;
   finally
     SendManual;
+    Emc.WaitDone;
     ScriptRunning:= False;
   end;
 end;
@@ -77,11 +92,21 @@ end;
 procedure RunScript(Cmd: integer);
 var
   s: string;
+  e: string;
   i,OldMode: integer;
+
 begin
+  e:= '';
   if State.TaskMode <> TASKMODEMANUAL then
+    e:= 'Cannot run a script when not in mode manual';
+  if not State.Machine then
+    e:= 'Cannot execute a script when machine is turned off.';
+  if State.EStop then
+    e:= 'Cannot execute a script when EStop is activated.';
+  if e <> '' then
     begin
-      LastError:= 'Cannot run a script when not in mode manual';
+      writeln(e);
+      LastError:= e;
       Exit;
     end;
   s:= GetScriptFile(Cmd);
@@ -92,14 +117,22 @@ begin
     end;
   if not Assigned(StrListScript) then
     StrListScript:= TStringList.Create;
-  if StrListScript = nil then Exit;
+  if StrListScript = nil then
+    begin
+      writeln('error creating stringlist for scripts');
+      Exit;
+    end;
   try
-    StrListScript.LoadFromFile(s);
+    StrListScript.LoadFromFile(ConfigDir + s);
   except
     LastError:='Error loading script: ' + s;
+    writeln(LastError);
     Exit;
   end;
-  ExecuteScript;
+  if StrListScript.Count < 1 then
+    writeln('Script ' + s + ' is empty!')
+  else
+    ExecuteScript;
 end;
 
 finalization

@@ -1,45 +1,45 @@
 object ToolDlg: TToolDlg
-  Left = 434
+  Left = 477
   Height = 340
-  Top = 370
-  Width = 625
+  Top = 297
+  Width = 615
   ActiveControl = Grid
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Werkzeuge bearbeiten'
   ClientHeight = 340
-  ClientWidth = 625
+  ClientWidth = 615
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poDesktopCenter
   ShowInTaskBar = stNever
   LCLVersion = '0.9.28.2'
   object Grid: TStringGrid
-    Left = 8
-    Height = 216
-    Top = 16
+    Left = 4
+    Height = 284
+    Top = 8
     Width = 608
     AutoEdit = False
     ColCount = 4
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goEditing, goAlwaysShowEditor, goSmoothScroll]
-    ScrollBars = ssNone
+    ScrollBars = ssVertical
     TabOrder = 0
     OnSetEditText = GridSetEditText
   end
   object BtnOk: TButton
-    Left = 16
-    Height = 25
-    Top = 304
-    Width = 75
+    Left = 4
+    Height = 37
+    Top = 300
+    Width = 96
     Caption = '&Speichern'
     ModalResult = 1
     TabOrder = 1
   end
   object BtnCancel: TButton
-    Left = 105
-    Height = 25
-    Top = 304
-    Width = 75
+    Left = 108
+    Height = 36
+    Top = 300
+    Width = 96
     Caption = '&Abbruch'
     ModalResult = 2
     TabOrder = 2

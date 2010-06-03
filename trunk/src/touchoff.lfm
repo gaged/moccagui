@@ -1,7 +1,7 @@
 object TouchOffDlg: TTouchOffDlg
-  Left = 569
+  Left = 471
   Height = 189
-  Top = 432
+  Top = 367
   Width = 330
   ActiveControl = EditV
   BorderIcons = [biSystemMenu]

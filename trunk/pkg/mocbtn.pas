@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, LCLType, LCLProc, LCLIntf,
-  GraphType, Graphics, ImgList, ActnList, Controls, LMessages, Forms,
+  GraphType, Graphics, ActnList, Controls, LMessages, Forms,
   Themes, Buttons, Menus, LResources;
 
 type
@@ -27,8 +27,10 @@ type
     FState: TButtonState;
     FShowClicks: Boolean;
     FTextStyle: TTextStyle;
+    FCommand: string;
     procedure GlyphChanged(Sender: TObject);
     procedure Paint; override;
+    procedure SetCommand(Value: string);
     procedure SetDown(Value: Boolean);
     procedure RealSetText(const Value: TCaption); override;
   public
@@ -36,6 +38,7 @@ type
     destructor Destroy; override;
     procedure LoadGlyphFromLazarusResource(const AName: String);
   published
+    property Command: string read FCommand write SetCommand;
     property Down: Boolean read FDown write SetDown default false;
     property Glyph: TBitmap read GetGlyph write SetGlyph;
     property ShowClicks: boolean read FShowClicks write FShowClicks default false;
@@ -95,12 +98,21 @@ begin
   inherited Destroy;
 end;
 
-procedure TMocButton.SetDown(Value : Boolean);
+procedure TMocButton.SetDown(Value: Boolean);
 begin
   if FDown <> Value then
     begin
       FDown:= Value;
       Invalidate;
+    end;
+end;
+
+procedure TMocButton.SetCommand(Value: string);
+begin
+  if FCommand <> Value then
+    begin
+      FCommand:= Value;
+      Tag:= 0;
     end;
 end;
 

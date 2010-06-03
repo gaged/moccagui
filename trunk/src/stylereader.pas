@@ -117,9 +117,9 @@ begin
         if PropName = 'BORDERSTYLE' then
           begin
             S:= UpperCase(PropVal);
-            if S = 'BSNONE' then BorderStyle:= bsNone else
-            if S = 'BSSINGLE' then Borderstyle:= bsSingle else
-            if S = 'BSSIZEABLE' then BorderStyle:= bsSizeable;
+            if S = 'NONE' then BorderStyle:= bsNone else
+            if S = 'SINGLE' then Borderstyle:= bsSingle else
+            if S = 'SIZEABLE' then BorderStyle:= bsSizeable;
           end;
       end;
   if Comp is TMocButton then

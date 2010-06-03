@@ -12,15 +12,10 @@ uses
   {$IFNDEF OWNGL}
   OpenGlContext,
   {$ENDIF}
-  moccapkg,
-  emc2pas,
-  SysUtils,
-  mocmain,
-  mocglb, mocini, jogclient,
-  runclient, mdiclient,
-  simclient,
-  offsetdlg, tooleditdlg, touchoff, toolchange, hal, emcint,
-  partaligndlg, scripts, logger, setup, emcmsgbox, configreader;
+  moccapkg, emc2pas, SysUtils, mocmain, mocglb, mocini, jogclient, runclient,
+  mdiclient, simclient, offsetdlg, tooleditdlg, touchoff, toolchange, hal,
+  emcint, partaligndlg, scripts, logger, setup, emcmsgbox, configreader,
+  touchoffwiz, glfont;
 
 const
 //  __LC_CTYPE    = 0;
@@ -85,6 +80,7 @@ begin
   if not InitEmc then Halt(1);
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TTouchOffWizDlg, TouchOffWizDlg);
   Application.Run;
   QuitEMC;
 end.
