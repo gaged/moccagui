@@ -430,21 +430,43 @@ begin
   if ExtX > ExtMax then ExtMax:= ExtX;
   if ExtY > ExtMax then ExtMax:= ExtY;
   if ExtZ > ExtMax then ExtMax:= ExtZ;
-  TextScale:= ExtMax / 10;
+  TextScale:= ExtMax / 25;
   TextWidth:= 6 * TextScale;
 end;
 
-
 procedure TSimClientForm.DrawPart;
-const
-  Dist = 1.2;
 var
   x,y,z: Double;
+  DispX,DispY,DispZ: Double;
 begin
   if not LimitIsPart then Exit;
+  if Vars.Metric then
+    begin
+      DispX:= ExtX * 25.4;
+      DispY:= ExtY * 25.4;
+      DispZ:= ExtZ * 25.4;
+    end
+  else
+    begin
+      DispX:= ExtX;
+      DispY:= ExtY;
+      DispZ:= ExtZ;
+    end;
+  // X-Coord
   x:= L.MinX + (ExtX / 2) - (TextWidth / 2);
   y:= L.MinY - (1.2 * TextScale);
-  DrawGlText(X,Y,L.MinZ,TextScale,'123456');
+  z:= L.MinZ;
+  DrawGlText(x,y,z,glfX,TextScale,PosToString(DispX));
+  // Y-Coord
+  x:= L.MinX + (ExtX / 2) - (TextWidth / 2);
+  y:= - L.MinY; //  - (1.2 * TextScale);
+  z:= L.MinZ;
+  DrawGlText(x,y,z,glfY,TextScale,PosToString(DispY));
+  // Z-Coord
+  x:= L.MinX - TextWidth - 1; //  - (TextWidth / 2);
+  y:= L.MinZ + (ExtZ / 2); //- L.MinY; //  - (1.2 * TextScale);
+  z:= - (L.MinY + (ExtY / 2)); //  (ExtZ / 2);
+  DrawGlText(x,y,z,glfZ,TextScale,PosToString(DispZ));
 end;
 
 procedure TSimClientForm.UpdateView;
@@ -484,8 +506,8 @@ begin
   Centerx:= L.maxX - (ExtX / 2); //  + offset.x;
   Centery:= L.maxY - (ExtY / 2); // + offset.y;
   Centerz:= L.maxZ - (ExtZ / 2); // + offset.z;
-  //writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
-  //writeln(Format('%s %f %f %f',['Extents: ',ExtX,ExtY,ExtZ]));
+  writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
+  writeln(Format('%s %f %f %f',['Extents: ',ExtX,ExtY,ExtZ]));
   PanX:= 0; PanY:= 0; PanZ:= 0; EyeX:= 0; EyeY:= 0;
   if FViewMode = 0 then
     begin
@@ -631,8 +653,8 @@ begin
   SetGlColor3(GlColors.toolpath);
   if FShowLivePlot then
     LoggerCall;
-  // DrawPart;
-  // DrawText(1,0,0,0.05,'0123456789');
+  DrawPart;
+  //DrawText(1,0,0,0.05,'0123456789');
   {$IFDEF LINESMOOTH}
   glDisable(GL_LINE_SMOOTH);
   {$ENDIF}
