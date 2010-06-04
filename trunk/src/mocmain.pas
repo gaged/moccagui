@@ -15,6 +15,7 @@ type
 
   TMainForm = class(TForm)
     BgImage: TImage;
+    ButtonShowDim: TMocButton;
     ButtonView1: TMocButton;
     ButtonView2: TMocButton;
     ButtonView3: TMocButton;
@@ -27,6 +28,7 @@ type
     LedSOREnabled: TMocLed;
     ButtonView0: TMocButton;
     MocLedToolpath: TMocLed;
+    MocLedShowDim: TMocLed;
     OEMLabel1: TLabel;
     OEMLabel2: TLabel;
     OEMLabel3: TLabel;
@@ -107,6 +109,7 @@ type
     procedure ButtonSpindleMinusClick(Sender: TObject);
     procedure ButtonSpindlePlusClick(Sender: TObject);
     procedure BtnSpindleBrakeClick(Sender: TObject);
+    procedure ButtonShowDimClick(Sender: TObject);
     procedure ButtonToolPathClick(Sender: TObject);
     procedure ButtonView0Click(Sender: TObject);
     procedure ButtonView1Click(Sender: TObject);
@@ -465,6 +468,7 @@ begin
     with clSim do
       begin
         MocLedToolPath.IsOn:= ShowLivePlot;
+        MocLedShowDim.IsOn:= ShowDimensions;
         ButtonView0.Down:= ViewMode = 0;
         ButtonView1.Down:= ViewMode = 1;
         ButtonView2.Down:= ViewMode = 2;
@@ -553,6 +557,7 @@ begin
         writeln('Error loading background- image: ' + BackGroundImage);
       end;
     end;
+
 //  {$IFDEF LCLGTK2}
 //  if (Vars.WindowSize = 2) then
 //    begin
@@ -672,6 +677,14 @@ end;
 procedure TMainForm.BtnSpindleBrakeClick(Sender: TObject);
 begin
   HandleCommand(cmSPBRAKE);
+end;
+
+procedure TMainForm.ButtonShowDimClick(Sender: TObject);
+begin
+  if not Assigned(clSim) then
+    Exit;
+  clSim.ShowDimensions:= not clSim.ShowDimensions;
+  MocLedShowDim.IsOn:= clSim.ShowDimensions;
 end;
 
 procedure TMainForm.ButtonToolPathClick(Sender: TObject);

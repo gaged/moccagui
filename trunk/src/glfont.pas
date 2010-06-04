@@ -16,6 +16,9 @@ procedure DrawGlText(x,y,z: Double; fo: TGlFontOrientation; Scale: Double; S: st
 procedure DrawGlDigit(C: Char);
 procedure BuildGlFont;
 
+const
+  GlFontDist = 0.8;
+
 implementation
 
 type
@@ -33,6 +36,7 @@ const
 
 const
   DigitBase = 10;
+
 
 var
   DigitsInitialized: Boolean;
