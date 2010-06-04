@@ -140,19 +140,6 @@ begin
   t:= i;
 end;
 
-function PosToString(const Value: Double): string;
-var
-  s: string;
-begin
-  Result:= '';
-  if Value >= 0 then S:= '+';
-  if Vars.Metric then
-    S:= S + FloatToStrF(Value, ffFixed, 8, 3)
-  else
-    S:= S + FloatToStrF(Value, ffFixed, 8, 4);
-  Result:= S;
-end;
-
 constructor TAxis.Create(APanel: TWinControl; Id: integer; Des: Char);
 begin
   FValue:= -1;

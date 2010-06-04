@@ -45,6 +45,8 @@ var
     IsSet: Boolean;
   end;
 
+function PosToString(const Value: Double): string;
+
 procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
 procedure SetButtonDown(ACmd: integer; SetDown: Boolean);
 procedure SetButtonText(ACmd: integer; AText: string);
@@ -75,6 +77,19 @@ uses
  {$ENDIF}
  Process,
  stylereader;
+
+function PosToString(const Value: Double): string;
+var
+  s: string;
+begin
+  Result:= '';
+  if Value >= 0 then S:= '+';
+  if Vars.Metric then
+    S:= S + FloatToStrF(Value, ffFixed, 8, 3)
+  else
+    S:= S + FloatToStrF(Value, ffFixed, 8, 4);
+  Result:= S;
+end;
 
 function GetCmdNumber(const C: string): integer;
 var

@@ -9,7 +9,10 @@ uses
 
 // The OpenGl Font
 
-procedure DrawGlText(x,y,z: Double; Scale: Double; S: string);
+type
+  TGlFontOrientation = (glfX,glfY,glfZ);
+
+procedure DrawGlText(x,y,z: Double; fo: TGlFontOrientation; Scale: Double; S: string);
 procedure DrawGlDigit(C: Char);
 procedure BuildGlFont;
 
@@ -64,6 +67,23 @@ begin
   glEndList;
 end;
 
+procedure MakeDot;
+var
+  ListId: integer;
+begin
+  ListId:= DigitBase + 10;
+  glDeleteLists(ListId,1);
+  glNewList(ListId,GL_COMPILE);
+  glBegin(GL_LINES);
+  glVertex3f(0.2,0,0);
+  glVertex3f(0.3,0,0);
+  glVertex3f(0.3,0.1,0);
+  glVertex3f(0.2,0.1,0);
+  glVertex3f(0.2,0,0);
+  glEnd;
+  glEndList;
+end;
+
 procedure BuildGlFont;
 begin
   MakeDigit(0,true,true,true,false,true,true,true);
@@ -76,6 +96,7 @@ begin
   MakeDigit(7,true,false,true,false,false,true,false);
   MakeDigit(8,true,true,true,true,true,true,true);
   MakeDigit(9,true,true,true,true,false,true,true);
+  MakeDot;
   DigitsInitialized:= True;
 end;
 
@@ -94,28 +115,45 @@ begin
     '7': glCallList(DigitBase + 7);
     '8': glCallList(DigitBase + 8);
     '9': glCallList(DigitBase + 9);
+    ',','.': glCallList(DigitBase + 10);
   end;
 end;
 
-procedure DrawGlText(x,y,z: Double; Scale: Double; S: string);
+procedure DrawGlText(x,y,z: Double;fo: TGlFontOrientation;Scale: Double; S: string);
 var
   i: integer;
   dx,dy,dz: double;
 begin
   if (S = '') or (Scale = 0) then Exit;
-  dx:= x / Scale; // translate manually, saves code
+  dx:= x / Scale;
   dy:= y / Scale;
   dz:= z / Scale;
+  glPushMatrix;
+  glScaleF(Scale,Scale,Scale);
+  if fo = glfX then
+    begin
+      glTranslateF(dx,dy,dz);
+    end
+  else
+  if fo = glfY then
+    begin
+      glRotateF(90,0,0,1);
+      glTranslateF(dx,dy,dz);
+    end
+  else
+    begin
+      glRotateF(90,1,0,0);
+      glTranslateF(dx,dy,dz);
+    end;
   for i:= 1 to Length(S) do
     begin
-      glPushMatrix;
-      glScaleF(Scale,Scale,1);
-      glTranslateF(dx,dy,dz);
       DrawGlDigit(S[i]);
-      dx:= dx + 1.1;
-      glPopMatrix;
+      glTranslateF(1.1,0,0);
     end;
+  glPopMatrix;
 end;
+
+
 
 end.
 
