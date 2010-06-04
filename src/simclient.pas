@@ -42,7 +42,14 @@ type
     {$ELSE}
     ogl: TGlControl;
     {$ENDIF}
+
     FShowLivePlot: Boolean;
+    FShowDimensions: Boolean;
+    FViewMode: integer;
+    FFileName: string;
+    FUnitCode: string;
+    FInitCode: string;
+
     RotationX,RotationY,RotationZ: double;
     PanX,PanY,PanZ: double;
     CenterX,CenterY,CenterZ: double;
@@ -50,20 +57,16 @@ type
     ConeX,ConeY,ConeZ: Double;
     ExtX,ExtY,ExtZ: double;
     L: TExtents;
-    LimitIsPart: Boolean;
-    TextScale: Double;
-    TextWidth: Double;
+    DimDrawFlag: Boolean;
+    DimScale: Double;
+    DimDist: Double;
     Offset: tlo;
     ConeL,LimitsL,CoordsL,ListL: gluInt;
     MouseX,MouseY: integer;
     Moving: Boolean;
-    FViewMode: integer;
     ToolRad,ToolLen: double;
     AreaInitialized: Boolean;
     ZoomMax: integer;
-    FFileName: string;
-    FUnitCode: string;
-    FInitCode: string;
 
     procedure MakeLimits;
     procedure MakeCoords;
@@ -71,8 +74,11 @@ type
     procedure MakeList;
     procedure Pan(DX,DY: integer);
     procedure UpdateView;
-    procedure UpdatePart;
-    procedure DrawPart;
+    procedure UpdateDim;
+    procedure DrawDim;
+    procedure DrawDimX;
+    procedure DrawDimY;
+    procedure DrawDimZ;
     procedure MoveCone(X,Y,Z: Double);
     procedure ResetView;
     procedure RotateZ(Angle: integer);
@@ -87,6 +93,7 @@ type
     procedure ClearPlot;
     procedure UpdateSelf;
     property  ShowLivePlot: Boolean read FShowLivePlot write FShowLivePlot;
+    property  ShowDimensions: Boolean read FShowDimensions write FShowDimensions;
     property  ViewMode: integer read FViewMode write SetViewMode;
   end;
   
@@ -184,9 +191,14 @@ end;
 
 procedure TSimClientForm.FormCreate(Sender: TObject);
 begin
-  // ReadStyle(Self);
+
   AreaInitialized:= False;
+
   FViewMode:= 0;
+  FShowLivePlot:= True;
+  FShowDimensions:= True;
+  FFileName:= '';
+
   ConeL:= 1;
   LimitsL:= 2;
   CoordsL:= 3;
@@ -194,8 +206,11 @@ begin
   ToolRad:= 0.2;
   ToolLen:= 0.5;
   ZoomMax:= 10;
-  FShowLivePlot:= True;
-  FFileName:= '';
+
+  DimScale:= 1;
+  DimDist:= 1;
+  DimDrawFlag:= False;
+
   sbV.setParams(InitialRotX,-180,180,1);
   sbH.SetParams(InitialRotZ,-180,180,1);
   if not Assigned(MyGlList) then
@@ -421,52 +436,173 @@ begin
     end;
 end;
 
-procedure TSimClientForm.UpdatePart;
+procedure TSimClientForm.UpdateDim;
 var
   ExtMax: Double;
 begin
-  if not LimitIsPart then Exit;
+  if not DimDrawFlag then Exit;
   ExtMax:= 1;
   if ExtX > ExtMax then ExtMax:= ExtX;
   if ExtY > ExtMax then ExtMax:= ExtY;
   if ExtZ > ExtMax then ExtMax:= ExtZ;
-  TextScale:= ExtMax / 25;
-  TextWidth:= 6 * TextScale;
+  DimScale:= ExtMax / 25;
+  DimDist:= 1.3 * DimScale;
 end;
 
-procedure TSimClientForm.DrawPart;
+procedure TSimClientForm.DrawDimX;
 var
-  x,y,z: Double;
-  DispX,DispY,DispZ: Double;
+  i: integer;
+  w,tw,x,y,z: double;
+  s: string;
 begin
-  if not LimitIsPart then Exit;
+  if DimScale = 0 then Exit;
+
   if Vars.Metric then
-    begin
-      DispX:= ExtX * 25.4;
-      DispY:= ExtY * 25.4;
-      DispZ:= ExtZ * 25.4;
-    end
+    w:= ExtX * 25.4
   else
+    w:= ExtX;
+  s:= PosToString(w);
+
+  if s = '' then Exit;
+
+  y:= L.MinY - DimDist;
+  z:= L.MinZ;
+
+  glPushMatrix;
+
+  glBegin(GL_LINES);
+  glVertex3f(L.MinX,y,z);
+  glVertex3f(L.MaxX,y,z);
+  glEnd;
+
+  glBegin(GL_LINES);
+  glVertex3f(L.MinX,y - DimDist,z);
+  glVertex3f(L.MinX,y + DimDist,z);
+  glEnd;
+
+  glBegin(GL_LINES);
+  glVertex3f(L.MaxX,y - DimDist,z);
+  glVertex3f(L.MaxX,y + DimDist,z);
+  glEnd;
+
+  tw:= (Length(s) * GlFontDist) * DimScale;
+
+  if tw < ExtX then
+    x:= L.MinX + (ExtX / 2) - (tw / 2)
+  else
+    x:= L.MaxX + DimDist;
+
+  y:= L.MinY - (3 * DimDist);
+
+  glTranslateF(x,y,z);
+  glScaleF(DimScale,DimScale,DimScale);
+
+  for i:= 1 to Length(S) do
     begin
-      DispX:= ExtX;
-      DispY:= ExtY;
-      DispZ:= ExtZ;
+      DrawGlDigit(S[i]);
+      glTranslateF(GlFontDist,0,0);
     end;
-  // X-Coord
-  x:= L.MinX + (ExtX / 2) - (TextWidth / 2);
-  y:= L.MinY - (1.2 * TextScale);
+
+  glPopMatrix;
+end;
+
+procedure TSimClientForm.DrawDimY;
+var
+  i: integer;
+  w,tw,x,y,z: double;
+  s: string;
+begin
+  if DimScale = 0 then Exit;
+  if Vars.Metric then
+    w:= ExtY * 25.4
+  else
+    w:= ExtY;
+  s:= PosToString(w);
+  if s = '' then Exit;
+  x:= L.MinX - DimDist;
   z:= L.MinZ;
-  DrawGlText(x,y,z,glfX,TextScale,PosToString(DispX));
-  // Y-Coord
-  x:= L.MinX + (ExtX / 2) - (TextWidth / 2);
-  y:= - L.MinY; //  - (1.2 * TextScale);
-  z:= L.MinZ;
-  DrawGlText(x,y,z,glfY,TextScale,PosToString(DispY));
-  // Z-Coord
-  x:= L.MinX - TextWidth - 1; //  - (TextWidth / 2);
-  y:= L.MinZ + (ExtZ / 2); //- L.MinY; //  - (1.2 * TextScale);
-  z:= - (L.MinY + (ExtY / 2)); //  (ExtZ / 2);
-  DrawGlText(x,y,z,glfZ,TextScale,PosToString(DispZ));
+  glPushMatrix;
+  glBegin(GL_LINES);
+  glVertex3f(x,L.MinY,z);
+  glVertex3f(x,L.MaxY,z);
+  glEnd;
+  glBegin(GL_LINES);
+  glVertex3f(x - DimDist,L.MaxY,z);
+  glVertex3f(x + DimDist,L.MaxY,z);
+  glEnd;
+  glBegin(GL_LINES);
+  glVertex3f(x - DimDist,L.MinY,z);
+  glVertex3f(x + DimDist,L.MinY,z);
+  glEnd;
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  if tw < ExtY then
+    y:= L.MinY + (ExtY / 2) - (tw / 2)
+  else
+    y:= L.MaxY + DimDist;
+  x:= L.MinX - (2 * DimDist);
+  glTranslateF(x,y,z);
+  glRotateF(90,0,0,1);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(S) do
+    begin
+      DrawGlDigit(S[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+end;
+
+procedure TSimClientForm.DrawDimZ;
+var
+  i: integer;
+  w,tw,x,y,z: double;
+  s: string;
+begin
+  if DimScale = 0 then Exit;
+  if Vars.Metric then
+    w:= ExtZ * 25.4
+  else
+    w:= ExtZ;
+  s:= PosToString(w);
+  if s = '' then Exit;
+  x:= L.MinX - DimDist;
+  y:= L.MinY;
+  glPushMatrix;
+  glBegin(GL_LINES);
+  glVertex3f(x,y,L.MinZ);
+  glVertex3f(x,y,L.MaxZ);
+  glEnd;
+  glBegin(GL_LINES);
+  glVertex3f(x - DimDist,y,L.MaxZ);
+  glVertex3f(x + DimDist,y,L.MaxZ);
+  glEnd;
+  glBegin(GL_LINES);
+  glVertex3f(x - DimDist,y,L.MinZ);
+  glVertex3f(x + DimDist,y,L.MinZ);
+  glEnd;
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  if tw < ExtZ then
+    z:= L.MinZ + (ExtZ / 2) - (tw / 2)
+  else
+    z:= L.MaxZ; //  - DimDist;
+  x:= L.MinX - (2 * DimDist);
+  glTranslateF(x,y,z);
+  glRotateF(90,1,0,0);
+  glRotateF(90,0,0,1);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(S) do
+    begin
+      DrawGlDigit(S[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+end;
+
+procedure TSimClientForm.DrawDim;
+begin
+  if not DimDrawFlag then Exit;
+  DrawDimX;
+  DrawDimY;
+  DrawDimZ;
 end;
 
 procedure TSimClientForm.UpdateView;
@@ -480,11 +616,11 @@ procedure TSimClientForm.UpdateView;
 
 begin
   L:= SetExtents(0,0,0,0,0,0);
-  LimitIsPart:= False;
+  DimDrawFlag:= False;
   if (Assigned(MyGlList)) and (FFileName <> '') then
     begin
       MyGlList.GetExtents(L);
-      LimitIsPart:= True;
+      DimDrawFlag:= True;
     end
   else
     L:= Vars.MLimits;
@@ -494,10 +630,10 @@ begin
       Writeln('Preview is too small. Using Machine Limits...');
       L:= Vars.MLimits;
       CalcExtents;
-      LimitIsPart:= False;
+      DimDrawFlag:= False;
     end;
   GetCanonOffset(Offset);
-  UpdatePart;
+  UpdateDim;
   ResetView;
 end;
 
@@ -653,7 +789,8 @@ begin
   SetGlColor3(GlColors.toolpath);
   if FShowLivePlot then
     LoggerCall;
-  DrawPart;
+  if FShowDimensions then
+    DrawDim;
   //DrawText(1,0,0,0.05,'0123456789');
   {$IFDEF LINESMOOTH}
   glDisable(GL_LINE_SMOOTH);

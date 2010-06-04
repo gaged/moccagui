@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 169
+  Left = 182
   Height = 724
-  Top = 167
+  Top = 171
   Width = 967
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -723,7 +723,7 @@ object MainForm: TMainForm
     OnClick = ButtonView3Click
   end
   object ButtonViewPlus: TMocButton
-    Left = 628
+    Left = 596
     Height = 34
     Top = 344
     Width = 34
@@ -733,7 +733,7 @@ object MainForm: TMainForm
     OnClick = ButtonViewPlusClick
   end
   object ButtonViewMinus: TMocButton
-    Left = 668
+    Left = 636
     Height = 34
     Top = 344
     Width = 34
@@ -764,6 +764,24 @@ object MainForm: TMainForm
   end
   object MocLedToolpath: TMocLed
     Left = 782
+    Height = 10
+    Top = 368
+    Width = 84
+    LedColor = clRed
+    IsOn = False
+  end
+  object ButtonShowDim: TMocButton
+    Left = 692
+    Height = 24
+    Top = 344
+    Width = 84
+    ShowClicks = True
+    Caption = 'Bemaßung'
+    Color = clBtnFace
+    OnClick = ButtonShowDimClick
+  end
+  object MocLedShowDim: TMocLed
+    Left = 692
     Height = 10
     Top = 368
     Width = 84
