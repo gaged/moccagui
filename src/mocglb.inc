@@ -326,6 +326,8 @@ type
     traverse: TGlColorItem;
     feed: TGlColorItem;
     toolpath: TGlColorItem;
+    dim1: TGlColorItem;
+    dim2: TGlColorItem;
   end;
 
   TGlSettings = record
