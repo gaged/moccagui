@@ -75,16 +75,15 @@ procedure MakeDot;
 var
   ListId: integer;
 begin
-  ListId:= DigitBase + 10;
+  ListId:= DigitBase + 11;
   glDeleteLists(ListId,1);
   glNewList(ListId,GL_COMPILE);
-  glBegin(GL_LINES);
+  glBegin(GL_QUADS);
   glVertex3f(0.2,0,0);
   glVertex3f(0.3,0,0);
   glVertex3f(0.3,0.1,0);
   glVertex3f(0.2,0.1,0);
-  glVertex3f(0.2,0,0);
-  glEnd;
+  glEnd();
   glEndList;
 end;
 
@@ -100,6 +99,7 @@ begin
   MakeDigit(7,true,false,true,false,false,true,false);
   MakeDigit(8,true,true,true,true,true,true,true);
   MakeDigit(9,true,true,true,true,false,true,true);
+  MakeDigit(10,false,false,false,true,false,false,false);
   MakeDot;
   DigitsInitialized:= True;
 end;
@@ -119,7 +119,8 @@ begin
     '7': glCallList(DigitBase + 7);
     '8': glCallList(DigitBase + 8);
     '9': glCallList(DigitBase + 9);
-    ',','.': glCallList(DigitBase + 10);
+    '-': glCallList(DigitBase + 10);
+    ',','.': glCallList(DigitBase + 11);
   end;
 end;
 

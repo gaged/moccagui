@@ -303,6 +303,8 @@ with GlColors do
     limits.r:= 0.7; limits.g:= 0.7; limits.b:= 0.6;
     bg.r:= 1; bg.g:= 1; bg.b:= 1;
     table.r:= 0; table.g:= 0; table.b:= 0.9; table.a:= 0.5;
+    dim1.r:= 0; dim1.g:= 0; dim1.b:= 0;
+    dim2.r:= 1; dim2.g:= 0; dim2.b:= 0;
   end;
 
 with Vars.JogIncrements[0] do

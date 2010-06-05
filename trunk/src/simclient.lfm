@@ -1,7 +1,7 @@
 object SimClientForm: TSimClientForm
-  Left = 435
+  Left = 439
   Height = 377
-  Top = 414
+  Top = 398
   Width = 685
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
