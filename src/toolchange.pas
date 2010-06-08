@@ -20,6 +20,7 @@ type
     LbTools: TListBox;
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
@@ -32,10 +33,7 @@ function DoChangeTool: integer;
 implementation
 
 uses
-  mocglb,emc2pas;
-
-const
-  Lathe: Boolean = False;
+  mocglb,moctool,emc2pas;
 
 var
   iTool: integer;
@@ -46,7 +44,7 @@ var
 begin
   Result:= 0;
   iTool:= 0;
-  if not ToolsInitialized then
+  if Vars.ToolFile = '' then
     begin
       ShowMessage('No Toolfile set in ' + Vars.IniFile);
       Exit;
@@ -73,6 +71,12 @@ begin
   {$ENDIF}}
   InitControls;
   Font.Pitch:= fpFixed;
+end;
+
+procedure TToolChgDlg.FormKeyPress(Sender: TObject; var Key: char);
+begin
+  if Key = #13 then ModalResult:= mrOk else
+    if Key = #27 then ModalResult:= mrCancel;
 end;
 
 procedure TToolChgDlg.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -107,8 +111,7 @@ end;
 procedure TToolChgDlg.InitControls;
 var
   i: integer;
-  comment: string;
-  S: string;
+  s: string;
 begin
   s:= '';
   LbTools.Clear;
@@ -116,12 +119,12 @@ begin
     with Tools[i] do
       if Tools[i].Id > 0 then
         begin
-          Comment:= PChar(ToolComments[i]);
-          if Lathe then
-            S:= Format('%d %d %.4f %.4f %.4f %.4f %.4f %d %s',
-              [i,id,ZOffset,XOffset,Diameter,FrontAngle,BackAngle,Orientation,Comment])
+          if Vars.IsLathe then
+            s:= Format('%3d %3d %8f %8f %8f %8f %8f %2d %s',
+              [pocket,id,zoffset,xoffset,diameter,frontangle,backangle,
+               orientation,comment])
           else
-            S:= Format('%2d %10.3f %10.3f %-20s',[id,ZOffset,Diameter,Comment]);
+            s:= Format('%3d %3d %8f %8f %s',[pocket,id,zoffset,diameter,Comment]);
           LbTools.Items.Add(s);
         end;
 end;

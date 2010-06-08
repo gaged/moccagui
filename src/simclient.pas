@@ -152,6 +152,7 @@ begin
   FFileName:= FileName;
   FUnitCode:= UnitCode;
   FInitCode:= InitCode;
+  writeln('Sim: loading file ' + FileName);
   ReloadFile;
 end;
 

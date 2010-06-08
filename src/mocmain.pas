@@ -184,6 +184,7 @@ implementation
 uses
   emc2pas,
   mocemc,
+  moctool,
   setup,
   mocstatusdlg;
 
@@ -314,7 +315,7 @@ begin
         begin
           d:= Tools[FTool].diameter / Scale;
           l:= Tools[FTool].zoffset / Scale;
-          s:= PChar(ToolComments[FTool]);
+          s:= Tools[FTool].Comment;
           if Length(s) < 1 then s:= MSG_NOTOOL + '?';
         end;
       LabelTool.Caption:= s;
@@ -625,6 +626,7 @@ begin
   Emc.LoadTools;
   except
     LastError:= 'Could not load Toolfile';
+    raise;	
   end;
 
 end;

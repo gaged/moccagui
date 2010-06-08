@@ -56,6 +56,7 @@ implementation
 
 uses
   math, sysutils,
+  moctool,
   emc2pas,  // LINELEN
   gllist;   // MyGlList
 
@@ -81,7 +82,9 @@ var
   glGCodes: array[0..ACTIVE_G_CODES_MAX-1] of integer; external name 'gcodes';
   glMCodes: array[0..ACTIVE_M_CODES_MAX-1] of integer; external name 'mcodes';
 
+{$ifdef VER_23}
 procedure initgcode; cdecl; external;
+{$endif}
 function parsefile(filename,unitcode,initcode: PChar): integer; cdecl; external;
 function converterror(Err: integer): integer; cdecl; external;
 function goto_line(line_no: integer; filename,unitcode,initcode: PChar): integer; cdecl; external;
@@ -236,8 +239,10 @@ begin
       Exit;
     end;
   Init;
+  {$ifdef VER_23}
   if maxerror < 0 then
     InitGCode;
+  {$endif}
   MyGlList.Clear;
   Result:= parsefile(PChar(FileName),PChar(UnitCode),PChar(InitCode));
   if linearUnitConversion = LINEAR_UNITS_MM then
@@ -247,7 +252,6 @@ begin
 end;
 
 procedure AppendTraverse(l: tlo);
-
 begin
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Traverse ',l.x,l.y,l.z]));
@@ -282,6 +286,17 @@ begin
   if Assigned(MyGlList) then
     MyGlList.AddDwell(lineno,x,y,z);
 end;
+
+{$ifdef VER_24}
+procedure set_xy_rotation(t: double); cdecl; export;
+begin
+end;
+
+procedure use_tool_length_offset(x,y,z,a,b,c,u,v,w: double); cdecl; export;
+begin
+end;
+
+{$endif}
   
 procedure nextline; cdecl; export;
 begin

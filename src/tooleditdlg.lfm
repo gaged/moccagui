@@ -1,7 +1,7 @@
 object ToolDlg: TToolDlg
-  Left = 477
+  Left = 487
   Height = 340
-  Top = 297
+  Top = 232
   Width = 615
   ActiveControl = Grid
   BorderIcons = [biSystemMenu]

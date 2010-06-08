@@ -22,6 +22,9 @@
 #include <string.h>		// strcmp
 #include <sys/time.h>
 
+#ifdef VER_24
+#include "rs274ngc_interp.hh"
+#endif
 
 Interp interp_new;
 
@@ -40,7 +43,14 @@ Interp interp_new;
 #define iserror(x) ((x) < 0 || (x) >= RS274NGC_MIN_ERROR)
 
 char _parameter_file_name[LINELEN];
+
+#ifdef VER_23
 extern char *_rs274ngc_errors[];
+#endif
+
+#ifdef VER_24
+EmcPose tool_offset;
+#endif
 
 CANON_TOOL_TABLE canontool;
 
@@ -105,7 +115,6 @@ extern "C" int interpreter_exec(char *command)
 
 extern "C" int interpreter_synch() { return interp_synch(); }
 
-
 void maybe_new_line(int line_number) {
     if(interp_error) return;
     active_settings(settings);
@@ -124,6 +133,57 @@ void maybe_new_line(void) {
     maybe_new_line(-1);
 }
 
+#ifdef VER_24
+extern "C" void set_xy_rotation(double t);
+
+void SET_XY_ROTATION(double t) {
+    maybe_new_line();
+    if(interp_error) return;
+    set_xy_rotation(t);
+};    
+
+extern "C" void use_tool_length_offset(double x, double y, double z, 
+  double a, double b, double c, double u, double v, double w);
+
+void USE_TOOL_LENGTH_OFFSET(EmcPose offset) {
+    tool_offset = offset;
+    maybe_new_line();
+    if(interp_error) return;
+    if(metric) {
+        offset.tran.x /= 25.4; offset.tran.y /= 25.4; offset.tran.z /= 25.4;
+        offset.u /= 25.4; offset.v /= 25.4; offset.w /= 25.4; }
+    use_tool_length_offset(offset.tran.x, offset.tran.y, offset.tran.z, 
+        offset.a, offset.b, offset.c, offset.u, offset.v, offset.w);
+}
+
+double GET_EXTERNAL_TOOL_LENGTH_XOFFSET() {
+    return tool_offset.tran.x;
+}
+double GET_EXTERNAL_TOOL_LENGTH_YOFFSET() {
+    return tool_offset.tran.y;
+}
+double GET_EXTERNAL_TOOL_LENGTH_ZOFFSET() {
+    return tool_offset.tran.z;
+}
+double GET_EXTERNAL_TOOL_LENGTH_AOFFSET() {
+    return tool_offset.a;
+}
+double GET_EXTERNAL_TOOL_LENGTH_BOFFSET() {
+    return tool_offset.b;
+}
+double GET_EXTERNAL_TOOL_LENGTH_COFFSET() {
+    return tool_offset.c;
+}
+double GET_EXTERNAL_TOOL_LENGTH_UOFFSET() {
+    return tool_offset.u;
+}
+double GET_EXTERNAL_TOOL_LENGTH_VOFFSET() {
+    return tool_offset.v;
+}
+double GET_EXTERNAL_TOOL_LENGTH_WOFFSET() {
+    return tool_offset.w;
+}
+#endif
 
 void ARC_FEED(int line_number,
               double first_end, double second_end, double first_axis,
@@ -174,6 +234,65 @@ void STRAIGHT_TRAVERSE(int line_number,
     straighttraverse(x, y, z, a, b, c, u, v, w);
 }
 
+#ifdef VER_24
+static double TO_PROG_LEN(double p) {
+    if(metric) return p*25.4;
+    return p;
+}
+
+void NURBS_FEED(int line_number, std::vector<CONTROL_POINT> nurbs_control_points, unsigned int k) {
+    double u = 0.0;
+    unsigned int n = nurbs_control_points.size() - 1;
+    double umax = n - k + 2;
+    unsigned int div = nurbs_control_points.size()*15;
+    std::vector<unsigned int> knot_vector = knot_vector_creator(n, k);	
+    PLANE_POINT P1;
+    while (u+umax/div < umax) {
+        PLANE_POINT P1 = nurbs_point(u+umax/div,k,nurbs_control_points,knot_vector);
+        // EBo -- replace 12345 with *whatever* gives us the line_number
+        STRAIGHT_FEED(line_number, P1.X,P1.Y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w);
+        u = u + umax/div;
+    } 
+    P1.X = nurbs_control_points[n].X;
+    P1.Y = nurbs_control_points[n].Y;
+    // EBo -- replace 12345 with *whatever* gives us the line_number
+    STRAIGHT_FEED(line_number, P1.X,P1.Y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w);
+    knot_vector.clear();
+}
+
+void SPLINE_FEED(int line_number, double x1, double y1, double x2, double y2) {
+    double x0 = TO_PROG_LEN(_pos_x),
+         y0 = TO_PROG_LEN(_pos_y);
+
+    for(int i=1; i<=100; i++) {
+      double t = i / 100.;
+      double t2 = t*t;
+      double t1 = 2*t*(1-t);
+      double t0 = (1-t)*(1-t);
+      double x = x0*t0 + x1*t1 + x2*t2;
+      double y = y0*t0 + y1*t1 + y2*t2;
+      // EBo -- replace 12345 with *whatever* gives us the line_number
+      STRAIGHT_FEED(line_number, x,y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w);
+    }
+}
+
+void SPLINE_FEED(int line_number, double x1, double y1, double x2, double y2, double x3, double y3) {
+    double x0 = TO_PROG_LEN(_pos_x),
+         y0 = TO_PROG_LEN(_pos_y);
+
+    for(int i=1; i<=100; i++) {      double t = i / 100.;
+      double t3 = t*t*t;
+      double t2 = 3*t*t*(1-t);
+      double t1 = 3*t*(1-t)*(1-t);
+      double t0 = (1-t)*(1-t)*(1-t);
+      double x = x0*t0 + x1*t1 + x2*t2 + x3*t3;
+      double y = y0*t0 + y1*t1 + y2*t2 + y3*t3;
+      STRAIGHT_FEED(line_number, x,y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w);
+    }
+}
+
+#endif
+
 void SET_ORIGIN_OFFSETS(double x, double y, double z,
                         double a, double b, double c,
                         double u, double v, double w) {
@@ -185,6 +304,7 @@ void SET_ORIGIN_OFFSETS(double x, double y, double z,
 
 void USE_LENGTH_UNITS(CANON_UNITS u) { metric = u == CANON_UNITS_MM; }
 void SET_LENGTH_UNITS(CANON_UNITS u) { metric = u == CANON_UNITS_MM; }
+
 
 void SELECT_PLANE(CANON_PLANE pl) {
     maybe_new_line();   
@@ -234,9 +354,17 @@ void LOGOPEN(char *f) {}
 void LOGCLOSE() {}
 
 
+#ifdef VER_23
 void SET_TOOL_TABLE_ENTRY(int id, double zoffset, double xoffset, double diameter,
                           double frontangle, double backangle, int orientation) {
 }
+#endif
+
+#ifdef VER_24
+void SET_TOOL_TABLE_ENTRY(int pocket, int toolno, EmcPose offset, double diameter,
+                          double frontangle, double backangle, int orientation) {
+}
+#endif
 
 void SET_TOOL_TABLE_ENTRY(int id, double zoffset, double diameter) {
 }
@@ -391,7 +519,19 @@ int GET_EXTERNAL_FLOOD() { return 0; }
 int GET_EXTERNAL_MIST() { return 0; }
 CANON_PLANE GET_EXTERNAL_PLANE() { return 1; }
 double GET_EXTERNAL_SPEED() { return 0; }
+
+#ifdef VER_24
+int GET_EXTERNAL_POCKETS_MAX() { return CANON_POCKETS_MAX; }
+#endif
+
+#ifdef VER_23
 int GET_EXTERNAL_TOOL_MAX() { return CANON_TOOL_MAX; }
+#endif
+
+#ifdef VER_24
+void SELECT_POCKET(int tool) {}
+#endif
+
 void DISABLE_ADAPTIVE_FEED() {} 
 void ENABLE_ADAPTIVE_FEED() {} 
 
@@ -404,6 +544,7 @@ int GET_EXTERNAL_AXIS_MASK() {
   return axis_mask;
 }
 
+#ifdef VER_23
 double GET_EXTERNAL_TOOL_LENGTH_XOFFSET() {
     return tool_xoffset;
 }
@@ -411,6 +552,7 @@ double GET_EXTERNAL_TOOL_LENGTH_XOFFSET() {
 double GET_EXTERNAL_TOOL_LENGTH_ZOFFSET() {
     return tool_zoffset;
 }
+#endif
 
 double GET_EXTERNAL_ANGLE_UNITS() {
   return 1.0;
@@ -431,6 +573,10 @@ void SET_MOTION_CONTROL_MODE(CANON_MOTION_MODE mode, double tolerance) { motion_
 void SET_MOTION_CONTROL_MODE(double tolerance) { }
 void SET_MOTION_CONTROL_MODE(CANON_MOTION_MODE mode) { motion_mode = mode; }
 CANON_MOTION_MODE GET_EXTERNAL_MOTION_CONTROL_MODE() { return motion_mode; }
+
+#ifdef VER_24
+void SET_NAIVECAM_TOLERANCE(double tolerance) { }
+#endif
 
 void MESSAGE(char *comment) {
     maybe_new_line();
@@ -502,6 +648,7 @@ out_error:
 
 int maxerror = -1;
 
+#ifdef VER_23
 static int find_maxerror(void) {
   int i=0;
     for(;;i++) {
@@ -509,6 +656,7 @@ static int find_maxerror(void) {
             return i;
     }
 }
+#endif
 
 char savedError[LINELEN+1];
 
@@ -521,6 +669,8 @@ extern "C" int converterror(int err)
     return 1;
 }
 
+#ifdef VER_23
 extern "C" void initgcode(void) {
     maxerror = find_maxerror();
 }
+#endif

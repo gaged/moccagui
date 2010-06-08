@@ -23,7 +23,6 @@ type
   private
     procedure SetupGrid;
     procedure UpdateGrid;
-    procedure SaveTools;
   end;
 
 procedure EditTools;
@@ -33,13 +32,13 @@ implementation
 { TToolDlg }
 
 uses
-  mocglb,emc2pas;
+  mocglb,moctool,emc2pas;
 
 procedure EditTools;
 var
   Dlg: TToolDlg;
 begin
-  if not ToolsInitialized then
+  if  Vars.ToolFile = '' then
     begin
       ShowMessage('No Toolfile set in ' + Vars.IniFile);
       Exit;
@@ -50,23 +49,6 @@ begin
       Dlg.ShowModal;
       Dlg.Free;
     end;
-end;
-
-procedure TToolDlg.SaveTools;
-var
-  i: integer;
-  s: string;
-  FileName: PChar;
-begin
-  if Length(Vars.ToolFile) < 1 then Exit;
-  for i:= 1 to CANON_TOOL_MAX - 1 do
-    begin
-      s:= Grid.Cells[4,i];
-      if ToolComments[i] <> nil then
-        StrLCopy(ToolComments[i],PChar(s),CANON_TOOL_ENTRY_LEN - 1);
-    end;
-  FileName:= PChar(Vars.ToolFile);
-  SaveToolTable(FileName);
 end;
 
 procedure TToolDlg.EditorKeyPress(Sender: TObject; var Key: char);
@@ -110,7 +92,7 @@ end;
 procedure TToolDlg.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if ModalResult = mrOk then
-    SaveTools;
+    SaveToolTable(Vars.ToolFile);
 end;
 
 procedure TToolDlg.SetupGrid;
@@ -152,7 +134,7 @@ begin
           Cells[1,r]:= IntToStr(Id);
           Cells[2,r]:= FloatToStrF(ZOffset, ffFixed, 6, 3);
           Cells[3,r]:= FloatToStrF(Diameter, ffFixed, 6, 3);
-          Cells[4,r]:= PChar(ToolComments[i]);
+          Cells[4,r]:= Comment;
         end;
     end;
 end;

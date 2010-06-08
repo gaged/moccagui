@@ -1,16 +1,18 @@
 { Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
 
 LazarusResources.Add('TToolChgDlg','FORMDATA',[
-  'TPF0'#11'TToolChgDlg'#10'ToolChgDlg'#4'Left'#3#233#1#6'Height'#3#130#1#3'Top'
-  +#3'U'#1#5'Width'#3#187#1#13'ActiveControl'#7#7'LbTools'#11'BorderIcons'#11#12
+  'TPF0'#11'TToolChgDlg'#10'ToolChgDlg'#4'Left'#3#209#1#6'Height'#3#128#1#3'Top'
+  +#3'F'#1#5'Width'#3#172#1#13'ActiveControl'#7#7'LbTools'#11'BorderIcons'#11#12
   +'biSystemMenu'#0#11'BorderStyle'#7#8'bsDialog'#7'Caption'#6#19'Werkzeug ausw'
-  +#195#164'hlen'#12'ClientHeight'#3#130#1#11'ClientWidth'#3#187#1#12'OnCloseQu'
-  +'ery'#7#14'FormCloseQuery'#8'OnCreate'#7#10'FormCreate'#6'OnShow'#7#8'FormSh'
-  +'ow'#8'Position'#7#14'poScreenCenter'#10'LCLVersion'#6#8'0.9.28.2'#0#8'TList'
-  +'Box'#7'LbTools'#4'Left'#2#8#6'Height'#3'@'#1#3'Top'#2#8#5'Width'#3#169#1#14
-  +'ExtendedSelect'#8#10'ItemHeight'#2#0#8'TabOrder'#2#0#8'TopIndex'#2#255#0#0#7
-  +'TButton'#7'Button1'#4'Left'#2#16#6'Height'#2#25#3'Top'#3'`'#1#5'Width'#2'K'
-  +#7'Caption'#6#3'&Ok'#11'ModalResult'#2#1#8'TabOrder'#2#1#0#0#7'TButton'#7'Bu'
-  +'tton2'#4'Left'#2'h'#6'Height'#2#25#3'Top'#3'`'#1#5'Width'#2'K'#7'Caption'#6
-  +#7'Abbruch'#11'ModalResult'#2#2#8'TabOrder'#2#2#0#0#0
+  +#195#164'hlen'#12'ClientHeight'#3#128#1#11'ClientWidth'#3#172#1#10'KeyPrevie'
+  +'w'#9#12'OnCloseQuery'#7#14'FormCloseQuery'#8'OnCreate'#7#10'FormCreate'#10
+  +'OnKeyPress'#7#12'FormKeyPress'#6'OnShow'#7#8'FormShow'#8'Position'#7#14'poS'
+  +'creenCenter'#10'LCLVersion'#6#8'0.9.28.2'#0#8'TListBox'#7'LbTools'#4'Left'#2
+  +#0#6'Height'#3'@'#1#3'Top'#2#4#5'Width'#3#169#1#14'ExtendedSelect'#8#11'Font'
+  +'.Height'#2#240#9'Font.Name'#6#16'Courier 10 Pitch'#10'ItemHeight'#2#0#10'Pa'
+  +'rentFont'#8#8'TabOrder'#2#0#8'TopIndex'#2#255#0#0#7'TButton'#7'Button1'#4'L'
+  +'eft'#2#8#6'Height'#2#25#3'Top'#3'`'#1#5'Width'#2'K'#7'Caption'#6#3'&Ok'#7'D'
+  +'efault'#9#11'ModalResult'#2#1#8'TabOrder'#2#1#0#0#7'TButton'#7'Button2'#4'L'
+  +'eft'#2'`'#6'Height'#2#25#3'Top'#3'`'#1#5'Width'#2'K'#6'Cancel'#9#7'Caption'
+  +#6#7'Abbruch'#11'ModalResult'#2#2#8'TabOrder'#2#2#0#0#0
 ]);

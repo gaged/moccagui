@@ -102,7 +102,6 @@ begin
   ReadStyle(Self);
 end;
 
-
 procedure TTouchOffDlg.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -129,7 +128,7 @@ begin
     ToolAxis:= 'Z';
   FValue:= GetRelPos(FAxisNo);
   EditV.Text:= '0.00';
-  LabelPos.Caption:= FloatToStr(FValue);
+  LabelPos.Caption:= PosToString(FValue);
   cbCoords.Items.Clear;
   for i:= 0 to CoordSysMax do
     cbCoords.Items.Add(CoordSys[i]);

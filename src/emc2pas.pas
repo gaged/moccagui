@@ -1,5 +1,7 @@
 unit emc2pas;
 
+{$I mocca.inc}
+
 {$link emcpas.o}
 {$link libemc.a}
 {$linklib libemcini.so}
@@ -23,28 +25,6 @@ const
 
   CANON_TOOL_MAX = 56;	// from canon.hh
   CANON_TOOL_ENTRY_LEN = 256; // from canon.hh
-
-
-type
-  TTool = packed record
-    id: integer;
-    zoffset: double;
-    xoffset: double;
-    diameter: double;
-    frontangle: double;
-    backangle: double;
-    orientation: integer;
-  end;
-
-type
-  TTools = array[0..CANON_TOOL_MAX + 1] of TTool;
-
-var
-  Tools: TTools; external name 'toolTable';
-  ToolComments: array[0..CANON_TOOL_MAX+ 1] of PChar; external name 'ttcomments';
-
-const
-  ToolsInitialized: Boolean = False;
 
 const
   TaskModeManual = 1;
@@ -107,12 +87,6 @@ var
   LinearUnitConversion: integer; external name 'linearUnitConversion';
   AngularUnitConversion: integer; external name 'angularUnitConversion';
 
-
-function loadToolTable(const FileName: PChar): integer; cdecl; external;
-function saveToolTable(const FileName: PChar): integer; cdecl; external;
-procedure InitToolTable; cdecl; external;
-procedure FreeToolTable; cdecl; external;
-
 function taskGetFile(ProgFile: PChar): Boolean; cdecl; external;
 
 // mocca script stuff
@@ -165,7 +139,9 @@ function taskMotionline: integer; cdecl; external; { task.motionLine; }
 function taskCurrentLine: integer; cdecl; external; { task.currentLine; }
 function taskReadLine: integer; cdecl; external; { task.readLine; }
 function taskRotationXY: double; cdecl; external; { task.rotation_xy; }
+{$ifdef VER_23}
 function taskTloIsAlongW: boolean; cdecl; external; { task.tloIsAlongW; }
+{$endif}
 function taskProgramUnits: integer; cdecl; external; { task.programUnits; }
 function taskInterpErrorCode: integer; cdecl; external; { task.interpreter_errcode; }
 function taskDelayLeft: double; cdecl; external; { task.delayLeft; }
