@@ -49,7 +49,7 @@ implementation
 
 uses
   Forms,
-  mocglb,emc2pas,mocjoints,
+  mocglb,moctool,emc2pas,mocjoints,
   runclient,
   offsetdlg,
   tooleditdlg,
@@ -82,14 +82,7 @@ begin
   FileName:= PChar(Vars.ToolFile);
   sendLoadToolTable(FileName);
   if WaitDone = 0 then
-    begin
-      if not ToolsInitialized then
-        begin
-          InitToolTable;
-          ToolsInitialized:= True;
-        end;
-      LoadToolTable(FileName);
-    end;
+    LoadToolTable(FileName);
 end;
 
 function ExecToolChange(Cmd: string): boolean;
@@ -262,8 +255,7 @@ procedure TEmc.TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
 var
   s: string;
   IsInch: Boolean;
-  Scale,V: Double;
-  UVal: Double;
+  AbsPos,OffsetPos,V: Double;
   i: integer;
   IsLinear: Boolean;
 begin
@@ -273,16 +265,15 @@ begin
     IsLinear:= Vars.Axis[i-1].IsLinear
   else
     raise Exception.Create('Touchoff: invalid Axis: ' + Axis);
-  if IsInch and IsLinear then
-    Scale:= 25.4
-  else
-    Scale:= 1;
-  if Vars.Metric and IsInch then
-    UVal:= Value / Scale
-  else
-    UVal:= Value;
-  V:= (GetAbsPos(Joints.AxisByChar(Axis)) / Scale) - Value;
-  S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,V]);
+  //IsLinear then
+  //  Scale:= 25.4
+  //else
+  //  Scale:= 1;
+  AbsPos:= GetAbsPos(Joints.AxisByChar(Axis));
+  OffsetPos:= AbsPos - Value;
+  if IsInch and Vars.Metric then OffsetPos:= OffsetPos / 25.4;
+  if (not IsInch) and (not Vars.Metric) then OffsetPos:= OffsetPos * 25.4;
+  S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,OffsetPos]);
   ExecuteSilent(s);
   clRun.UpdatePreview(True);
 end;
@@ -402,10 +393,12 @@ begin
       Probing:= trajProbing;
       ORideLimits:= AxisOverrideLimits(0);
       CurrentTool:= toolInSpindle;
-      ToolPrepared:= toolPrepped <> 0;
       ToolOffset:= toolLengthOffset;
       ORideLimits:= AxisOverrideLimits(0);
+      {$ifdef VER_23}
       TloAlongW:=  taskTloIsAlongW;
+      ToolPrepared:= toolPrepped <> 0;
+      {$endif}
       FeedORideEnabled:= trajFeedORideEnabled;
       SpindleORideEnabled:= trajSpindleORideEnabled;
       if TaskMode = TASKMODEAUTO then

@@ -14,7 +14,6 @@ INCLUDES = -I$(EMCDIR)/include
 
 LCL = -Fu.
 LCL += -Fu../lib
-LCL += -Fu../pkg
 LCL += -Fu$(LAZDIR)/lcl/units/i386-linux
 LCL += -Fu$(LAZDIR)/lcl/units/i386-linux/$(WM)
 LCL += -Fu$(LAZDIR)/components/custom

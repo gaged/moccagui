@@ -46,7 +46,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="32">
+    <Units Count="33">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -233,12 +233,17 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="glfont"/>
       </Unit31>
+      <Unit32>
+        <Filename Value="moctool.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="moctool"/>
+      </Unit32>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
-      <Libraries Value="/home/gtom/emc/lib/;/home/gtom/mocca/lib/"/>
+      <Libraries Value="/home/gtom/emc/lib/"/>
       <UnitOutputDirectory Value="/home/gtom/mocca/lib"/>
       <LCLWidgetType Value="gtk2"/>
     </SearchPaths>
@@ -256,6 +261,9 @@
         <UseLineInfoUnit Value="False"/>
       </Debugging>
       <LinkSmart Value="True"/>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+      </Options>
     </Linking>
     <Other>
       <CompilerPath Value="$(CompPath)"/>

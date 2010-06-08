@@ -8,7 +8,8 @@
 // {$define PRINT_CANON}
 {$define OWNGL}
 //{$define DEBUG_GL}
-//{$define VER2_2}
+{$define VER_24}
 {$define HAS_SLEEP}
+
 
 

@@ -1,6 +1,5 @@
 unit mocini;
 
-
 {$I mocca.inc}
 
 interface
@@ -345,6 +344,10 @@ begin
 
   GetIniStr('DISPLAY','EDITOR',tmp,'');
   Vars.Editor:= Trim(tmp);
+
+  Vars.IsLathe:= False;
+  if GetIniInt('DISPLAY','LATHE',i,0) then
+    if i = 1 then Vars.IsLathe:= True;
 
   if not IniReadAxes then
     Exit;

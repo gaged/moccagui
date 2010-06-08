@@ -15,7 +15,7 @@ uses
   moccapkg, emc2pas, SysUtils, mocmain, mocglb, mocini, jogclient, runclient,
   mdiclient, simclient, offsetdlg, tooleditdlg, touchoff, toolchange, hal,
   emcint, partaligndlg, scripts, logger, setup, emcmsgbox, configreader,
-  touchoffwiz, glfont;
+  touchoffwiz, glfont, moctool;
 
 const
 //  __LC_CTYPE    = 0;

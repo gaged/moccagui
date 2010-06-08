@@ -1,6 +1,7 @@
 unit emcint;
 
 {$mode objfpc}{$H+}
+{$I mocca.inc}
 
 interface
 

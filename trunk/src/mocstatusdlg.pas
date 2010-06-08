@@ -108,7 +108,6 @@ begin
   AddBool('Feedhold enabled',trajFeedHoldEnabled);
   AddBool('Probing',trajProbing);
   AddBool('Probe tripped',trajProbeTripped);
-
   AddStr('Task:','');
   AddInt('Task mode',taskMode);
   AddInt('Task state',taskState);
@@ -117,7 +116,9 @@ begin
   AddInt('Currentline',taskCurrentLine);
   AddInt('Readline',taskReadLine);
   // AddDouble('Rotation XY',taskRotationXY);
+  {$ifdef VER_23}
   AddBool('Tlo is along W',taskTloIsAlongW);
+  {$endif}
   AddInt('Program units',taskProgramUnits);
   AddInt('Interpreter Error',taskInterpErrorCode);
   // AddDouble('Delay left',taskDelayLeft);

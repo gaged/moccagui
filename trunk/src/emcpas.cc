@@ -13,7 +13,31 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#include "emcpas.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <math.h>
+#include <ctype.h>
+
+#include "rcs.hh"               
+#include "emc.hh"              
+#include "emc_nml.hh"
+#include "emcglb.h"             
+#include "emccfg.h"            
+#include "inifile.hh"         
+#include "rcs_print.hh"
+#include "nml_oi.hh"
+#include "timer.hh"
+
+#include "canon.hh"
+
+#ifdef VER_24
+#include "initool.hh"
+#include "interp_internal.hh"
+#include "tool_parse.h"
+#endif
 
 #define EMC_COMMAND_DELAY   0.1	// how long to sleep between checks
 #define CM_PER_MM 0.1
@@ -97,178 +121,6 @@ extern "C"
 void *__dso_handle = NULL;
 }
 #endif
-
-char *ttcomments[CANON_TOOL_MAX+1];
-CANON_TOOL_TABLE toolTable[CANON_TOOL_MAX+1];
-
-extern "C" void InitToolTable()
-{
-  for(int i=0; i<=CANON_TOOL_MAX; i++) {
-    ttcomments[i] = (char *)malloc(CANON_TOOL_ENTRY_LEN);
-  }
-}
-
-extern "C" void DoneToolTable()
-{
-  for(int i=0; i<CANON_TOOL_MAX; i++) {
-    free(ttcomments[i]);
-  }
-}
-
-extern "C" int loadToolTable(char *filename)
-{
-    int t;
-    FILE *fp;
-    char buffer[CANON_TOOL_ENTRY_LEN];
-    char comment[CANON_TOOL_ENTRY_LEN];
-    const char *name;
-    if (filename[0] == 0) {
-	name = TOOL_TABLE_FILE;
-    } else {
-	name = filename;
-    }
-    if (NULL == (fp = fopen(name, "r"))) {
-	return -1;
-    }
-    for (t = 0; t <= CANON_TOOL_MAX; t++) {
-        toolTable[t].id = 0;
-	toolTable[t].zoffset = 0.0;
-	toolTable[t].diameter = 0.0;
-        toolTable[t].xoffset = 0.0;
-        toolTable[t].frontangle = 0.0;
-        toolTable[t].backangle = 0.0;
-        toolTable[t].orientation = 0;
-        ttcomments[t][0] = '\0';
-    }
-
-    if (NULL == fgets(buffer, 256, fp)) {
-	printf("Error: toolfile exists, but is empty\n");
-	fclose(fp);
-	return -1;
-    }
-
-    while (!feof(fp)) {
-	int pocket;
-	int id;
-	double zoffset;
-        double xoffset;
-	double diameter;
-        double frontangle, backangle;
-        int orientation;
-        int scanned;
-
-	// just read pocket, ID, and length offset
-	if (NULL == fgets(buffer, CANON_TOOL_ENTRY_LEN, fp)) {
-	    break;
-	}
-        if((scanned = sscanf(buffer, "%d %d %lf %lf %lf %lf %lf %d %[^\n]",
-                             &pocket, &id, &zoffset, &xoffset, &diameter,
-                             &frontangle, &backangle, &orientation, comment)) &&
-           (scanned == 8 || scanned == 9)) {
-            if (pocket < 0 || pocket > CANON_TOOL_MAX) {
-                printf("skipping tool: bad pocket number %d\n", pocket);
-                continue;
-            } else {
-                /* lathe tool */
-                toolTable[pocket].id = id;
-                toolTable[pocket].zoffset = zoffset;
-                toolTable[pocket].xoffset = xoffset;
-                toolTable[pocket].diameter = diameter;
-
-                toolTable[pocket].frontangle = frontangle;
-                toolTable[pocket].backangle = backangle;
-                toolTable[pocket].orientation = orientation;
-                if(scanned == 9) strcpy(ttcomments[pocket], comment);
-            }
-        } else if ((scanned = sscanf(buffer, "%d %d %lf %lf %[^\n]",
-                                     &pocket, &id, &zoffset, &diameter, comment)) &&
-                   (scanned == 4 || scanned == 5)) {
-            if (pocket < 0 || pocket > CANON_TOOL_MAX) {
-                printf("skipping tool: bad pocket number %d\n", pocket);
-                continue;
-            } else {
-                /* mill tool */
-                toolTable[pocket].id = id;
-                toolTable[pocket].zoffset = zoffset;
-                toolTable[pocket].diameter = diameter;
-
-                // these aren't used on a mill
-                toolTable[pocket].frontangle = toolTable[pocket].backangle = 0.0;
-                toolTable[pocket].xoffset = 0.0;
-                toolTable[pocket].orientation = 0;
-                if(scanned == 5) strcpy(ttcomments[pocket], comment);
-            }
-        } else {
-            /* invalid line. skip it silently */
-            continue;
-        }
-    }
-
-    // close the file
-    fclose(fp);
-
-    return 0;
-}
-
-extern "C" int saveToolTable(char *filename)
-{
-    int pocket;
-    FILE *fp;
-    const char *name;
-    int lathe_style = 0;
-
-    for(pocket=1; pocket <= CANON_TOOL_MAX; pocket++) {
-        if(toolTable[pocket].orientation != 0) {
-            lathe_style = 1;
-            break;
-        }
-    }
-
-    // check filename
-    if (filename[0] == 0) {
-	name = TOOL_TABLE_FILE;
-    } else {
-	// point to name provided
-	name = filename;
-    }
-
-    // open tool table file
-    if (NULL == (fp = fopen(name, "w"))) {
-	// can't open file
-	return -1;
-    }
-
-    if(lathe_style) {
-        fprintf(fp, "%6s%4s%11s%11s%11s%12s%12s%7s  %s\n\n",
-                "POCKET", "FMS", "ZOFFSET", "XOFFSET",
-                "DIAMETER", "FRONTANGLE", "BACKANGLE", "ORIENT", 
-                "COMMENT");
-        for (pocket = 1; pocket <= CANON_TOOL_MAX; pocket++) {
-            if (toolTable[pocket].id)
-                fprintf(fp, "%6d%4d%+11f%+11f%11f%+12f%+12f%7d  %s\n",
-                        pocket,
-                        toolTable[pocket].id,
-                        toolTable[pocket].zoffset, toolTable[pocket].xoffset, toolTable[pocket].diameter,
-                        toolTable[pocket].frontangle, toolTable[pocket].backangle, 
-                        toolTable[pocket].orientation, ttcomments[pocket]);
-        }
-    } else {
-        fprintf(fp, "%7s%4s%11s%11s  %s\n\n",
-                "POCKET", "FMS", "LENGTH", "DIAMETER", "COMMENT");
-        for (pocket = 1; pocket <= CANON_TOOL_MAX; pocket++) {
-            if (toolTable[pocket].id)
-                fprintf(fp, "%7d%4d%+11f%11f  %s\n",
-                        pocket,
-                        toolTable[pocket].id,
-                        toolTable[pocket].zoffset, toolTable[pocket].diameter,
-                        ttcomments[pocket]);
-        }
-    }
-
-    fclose(fp);
-    return 0;
-}
-
 
 // some "special" stuff
 // we need the emctask interp state to execute scripts 
@@ -372,11 +224,17 @@ extern "C" int taskInterpState() { return emcStatus->task.interpState; }
 extern "C" int taskMotionline() { return emcStatus->task.motionLine; }
 extern "C" int taskCurrentLine() { return emcStatus->task.currentLine; }
 extern "C" int taskReadLine() { return emcStatus->task.readLine; }
-// extern "C" double taskRotationXY() { return emcStatus->task.rotation_xy; }
+#ifdef VER_24
+extern "C" double taskRotationXY() { return emcStatus->task.rotation_xy; }
+#endif
+#ifdef VER_23
 extern "C" bool taskTloIsAlongW() { return emcStatus->task.tloIsAlongW; }
+#endif
 extern "C" int taskProgramUnits() { return emcStatus->task.programUnits; }
 extern "C" int taskInterpErrorCode() { return emcStatus->task.interpreter_errcode; }
-// extern "C" double taskDelayLeft() { return emcStatus->task.delayLeft; }
+#ifdef VER_24
+extern "C" double taskDelayLeft() { return emcStatus->task.delayLeft; }
+#endif
 extern "C" bool taskBlockDelete() { return emcStatus->task.block_delete_state; }
 extern "C" bool taskOptStop() { return emcStatus->task.optional_stop_state; }
 
@@ -392,7 +250,10 @@ extern "C" int spindleEnabled() { return emcStatus->motion.spindle.enabled; }
 extern "C" bool coolantMist() { return emcStatus->io.coolant.mist != 0; }
 extern "C" bool coolantFlood() { return emcStatus->io.coolant.flood != 0; }
 
+#ifdef VER_23
 extern "C" int toolPrepped() { return emcStatus->io.tool.toolPrepped; }
+#endif
+
 extern "C" int toolInSpindle() { return emcStatus->io.tool.toolInSpindle; }
 extern "C" double toolLengthOffset() { return emcStatus->task.toolOffset.tran.z; }
 
@@ -1569,6 +1430,26 @@ extern "C" int sendLoadToolTable(const char *file)
     return 0;
 }
 
+#ifdef VER_24
+extern "C" int sendToolSetOffset(int id, double zoffset, double diameter)
+{
+    EMC_TOOL_SET_OFFSET emc_tool_set_offset_msg;
+    emc_tool_set_offset_msg.toolno = id;
+    emc_tool_set_offset_msg.offset.tran.z = zoffset;
+    emc_tool_set_offset_msg.diameter = diameter;
+    emc_tool_set_offset_msg.orientation = 0; // mill style tool table
+    emc_tool_set_offset_msg.serial_number = ++emcCommandSerialNumber;
+    emcCommandBuffer->write(emc_tool_set_offset_msg);
+    if (emcWaitType == EMC_WAIT_RECEIVED) {
+	return emcCommandWaitReceived(emcCommandSerialNumber);
+    } else if (emcWaitType == EMC_WAIT_DONE) {
+	return emcCommandWaitDone(emcCommandSerialNumber);
+    }
+    return 0;
+}
+#endif
+
+#ifdef VER_23
 extern "C" int sendToolSetOffset(int id, double zoffset, double diameter)
 {
     EMC_TOOL_SET_OFFSET emc_tool_set_offset_msg;
@@ -1585,7 +1466,36 @@ extern "C" int sendToolSetOffset(int id, double zoffset, double diameter)
     }
     return 0;
 }
+#endif
 
+// .toolno, .offset.tran.z, .offset.tran.x, .diameter 
+// .frontangle, .backangle, .orientation
+
+#ifdef VER_24
+extern "C" int sendToolSetOffset2(int id, double zoffset, double xoffset, 
+                      double diameter, double frontangle, double backangle,
+                      int orientation)
+{
+    EMC_TOOL_SET_OFFSET emc_tool_set_offset_msg;
+    emc_tool_set_offset_msg.toolno = id;                  
+    emc_tool_set_offset_msg.offset.tran.z = zoffset;        
+    emc_tool_set_offset_msg.offset.tran.x = xoffset;        
+    emc_tool_set_offset_msg.diameter = diameter;      
+    emc_tool_set_offset_msg.frontangle = frontangle;  
+    emc_tool_set_offset_msg.backangle = backangle;    
+    emc_tool_set_offset_msg.orientation = orientation;
+    emc_tool_set_offset_msg.serial_number = ++emcCommandSerialNumber;
+    emcCommandBuffer->write(emc_tool_set_offset_msg);
+    if (emcWaitType == EMC_WAIT_RECEIVED) {
+	return emcCommandWaitReceived(emcCommandSerialNumber);
+    } else if (emcWaitType == EMC_WAIT_DONE) {
+	return emcCommandWaitDone(emcCommandSerialNumber);
+    }
+    return 0;
+}
+#endif
+
+#ifdef VER_23
 extern "C" int sendToolSetOffset2(int id, double zoffset, double xoffset, 
                       double diameter, double frontangle, double backangle,
                       int orientation)
@@ -1607,6 +1517,7 @@ extern "C" int sendToolSetOffset2(int id, double zoffset, double xoffset,
     }
     return 0;
 }
+#endif
 
 extern "C" int sendAxisSetBacklash(int axis, double backlash)
 {

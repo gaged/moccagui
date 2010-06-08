@@ -234,6 +234,7 @@ type
     ProgramPrefix: string;        // program_prefix from ini
     ProgramFile: string;
     Machine: string;              // the machine as defined in inifile
+    IsLathe: Boolean;
     PostGuiHalfile: string;
     ToolFile: string;
     ParamFile: string;
