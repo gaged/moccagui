@@ -56,7 +56,6 @@ implementation
 
 uses
   math, sysutils,
-  moctool,
   emc2pas,  // LINELEN
   gllist;   // MyGlList
 
@@ -338,18 +337,32 @@ end;
 procedure changetool(Tool: integer); cdecl; export;
 begin
   FirstMove:= True;
+  {$ifdef PRINT_CANON}
+  writeln(Format('%s %d',['change_tool: ',Tool]));
+  {$endif}
 end;
 
 function gettool(i: integer): integer; cdecl; export;
 begin
-  if (i < 0) or (i > CANON_TOOL_MAX) then
+  if (i < 0) or (i >= CANON_TOOL_MAX) then
     result:= 0
   else
     with CanonTool do
       begin
-        id:= Tools[i].Id;
-        zoffset:= ToCanonUnits(Tools[i].zoffset);
+        toolno:= Tools[i].toolno;
         xoffset:= ToCanonUnits(Tools[i].xoffset);
+        {$ifdef VER_24}
+        yoffset:= ToCanonUnits(Tools[i].yoffset);
+       {$endif}
+        zoffset:= ToCanonUnits(Tools[i].zoffset);
+       {$ifdef VER_24}
+        aoffset:= ToCanonUnits(Tools[i].aoffset);
+        boffset:= ToCanonUnits(Tools[i].boffset);
+        coffset:= ToCanonUnits(Tools[i].coffset);
+        uoffset:= ToCanonUnits(Tools[i].uoffset);
+        voffset:= ToCanonUnits(Tools[i].voffset);
+        woffset:= ToCanonUnits(Tools[i].woffset);
+        {$endif}
         diameter:= ToCanonUnits(Tools[i].diameter);
         frontangle:= ToCanonUnits(Tools[i].frontangle);
         backangle:= ToCanonUnits(Tools[i].backangle);

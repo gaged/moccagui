@@ -1621,7 +1621,11 @@ extern "C" bool iniClose()
 
 extern "C" bool iniOpen(const char *filename)
 {
-  return inifile.Open(filename);
+  if (inifile.Open(filename) == false) {
+    return false;
+   }
+  return true;
+  // return inifile.Open(filename);
 }
 
 

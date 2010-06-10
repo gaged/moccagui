@@ -33,7 +33,7 @@ function DoChangeTool: integer;
 implementation
 
 uses
-  mocglb,moctool,emc2pas;
+  mocglb,emc2pas;
 
 var
   iTool: integer;
@@ -60,17 +60,8 @@ end;
 
 procedure TToolChgDlg.FormCreate(Sender: TObject);
 begin
-  ReadStyle(Self);
-  {{$IFDEF LCLGKT2}
-  with LbTools.Font do
-    begin
-      Size:= 10;
-      Name:= 'Courier 10 Pitch'
-      Pitch:= fpFixed;
-    end;
-  {$ENDIF}}
+  // ReadStyle(Self);
   InitControls;
-  Font.Pitch:= fpFixed;
 end;
 
 procedure TToolChgDlg.FormKeyPress(Sender: TObject; var Key: char);
@@ -112,19 +103,21 @@ procedure TToolChgDlg.InitControls;
 var
   i: integer;
   s: string;
+  Comment: string;
 begin
   s:= '';
   LbTools.Clear;
+  Comment:= '';
   for i:= 1 to CANON_TOOL_MAX - 1 do  // ??? First Pocket is 1 ???
     with Tools[i] do
-      if Tools[i].Id > 0 then
+      if Tools[i].ToolNo > 0 then
         begin
           if Vars.IsLathe then
             s:= Format('%3d %3d %8f %8f %8f %8f %8f %2d %s',
-              [pocket,id,zoffset,xoffset,diameter,frontangle,backangle,
+              [i,toolno,zoffset,xoffset,diameter,frontangle,backangle,
                orientation,comment])
           else
-            s:= Format('%3d %3d %8f %8f %s',[pocket,id,zoffset,diameter,Comment]);
+            s:= Format('%3d %3d %8f %8f %s',[i,toolno,zoffset,diameter,Comment]);
           LbTools.Items.Add(s);
         end;
 end;

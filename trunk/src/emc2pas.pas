@@ -26,6 +26,31 @@ const
   CANON_TOOL_MAX = 56;	// from canon.hh
   CANON_TOOL_ENTRY_LEN = 256; // from canon.hh
 
+type
+  TTool = packed record
+    toolno: integer;
+    xoffset: double;
+    {$ifdef VER_24}
+    yoffset: double;
+    {$endif} 
+    zoffset: double;
+    {$ifdef VER_24}
+    aoffset: double;
+    boffset: double;
+    coffset: double;
+    uoffset: double;
+    voffset: double;
+    woffset: double;
+    {$endif}
+    diameter: double;
+    frontangle: double;
+    backangle: double;
+    orientation: integer;
+  end;
+
+type
+  TTools = array[0..CANON_TOOL_MAX + 1] of TTool;
+
 const
   TaskModeManual = 1;
   TaskModeAuto   = 2;
@@ -69,6 +94,7 @@ const
 var
   ErrorStr: Array[0..LINELEN-1] of Char; external name 'errorString';
   EMC_NMLFILE: Array[0..LINELEN-1] of Char; external name 'EMC_NMLFILE';
+  // DEFAULT_EMC_NMLFILE: Array[0..LINELEN-1] of Char; external name 'EMC_DEFAULT_NMLFILE';
 
   OperatorTextStr: Array[0..LINELEN-1] of Char; external name 'operatorTextStr';
   OperatorDisplayStr: Array[0..LINELEN-1] of Char; external name 'operatorDisplayStr';
@@ -87,7 +113,21 @@ var
   LinearUnitConversion: integer; external name 'linearUnitConversion';
   AngularUnitConversion: integer; external name 'angularUnitConversion';
 
-function taskGetFile(ProgFile: PChar): Boolean; cdecl; external;
+  {$ifdef VER_24}
+  RandomToolchanger: integer; external name 'random_toolchanger';
+  {$endif}
+
+  Tools: TTools; external name 'toolTable';
+  ToolComments: array[0..CANON_TOOL_MAX+ 1] of PChar; external name 'ttcomments';
+
+// Toolfile
+function SetCanonTool(tool: integer): boolean; cdecl; external;
+procedure InitToolTable; cdecl; external;
+procedure DoneToolTable; cdecl; external;
+function loadToolTable(const filename: PChar): integer; cdecl; external;
+function saveToolTable(const filename: PChar): integer; cdecl; external;
+
+function taskGetFile(ProgFile: PChar): boolean; cdecl; external;
 
 // mocca script stuff
 function GetTaskInterpState: integer; cdecl; external;
@@ -174,7 +214,7 @@ procedure taskActiveCodes; cdecl; external;
 function  geterror(const msg: PChar): Boolean; cdecl; external;
 
 // ini- related functions C++ wrapper
-function  iniOpen(const filename: PChar): boolean; cdecl; external libemcini;
+function  iniOpen(filename: PChar): boolean; cdecl; external libemcini;
 function  iniClose: boolean; cdecl; external libemcini;
 function  iniGet(const gvar,gsec,buffer: PChar): boolean; cdecl; external libemcini;
 

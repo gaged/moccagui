@@ -184,7 +184,6 @@ implementation
 uses
   emc2pas,
   mocemc,
-  moctool,
   setup,
   mocstatusdlg;
 
@@ -315,8 +314,8 @@ begin
         begin
           d:= Tools[FTool].diameter / Scale;
           l:= Tools[FTool].zoffset / Scale;
-          s:= Tools[FTool].Comment;
-          if Length(s) < 1 then s:= MSG_NOTOOL + '?';
+          // s:= Tools[FTool].Comment;
+          if Length(s) < 1 then s:= 'WKZ' + IntToStr(FTool);
         end;
       LabelTool.Caption:= s;
       LabelToolDia.Caption:= FloatToStr(d);

@@ -8,10 +8,10 @@ uses
   Graphics,Classes, SysUtils, LResources, Forms, Controls, Dialogs, ExtCtrls,
   ExtDlgs, ComCtrls, mocbtn;
 
-{$I mocglb.inc}
-
 const
   ShowGlPreview: Boolean = True;
+
+{$I mocglb.inc}
 
 var
   LastError: string;

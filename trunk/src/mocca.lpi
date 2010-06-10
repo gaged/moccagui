@@ -46,7 +46,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="33">
+    <Units Count="32">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -233,11 +233,6 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="glfont"/>
       </Unit31>
-      <Unit32>
-        <Filename Value="moctool.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="moctool"/>
-      </Unit32>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -263,6 +258,7 @@
       <LinkSmart Value="True"/>
       <Options>
         <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-L/home/gtom/emc2-2.4.1/lib"/>
       </Options>
     </Linking>
     <Other>

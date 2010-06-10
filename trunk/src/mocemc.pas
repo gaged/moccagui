@@ -49,13 +49,16 @@ implementation
 
 uses
   Forms,
-  mocglb,moctool,emc2pas,mocjoints,
+  mocglb,emc2pas,mocjoints,
   runclient,
   offsetdlg,
   tooleditdlg,
   toolchange,
   touchoff,
   partaligndlg;
+
+const
+  ToolsInitialized: Boolean = False;
 
 procedure TEmc.EditCurrent;
 begin
@@ -78,11 +81,20 @@ procedure TEmc.LoadTools;
 var
   FileName: PChar;
 begin
-  if Length(Vars.ToolFile) < 1 then Exit;
+  if Length(Vars.ToolFile) < 1 then
+    begin
+      writeln('Keine Werkzeugdatei vorhanden.');
+      Exit;
+    end;
   FileName:= PChar(Vars.ToolFile);
   sendLoadToolTable(FileName);
   if WaitDone = 0 then
-    LoadToolTable(FileName);
+    begin
+      if not ToolsInitialized then
+        InitToolTable;
+      ToolsInitialized:= True;
+      LoadToolTable(FileName);
+    end; 
 end;
 
 function ExecToolChange(Cmd: string): boolean;
