@@ -14,7 +14,7 @@ INCLUDES += -I$(EMCDIR)/src/emc/rs274ngc
 
 LCL = -Fu.
 LCL += -Fu../src
-LCL += -Fu../lib
+LCL += -Fu./lib
 LCL += -Fu../pkg
 LCL += -Fu../pkg/lib/i386-linux
 LCL += -Fu$(LAZDIR)/lcl/units/i386-linux
@@ -24,13 +24,14 @@ LCL += -Fu$(LAZDIR)/components/opengl
 LCL += -Fu$(LAZDIR)/packager/units/i386-linux
 
 emcpas.o: ../src/emcpas.cc
-	$(COMPILE) $(INCLUDES) -o../lib/emcpas.o -DVER_24 -DDSOHANDLE ../src/emcpas.cc
+	$(COMPILE) $(INCLUDES) -o./lib/emcpas.o -DVER_24 -UDSOHANDLE ../src/emcpas.cc
 
 simcanon.o: ../src/simcanon.cc
-	$(COMPILE) $(INCLUDES) -o../lib/simcanon.o -DVER_24 ../src/simcanon.cc
+	$(COMPILE) $(INCLUDES) -o./lib/simcanon.o -DVER_24 ../src/simcanon.cc
 
 mocca.o: ../src/mocca.lpr
-	$(COMPILEMOC) -k-L$(EMCDIR)/lib $(LCL) -dVER_24 -Fl../lib -FU../lib -o../lib/mocca ../src/mocca.lpr
+	$(COMPILEMOC) -k-L$(EMCDIR)/lib $(LCL) -dVER_24 -Fl./lib -FU./lib -o./mocca2.4 ../src/mocca.lpr
+	cp ./mocca2.4 $(EMCDIR)/bin/mocca
 	
 all: simcanon.o emcpas.o mocca.o
 

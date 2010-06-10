@@ -45,6 +45,7 @@ begin
       Exit;
     end;
   Emc2LibPath:= Emc2Home + '/lib/';
+  writeln('Library loaded from: ' + Emc2LibPath);
   EmcIniHandle:= Pointer(LoadLibrary(Emc2LibPath + libemcini));
   if EmcIniHandle = nil then
     begin

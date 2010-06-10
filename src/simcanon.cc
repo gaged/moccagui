@@ -1,10 +1,16 @@
-//    Copyright 2004, 2005, 2006 Jeff Epler <jepler@unpythonic.net> and 
-//    Chris Radek <chris@timeguy.com>
+//    Based on a public domain work by Fred Proctor, Thomas Kramer, and
+//    others at NIST
+//    Copyright 2005-2009  Ray Henry, Paul Corner, John Kasunich,
+//    Peter G. Vavaroutsos, Alex Joni, Chris Radek, Jeff Epler and others.
+//
+//    Copyright 2009-2010 Thomas Guenther
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation; either version 2 of the License, or
 //    (at your option) any later version.
+//    Copyright 2004, 2005, 2006 Jeff Epler <jepler@unpythonic.net> and 
+//    Chris Radek <chris@timeguy.com>
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +28,8 @@
 #include <string.h>		// strcmp
 #include <sys/time.h>
 
+#include <stdlib.h>
+   
 #ifdef VER_24
 #include "rs274ngc_interp.hh"
 #endif
@@ -53,6 +61,8 @@ EmcPose tool_offset;
 #endif
 
 CANON_TOOL_TABLE canontool;
+
+#include "toolparse.cc"
 
 double settings[ACTIVE_SETTINGS];
 int gcodes[ACTIVE_G_CODES];
@@ -290,7 +300,6 @@ void SPLINE_FEED(int line_number, double x1, double y1, double x2, double y2, do
       STRAIGHT_FEED(line_number, x,y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w);
     }
 }
-
 #endif
 
 void SET_ORIGIN_OFFSETS(double x, double y, double z,
@@ -304,7 +313,6 @@ void SET_ORIGIN_OFFSETS(double x, double y, double z,
 
 void USE_LENGTH_UNITS(CANON_UNITS u) { metric = u == CANON_UNITS_MM; }
 void SET_LENGTH_UNITS(CANON_UNITS u) { metric = u == CANON_UNITS_MM; }
-
 
 void SELECT_PLANE(CANON_PLANE pl) {
     maybe_new_line();   
@@ -395,7 +403,13 @@ void PROGRAM_END() {}
 void FINISH() {}
 void PALLET_SHUTTLE() {}
 
+
+#ifdef VER_23
 void SELECT_TOOL(int tool) { selecttool(tool); }
+#endif
+#ifdef VER_24
+void SELECT_POCKET(int tool) { selecttool(tool); }
+#endif
 
 void OPTIONAL_PROGRAM_STOP() {}
 
@@ -478,6 +492,7 @@ void GET_EXTERNAL_PARAMETER_FILE_NAME(char *name, int max_size)
 
 int GET_EXTERNAL_LENGTH_UNIT_TYPE() { return CANON_UNITS_INCHES; }
 
+#ifdef VER_23
 CANON_TOOL_TABLE GET_EXTERNAL_TOOL_TABLE(int tool) {
     CANON_TOOL_TABLE t = {0,0,0,0,0,0,0};
     if(interp_error) return t;
@@ -488,6 +503,20 @@ CANON_TOOL_TABLE GET_EXTERNAL_TOOL_TABLE(int tool) {
       return canontool;
     }
 }
+#endif
+
+#ifdef VER_24
+CANON_TOOL_TABLE GET_EXTERNAL_TOOL_TABLE(int pocket) {
+    CANON_TOOL_TABLE t = {-1,{{0,0,0},0,0,0,0,0,0},0,0,0,0};
+    if(interp_error) return t;
+    if (gettool(pocket) == 0) {
+      return t;
+    }
+    else {
+       return canontool;
+    }
+}
+#endif
 
 int GET_EXTERNAL_TLO_IS_ALONG_W(void) { 
     int is_along_w = 0;
@@ -528,9 +557,6 @@ int GET_EXTERNAL_POCKETS_MAX() { return CANON_POCKETS_MAX; }
 int GET_EXTERNAL_TOOL_MAX() { return CANON_TOOL_MAX; }
 #endif
 
-#ifdef VER_24
-void SELECT_POCKET(int tool) {}
-#endif
 
 void DISABLE_ADAPTIVE_FEED() {} 
 void ENABLE_ADAPTIVE_FEED() {} 
@@ -662,9 +688,11 @@ char savedError[LINELEN+1];
 
 extern "C" int converterror(int err)
  {
+    #ifdef VER_23
     if(err < 0 || err >= maxerror) {
     return 0;
     }
+    #endif
     interp_new.error_text(err, savedError, LINELEN);
     return 1;
 }

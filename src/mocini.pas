@@ -133,8 +133,6 @@ begin
   Result:= True;
 end;
 
-
-
 function IniRead(FileName: string): Boolean;
 var
   d: Double;
@@ -161,12 +159,17 @@ begin
   writeln('mocca reads from :',Vars.IniPath);
 
   // first we try to find the nml-file
+  // emc2-2.4 uses the default NML_FILE;
+  // emc2-2.3 needs the NML_FILE set up in the ini-file
+  writeln('Default NML- File: ', PChar(EMC_NMLFILE));
   if GetIniStr('EMC','NML_FILE',tmp,'') then
     EMC_NMLFILE:= PChar(tmp)
   else
     begin
-      Writeln('Cannot find NMLFILE');
+      {$ifdef VER_23}
+      writeln('Cannot find NMLFILE');
       Exit;
+      {$endif}
     end;
   {$ifdef DEBUG_INI}
   writeln('Ini: NMLFile: ' + PChar(EMC_NMLFILE));

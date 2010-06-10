@@ -32,7 +32,7 @@ implementation
 { TToolDlg }
 
 uses
-  mocglb,moctool,emc2pas;
+  mocglb,emc2pas;
 
 procedure EditTools;
 var
@@ -70,7 +70,7 @@ begin
   if (Value = '?') or (Value = '-') or (Value = '+') then Exit;
   try
     case ACol of
-      1: Tools[ARow].id:= StrToInt(Value);
+      1: Tools[ARow].toolno:= StrToInt(Value);
       2: Tools[ARow].ZOffset:= StrToFloat(Value);
       3: Tools[ARow].Diameter:= StrToFloat(Value);
     end;
@@ -92,7 +92,7 @@ end;
 procedure TToolDlg.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if ModalResult = mrOk then
-    SaveToolTable(Vars.ToolFile);
+    SaveToolTable(PChar(Vars.ToolFile));
 end;
 
 procedure TToolDlg.SetupGrid;
@@ -127,14 +127,14 @@ begin
   for i:= 1 to CANON_TOOL_MAX - 1 do  // ??? First Pocket is 1 ???
     with Tools[i],Grid do
     begin
-      if Tools[i].Id >= 0 then
+      if Tools[i].ToolNo >= 0 then
         begin
           inc(r);
           Cells[0,r]:= IntToStr(i);
-          Cells[1,r]:= IntToStr(Id);
+          Cells[1,r]:= IntToStr(ToolNo);
           Cells[2,r]:= FloatToStrF(ZOffset, ffFixed, 6, 3);
           Cells[3,r]:= FloatToStrF(Diameter, ffFixed, 6, 3);
-          Cells[4,r]:= Comment;
+          // Cells[4,r]:= PChar(Comment;
         end;
     end;
 end;
