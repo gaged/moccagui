@@ -1,0 +1,98 @@
+Die Buttons kann man frei gestalten...
+
+Mocca braucht in der (Emc) Ini-Datei nur noch den Pfad zu einem Verzeichniss in dem ein Layout und eine Config- Datei ist. z.B.:
+
+[MOCCA]
+config=/home/dein_name/fraese
+
+in der config.xml können die Buttons FREI gestaltet werden und werden dann zur Laufzeit von Mocca geladen:
+
+Beispiel:
+
+<menurun>
+<item index="0" cmd="cmRUN" bitmap="" text="Start"/>
+<item index="1" cmd="cmSTOP" bitmap="" text="Stop"/>
+<item index="2" cmd="cmSTEP" bitmap="" text="Schritt"/>
+<item index="3" cmd="cmPAUSE" bitmap="" text="Pause"/>
+<item index="4" cmd="cmRUNLINE" bitmap="" text="Start ab Zeile"/>
+<item index="5" cmd="cmOPTSTOP" bitmap="" text="Opt.-Stops"/>
+<item index="6" cmd="cmBLOCKDEL" bitmap="" text="/ Blöcke"/>
+<item index="7" cmd="cmRELOAD" bitmap="" text="Neu Laden"/>
+<item index="8" cmd="cmOPEN" bitmap="" text="Öffnen..."/>
+<item index="9" cmd="cmEDITOR" bitmap="" text="Editor..."/>
+</menurun>
+
+Um ein Bild auf den button für "Start" zu legen:
+
+<item index="0" cmd="cmRUN" bitmap="start.bmp" text="Start"/>
+
+folgende "Commands" stehen zur verfügung. Manche machen allerdings noch nichts z.B. cmTOOLCL das für Werkzeug klemmen vorgesehen ist, oder cmTOOLMSR (Tool Mearsure) zm Vermessen des Wkz)
+
+cmABORT = 0;
+cmESTOP = 1;
+cmMACHINE = 2;
+cmJOG = 3;
+cmAUTO = 4;
+cmMDI = 5;
+cmSPMINUS = 201;
+cmSPPLUS = 202;
+cmSPCW = 11;
+cmSPCCW = 12;
+cmSPBRAKE = 13;
+cmFLOOD = 15;
+cmMIST = 16;
+cmREF = 220;
+cmREFX = 221;
+cmREFY = 222;
+cmREFZ = 223;
+cmREFA = 224;
+cmREFB = 225;
+cmREFC = 226;
+cmUNREF = 227;
+cmREFALL = 228;
+cmUNREFALL = 229;
+cmTOOLS = 230;
+cmTOOLEDT = 231;
+cmTOOLCHG = 232;
+cmTOOLCL = 233;
+cmTOOLUNCL = 234;
+cmTOOLPAR = 235;
+cmTOOLMSR = 236;
+cmTOUCHOFF = 240;
+cmTOUCHX = 241;
+cmTOUCHY = 242;
+cmTOUCHZ = 243;
+cmTOUCHA = 244;
+cmTOUCHB = 245;
+cmTOUCHC = 246;
+cmZEROALL = 247;
+cmOFFSDLG = 248;
+cmSETUP = 250;
+cmVIEW = 260;
+cmLIMITS = 260;
+cmOPEN = 270;
+cmRUN = 20;
+cmRUNLINE = 21;
+cmSTOP = 22;
+cmSTEP = 271;
+cmPAUSE = 23;
+cmOPTSTOP = 24;
+cmBLOCKDEL = 25;
+cmRELOAD = 272;
+cmMDIEXEC = 280;
+cmMDIHIST = 281;
+cmEDITOR = 290;
+cmINCRDN = 320;
+cmINCRUP = 321;
+cmSHIFTUP = 330;
+cmSHIFTDN = 331;
+cmPARTALGN = 340;
+cmUNITS = 350;
+cmBACK = 999;
+cmSCRIPTBASE = 1000;
+cmSCRIPTS = 1099;
+cmCLOSE = 360;
+cmFEEDRESET = 400;
+
+
+In der Datei Mainform.xml wird die Lage der Steuerelemente und deren Aussehen festgelegt.
