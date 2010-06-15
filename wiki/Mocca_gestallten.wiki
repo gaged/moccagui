@@ -2,8 +2,10 @@ Die Buttons kann man frei gestalten...
 
 Mocca braucht in der (Emc) Ini-Datei nur noch den Pfad zu einem Verzeichniss in dem ein Layout und eine Config- Datei ist. z.B.:
 
+{{{
 [MOCCA]
 config=/home/dein_name/fraese
+}}}
 
 in der config.xml können die Buttons FREI gestaltet werden und werden dann zur Laufzeit von Mocca geladen:
 
