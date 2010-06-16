@@ -1,55 +1,67 @@
 object JogClientForm: TJogClientForm
-  Left = 553
-  Height = 415
-  Top = 227
-  Width = 553
+  Left = 625
+  Height = 282
+  Top = 267
+  Width = 432
   HorzScrollBar.Page = 476
   VertScrollBar.Page = 361
   ActiveControl = SliderJog
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'JogClientForm'
-  ClientHeight = 415
-  ClientWidth = 553
-  Color = clMedGray
+  ClientHeight = 282
+  ClientWidth = 432
+  Color = clGray
   KeyPreview = True
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
   ParentFont = True
   ShowInTaskBar = stNever
   LCLVersion = '0.9.28.2'
   object LabelJ1: TLabel
-    Left = 8
-    Height = 18
-    Top = 12
-    Width = 76
+    Left = 4
+    Height = 28
+    Top = 4
+    Width = 104
     AutoSize = False
     Caption = 'Joggeschw.'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
+    ParentFont = False
   end
   object LabelJ2: TLabel
-    Left = 8
-    Height = 18
-    Top = 68
-    Width = 108
+    Left = 284
+    Height = 28
+    Top = 4
+    Width = 136
     AutoSize = False
-    Caption = 'Schrittweite'
+    Caption = 'Schrittweiten'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
+    ParentFont = False
   end
   object LedORide: TMocLed
-    Left = 16
-    Height = 32
-    Top = 292
-    Width = 16
+    Left = 4
+    Height = 17
+    Top = 252
+    Width = 268
     LedColor = clRed
     IsOn = False
+    Color = clSilver
   end
   object BXMinus: TMocButton
     Tag = -1
-    Left = 8
+    Left = 4
     Height = 48
-    Top = 180
+    Top = 100
     Width = 48
     ShowClicks = True
     Caption = '- X'
@@ -61,9 +73,9 @@ object JogClientForm: TJogClientForm
   end
   object BXPlus: TMocButton
     Tag = 1
-    Left = 104
+    Left = 116
     Height = 48
-    Top = 180
+    Top = 100
     Width = 48
     ShowClicks = True
     Caption = 'X +'
@@ -75,9 +87,9 @@ object JogClientForm: TJogClientForm
   end
   object BYPlus: TMocButton
     Tag = 2
-    Left = 56
+    Left = 60
     Height = 48
-    Top = 132
+    Top = 48
     Width = 48
     ShowClicks = True
     Caption = '+ Y'
@@ -89,9 +101,9 @@ object JogClientForm: TJogClientForm
   end
   object BZPlus: TMocButton
     Tag = 3
-    Left = 104
+    Left = 116
     Height = 48
-    Top = 132
+    Top = 48
     Width = 48
     ShowClicks = True
     Caption = '+ Z'
@@ -103,9 +115,9 @@ object JogClientForm: TJogClientForm
   end
   object BYMinus: TMocButton
     Tag = -2
-    Left = 56
+    Left = 60
     Height = 48
-    Top = 228
+    Top = 152
     Width = 48
     ShowClicks = True
     Caption = '- Y'
@@ -117,9 +129,9 @@ object JogClientForm: TJogClientForm
   end
   object BZMinus: TMocButton
     Tag = -3
-    Left = 8
+    Left = 4
     Height = 48
-    Top = 228
+    Top = 152
     Width = 48
     ShowClicks = True
     Caption = '- Z'
@@ -131,9 +143,9 @@ object JogClientForm: TJogClientForm
   end
   object BAMinus: TMocButton
     Tag = -4
-    Left = 152
+    Left = 172
     Height = 48
-    Top = 132
+    Top = 48
     Width = 48
     ShowClicks = True
     Caption = '- A'
@@ -145,9 +157,9 @@ object JogClientForm: TJogClientForm
   end
   object BAPlus: TMocButton
     Tag = 4
-    Left = 200
+    Left = 224
     Height = 48
-    Top = 132
+    Top = 48
     Width = 48
     ShowClicks = True
     Caption = 'A +'
@@ -159,9 +171,9 @@ object JogClientForm: TJogClientForm
   end
   object BBMinus: TMocButton
     Tag = -5
-    Left = 152
+    Left = 172
     Height = 48
-    Top = 180
+    Top = 100
     Width = 48
     ShowClicks = True
     Caption = '- B'
@@ -173,9 +185,9 @@ object JogClientForm: TJogClientForm
   end
   object BBPlus: TMocButton
     Tag = 5
-    Left = 200
+    Left = 224
     Height = 48
-    Top = 180
+    Top = 100
     Width = 48
     ShowClicks = True
     Caption = 'B +'
@@ -187,9 +199,9 @@ object JogClientForm: TJogClientForm
   end
   object BCMinus: TMocButton
     Tag = -6
-    Left = 152
+    Left = 172
     Height = 48
-    Top = 228
+    Top = 152
     Width = 48
     ShowClicks = True
     Caption = '- C'
@@ -201,9 +213,9 @@ object JogClientForm: TJogClientForm
   end
   object BCPlus: TMocButton
     Tag = 6
-    Left = 200
+    Left = 224
     Height = 48
-    Top = 228
+    Top = 152
     Width = 48
     ShowClicks = True
     Caption = 'C +'
@@ -214,45 +226,102 @@ object JogClientForm: TJogClientForm
     ParentFont = False
   end
   object BtnORideLimits: TMocButton
-    Left = 32
+    Left = 4
     Height = 32
-    Top = 292
-    Width = 208
+    Top = 216
+    Width = 268
     ShowClicks = True
     Caption = 'Grenzwerte An/Aus'
     Color = clBtnFace
-    OnClick = BtnORideLimitsClick
+    OnClick = Click
   end
-  object CbInc: TComboBox
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Side = asrBottom
-    Left = 8
-    Height = 31
-    Top = 92
-    Width = 169
-    AutoSize = False
-    ItemHeight = 0
-    Items.Strings = (
-      'Durchgehend'
-      '0.001mm'
-      '0.01mm'
-      '0.1mm'
-      '1mm'
-      '10mm'
-    )
-    OnChange = CbIncClick
-    OnClick = CbIncClick
-    Style = csDropDownList
-    TabOrder = 0
+  object MocButtonInc0: TMocButton
+    Left = 284
+    Height = 25
+    Top = 48
+    Width = 136
+    ShowClicks = True
+    Caption = 'Durchgehend'
+    Color = clBtnFace
+    OnClick = MocButtonIncClick
+  end
+  object MocButtonInc1: TMocButton
+    Left = 284
+    Height = 25
+    Top = 76
+    Width = 136
+    ShowClicks = True
+    Color = clBtnFace
+    Enabled = False
+    OnClick = MocButtonIncClick
+  end
+  object MocButtonInc2: TMocButton
+    Left = 284
+    Height = 25
+    Top = 104
+    Width = 136
+    ShowClicks = True
+    Color = clBtnFace
+    Enabled = False
+    OnClick = MocButtonIncClick
+  end
+  object MocButtonInc3: TMocButton
+    Left = 284
+    Height = 25
+    Top = 132
+    Width = 136
+    ShowClicks = True
+    Color = clBtnFace
+    Enabled = False
+    OnClick = MocButtonIncClick
+  end
+  object MocButtonInc4: TMocButton
+    Left = 284
+    Height = 25
+    Top = 160
+    Width = 136
+    ShowClicks = True
+    Color = clBtnFace
+    Enabled = False
+    OnClick = MocButtonIncClick
+  end
+  object MocButtonInc5: TMocButton
+    Left = 284
+    Height = 25
+    Top = 188
+    Width = 136
+    ShowClicks = True
+    Color = clBtnFace
+    Enabled = False
+    OnClick = MocButtonIncClick
+  end
+  object MocButtonInc6: TMocButton
+    Left = 284
+    Height = 25
+    Top = 216
+    Width = 136
+    ShowClicks = True
+    Color = clBtnFace
+    Enabled = False
+    OnClick = MocButtonIncClick
+  end
+  object MocButtonInc7: TMocButton
+    Left = 284
+    Height = 25
+    Top = 244
+    Width = 136
+    ShowClicks = True
+    Color = clBtnFace
+    Enabled = False
+    OnClick = MocButtonIncClick
   end
   object SliderJog: TSlider
-    Left = 8
-    Height = 24
-    Top = 36
-    Width = 240
+    Left = 116
+    Height = 28
+    Top = 4
+    Width = 156
     Position = 0
-    BarColor = clYellow
+    BarColor = clNavy
     Vertical = False
     Smooth = True
     PositionChanged = SliderJogPositionChanged

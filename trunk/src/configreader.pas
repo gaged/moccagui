@@ -120,15 +120,15 @@ var
   nv,nn: string;
   S: string;
   i,idx,GridW: integer;
+  MaxIndex: integer;
 begin
   {$ifdef DEBUG_CONFIG}
   writeln('reading Tools configuration...');
   {$endif}
-  for i:= 0 to 8 do
-    begin
-      ToolCfg[i].Name:= '';
-      ToolCfg[i].Width:= 0;
-    end;
+  for i:= 0 to ToolLatheCount do
+    ToolHeaderWidths[i]:= 0;
+  if Vars.IsLathe then MaxIndex:= ToolLatheCount else
+    MaxIndex:= ToolMillCount;
   if Node = nil then
     begin
       writeln('tool- section not found in config-file');
@@ -159,7 +159,7 @@ begin
                 writeln('"index" in tool config is not an integer');
                 Exit;
               end;
-              if (idx < 0) or (idx > 8) then
+              if (idx < 0) or (idx > MaxIndex) then
                 begin
                   writeln('"index" in tool config is out of range');
                   Exit;
@@ -179,10 +179,11 @@ begin
               S:= nv;
             end;
         end;
-        if (idx >= 0) and (idx <= 8) then
+        if (idx >= 0) and (idx <= MaxIndex) then
           begin
-            if S <> '' then ToolCfg[idx].Name:= S;
-            if GridW > 0 then ToolCfg[idx].Width:= GridW;
+            if S <> '' then
+              ToolHeaders[idx]:= s;
+            if GridW > 0 then ToolHeaderWidths[idx]:= GridW;
             {$ifdef DEBUG_CONFIG}
             writeln('read toolitem: ' + S);
             {$endif}
@@ -399,18 +400,6 @@ begin
     ReadMenu(GetNode('menuref'),@BtnDefJogRef);
     ReadMenu(GetNode('menutouchoff'),@BtnDefJogTouch);
     ReadMenu(GetNode('menutool'),@BtnDefJogTool);
-
-    Node:= GetNode('background');
-    if Node <> nil then
-      begin
-        S:= Node.NodeValue;
-        if S <> '' then
-          BackGroundImage:= ConfigDir + S
-        else
-          S:= 'None!';
-        writeln('Background: ' + S);
-      end;
-
   finally
     Doc.Free;
   end;

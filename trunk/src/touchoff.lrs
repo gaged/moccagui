@@ -1,8 +1,8 @@
 { Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
 
 LazarusResources.Add('TTouchOffDlg','FORMDATA',[
-  'TPF0'#12'TTouchOffDlg'#11'TouchOffDlg'#4'Left'#3#215#1#6'Height'#3#189#0#3'T'
-  +'op'#3'o'#1#5'Width'#3'J'#1#13'ActiveControl'#7#5'EditV'#11'BorderIcons'#11
+  'TPF0'#12'TTouchOffDlg'#11'TouchOffDlg'#4'Left'#3#251#1#6'Height'#3#189#0#3'T'
+  +'op'#3'u'#1#5'Width'#3'J'#1#13'ActiveControl'#7#5'EditV'#11'BorderIcons'#11
   +#12'biSystemMenu'#0#7'Caption'#6#8'Antasten'#12'ClientHeight'#3#189#0#11'Cli'
   +'entWidth'#3'J'#1#10'KeyPreview'#9#12'OnCloseQuery'#7#14'FormCloseQuery'#8'O'
   +'nCreate'#7#10'FormCreate'#9'OnKeyDown'#7#11'FormKeyDown'#6'OnShow'#7#8'Form'

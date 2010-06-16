@@ -320,6 +320,10 @@ begin
 
   Vars.HomingOrderDefined:= GetIniStr('AXIS_0','HOME_SEQUENCE',tmp,'');
 
+  Vars.NoForceHoming:= False;
+  if GetIniInt('TRAJ','NO_FORCE_HOMING',i,0) then
+    Vars.NoForceHoming:= i <> 0;
+
   if GetIniStr('DISPLAY','POSITION_OFFSET',tmp,'') then
     begin
       tmp:= UpperCase(Trim(tmp));
@@ -358,6 +362,14 @@ begin
   GetIniStr('MOCCA','CONFIG',tmp,'');
   ConfigDir:= Trim(tmp);
 
+  if ConfigDir = '' then
+    begin
+      writeln('Error: There is no entry "CONFIG" in the Emc2 inifile.');
+      writeln('Mocca needs the file "config.xml" to start.');
+      writeln('Please check your installation of mocca.');
+      Exit;
+    end;
+
   i:= Length(ConfigDir);
   if i > 0 then
     begin
@@ -365,6 +377,10 @@ begin
         ConfigDir:= ConfigDir + '/';
     end;
   writeln('Config directory = "' + ConfigDir + '"');
+
+  GetIniInt('MOCCA','DEFAULT_LAYOUT',i,0);
+  if i > 0 then
+    UseDefaultLayout:= True;
 
   IniClose;
   Result:= True;

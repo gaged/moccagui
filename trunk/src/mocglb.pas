@@ -13,6 +13,10 @@ const
 
 {$I mocglb.inc}
 
+const
+  UseDefaultLayout: Boolean = False;
+
+
 var
   LastError: string;
   UpdateLock: Boolean;
@@ -35,15 +39,15 @@ var
   GlobalErrors: TStringList;
 
   ConfigDir: string;
-
   BackGroundImage: string;
-
-  ToolCfg : array[0..8] of ToolDef;
 
   PartBaseCoord : record
     x,y,z: double;
     IsSet: Boolean;
   end;
+
+const
+  Verbose: Boolean = true;
 
 function PosToString(const Value: Double): string;
 
@@ -64,7 +68,7 @@ procedure UnFullScreen(WinControl: TWinControl);
 
 procedure CallEditor;
 
-procedure ReadStyle(const Form: TForm);
+procedure ReadStyle(const Form: TForm; AFileName: string);
 
 function GetCmdNumber(const C: string): integer;
 
@@ -106,10 +110,9 @@ begin
     end;
 end;
 
-procedure ReadStyle(const Form: TForm);
+procedure ReadStyle(const Form: TForm; AFileName: string);
 var
   FileName: string;
-  FormName: string;
 begin
   if not Assigned(Form) then
     begin
@@ -118,13 +121,12 @@ begin
     end;
   if ConfigDir = '' then
     begin
-      writeln('Error reading layout for: ' + Form.Name);
+      writeln('Error reading layout for: ' + Form.Name + ' from: ' + AFileName);
       writeln('Path to xml-styles not set');
       Exit;
     end;
-  FormName:= LowerCase(Form.Name);
-  FileName:= ConfigDir + FormName + '.xml';
-  writeln('Reading layout ' + FileName);
+  FileName:= ConfigDir + AFileName;
+  writeln('Reading layout from ' + FileName);
   try
     ReadXMLStyle(Form,FileName);
   except
@@ -201,7 +203,7 @@ begin
         iBmp:= M^[i].G;
         if (iBmp >= 0) and Assigned(GlobalBitmaps) then
           if Assigned(GlobalBitmaps.Objects[iBmp]) then
-            MocBtns[i].Glyph.Assign(TBitmap(GlobalBitmaps.Objects[iBmp]));
+            MocBtns[i].Glyph.Assign(TGraphic(GlobalBitmaps.Objects[iBmp]));
       end;
 end;
 
@@ -247,7 +249,7 @@ end;
 function AddBitmap(const AName: string): integer;
 var
   i: integer;
-  B: TBitmap;
+  B: TPortableNetworkGraphic;
   S,S1: string;
 begin
   Result:= -1;
@@ -265,7 +267,8 @@ begin
       Result:= i;
       Exit;
     end;
-  B:= TBitmap.Create;
+  B:= TPortableNetworkGraphic.Create;
+  //B:= TBitmap.Create;
   if not Assigned(B) then
     begin
       writeln('Error: cannot create bitmap.');

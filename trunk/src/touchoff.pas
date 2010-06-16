@@ -99,7 +99,7 @@ end;
 
 procedure TTouchOffDlg.FormCreate(Sender: TObject);
 begin
-  ReadStyle(Self);
+  ReadStyle(Self,'touchoffdialog.xml');
 end;
 
 procedure TTouchOffDlg.FormKeyDown(Sender: TObject; var Key: Word;

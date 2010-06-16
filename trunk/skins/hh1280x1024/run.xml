@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Component>
+    <component name="RunClientForm" class="TRunClientForm">
+      <properties>
+        <ident name="BorderStyle" value="Single"/>
+        <ident name="Color" value="clSilver"/>
+      </properties>
+      <children>
+        <component name="MocLister" class="TMocLister">
+          <properties>
+            <integer name="Left" value="0"/>
+            <integer name="Height" value="356"/>
+            <integer name="Top" value="0"/>
+            <integer name="Width" value="480"/>
+            <ident name="Color" value="clSilver"/>
+            <ident name="ActiveColor" value="clWhite"/>
+          </properties>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>

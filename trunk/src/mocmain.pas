@@ -23,25 +23,23 @@ type
     ButtonClear: TMocButton;
     ButtonViewMinus: TMocButton;
     ButtonViewPlus: TMocButton;
-    Label1: TLabel;
+    OEMLabel11: TLabel;
     LedFOREnabled: TMocLed;
     LedSOREnabled: TMocLed;
     ButtonView0: TMocButton;
-    MocLedToolpath: TMocLed;
-    MocLedShowDim: TMocLed;
     OEMLabel1: TLabel;
     OEMLabel2: TLabel;
     OEMLabel3: TLabel;
     OEMLabel4: TLabel;
     OEMLabel5: TLabel;
-    OEMLabel6: TLabel;
+    LabelFile: TLabel;
     OEMLabel7: TLabel;
     OEMLabel9: TLabel;
     Label2: TLabel;
     OEMLabel10: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    Label5: TLabel;
+    OEMLabel12: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
@@ -59,8 +57,8 @@ type
     LabelMsg: TLabel;
     Label11: TLabel;
     LabelSpVel: TLabel;
-    ButtonSpindleMinus: TMocButton;
-    ButtonSpindlePlus: TMocButton;
+    OEMButton1: TMocButton;
+    OEMButton2: TMocButton;
     ButtonFeedReset: TMocButton;
     ButtonSpindlebrake: TMocButton;
     ButtonUnitsMM: TMocButton;
@@ -125,7 +123,6 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
-
     procedure LabelMsgClick(Sender: TObject);
     procedure LabelUnitsClick(Sender: TObject);
     procedure LabelViewClick(Sender: TObject);
@@ -160,6 +157,7 @@ type
     FCurrentVel: Double;
     FFOREnabled: Boolean;
     FSOREnabled: Boolean;
+    FFile: string;
 
     procedure InitPanels;
     procedure InitButtons;
@@ -280,7 +278,6 @@ begin
 
   if State.UnitsChanged then
     begin
-      // FMaxVel:= 0;
       LedShowMM.IsOn:= (LinearUnitConversion = linear_units_mm);
       State.UnitsChanged:= False;
     end;
@@ -290,7 +287,6 @@ begin
       SliderFeed.Caption:= IntToStr(State.ActFeed) + '%';
       SliderFeed.Position:= State.ActFeed;
       FFeed:= State.ActFeed;
-
     end;
 
   if FMaxVel <> State.ActVel then
@@ -308,13 +304,13 @@ begin
         begin
           d:= 0;
           l:= 0;
-          s:= MSG_NOTOOL;
+          s:= 'ToolNo out of range: ' + IntToStr(FTool);
         end
       else
         begin
           d:= Tools[FTool].diameter / Scale;
           l:= Tools[FTool].zoffset / Scale;
-          // s:= Tools[FTool].Comment;
+          s:= PChar(ToolComments[FTool]);
           if Length(s) < 1 then s:= 'WKZ' + IntToStr(FTool);
         end;
       LabelTool.Caption:= s;
@@ -326,25 +322,18 @@ begin
           clSim.SetTool(State.CurrentTool);
     end;
 
-  {
-  if FDTG <> State.Dtg then
+  if FFile <> Vars.ProgramFile then
     begin
-      LabelDtg.Caption:= FloatToStrF(State.Dtg, ffFixed, 6, 3) +
-        Vars.UnitStr;
-      FDtg:= State.Dtg;
+      FFile:= Vars.ProgramFile;
+      LabelFile.Caption:= FFile;
     end;
-
-  if FAcc <> State.Acc then
-    begin
-      LabelAcc.Caption:= FloatToStrF(State.Acc, ffFixed, 6, 3);
-      FAcc:= State.Acc;
-    end;
-  }
 
   if FCurrentVel <> State.CurrentVel then
     begin
-      LabelCurrentVel.Caption:= FloatToStrF(State.CurrentVel, ffFixed, 6, 3);
       FCurrentVel:= State.CurrentVel;
+      d:= State.CurrentVel * 60;
+      s:= FloatToStrF(d * 60, ffFixed, 6, 3) + Vars.UnitStr + '/min';
+      LabelCurrentVel.Caption:=  s;
     end;
 
   if FFOREnabled <> State.FeedORideEnabled then
@@ -444,7 +433,11 @@ begin
   if Assigned(MsgForm) then
     begin
       MsgForm.Left:= PanelMsg.Left;
-      MsgForm.Top:= PanelMsg.Top - MsgForm.Height;
+      i:= PanelMsg.Top - MsgForm.Height;
+      if i < Self.Top then
+        i:= Self.Top;
+      MsgForm.Top:= i;
+      MsgForm.Width:= PanelMsg.Width;
     end;
   Joints:= TJoints.Create(PanelDRO);  // create the joints here
   if not Assigned(Joints) then
@@ -467,8 +460,8 @@ begin
   if Assigned(clSim) then
     with clSim do
       begin
-        MocLedToolPath.IsOn:= ShowLivePlot;
-        MocLedShowDim.IsOn:= ShowDimensions;
+        ButtonToolPath.Down:= ShowLivePlot;
+        ButtonShowDim.Down:= ShowDimensions;
         ButtonView0.Down:= ViewMode = 0;
         ButtonView1.Down:= ViewMode = 1;
         ButtonView2.Down:= ViewMode = 2;
@@ -537,15 +530,20 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   cw,ch: integer;
 begin
-  ReadStyle(Self);
+  if not UseDefaultLayout then
+    ReadStyle(Self,'mocca.xml')
+  else
+    writeln('Using default layout for "mainform".');
+
   ScriptRunning:= False;
   UpdateLock:= True; // prevent from update in on_idle
   if BackGroundImage <> '' then
     begin
       try
+        BgImage.AutoSize:= True;
         BgImage.Picture.LoadFromFile(BackGroundImage);
-        cw:= BgImage.Picture.Bitmap.Width;
-        ch:= BgImage.Picture.Bitmap.Height;
+        cw:= BgImage.Picture.Width;
+        ch:= BgImage.Picture.Height;
         if (cw > 100) and (ch > 100) then
           begin
             Self.ClientWidth:= cw;
@@ -685,7 +683,7 @@ begin
   if not Assigned(clSim) then
     Exit;
   clSim.ShowDimensions:= not clSim.ShowDimensions;
-  MocLedShowDim.IsOn:= clSim.ShowDimensions;
+  ButtonShowDim.Down:= clSim.ShowDimensions;
 end;
 
 procedure TMainForm.ButtonToolPathClick(Sender: TObject);
@@ -693,7 +691,7 @@ begin
   if not Assigned(clSim) then
     Exit;
   clSim.ShowLivePlot:= not clSim.ShowLivePlot;
-  MocLedToolPath.IsOn:= clSim.ShowLivePlot;
+  ButtonToolPath.Down:= clSim.ShowLivePlot;
   if not clSim.ShowLivePlot then
     clSim.ClearPlot;
 end;
@@ -783,13 +781,10 @@ end;
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
 begin
   if State.TaskMode = TASKMODEMANUAL then
-    begin
-      if not Assigned(Joints) then Exit;
-      case Key of
-        'u'..'z': Joints.SetActiveChar(Key);
-      end;
-      Key:= #0;
-    end;
+    clJog.FormKeyPress(nil,Key)
+  else
+  if (State.TaskMode = TASKMODEAUTO) then
+    clRun.FormKeyPress(nil,Key)
 end;
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word; // all keydowns get here
@@ -836,7 +831,9 @@ begin
     end;
 
   if (State.TaskMode = TaskModeManual) then
-    clJog.FormKeyDown(nil,Key,Shift);
+    clJog.FormKeyDown(nil,Key,Shift) else
+  if (State.TaskMode = TaskModeAuto) then
+    clRun.FormKeyDown(nil,Key,Shift);
 end;
 
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -896,18 +893,24 @@ begin
   if Assigned(clRun) then clRun.SetBounds(0,0,w,h);
 end;
 
+
 procedure TMainForm.PanelButtonsResize(Sender: TObject);
+const
+  BtnSpace = 2;
 var
   w,h,x,i: integer;
 begin
-  w:= PanelButtons.ClientWidth div NumButtons;
-  h:= PanelButtons.ClientHeight;
-  if w < 10 then w:= 10;
-  x:= 0;
+  //if PanelButtons.Width > PanalButtons.Height then
+  //  begin
+      w:= PanelButtons.ClientWidth div NumButtons;
+      h:= PanelButtons.ClientHeight;
+      if w < 20 then w:= 20;
+      if h < 20 then h:= 20;
+      x:= (PanelButtons.ClientWidth - (w * NumButtons)) div 2;
   for i:= 0 to NumButtons - 1 do
     if Assigned(MocBtns[i]) then
       begin
-        MocBtns[i].SetBounds(x,0,w,h);
+        MocBtns[i].SetBounds(x+BtnSpace,BtnSpace,w-BtnSpace,h-BtnSpace);
         x:= x + w;
       end;
 end;
@@ -947,6 +950,6 @@ end;
 initialization
 {$I mocmain.lrs}
 
-  MocButtonFrameWidth:= 1;
+  MocButtonFrameWidth:= 3;
 end.
 

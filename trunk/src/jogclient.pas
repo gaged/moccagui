@@ -26,22 +26,28 @@ type
     BAMinus: TMocButton;
     BAPlus: TMocButton;
     BBMinus: TMocButton;
-    CbInc: TComboBox;
     LabelJ1: TLabel;
     LabelJ2: TLabel;
     LedORide: TMocLed;
+    MocButtonInc0: TMocButton;
+    MocButtonInc1: TMocButton;
+    MocButtonInc2: TMocButton;
+    MocButtonInc3: TMocButton;
+    MocButtonInc4: TMocButton;
+    MocButtonInc5: TMocButton;
+    MocButtonInc6: TMocButton;
+    MocButtonInc7: TMocButton;
     SliderJog: TSlider;
     procedure BJogMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure BJogMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure BtnORideLimitsClick(Sender: TObject);
-    procedure cbLimitsChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure CbIncClick(Sender: TObject);
     procedure Click(Sender: TObject);
+    procedure MocButtonIncClick(Sender: TObject);
     procedure SliderJogPositionChanged(Sender: TObject; NewPos: integer);
   private
     OldORideLimits: Boolean;
@@ -49,6 +55,7 @@ type
     OldMachineOn: Boolean;
     FCurrentMap: integer;
     FBtnDown: integer;
+    FIncrement: integer;
   public
     procedure ActivateSelf;
     procedure UpdateBtnState(Down: Boolean);
@@ -56,8 +63,11 @@ type
     procedure InitControls;
     procedure MapButtons;
     procedure UpdateButtons;
+    procedure SetIncrement(Index: integer);
+    procedure SetButtonParams(Index: integer; s: string; ATag: integer);
+    procedure SetButtonState(Index: integer; ADown: Boolean);
     procedure ChangeButtons(ToMap: integer);
-    procedure ChangeIncrements(i: integer);
+    procedure ChangeIncrement(i: integer);
     procedure HandleCommand(Cmd: integer);
     function  HandleJogKeys(var Key: Word; Down,Fast: Boolean): Boolean;
   end;
@@ -89,8 +99,8 @@ begin
     cmTOUCHOFF: ChangeButtons(2);
     cmTOOLS: ChangeButtons(3);
     cmSCRIPTS: ChangeButtons(4);
-    cmINCRUP: ChangeIncrements(1);
-    cmINCRDN: ChangeIncrements(-1);
+    cmINCRUP: ChangeIncrement(1);
+    cmINCRDN: ChangeIncrement(-1);
   else
     begin
       Emc.HandleCommand(Cmd);
@@ -137,18 +147,88 @@ begin
     end;
 end;
 
-procedure TJogClientForm.ChangeIncrements(i: integer);
+procedure TJogClientForm.SetIncrement(Index: integer);
+begin
+  if (Index < 0) or (Index > Vars.JogIncMax) then
+    Exit;
+  if Index <> FIncrement then
+    begin
+      SetButtonState(FIncrement,False);
+      FIncrement:= Index;
+      SetButtonState(FIncrement,True);
+      Vars.JogContinous:= (FIncrement = 0);
+      Vars.JogIncrement:= Vars.JogIncrements[FIncrement].Value;
+    end;
+end;
+
+procedure TJogClientForm.SetButtonParams(Index: integer; s: string; ATag: integer);
+begin
+  case Index of
+    0: begin
+         MocButtonInc0.Caption:= s;
+       end;
+    1: begin
+         MocButtonInc1.Caption:= s;
+         MocButtonInc1.Tag:= 1;
+         MocButtonInc1.Enabled:= true;
+       end;
+    2: begin
+         MocButtonInc2.Caption:= s;
+         MocButtonInc2.Tag:= 2;
+         MocButtonInc2.Enabled:= true;
+       end;
+    3: begin
+         MocButtonInc3.Caption:= s;
+         MocButtonInc3.Tag:= 3;
+         MocButtonInc3.Enabled:= true;
+       end;
+    4: begin
+         MocButtonInc4.Caption:= s;
+         MocButtonInc4.Tag:= 4;
+         MocButtonInc4.Enabled:= true;
+       end;
+    5: begin
+         MocButtonInc5.Caption:= s;
+         MocButtonInc5.Tag:= 5;
+         MocButtonInc6.Enabled:= true;
+       end;
+    6: begin
+         MocButtonInc6.Caption:= s;
+         MocButtonInc6.Tag:= 6;
+         MocButtonInc6.Enabled:= true;
+       end;
+    7: begin
+         MocButtonInc7.Caption:= s;
+         MocButtonInc7.Tag:= 7;
+         MocButtonInc7.Enabled:= true;
+       end;
+   end;
+end;
+
+procedure TJogClientForm.SetButtonState(Index: integer; ADown: Boolean);
+begin
+  case Index of
+    0: MocButtonInc0.Down:= ADown;
+    1: MocButtonInc1.Down:= ADown;
+    2: MocButtonInc2.Down:= ADown;
+    3: MocButtonInc3.Down:= ADown;
+    4: MocButtonInc4.Down:= ADown;
+    5: MocButtonInc5.Down:= ADown;
+    6: MocButtonInc6.Down:= ADown;
+    7: MocButtonInc7.Down:= ADown;
+   end;
+end;
+
+procedure TJogClientForm.ChangeIncrement(i: integer);
 var
   n: integer;
 begin
-  n:= CbInc.ItemIndex + i;
+  n:= FIncrement + i;
   if n < 0 then
-    n:= CbInc.Items.Count - 1
-  else
-  if n > CbInc.Items.Count - 1 then
     n:= 0;
-  CbInc.ItemIndex:= n;
-  CbIncClick(nil);
+  if  n > Vars.JogIncMax then
+    n:= Vars.JogIncMax;
+  SetIncrement(n);
 end;
 
 procedure TJogClientForm.ChangeButtons(ToMap: Integer);
@@ -242,44 +322,10 @@ begin
   SetButtonDown(cmJOG,True);
   SetButtonEnabled(cmREFALL,Vars.HomingOrderDefined);
   SliderJog.SetParams(0,State.MaxJogVel,State.ActJogVel);
-  CbInc.Items.Clear;
-  for i:= 0 to Vars.JogIncMax do
-    CbInc.Items.Add(Vars.JogIncrements[i].Text);
-  CbInc.ItemIndex:= 0;
-  Vars.JogContinous:= True;
+
   OldJogVel:= -1;
   OldORideLimits:= not State.ORideLimits;
-  OldMachineOn:= not State.Machine;
-  if Pos('A',Vars.CoordNames) < 1 then
-    begin
-      BAPlus.Enabled:= False;
-      BAMinus.Enabled:= False;
-    end;
-  if Pos('B',Vars.CoordNames) < 1 then
-    begin
-      BBPlus.Enabled:= False;
-      BBMinus.Enabled:= False;
-    end;
-  if Pos('C',Vars.CoordNames) < 1 then
-    begin
-      BCPlus.Enabled:= False;
-      BCMinus.Enabled:= False;
-    end;
-  if Pos('Z',Vars.CoordNames) < 1 then
-    begin
-      BZPlus.Enabled:= False;
-      BZMinus.Enabled:= False;
-    end;
-  if Pos('Y',Vars.CoordNames) < 1 then
-    begin
-      BYPlus.Enabled:= False;
-      BYMinus.Enabled:= False;
-    end;
-  if Pos('X',Vars.CoordNames) < 1 then
-    begin
-      BXPlus.Enabled:= False;
-      BXMinus.Enabled:= False;
-    end;
+  OldMachineOn:= not State.Machine
 end;
 
 function TJogClientForm.HandleJogKeys(var Key: Word;
@@ -337,7 +383,14 @@ procedure TJogClientForm.Click(Sender: TObject);
 begin
   if Assigned(Sender) then
     with Sender as TMocButton do
-    HandleCommand(Tag)
+      HandleCommand(Tag)
+end;
+
+procedure TJogClientForm.MocButtonIncClick(Sender: TObject);
+begin
+  if Sender = nil then Exit;
+  with Sender as TMocButton do
+    SetIncrement(Tag);
 end;
 
 procedure TJogClientForm.SliderJogPositionChanged(Sender: TObject; NewPos: integer);
@@ -355,11 +408,68 @@ begin
 end;
 
 procedure TJogClientForm.FormCreate(Sender: TObject);
+var
+  i: integer;
 begin
-  // ReadStyle(Self);
+  ReadStyle(Self,'jog.xml');
   Self.Tag:= TASKMODEMANUAL;
   FCurrentMap:= 0;
   FBtnDown:= 0;
+  if Vars.JogIncMax < 1 then
+    begin
+      writeln('No Jog-Increments set in config-file');
+      writeln('Using default configuration');
+      with Vars do
+        begin
+          JogIncrements[0].Text:= 'Durchgehend';
+          JogIncrements[0].Value:= 0;
+          JogIncrements[1].Text:= '1.00 mm';
+          JogIncrements[1].Value:= 1;
+          JogIncrements[2].Text:= '0.1 mm';
+          JogIncrements[2].Value:= 0.1;
+          JogIncrements[3].Text:= '0.01 mm';
+          JogIncrements[3].Value:= 0.01;
+          JogIncrements[4].Text:= '0.001 mm';
+          JogIncrements[4].Value:= 0.001;
+        end;
+      Vars.JogIncMax:= 4;
+    end;
+  for i:= 0 to Vars.JogIncMax do
+    SetButtonParams(i,Vars.JogIncrements[i].Text,i);
+  Vars.JogContinous:= True;
+  FIncrement:= 1;
+  SetIncrement(0);
+
+   if Pos('A',Vars.CoordNames) < 1 then
+    begin
+      BAPlus.Enabled:= False;
+      BAMinus.Enabled:= False;
+    end;
+  if Pos('B',Vars.CoordNames) < 1 then
+    begin
+      BBPlus.Enabled:= False;
+      BBMinus.Enabled:= False;
+    end;
+  if Pos('C',Vars.CoordNames) < 1 then
+    begin
+      BCPlus.Enabled:= False;
+      BCMinus.Enabled:= False;
+    end;
+  if Pos('Z',Vars.CoordNames) < 1 then
+    begin
+      BZPlus.Enabled:= False;
+      BZMinus.Enabled:= False;
+    end;
+  if Pos('Y',Vars.CoordNames) < 1 then
+    begin
+      BYPlus.Enabled:= False;
+      BYMinus.Enabled:= False;
+    end;
+  if Pos('X',Vars.CoordNames) < 1 then
+    begin
+      BXPlus.Enabled:= False;
+      BXMinus.Enabled:= False;
+    end;
 end;
 
 procedure TJogClientForm.BJogMouseDown(Sender: TObject;
@@ -380,20 +490,21 @@ begin
   FBtnDown:= 0;
 end;
 
-procedure TJogClientForm.BtnORideLimitsClick(Sender: TObject);
-begin
-  Emc.SetORideLimits(not State.ORideLimits);
-end;
-
-procedure TJogClientForm.cbLimitsChange(Sender: TObject);
-begin
-
-end;
-
 procedure TJogClientForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if HandleJogKeys(Key,True,(ssShift in Shift)) then Key:= 0;
+end;
+
+procedure TJogClientForm.FormKeyPress(Sender: TObject; var Key: char);
+begin
+  if not Assigned(Joints) then Exit;
+  case Key of
+    'u'..'z': Joints.SetActiveChar(Key);
+    '+': ChangeIncrement(1);
+    '-': ChangeIncrement(-1);
+  end;
+  Key:= #0;
 end;
 
 procedure TJogClientForm.FormKeyUp(Sender: TObject; var Key: Word;
@@ -402,15 +513,6 @@ begin
   if HandleJogKeys(Key,False,False) then Key:= 0;
 end;
 
-procedure TJogClientForm.CbIncClick(Sender: TObject);
-var
-  i: integer;
-begin
-  i:= CbInc.ItemIndex;
-  if (i < 0) or (i > Vars.JogIncMax) then Exit;
-  Vars.JogContinous:= (i = 0);
-  Vars.jogIncrement:= Vars.JogIncrements[i].Value;
-end;
 
 initialization
   {$I jogclient.lrs}

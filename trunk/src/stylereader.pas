@@ -12,7 +12,7 @@ function ReadXMLStyle(const AForm: TForm; AFileName: string): Boolean;
 implementation
 
 uses
-  Dom,XMLRead,Graphics,StdCtrls,Controls,mocglb,mocbtn,mocled;
+  Dom,XMLRead,Graphics,StdCtrls,Controls,mocglb,mocbtn,mocled,mocslider;
 
 const
   Msg1 = 'Error reading style-file.' + #13;
@@ -44,6 +44,32 @@ begin
     writeln('Component "' + CompName + '" not found');
 end;
 
+procedure AssignFontProperty(PropName,PropVal: string);
+var
+  AColor: Longint;
+begin
+  if Pos('FONT.',PropName) = 1 then
+    with Comp as TControl do
+      begin
+        if PropName = 'FONT.NAME' then
+          Font.Name:= PropVal
+        else
+        if PropName = 'FONT.HEIGHT' then
+          Font.Height:= StrToInt(PropVal)
+        else
+        if PropName = 'FONT.COLOR' then
+          begin
+            if IdentToColor(PropVal,AColor) then
+            Font.Color:= AColor;
+          end;
+        if PropName = 'FONT.STYLE' then
+          begin
+            if Pos('fsBold',PropVal) > 0 then
+              Font.Style:= Font.Style + [fsBold];
+          end;
+      end;
+end;
+
 procedure AssignProperty(const PropName,PropVal: string);
 var
   AColor: Longint;
@@ -55,14 +81,12 @@ begin
   if Comp is TControl then
     with Comp as TControl do
       begin
+        AssignFontProperty(PropName,PropVal);
+        if PropName = 'HINT' then
+          Hint:= PropVal
+        else
         if PropName = 'CAPTION' then
           Caption:= PropVal
-        else
-        if PropName = 'FONT.NAME' then
-          Font.Name:= PropVal
-        else
-        if PropName = 'FONT.HEIGHT' then
-          Font.Height:= StrToInt(PropVal)
         else
         if PropName = 'COLOR' then
           begin
@@ -89,7 +113,7 @@ begin
             else
             if (UpperCase(PropVal) = 'TRUE') or (PropVal = '1') then
               Visible:= True;
-          end;
+          end;        
       end;
   if Comp is TMocLed then
     with Comp as TMocLed do
@@ -114,6 +138,13 @@ begin
   if Comp is TForm then
     with Comp as TForm do
       begin
+        if PropName = 'IMAGE' then
+          begin
+            if PropVal <> '' then
+              BackGroundImage:= ConfigDir + PropVal
+            else
+              BackGroundImage:= '';
+          end;
         if PropName = 'BORDERSTYLE' then
           begin
             S:= UpperCase(PropVal);
@@ -123,13 +154,25 @@ begin
           end;
       end;
   if Comp is TMocButton then
-    if PropName = 'BITMAP' then
-      begin
-        i:= AddBitmap(PropVal);
-        if (i >= 0) and Assigned(GlobalBitmaps) then
-          if Assigned(GlobalBitmaps.Objects[i]) then
-            TMocButton(Comp).Glyph.Assign(TBitmap(GlobalBitmaps.Objects[i]));
-      end;
+    with Comp as TMocButton do
+    begin
+      if PropName = 'BITMAP' then
+        begin
+          i:= AddBitmap(PropVal);
+          if (i >= 0) and Assigned(GlobalBitmaps) then
+            if Assigned(GlobalBitmaps.Objects[i]) then
+              TMocButton(Comp).Glyph.Assign(TBitmap(GlobalBitmaps.Objects[i]));
+        end;
+      if PropName = 'COMMAND' then
+        Command:= PropVal;
+    end;
+  if Comp is TSlider then
+    if PropName = 'BARCOLOR' then
+      with Comp as TSlider do
+        begin
+          if IdentToColor(PropVal,AColor) then
+             BarColor:= AColor;
+        end;
 end;
 
 procedure ParseNode(Node: TDOMNode);

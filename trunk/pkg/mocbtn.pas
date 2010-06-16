@@ -175,6 +175,10 @@ begin
   Offset.X:= (cw - gw) div 2;
   Offset.Y:= 1;
 
+  if gw > 0 then
+    if Caption = '' then
+      Offset.Y:= (ch - gh) div 2;
+
   if FDown then
     begin
       Inc(Offset.X);

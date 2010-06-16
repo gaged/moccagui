@@ -21,8 +21,10 @@ type
     procedure GridSetEditText(Sender: TObject; ACol, ARow: Integer;
       const Value: string);
   private
+    FToolNo: integer;
     procedure SetupGrid;
-    procedure UpdateGrid;
+    //procedure UpdateGrid;
+    //procedure UpdateRow(ARow: integer);
   end;
 
 procedure EditTools;
@@ -31,8 +33,13 @@ implementation
 
 { TToolDlg }
 
+
 uses
   mocglb,emc2pas;
+
+var
+  FakePocket : Array[0..CANON_TOOL_MAX] of integer;
+
 
 procedure EditTools;
 var
@@ -82,11 +89,10 @@ end;
 
 procedure TToolDlg.FormCreate(Sender: TObject);
 begin
-  // ReadStyle(Self);
   SetupGrid;
   Self.ClientWidth:= (2 *Grid.Left) + Grid.Width;
-  UpdateGrid;
-  Grid.Editor.OnKeyPress:= @Self.EditorKeyPress;
+  //UpdateGrid;
+  //Grid.Editor.OnKeyPress:= @Self.EditorKeyPress;
 end;
 
 procedure TToolDlg.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -97,33 +103,87 @@ end;
 
 procedure TToolDlg.SetupGrid;
 var
-  w,i: integer;
-  S: string;
+  i,c: integer;
+  MaxItem,MaxLen: integer;
+  w,Item: integer;
+  s: string;
 begin
-  Grid.ColCount:= 5;
-  Grid.RowCount:= CANON_TOOL_MAX + 1;
-  for i:= 0 to 4 do
+  if Vars.IsLathe then
+    c:= ToolLatheCount
+  else
+    c:= ToolMillCount;
+  Grid.ColCount:= c + 1;
+  Grid.RowCount:= CANON_TOOL_MAX;
+  for i:= 0 to c do
     begin
-      S:= ToolCfg[i].Name;
-      if S = '' then
-        S:= 'Col' + IntToStr(i);
-      Grid.Cells[i,0]:= S;
-      w:= ToolCfg[i].Width;
-      if w < 1 then
-        w:= Grid.Canvas.TextExtent(S).cx;
-      Grid.ColWidths[i]:= w + 4;
+      if Vars.IsLathe then
+        Item:= ToolIndicesLathe[i]
+      else
+        Item:= ToolIndicesMill[i];
+      if (Item >= 0) and (Item <= ToolLatheCount) then
+        begin
+          s:= ToolHeaders[item];
+          if s = '' then
+            s:= 'Item' + IntToStr(item);
+          w:= ToolHeaderWidths[item];
+          if w < 10 then
+            w:= Grid.Canvas.TextExtent(s).cx;
+          Grid.Columns[i].Width:= w;
+          Grid.Columns[i].Title.Caption:= s;
+        end
+      else
+        begin
+          writeln('Toolheader-index out of range.' + IntToStr(Item));
+          Exit;
+        end;
     end;
-  w:= 0;
-  for i:= 0 to Grid.ColCount - 1 do
-    w:= w + Grid.ColWidths[i] + Grid.GridLineWidth;
-  Grid.ClientWidth:= w + Grid.GridLineWidth;
+  if (MaxLen > 0) and (MaxItem > 0) then
+    begin
+      s:= ToolHeaders[item];
+      w:= Grid.Canvas.TextExtent(s).cx;
+      Grid.Columns[0].Width:= w;
+    end;
 end;
 
-procedure TToolDlg.UpdateGrid;
+{
+procedure TToolDlg.UpdateRow(ARow: integer);
 var
-  i,r: integer;
+  i,c,Pocket: integer;
+  T: TTool;
+  item: integer;
+  iTool: integer;
 begin
-  r:= 0;
+  if (ARow < 1) or (ARow > CANON_TOOL_MAX) then
+    Exit;
+  iTool:= ARow - 1;
+  Pocket:= FakePockets[iTool];
+  if (Pocket < 0) or (Pocket > CANON_TOOL_MAX) then
+    begin
+      for i:= 0 to Grid.ColCount - 1 do
+        Grid.Cells[i,ARow]:= '';
+      Exit;
+    end;
+  T:= Tools[Pocket];
+  if Vars.IsLathe then
+    c:= ToolLatheCount
+  else
+    c:= ToolMillCount;
+  for i:= 0 to c do
+    begin
+      if Vars.IsLathe then
+        Item:= ToolIndicesLathe[i]
+      else
+        Item:= ToolIndicesMill[i];
+        if (Item < 0) or (Item > ToolHeadersMax) then
+          break;
+      case Item of
+        0: Grid.Cells[i,Index]:= IntToStr(Index);
+        1: Grid.Cells[i,Index]:= IntToStr(T.toolno);
+
+          if Tool
+        end;
+    end;
+
   for i:= 1 to CANON_TOOL_MAX - 1 do  // ??? First Pocket is 1 ???
     with Tools[i],Grid do
     begin
@@ -138,6 +198,7 @@ begin
         end;
     end;
 end;
+}
 
 initialization
   {$I tooleditdlg.lrs}

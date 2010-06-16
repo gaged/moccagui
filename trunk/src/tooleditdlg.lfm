@@ -1,7 +1,7 @@
 object ToolDlg: TToolDlg
-  Left = 487
+  Left = 477
   Height = 340
-  Top = 232
+  Top = 206
   Width = 615
   ActiveControl = Grid
   BorderIcons = [biSystemMenu]
@@ -15,14 +15,20 @@ object ToolDlg: TToolDlg
   ShowInTaskBar = stNever
   LCLVersion = '0.9.28.2'
   object Grid: TStringGrid
-    Left = 4
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
     Height = 284
-    Top = 8
-    Width = 608
+    Top = 0
+    Width = 615
+    Anchors = [akTop, akLeft, akRight]
     AutoEdit = False
-    ColCount = 4
+    ColCount = 1
+    Flat = True
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goEditing, goAlwaysShowEditor, goSmoothScroll]
-    ScrollBars = ssVertical
+    ScrollBars = ssBoth
     TabOrder = 0
     OnSetEditText = GridSetEditText
   end

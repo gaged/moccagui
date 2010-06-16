@@ -550,7 +550,7 @@ begin
     if FOldActiveAxis <> Vars.ActiveAxis then
       if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then
         begin
-          FBox.Top:= FAxes[Vars.ActiveAxis].Top - 2;
+          FBox.Top:= FAxes[Vars.ActiveAxis].Top - 1;
           FOldActiveAxis:= Vars.ActiveAxis;
           SetHalJogAxis(GetAxisChar(Vars.ActiveAxis));
         end;
@@ -574,7 +574,7 @@ begin
     end;
   FBox.Left:= 0;
   FBox.Width:= FPanel.ClientWidth;
-  FBox.Height:= h;
+  FBox.Height:= h-2;
 end;
 
 end.

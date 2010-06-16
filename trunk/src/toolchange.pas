@@ -112,10 +112,11 @@ begin
     with Tools[i] do
       if Tools[i].ToolNo > 0 then
         begin
+          Comment:= PChar(ToolComments[i]);
           if Vars.IsLathe then
             s:= Format('%3d %3d %8f %8f %8f %8f %8f %2d %s',
               [i,toolno,zoffset,xoffset,diameter,frontangle,backangle,
-               orientation,comment])
+               orientation,Comment])
           else
             s:= Format('%3d %3d %8f %8f %s',[i,toolno,zoffset,diameter,Comment]);
           LbTools.Items.Add(s);

@@ -3,21 +3,14 @@
   <Component>
     <component name="MainForm" class="TMainForm">
       <properties>
-        <integer name="Left" value="233"/>
-        <integer name="Height" value="724"/>
-        <integer name="Top" value="96"/>
-        <integer name="Width" value="967"/>
-        <integer name="HorzScrollBar.Page" value="1278"/>
-        <integer name="HorzScrollBar.Range" value="1272"/>
-        <boolean name="HorzScrollBar.Visible" value="false"/>
-        <integer name="VertScrollBar.Page" value="948"/>
-        <integer name="VertScrollBar.Range" value="932"/>
-        <boolean name="VertScrollBar.Visible" value="false"/>
-        <ident name="ActiveControl" value="PanelDRO"/>
+        <integer name="Left" value="0"/>
+        <integer name="Height" value="945"/>
+        <integer name="Top" value="25"/>
+        <integer name="Width" value="1270"/>
         <string name="Caption" value="Mocca"/>
-        <integer name="ClientHeight" value="724"/>
-        <integer name="ClientWidth" value="967"/>
-        <ident name="Color" value="clGray"/>
+        <integer name="ClientHeight" value="945"/>
+        <integer name="ClientWidth" value="1270"/>
+        <ident name="Color" value="clSilver"/>
         <integer name="Font.Height" value="-13"/>
         <boolean name="KeyPreview" value="true"/>
         <ident name="Position" value="poScreenCenter"/>
@@ -27,22 +20,25 @@
         <component name="BgImage" class="TImage">
           <properties>
             <integer name="Left" value="0"/>
-            <integer name="Height" value="36"/>
+            <integer name="Height" value="20"/>
             <integer name="Top" value="0"/>
-            <integer name="Width" value="40"/>
+            <integer name="Width" value="20"/>
           </properties>
         </component>
         <component name="Label9" class="TLabel">
           <properties>
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="264"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="468"/>
-            <integer name="Width" value="101"/>
+            <integer name="Left" value="460"/>
+            <integer name="Height" value="26"/>
+            <integer name="Top" value="612"/>
+            <integer name="Width" value="97"/>
+            <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Vorschub"/>
-            <integer name="Font.Height" value="-19"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
             <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
           </properties>
@@ -50,14 +46,16 @@
         <component name="Label10" class="TLabel">
           <properties>
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
-            <integer name="Left" value="420"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="468"/>
-            <integer name="Width" value="156"/>
+            <integer name="Left" value="688"/>
+            <integer name="Height" value="26"/>
+            <integer name="Top" value="612"/>
+            <integer name="Width" value="104"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Max. Geschw."/>
-            <integer name="Font.Height" value="-19"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
             <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
           </properties>
@@ -65,13 +63,16 @@
         <component name="Label11" class="TLabel">
           <properties>
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
-            <integer name="Left" value="584"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="468"/>
-            <integer name="Width" value="84"/>
+            <integer name="Left" value="920"/>
+            <integer name="Height" value="26"/>
+            <integer name="Top" value="612"/>
+            <integer name="Width" value="115"/>
+            <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Spindel"/>
-            <integer name="Font.Height" value="-19"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
             <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
           </properties>
@@ -82,15 +83,17 @@
             <ident name="AnchorSideTop.Side" value="asrCenter"/>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="688"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="524"/>
-            <integer name="Width" value="71"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="644"/>
+            <integer name="Width" value="100"/>
             <ident name="Alignment" value="taCenter"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="LabelSpVel"/>
+            <ident name="Color" value="clWhite"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="Transparent" value="false"/>
           </properties>
         </component>
         <component name="LabelTool" class="TLabel">
@@ -98,10 +101,10 @@
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="420"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="436"/>
-            <integer name="Width" value="252"/>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="30"/>
+            <integer name="Top" value="644"/>
+            <integer name="Width" value="428"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
             <string name="Caption" value="LabelTool"/>
@@ -114,10 +117,10 @@
         <component name="LabelMCodes" class="TLabel">
           <properties>
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
-            <integer name="Left" value="4"/>
+            <integer name="Left" value="196"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="488"/>
-            <integer name="Width" value="252"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="240"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="2"/>
             <integer name="BorderSpacing.Top" value="4"/>
@@ -133,10 +136,10 @@
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="4"/>
-            <integer name="Height" value="52"/>
-            <integer name="Top" value="512"/>
-            <integer name="Width" value="252"/>
+            <integer name="Left" value="128"/>
+            <integer name="Height" value="38"/>
+            <integer name="Top" value="744"/>
+            <integer name="Width" value="308"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="LabelGCodes"/>
             <ident name="Color" value="clWhite"/>
@@ -148,10 +151,10 @@
         <component name="LabelS" class="TLabel">
           <properties>
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
-            <integer name="Left" value="192"/>
+            <integer name="Left" value="128"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="468"/>
-            <integer name="Width" value="64"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="54"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
             <string name="Caption" value="LabelS"/>
@@ -165,9 +168,9 @@
           <properties>
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
-            <integer name="Left" value="56"/>
+            <integer name="Left" value="36"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="468"/>
+            <integer name="Top" value="720"/>
             <integer name="Width" value="52"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
@@ -182,10 +185,10 @@
           <properties>
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="680"/>
+            <integer name="Left" value="83"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="436"/>
-            <integer name="Width" value="79"/>
+            <integer name="Top" value="684"/>
+            <integer name="Width" value="33"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
             <string name="Caption" value="0"/>
@@ -200,9 +203,9 @@
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="764"/>
+            <integer name="Left" value="212"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="436"/>
+            <integer name="Top" value="684"/>
             <integer name="Width" value="80"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
@@ -218,10 +221,10 @@
           <properties>
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="852"/>
+            <integer name="Left" value="360"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="436"/>
-            <integer name="Width" value="80"/>
+            <integer name="Top" value="684"/>
+            <integer name="Width" value="76"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
             <string name="Caption" value="0"/>
@@ -231,95 +234,107 @@
             <boolean name="Transparent" value="false"/>
           </properties>
         </component>
-        <component name="Label1" class="TLabel">
+        <component name="Label2" class="TLabel">
           <properties>
-            <integer name="Left" value="420"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="388"/>
-            <integer name="Width" value="108"/>
-            <string name="Caption" value="Werkzeug"/>
-            <integer name="Font.Height" value="-19"/>
+            <integer name="Left" value="304"/>
+            <integer name="Height" value="18"/>
+            <integer name="Top" value="684"/>
+            <integer name="Width" value="52"/>
+            <boolean name="AutoSize" value="false"/>
+            <string name="Caption" value="Länge"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
             <set name="Font.Style" value="fsBold"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
-        <component name="Label2" class="TLabel">
-          <properties>
-            <integer name="Left" value="852"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="416"/>
-            <integer name="Width" value="80"/>
-            <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Länge"/>
-            <boolean name="ParentColor" value="false"/>
-          </properties>
-        </component>
         <component name="Label3" class="TLabel">
           <properties>
-            <integer name="Left" value="764"/>
+            <integer name="Left" value="128"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="416"/>
+            <integer name="Top" value="684"/>
             <integer name="Width" value="80"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Durchm."/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="Label4" class="TLabel">
           <properties>
-            <integer name="Left" value="680"/>
+            <integer name="Left" value="8"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="416"/>
-            <integer name="Width" value="80"/>
+            <integer name="Top" value="684"/>
+            <integer name="Width" value="64"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Wkz. Nr."/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
-        <component name="Label5" class="TLabel">
+        <component name="OEMLabel12" class="TLabel">
           <properties>
-            <integer name="Left" value="420"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="416"/>
-            <integer name="Width" value="252"/>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="26"/>
+            <integer name="Top" value="788"/>
+            <integer name="Width" value="108"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Bezeichnung"/>
+            <string name="Caption" value="Programm"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="Label6" class="TLabel">
           <properties>
-            <integer name="Left" value="4"/>
+            <integer name="Left" value="8"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="468"/>
-            <integer name="Width" value="48"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="24"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="F-Wert"/>
+            <string name="Caption" value="F"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="Label7" class="TLabel">
           <properties>
-            <integer name="Left" value="144"/>
+            <integer name="Left" value="96"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="468"/>
-            <integer name="Width" value="44"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="20"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="S-Wert"/>
+            <string name="Caption" value="S"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="LabelCurrentVel" class="TLabel">
           <properties>
-            <integer name="Left" value="480"/>
+            <integer name="Left" value="804"/>
             <integer name="Height" value="24"/>
-            <integer name="Top" value="524"/>
-            <integer name="Width" value="96"/>
+            <integer name="Top" value="680"/>
+            <integer name="Width" value="92"/>
             <ident name="Alignment" value="taRightJustify"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="0.000 m/s"/>
-            <ident name="Color" value="clWhite"/>
+            <ident name="Color" value="clForm"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="Transparent" value="false"/>
@@ -327,413 +342,500 @@
         </component>
         <component name="Label8" class="TLabel">
           <properties>
-            <integer name="Left" value="420"/>
+            <integer name="Left" value="692"/>
             <integer name="Height" value="22"/>
-            <integer name="Top" value="526"/>
-            <integer name="Width" value="52"/>
+            <integer name="Top" value="680"/>
+            <integer name="Width" value="107"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Aktuell"/>
+            <string name="Caption" value="Akt. Geschw."/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="LedModeMDI" class="TMocLed">
           <properties>
-            <integer name="Left" value="564"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="616"/>
-            <integer name="Width" value="128"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="556"/>
+            <integer name="Width" value="100"/>
             <ident name="LedColor" value="clYellow"/>
             <boolean name="IsOn" value="false"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clSilver"/>
           </properties>
         </component>
         <component name="LedModeAuto" class="TMocLed">
           <properties>
-            <integer name="Left" value="424"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="616"/>
-            <integer name="Width" value="128"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="444"/>
+            <integer name="Width" value="100"/>
             <ident name="LedColor" value="clYellow"/>
             <boolean name="IsOn" value="false"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clSilver"/>
           </properties>
         </component>
         <component name="LedMachineOn" class="TMocLed">
           <properties>
-            <integer name="Left" value="148"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="616"/>
-            <integer name="Width" value="140"/>
-            <ident name="LedColor" value="clLime"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="188"/>
+            <integer name="Width" value="100"/>
+            <ident name="LedColor" value="clGreen"/>
             <boolean name="IsOn" value="false"/>
             <ident name="Color" value="clRed"/>
           </properties>
         </component>
         <component name="LedModeManual" class="TMocLed">
           <properties>
-            <integer name="Left" value="292"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="616"/>
-            <integer name="Width" value="128"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="332"/>
+            <integer name="Width" value="100"/>
             <ident name="LedColor" value="clYellow"/>
             <boolean name="IsOn" value="false"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clSilver"/>
           </properties>
         </component>
         <component name="ButtonModeRun" class="TMocButton">
           <properties>
-            <integer name="Left" value="424"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="588"/>
-            <integer name="Width" value="128"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="364"/>
+            <integer name="Width" value="100"/>
+            <string name="Command" value="cmAUTO"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Satzlauf"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="run.png"/>
+            <string name="Hint" value="Setzt EMC in den Status 'Auto' zum Ausführen eines Programmes"/>
           </properties>
         </component>
         <component name="ButtonModeMDI" class="TMocButton">
           <properties>
-            <integer name="Left" value="564"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="588"/>
-            <integer name="Width" value="128"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="476"/>
+            <integer name="Width" value="100"/>
+            <string name="Command" value="cmMDI"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="MDI"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Hint" value="Setzt EMC in den Status 'MDI' zur Eingabe von NC-Code"/>
+            <string name="Bitmap" value="mdi.png"/>
           </properties>
         </component>
         <component name="ButtonModeAuto" class="TMocButton">
           <properties>
-            <integer name="Left" value="292"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="588"/>
-            <integer name="Width" value="128"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="252"/>
+            <integer name="Width" value="100"/>
+            <string name="Command" value="cmJOG"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Manuell"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Hint" value="Setzt EMC in den Status 'Manuell' zum verfahren der Maschine"/>
+            <string name="Bitmap" value="jog.png"/>
           </properties>
         </component>
         <component name="ButtonMachine" class="TMocButton">
           <properties>
-            <integer name="Left" value="148"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="588"/>
-            <integer name="Width" value="140"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="108"/>
+            <integer name="Width" value="100"/>
+            <string name="Command" value="cmMACHINE"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Maschine"/>
+            <string name="Caption" value=""/>
+            <string name="Hint" value="Maschine Ein- oder Ausschalten"/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="machineonoff.png"/>
           </properties>
         </component>
         <component name="ButtonEStop" class="TMocButton">
           <properties>
-            <integer name="Left" value="4"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="588"/>
-            <integer name="Width" value="140"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="8"/>
+            <integer name="Width" value="100"/>
+            <string name="Command" value="cmESTOP"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Notaus"/>
+            <string name="Hint" value="Notaus- Ein- oder Ausschalten"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="estopred.png"/>
           </properties>
         </component>
         <component name="ButtonSpindle" class="TMocButton">
           <properties>
-            <integer name="Left" value="600"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="524"/>
-            <integer name="Width" value="82"/>
+            <integer name="Left" value="927"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="100"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Spindel An"/>
+            <string name="Hint" value="Spindel Ein- oder Ausschalten"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="spindleonoff.png"/>
           </properties>
         </component>
-        <component name="ButtonSpCCW" class="TMocButton">
+        <component name="ButtonSpReverse" class="TMocButton">
           <properties>
-            <integer name="Left" value="832"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="492"/>
-            <integer name="Width" value="102"/>
+            <integer name="Left" value="1043"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="100"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Rückw."/>
+            <string name="Caption" value=""/>
+            <string name="Hint" value="Drehrichtung der Spindel Vor- oder Rückwärts setzen."/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="spindlereverse.png"/>
           </properties>
         </component>
         <component name="ButtonCoolant" class="TMocButton">
           <properties>
-            <integer name="Left" value="828"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="588"/>
-            <integer name="Width" value="124"/>
+            <integer name="Left" value="802"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="100"/>
+            <string name="Command" value="cmFLOOD"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Kühlung"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="coolanton.png"/>
+            <string name="Hint" value="Kühlmittel-Pumpe Ein- oder Ausschalten"/>
           </properties>
         </component>
         <component name="ButtonMist" class="TMocButton">
           <properties>
-            <integer name="Left" value="696"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="588"/>
-            <integer name="Width" value="124"/>
+            <integer name="Left" value="688"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="100"/>
+            <string name="Command" value="cmMIST"/>
             <boolean name="ShowClicks" value="true"/>
             <string name="Caption" value="Nebel"/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Hint" value="Kühlnebel Ein- oder Ausschalten."/>
           </properties>
         </component>
         <component name="LedSpindleCCW" class="TMocLed">
           <properties>
-            <integer name="Left" value="812"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="492"/>
-            <integer name="Width" value="18"/>
+            <integer name="Left" value="1043"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="800"/>
+            <integer name="Width" value="100"/>
             <ident name="LedColor" value="clRed"/>
             <boolean name="IsOn" value="false"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clSilver"/>
           </properties>
         </component>
         <component name="LedSpindleOn" class="TMocLed">
           <properties>
-            <integer name="Left" value="584"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="524"/>
-            <integer name="Width" value="14"/>
-            <ident name="LedColor" value="clYellow"/>
+            <integer name="Left" value="927"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="800"/>
+            <integer name="Width" value="100"/>
+            <ident name="LedColor" value="clGreen"/>
             <boolean name="IsOn" value="false"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clSilver"/>
           </properties>
         </component>
         <component name="LedEStop" class="TMocLed">
           <properties>
-            <integer name="Left" value="4"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="616"/>
-            <integer name="Width" value="140"/>
-            <ident name="LedColor" value="clLime"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="88"/>
+            <integer name="Width" value="100"/>
+            <ident name="LedColor" value="clGray"/>
             <boolean name="IsOn" value="false"/>
             <ident name="Color" value="clRed"/>
           </properties>
         </component>
         <component name="LedMist" class="TMocLed">
           <properties>
-            <integer name="Left" value="696"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="616"/>
-            <integer name="Width" value="124"/>
-            <ident name="LedColor" value="clYellow"/>
+            <integer name="Left" value="688"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="800"/>
+            <integer name="Width" value="100"/>
+            <ident name="LedColor" value="clGreen"/>
             <boolean name="IsOn" value="false"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clGray"/>
           </properties>
         </component>
         <component name="LedFlood" class="TMocLed">
           <properties>
-            <integer name="Left" value="828"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="616"/>
-            <integer name="Width" value="124"/>
-            <ident name="LedColor" value="clYellow"/>
+            <integer name="Left" value="802"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="800"/>
+            <integer name="Width" value="100"/>
+            <ident name="LedColor" value="clGreen"/>
             <boolean name="IsOn" value="false"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clGray"/>
           </properties>
         </component>
         <component name="LedShowMM" class="TMocLed">
           <properties>
-            <integer name="Left" value="316"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="32"/>
-            <integer name="Width" value="96"/>
+            <integer name="Left" value="672"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="576"/>
+            <integer name="Width" value="100"/>
             <ident name="LedColor" value="clYellow"/>
             <boolean name="IsOn" value="false"/>
+            <ident name="Color" value="clGray"/>
           </properties>
         </component>
         <component name="LedShowRelative" class="TMocLed">
           <properties>
-            <integer name="Left" value="316"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="152"/>
-            <integer name="Width" value="96"/>
+            <integer name="Left" value="672"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="416"/>
+            <integer name="Width" value="100"/>
             <ident name="LedColor" value="clYellow"/>
             <boolean name="IsOn" value="false"/>
+            <ident name="Color" value="clGray"/>
           </properties>
         </component>
         <component name="LedShowDtg" class="TMocLed">
           <properties>
-            <integer name="Left" value="316"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="88"/>
-            <integer name="Width" value="96"/>
+            <integer name="Left" value="672"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="496"/>
+            <integer name="Width" value="100"/>
             <ident name="LedColor" value="clYellow"/>
             <boolean name="IsOn" value="false"/>
+            <ident name="Color" value="clGray"/>
           </properties>
         </component>
         <component name="LedSpindlebrake" class="TMocLed">
           <properties>
-            <integer name="Left" value="812"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="524"/>
-            <integer name="Width" value="18"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="14"/>
+            <integer name="Top" value="800"/>
+            <integer name="Width" value="100"/>
+            <ident name="LedColor" value="clRed"/>
+            <boolean name="IsOn" value="false"/>
+            <ident name="Color" value="clGray"/>
+          </properties>
+        </component>
+        <component name="LedFOREnabled" class="TMocLed">
+          <properties>
+            <integer name="Left" value="642"/>
+            <integer name="Height" value="24"/>
+            <integer name="Top" value="680"/>
+            <integer name="Width" value="26"/>
             <ident name="LedColor" value="clYellow"/>
             <boolean name="IsOn" value="false"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clGray"/>
+          </properties>
+        </component>
+        <component name="LedSOREnabled" class="TMocLed">
+          <properties>
+            <integer name="Left" value="1114"/>
+            <integer name="Height" value="24"/>
+            <integer name="Top" value="680"/>
+            <integer name="Width" value="26"/>
+            <ident name="LedColor" value="clYellow"/>
+            <boolean name="IsOn" value="false"/>
+            <ident name="Color" value="clGray"/>
           </properties>
         </component>
         <component name="ButtonUnitsMM" class="TMocButton">
           <properties>
-            <integer name="Left" value="316"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="8"/>
-            <integer name="Width" value="96"/>
+            <integer name="Left" value="672"/>
+            <integer name="Height" value="36"/>
+            <integer name="Top" value="540"/>
+            <integer name="Width" value="100"/>
             <boolean name="ShowClicks" value="true"/>
             <string name="Caption" value="mm"/>
             <ident name="Color" value="clBtnFace"/>
-          </properties>
+            <string name="Hint" value="Einheiten in 'mm' oder 'Inch' anzeigen."/>
+         </properties>
         </component>
         <component name="ButtonShowRelative" class="TMocButton">
           <properties>
-            <integer name="Left" value="316"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="128"/>
-            <integer name="Width" value="96"/>
+            <integer name="Left" value="672"/>
+            <integer name="Height" value="36"/>
+            <integer name="Top" value="380"/>
+            <integer name="Width" value="100"/>
             <boolean name="ShowClicks" value="true"/>
             <string name="Caption" value="Masch.Koord"/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Hint" value="Einheiten Relativ oder Absolut zur Maschine anzeigen."/>
           </properties>
         </component>
         <component name="ButtonShowDtg" class="TMocButton">
           <properties>
-            <integer name="Left" value="316"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="64"/>
-            <integer name="Width" value="96"/>
+            <integer name="Left" value="672"/>
+            <integer name="Height" value="36"/>
+            <integer name="Top" value="460"/>
+            <integer name="Width" value="100"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Restweg"/>
+            <string name="Caption" value="DTG"/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Hint" value="Restweg anzeigen. (Nur bei Satzlauf)"/>
           </properties>
         </component>
         <component name="ButtonSpindlebrake" class="TMocButton">
           <properties>
-            <integer name="Left" value="832"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="524"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="720"/>
             <integer name="Width" value="100"/>
+            <string name="Command" value="cmSPBRAKE"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Spindelbremse"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
-          </properties>
+            <string name="Bitmap" value="spindlebrake.png"/>
+            <string name="Hint" value="Spindelbremse Ein- oder Ausschalten."/>         </properties>
         </component>
         <component name="ButtonFeedReset" class="TMocButton">
           <properties>
-            <integer name="Left" value="264"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="524"/>
-            <integer name="Width" value="148"/>
+            <integer name="Left" value="564"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="612"/>
+            <integer name="Width" value="104"/>
+            <string name="Command" value="cmFEEDRESET"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Vorschb. 100%"/>
+            <string name="Caption" value="100%"/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Hint" value="Vorschub auf Vorgabe zurücksetzen"/>
           </properties>
         </component>
-        <component name="ButtonSpindlePlus" class="TMocButton">
+        <component name="OEMButton2" class="TMocButton">
           <properties>
-            <integer name="Left" value="768"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="492"/>
-            <integer name="Width" value="32"/>
+            <integer name="Left" value="1041"/>
+            <integer name="Height" value="26"/>
+            <integer name="Top" value="612"/>
+            <integer name="Width" value="99"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="+"/>
+            <string name="Caption" value="100%"/>
             <ident name="Color" value="clBtnFace"/>
+            <boolean name="Visible" value="false"/>
           </properties>
         </component>
-        <component name="ButtonSpindleMinus" class="TMocButton">
+        <component name="OEMButton1" class="TMocButton">
           <properties>
-            <integer name="Left" value="768"/>
+            <integer name="Left" value="800"/>
             <integer name="Height" value="28"/>
-            <integer name="Top" value="524"/>
-            <integer name="Width" value="32"/>
+            <integer name="Top" value="612"/>
+            <integer name="Width" value="98"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="-"/>
+            <string name="Caption" value="Vorgabe"/>
             <ident name="Color" value="clBtnFace"/>
+            <boolean name="Visible" value="false"/>
           </properties>
         </component>
         <component name="OEMLabel1" class="TLabel">
           <properties>
-            <integer name="Left" value="44"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="228"/>
-            <integer name="Width" value="111"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="612"/>
+            <integer name="Width" value="100"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="OEMLabel1"/>
+            <string name="Caption" value="Akt. U/min"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
-            <boolean name="Visible" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="OEMLabel2" class="TLabel">
           <properties>
-            <integer name="Left" value="44"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="252"/>
-            <integer name="Width" value="111"/>
+            <integer name="Left" value="464"/>
+            <integer name="Height" value="22"/>
+            <integer name="Top" value="680"/>
+            <integer name="Width" value="132"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Label12"/>
+            <string name="Caption" value="Übersteuerung"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
-            <boolean name="Visible" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="OEMLabel3" class="TLabel">
           <properties>
-            <integer name="Left" value="160"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="188"/>
-            <integer name="Width" value="111"/>
+            <integer name="Left" value="923"/>
+            <integer name="Height" value="22"/>
+            <integer name="Top" value="680"/>
+            <integer name="Width" value="151"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Label12"/>
+            <string name="Caption" value="Übersteuerung Ein"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
-            <boolean name="Visible" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="OEMLabel4" class="TLabel">
           <properties>
-            <integer name="Left" value="160"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="208"/>
-            <integer name="Width" value="111"/>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="30"/>
+            <integer name="Top" value="824"/>
+            <integer name="Width" value="108"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Label12"/>
+            <string name="Caption" value="Meldungen"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-16"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
-            <boolean name="Visible" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="OEMLabel5" class="TLabel">
           <properties>
-            <integer name="Left" value="160"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="232"/>
-            <integer name="Width" value="111"/>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="38"/>
+            <integer name="Top" value="744"/>
+            <integer name="Width" value="108"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Label12"/>
+            <string name="Caption" value="Akt. G-Codes"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
-            <boolean name="Visible" value="false"/>
+            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
-        <component name="OEMLabel6" class="TLabel">
+        <component name="LabelFile" class="TLabel">
           <properties>
-            <integer name="Left" value="160"/>
-            <integer name="Height" value="18"/>
-            <integer name="Top" value="256"/>
-            <integer name="Width" value="111"/>
+            <integer name="Left" value="128"/>
+            <integer name="Height" value="26"/>
+            <integer name="Top" value="788"/>
+            <integer name="Width" value="308"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Label12"/>
+            <ident name="Color" value="clWhite"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
-            <boolean name="Visible" value="false"/>
+            <boolean name="Transparent" value="false"/>
+            <boolean name="Visible" value="True"/>
           </properties>
         </component>
         <component name="OEMLabel7" class="TLabel">
           <properties>
             <integer name="Left" value="44"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="276"/>
+            <integer name="Top" value="168"/>
             <integer name="Width" value="111"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Label12"/>
+            <ident name="Color" value="clWhite"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="Transparent" value="false"/>
             <boolean name="Visible" value="false"/>
           </properties>
         </component>
@@ -745,7 +847,10 @@
             <integer name="Width" value="111"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Label12"/>
+            <ident name="Color" value="clWhite"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="Transparent" value="false"/>
             <boolean name="Visible" value="false"/>
           </properties>
         </component>
@@ -757,140 +862,155 @@
             <integer name="Width" value="111"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Label12"/>
+            <ident name="Color" value="clWhite"/>
+            <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
+            <boolean name="Transparent" value="false"/>
             <boolean name="Visible" value="false"/>
           </properties>
         </component>
-        <component name="LedFOREnabled" class="TMocLed">
+        <component name="OEMLabel11" class="TLabel">
           <properties>
-            <integer name="Left" value="264"/>
-            <integer name="Height" value="12"/>
-            <integer name="Top" value="552"/>
-            <integer name="Width" value="144"/>
-            <ident name="LedColor" value="clYellow"/>
-            <boolean name="IsOn" value="false"/>
-          </properties>
-        </component>
-        <component name="LedSOREnabled" class="TMocLed">
-          <properties>
-            <integer name="Left" value="748"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="492"/>
-            <integer name="Width" value="11"/>
-            <ident name="LedColor" value="clYellow"/>
-            <boolean name="IsOn" value="false"/>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="26"/>
+            <integer name="Top" value="612"/>
+            <integer name="Width" value="108"/>
+            <boolean name="AutoSize" value="false"/>
+            <string name="Caption" value="Werkzeug"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
+            <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
+            <boolean name="Visible" value="true"/>
           </properties>
         </component>
         <component name="ButtonView0" class="TMocButton">
           <properties>
-            <integer name="Left" value="420"/>
+            <integer name="Left" value="8"/>
             <integer name="Height" value="34"/>
-            <integer name="Top" value="344"/>
+            <integer name="Top" value="560"/>
             <integer name="Width" value="34"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="P"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="toolaxisp.png"/>
+            <string name="Hint" value="Perspektivische Ansicht"/>
           </properties>
         </component>
         <component name="ButtonView1" class="TMocButton">
           <properties>
-            <integer name="Left" value="460"/>
+            <integer name="Left" value="48"/>
             <integer name="Height" value="34"/>
-            <integer name="Top" value="344"/>
+            <integer name="Top" value="560"/>
             <integer name="Width" value="34"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="D"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="toolaxisx.png"/>
+            <string name="Hint" value="Ansicht der X-Ebene"/>
           </properties>
         </component>
         <component name="ButtonView2" class="TMocButton">
           <properties>
-            <integer name="Left" value="500"/>
+            <integer name="Left" value="88"/>
             <integer name="Height" value="34"/>
-            <integer name="Top" value="344"/>
+            <integer name="Top" value="560"/>
             <integer name="Width" value="34"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="V"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="toolaxisy.png"/>
           </properties>
         </component>
         <component name="ButtonView3" class="TMocButton">
           <properties>
-            <integer name="Left" value="540"/>
+            <integer name="Left" value="128"/>
             <integer name="Height" value="34"/>
-            <integer name="Top" value="344"/>
+            <integer name="Top" value="560"/>
             <integer name="Width" value="34"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="R"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="toolaxisz.png"/>
           </properties>
         </component>
         <component name="ButtonViewPlus" class="TMocButton">
           <properties>
-            <integer name="Left" value="628"/>
+            <integer name="Left" value="176"/>
             <integer name="Height" value="34"/>
-            <integer name="Top" value="344"/>
+            <integer name="Top" value="560"/>
             <integer name="Width" value="34"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="+"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="zoomplus.png"/>
+            <string name="Hint" value="Ansicht vergrössern"/>
           </properties>
         </component>
         <component name="ButtonViewMinus" class="TMocButton">
           <properties>
-            <integer name="Left" value="668"/>
+            <integer name="Left" value="216"/>
             <integer name="Height" value="34"/>
-            <integer name="Top" value="344"/>
+            <integer name="Top" value="560"/>
             <integer name="Width" value="34"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="-"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="zoomminus.png"/>
+            <string name="Hint" value="Ansicht verkleinern"/>
           </properties>
         </component>
         <component name="ButtonToolPath" class="TMocButton">
           <properties>
-            <integer name="Left" value="782"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="344"/>
-            <integer name="Width" value="84"/>
+            <integer name="Left" value="400"/>
+            <integer name="Height" value="34"/>
+            <integer name="Top" value="560"/>
+            <integer name="Width" value="34"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Wkz Pfad"/>
+            <string name="Caption" value=""/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="toolpath.png"/>
+            <string name="Hint" value="Werkzeugpfad anzeigen"/>
           </properties>
         </component>
         <component name="ButtonClear" class="TMocButton">
           <properties>
-            <integer name="Left" value="870"/>
+            <integer name="Left" value="500"/>
             <integer name="Height" value="34"/>
-            <integer name="Top" value="344"/>
+            <integer name="Top" value="560"/>
             <integer name="Width" value="84"/>
             <boolean name="ShowClicks" value="true"/>
             <string name="Caption" value="Löschen"/>
             <ident name="Color" value="clBtnFace"/>
+            <string name="Hint" value="Werkzeugpfad löschen."/>
           </properties>
         </component>
-        <component name="MocLedToolpath" class="TMocLed">
+        <component name="ButtonShowDim" class="TMocButton">
           <properties>
-            <integer name="Left" value="782"/>
-            <integer name="Height" value="10"/>
-            <integer name="Top" value="368"/>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="34"/>
+            <integer name="Top" value="560"/>
             <integer name="Width" value="84"/>
-            <ident name="LedColor" value="clRed"/>
-            <boolean name="IsOn" value="false"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="Bemaßung"/>
+            <ident name="Color" value="clBtnFace"/>
+            <string name="Hint" value="Bemassung anzeigen."/>
           </properties>
         </component>
         <component name="PanelDRO" class="TPanel">
           <properties>
-            <integer name="Left" value="8"/>
-            <integer name="Height" value="164"/>
-            <integer name="Top" value="8"/>
-            <integer name="Width" value="272"/>
-            <ident name="BevelOuter" value="bvNone"/>
+            <integer name="Left" value="778"/>
+            <integer name="Height" value="222"/>
+            <integer name="Top" value="372"/>
+            <integer name="Width" value="374"/>
             <ident name="Color" value="clSilver"/>
             <ident name="Font.Color" value="clBlue"/>
-            <integer name="Font.Height" value="-40"/>
-            <string name="Font.Name" value="Monospace"/>
+            <integer name="Font.Height" value="-60"/>
+            <string name="Font.Name" value="Courier 10 Pitch"/>
             <ident name="Font.Pitch" value="fpFixed"/>
+            <set name="Font.Style" value="fsBold"/>
             <boolean name="FullRepaint" value="false"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -901,10 +1021,10 @@
           <properties>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="4"/>
-            <integer name="Height" value="56"/>
-            <integer name="Top" value="660"/>
-            <integer name="Width" value="952"/>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="78"/>
+            <integer name="Top" value="860"/>
+            <integer name="Width" value="1256"/>
             <ident name="BevelOuter" value="bvNone"/>
             <integer name="BevelWidth" value="5"/>
             <ident name="BorderStyle" value="bsSingle"/>
@@ -914,13 +1034,12 @@
         </component>
         <component name="PanelMaster" class="TPanel">
           <properties>
-            <ident name="AnchorSideRight.Side" value="asrBottom"/>
-            <integer name="Left" value="4"/>
-            <integer name="Height" value="284"/>
-            <integer name="Top" value="176"/>
-            <integer name="Width" value="408"/>
+            <integer name="Left" value="672"/>
+            <integer name="Height" value="356"/>
+            <integer name="Top" value="8"/>
+            <integer name="Width" value="480"/>
             <ident name="BevelOuter" value="bvNone"/>
-            <ident name="Color" value="clSilver"/>
+            <ident name="Color" value="clForm"/>
             <boolean name="FullRepaint" value="false"/>
             <boolean name="ParentColor" value="false"/>
             <integer name="TabOrder" value="1"/>
@@ -930,12 +1049,12 @@
           <properties>
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
-            <integer name="Left" value="420"/>
-            <integer name="Height" value="328"/>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="544"/>
             <integer name="Top" value="8"/>
-            <integer name="Width" value="532"/>
+            <integer name="Width" value="656"/>
             <ident name="BevelOuter" value="bvNone"/>
-            <ident name="Color" value="clMedGray"/>
+            <ident name="Color" value="clForm"/>
             <boolean name="ParentColor" value="false"/>
             <integer name="TabOrder" value="2"/>
           </properties>
@@ -943,13 +1062,13 @@
         <component name="PanelMsg" class="TPanel">
           <properties>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
-            <integer name="Left" value="4"/>
-            <integer name="Height" value="24"/>
-            <integer name="Top" value="632"/>
-            <integer name="Width" value="948"/>
-            <integer name="ClientHeight" value="24"/>
-            <integer name="ClientWidth" value="948"/>
-            <ident name="Color" value="clMedGray"/>
+            <integer name="Left" value="128"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="824"/>
+            <integer name="Width" value="1136"/>
+            <integer name="ClientHeight" value="32"/>
+            <integer name="ClientWidth" value="1136"/>
+            <ident name="Color" value="clForm"/>
             <boolean name="ParentColor" value="false"/>
             <integer name="TabOrder" value="3"/>
           </properties>
@@ -963,58 +1082,63 @@
                 <ident name="AnchorSideBottom.Control" value="PanelMsg"/>
                 <ident name="AnchorSideBottom.Side" value="asrBottom"/>
                 <integer name="Left" value="6"/>
-                <integer name="Height" value="12"/>
+                <integer name="Height" value="20"/>
                 <integer name="Top" value="6"/>
-                <integer name="Width" value="936"/>
-                <ident name="Alignment" value="taCenter"/>
+                <integer name="Width" value="1124"/>
                 <set name="Anchors" value="akTop,akLeft,akRight,akBottom"/>
                 <boolean name="AutoSize" value="false"/>
                 <integer name="BorderSpacing.Around" value="6"/>
                 <string name="Caption" value="LabelMsg"/>
-                <ident name="Font.Color" value="clRed"/>
+                <ident name="Font.Color" value="clBlue"/>
                 <set name="Font.Style" value="fsBold"/>
                 <ident name="Layout" value="tlCenter"/>
                 <boolean name="ParentColor" value="false"/>
                 <boolean name="ParentFont" value="false"/>
+                <string name="Hint" value="Meldungen (Klicken = Anzeigen, Strg + Leertaste = Löschen)"/>
               </properties>
             </component>
           </children>
         </component>
         <component name="SliderSOR" class="TSlider">
           <properties>
-            <integer name="Left" value="584"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="492"/>
-            <integer name="Width" value="160"/>
+            <integer name="Left" value="920"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="644"/>
+            <integer name="Width" value="220"/>
             <integer name="Position" value="0"/>
-            <ident name="BarColor" value="clYellow"/>
+            <ident name="BarColor" value="clNavy"/>
             <boolean name="Vertical" value="false"/>
             <boolean name="Smooth" value="true"/>
+            <string name="Caption" value="0.00"/>
+            <string name="Hint" value="Spindelübersteuerung in %"/>
           </properties>
         </component>
         <component name="SliderVel" class="TSlider">
           <properties>
-            <integer name="Left" value="420"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="492"/>
-            <integer name="Width" value="156"/>
+            <integer name="Left" value="688"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="644"/>
+            <integer name="Width" value="208"/>
             <integer name="Position" value="0"/>
-            <ident name="BarColor" value="clYellow"/>
+            <ident name="BarColor" value="clNavy"/>
             <boolean name="Vertical" value="false"/>
             <boolean name="Smooth" value="false"/>
+            <string name="Caption" value="0.00"/>
+            <string name="Hint" value="Maximale Fahrgeschw. der Maschine."/>
           </properties>
         </component>
         <component name="SliderFeed" class="TSlider">
           <properties>
-            <integer name="Left" value="264"/>
-            <integer name="Height" value="28"/>
-            <integer name="Top" value="492"/>
-            <integer name="Width" value="148"/>
+            <integer name="Left" value="460"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="644"/>
+            <integer name="Width" value="208"/>
             <integer name="Position" value="0"/>
-            <ident name="BarColor" value="clYellow"/>
+            <ident name="BarColor" value="clNavy"/>
             <boolean name="Vertical" value="false"/>
             <boolean name="Smooth" value="true"/>
             <string name="Caption" value="100 %"/>
+            <string name="Hint" value="Vorschubübersteuerung in %"/>
           </properties>
         </component>
         <component name="Timer" class="TTimer">

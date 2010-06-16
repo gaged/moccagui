@@ -62,6 +62,7 @@ begin
   FVertical:= False;
   FTextStyle.Alignment:= taCenter;
   FTextStyle.Layout:= tlCenter;
+  FTextStyle.Opaque:= True;
   SetParams(-100,1000,0);
 end;
 
@@ -186,15 +187,16 @@ begin
           Canvas.Brush.Color:= BarColor;
           Canvas.FillRect(R.Left,R.Top,i,R.Bottom);
         end;
+      if FCaption <> '' then
+        begin
+          //SetBkMode(Canvas.Handle,TRANSPARENT);
+          Canvas.Brush.Color:= Color;
+          Canvas.TextStyle:= FTextStyle;
+          Canvas.TextRect(R,0,0,FCaption);
+        end;
     end
   else
     Canvas.FillRect(R);
-  if FCaption <> '' then
-    begin
-      Canvas.TextStyle:= FTextStyle;
-      Canvas.TextRect(R,0,0,FCaption);
-    end;
-
   inherited Paint;
 end;
 

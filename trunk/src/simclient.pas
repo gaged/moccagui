@@ -310,7 +310,7 @@ begin
         0:SetRot(-45,0,0);
         1:SetRot(0,0,0);
         2: SetRot(-90,0,0);
-        3: SetRot(-90,0,-90);
+        3: SetRot(0,-90,0);
       end;
       sbV.setParams(Round(RotationX),-90,90);
       sbH.SetParams(Round(RotationZ),-90,90);
