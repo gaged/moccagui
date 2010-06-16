@@ -1,0 +1,350 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Component>
+    <component name="JogClientForm" class="TJogClientForm">
+      <properties>
+        <integer name="Left" value="612"/>
+        <integer name="Height" value="340"/>
+        <integer name="Top" value="271"/>
+        <integer name="Width" value="466"/>
+        <integer name="HorzScrollBar.Page" value="476"/>
+        <integer name="VertScrollBar.Page" value="361"/>
+        <ident name="ActiveControl" value="SliderJog"/>
+        <set name="BorderIcons" value=""/>
+        <ident name="BorderStyle" value="bsNone"/>
+        <string name="Caption" value="JogClientForm"/>
+        <integer name="ClientHeight" value="340"/>
+        <integer name="ClientWidth" value="466"/>
+        <ident name="Color" value="clSilver"/>
+        <boolean name="KeyPreview" value="true"/>
+        <boolean name="ParentFont" value="true"/>
+        <ident name="ShowInTaskBar" value="stNever"/>
+        <string name="LCLVersion" value="0.9.28.2"/>
+      </properties>
+      <children>
+        <component name="LabelJ1" class="TLabel">
+          <properties>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="4"/>
+            <integer name="Width" value="100"/>
+            <boolean name="AutoSize" value="false"/>
+            <string name="Caption" value="Joggeschw."/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
+            <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="LabelJ2" class="TLabel">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="4"/>
+            <integer name="Width" value="128"/>
+            <boolean name="AutoSize" value="false"/>
+            <string name="Caption" value="Schrittweiten"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-13"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
+            <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="LedORide" class="TMocLed">
+          <properties>
+            <integer name="Left" value="4"/>
+            <integer name="Height" value="17"/>
+            <integer name="Top" value="312"/>
+            <integer name="Width" value="316"/>
+            <ident name="LedColor" value="clRed"/>
+            <boolean name="IsOn" value="false"/>
+            <ident name="Color" value="clSilver"/>
+          </properties>
+        </component>
+        <component name="BXMinus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="-1"/>
+            <integer name="Left" value="4"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="112"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="- X"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BXPlus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="1"/>
+            <integer name="Left" value="132"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="112"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="X +"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BYPlus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="2"/>
+            <integer name="Left" value="68"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="48"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="+ Y"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BZPlus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="3"/>
+            <integer name="Left" value="132"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="48"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="+ Z"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BYMinus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="-2"/>
+            <integer name="Left" value="68"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="176"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="- Y"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BZMinus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="-3"/>
+            <integer name="Left" value="4"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="176"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="- Z"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BAMinus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="-4"/>
+            <integer name="Left" value="196"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="48"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="- A"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BAPlus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="4"/>
+            <integer name="Left" value="260"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="48"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="A +"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BBMinus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="-5"/>
+            <integer name="Left" value="196"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="112"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="- B"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BBPlus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="5"/>
+            <integer name="Left" value="260"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="112"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="B +"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BCMinus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="-6"/>
+            <integer name="Left" value="196"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="176"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="- C"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BCPlus" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="6"/>
+            <integer name="Left" value="260"/>
+            <integer name="Height" value="60"/>
+            <integer name="Top" value="176"/>
+            <integer name="Width" value="60"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="C +"/>
+            <ident name="Color" value="clBtnFace"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="BtnORideLimits" class="TMocButton">
+          <properties>
+            <integer name="Left" value="4"/>
+            <integer name="Height" value="40"/>
+            <integer name="Top" value="272"/>
+            <integer name="Width" value="316"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="Grenzwerte An/Aus"/>
+            <ident name="Color" value="clBtnFace"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc0" class="TMocButton">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="48"/>
+            <integer name="Width" value="128"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="Durchgehend"/>
+            <ident name="Color" value="clBtnFace"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc1" class="TMocButton">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="80"/>
+            <integer name="Width" value="128"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc2" class="TMocButton">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="112"/>
+            <integer name="Width" value="128"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc3" class="TMocButton">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="144"/>
+            <integer name="Width" value="128"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc4" class="TMocButton">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="176"/>
+            <integer name="Width" value="128"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc5" class="TMocButton">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="208"/>
+            <integer name="Width" value="128"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc6" class="TMocButton">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="240"/>
+            <integer name="Width" value="128"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc7" class="TMocButton">
+          <properties>
+            <integer name="Left" value="332"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="272"/>
+            <integer name="Width" value="128"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="SliderJog" class="TSlider">
+          <properties>
+            <integer name="Left" value="116"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="4"/>
+            <integer name="Width" value="204"/>
+            <integer name="Position" value="0"/>
+            <ident name="BarColor" value="clNavy"/>
+            <boolean name="Vertical" value="false"/>
+            <boolean name="Smooth" value="true"/>
+          </properties>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>

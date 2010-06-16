@@ -1,18 +1,18 @@
 object MainForm: TMainForm
-  Left = 255
+  Left = 206
   Height = 724
-  Top = 50
-  Width = 967
+  Top = 136
+  Width = 968
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
   HorzScrollBar.Visible = False
   VertScrollBar.Page = 948
   VertScrollBar.Range = 932
   VertScrollBar.Visible = False
-  ActiveControl = PanelDRO
+  ActiveControl = PanelMaster
   Caption = 'Mocca'
   ClientHeight = 724
-  ClientWidth = 967
+  ClientWidth = 968
   Color = clGray
   Font.Height = -13
   KeyPreview = True
@@ -24,48 +24,57 @@ object MainForm: TMainForm
   OnResize = FormResize
   OnShow = FormShow
   Position = poScreenCenter
+  ShowHint = True
   LCLVersion = '0.9.28.2'
   object BgImage: TImage
     Left = 0
-    Height = 36
+    Height = 20
     Top = 0
-    Width = 40
+    Width = 20
   end
   object Label9: TLabel
     AnchorSideTop.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 264
-    Height = 24
-    Top = 468
-    Width = 101
+    Left = 8
+    Height = 32
+    Top = 464
+    Width = 97
+    AutoSize = False
     Caption = 'Vorschub'
-    Font.Height = -19
+    Font.Color = clNavy
+    Font.Height = -13
     Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
     ParentFont = False
   end
   object Label10: TLabel
     AnchorSideTop.Side = asrBottom
-    Left = 420
-    Height = 24
-    Top = 468
-    Width = 156
+    Left = 360
+    Height = 32
+    Top = 464
+    Width = 104
     AutoSize = False
     Caption = 'Max. Geschw.'
-    Font.Height = -19
+    Font.Color = clNavy
+    Font.Height = -13
     Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
     ParentFont = False
   end
   object Label11: TLabel
     AnchorSideTop.Side = asrBottom
-    Left = 584
-    Height = 24
-    Top = 468
-    Width = 84
+    Left = 640
+    Height = 32
+    Top = 464
+    Width = 75
+    AutoSize = False
     Caption = 'Spindel'
-    Font.Height = -19
+    Font.Color = clNavy
+    Font.Height = -13
     Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
     ParentFont = False
   end
@@ -74,24 +83,26 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 688
-    Height = 28
-    Top = 524
-    Width = 71
+    Left = 752
+    Height = 24
+    Top = 504
+    Width = 104
     Alignment = taCenter
     AutoSize = False
     Caption = 'LabelSpVel'
+    Color = clWhite
     Layout = tlCenter
     ParentColor = False
+    Transparent = False
   end
   object LabelTool: TLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 420
-    Height = 18
-    Top = 436
-    Width = 252
+    Left = 88
+    Height = 24
+    Top = 504
+    Width = 208
     AutoSize = False
     BorderSpacing.Left = 4
     Caption = 'LabelTool'
@@ -102,10 +113,10 @@ object MainForm: TMainForm
   end
   object LabelMCodes: TLabel
     AnchorSideTop.Side = asrBottom
-    Left = 4
-    Height = 18
-    Top = 488
-    Width = 252
+    Left = 344
+    Height = 24
+    Top = 584
+    Width = 240
     AutoSize = False
     BorderSpacing.Left = 2
     BorderSpacing.Top = 4
@@ -119,10 +130,10 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 4
-    Height = 52
-    Top = 512
-    Width = 252
+    Left = 128
+    Height = 48
+    Top = 560
+    Width = 208
     AutoSize = False
     Caption = 'LabelGCodes'
     Color = clWhite
@@ -132,10 +143,10 @@ object MainForm: TMainForm
   end
   object LabelS: TLabel
     AnchorSideLeft.Side = asrBottom
-    Left = 192
+    Left = 464
     Height = 18
-    Top = 468
-    Width = 64
+    Top = 560
+    Width = 54
     AutoSize = False
     BorderSpacing.Left = 4
     Caption = 'LabelS'
@@ -147,9 +158,9 @@ object MainForm: TMainForm
   object LabelF: TLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideRight.Side = asrBottom
-    Left = 56
+    Left = 372
     Height = 18
-    Top = 468
+    Top = 560
     Width = 52
     AutoSize = False
     BorderSpacing.Left = 4
@@ -162,10 +173,10 @@ object MainForm: TMainForm
   object LabelToolNo: TLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 680
-    Height = 18
-    Top = 436
-    Width = 79
+    Left = 88
+    Height = 24
+    Top = 528
+    Width = 33
     AutoSize = False
     BorderSpacing.Left = 4
     Caption = '0'
@@ -178,10 +189,10 @@ object MainForm: TMainForm
     AnchorSideLeft.Side = asrBottom
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 764
-    Height = 18
-    Top = 436
-    Width = 80
+    Left = 344
+    Height = 24
+    Top = 528
+    Width = 88
     AutoSize = False
     BorderSpacing.Left = 4
     BorderSpacing.Right = 4
@@ -194,10 +205,10 @@ object MainForm: TMainForm
   object LabelToolLen: TLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 852
-    Height = 18
-    Top = 436
-    Width = 80
+    Left = 184
+    Height = 24
+    Top = 528
+    Width = 76
     AutoSize = False
     BorderSpacing.Left = 4
     Caption = '0'
@@ -206,135 +217,156 @@ object MainForm: TMainForm
     ParentColor = False
     Transparent = False
   end
-  object Label1: TLabel
-    Left = 420
+  object Label2: TLabel
+    Left = 128
     Height = 24
-    Top = 388
-    Width = 108
-    Caption = 'Werkzeug'
-    Font.Height = -19
+    Top = 528
+    Width = 52
+    AutoSize = False
+    Caption = 'Länge'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label3: TLabel
+    Left = 264
+    Height = 24
+    Top = 528
+    Width = 80
+    AutoSize = False
+    Caption = 'Durchm.'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label4: TLabel
+    Left = 8
+    Height = 24
+    Top = 528
+    Width = 64
+    AutoSize = False
+    Caption = 'Wkz. Nr.'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+  end
+  object OEMLabel12: TLabel
+    Left = 8
+    Height = 26
+    Top = 416
+    Width = 81
+    AutoSize = False
+    Caption = 'Programm'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label6: TLabel
+    Left = 344
+    Height = 18
+    Top = 560
+    Width = 24
+    AutoSize = False
+    Caption = 'F'
+    Font.Color = clNavy
+    Font.Height = -13
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
   end
-  object Label2: TLabel
-    Left = 852
-    Height = 18
-    Top = 416
-    Width = 80
-    AutoSize = False
-    Caption = 'Länge'
-    ParentColor = False
-  end
-  object Label3: TLabel
-    Left = 764
-    Height = 18
-    Top = 416
-    Width = 80
-    AutoSize = False
-    Caption = 'Durchm.'
-    ParentColor = False
-  end
-  object Label4: TLabel
-    Left = 680
-    Height = 18
-    Top = 416
-    Width = 80
-    AutoSize = False
-    Caption = 'Wkz. Nr.'
-    ParentColor = False
-  end
-  object Label5: TLabel
-    Left = 420
-    Height = 18
-    Top = 416
-    Width = 252
-    AutoSize = False
-    Caption = 'Bezeichnung'
-    ParentColor = False
-  end
-  object Label6: TLabel
-    Left = 4
-    Height = 18
-    Top = 468
-    Width = 48
-    AutoSize = False
-    Caption = 'F-Wert'
-    ParentColor = False
-  end
   object Label7: TLabel
-    Left = 144
+    Left = 432
     Height = 18
-    Top = 468
-    Width = 44
+    Top = 560
+    Width = 20
     AutoSize = False
-    Caption = 'S-Wert'
+    Caption = 'S'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
     ParentColor = False
+    ParentFont = False
   end
   object LabelCurrentVel: TLabel
-    Left = 480
+    Left = 472
     Height = 24
-    Top = 524
-    Width = 96
+    Top = 504
+    Width = 92
     Alignment = taRightJustify
     AutoSize = False
     Caption = '0.000 m/s'
-    Color = clWhite
+    Color = clForm
     Layout = tlCenter
     ParentColor = False
     Transparent = False
   end
   object Label8: TLabel
-    Left = 420
+    Left = 360
     Height = 22
-    Top = 526
-    Width = 52
+    Top = 504
+    Width = 107
     AutoSize = False
-    Caption = 'Aktuell'
+    Caption = 'Akt. Geschw.'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
     Layout = tlCenter
     ParentColor = False
+    ParentFont = False
   end
   object LedModeMDI: TMocLed
-    Left = 564
-    Height = 12
-    Top = 616
-    Width = 128
+    Left = 880
+    Height = 14
+    Top = 423
+    Width = 80
     LedColor = clYellow
     IsOn = False
-    Color = clMedGray
+    Color = clSilver
   end
   object LedModeAuto: TMocLed
-    Left = 424
-    Height = 12
-    Top = 616
-    Width = 128
+    Left = 880
+    Height = 14
+    Top = 335
+    Width = 80
     LedColor = clYellow
     IsOn = False
-    Color = clMedGray
+    Color = clSilver
   end
   object LedMachineOn: TMocLed
-    Left = 148
-    Height = 12
-    Top = 616
-    Width = 140
-    LedColor = clLime
+    Left = 880
+    Height = 14
+    Top = 152
+    Width = 80
+    LedColor = clGreen
     IsOn = False
-    Color = clRed
+    Color = clSilver
   end
   object LedModeManual: TMocLed
-    Left = 292
-    Height = 12
-    Top = 616
-    Width = 128
+    Left = 880
+    Height = 14
+    Top = 250
+    Width = 80
     LedColor = clYellow
     IsOn = False
-    Color = clMedGray
+    Color = clSilver
   end
   object ButtonModeRun: TMocButton
-    Left = 424
-    Height = 24
-    Top = 588
-    Width = 128
+    Left = 880
+    Height = 64
+    Top = 271
+    Width = 80
     Command = 'cmAUTO'
     ShowClicks = True
     Caption = 'Satzlauf'
@@ -342,10 +374,10 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object ButtonModeMDI: TMocButton
-    Left = 564
-    Height = 24
-    Top = 588
-    Width = 128
+    Left = 880
+    Height = 64
+    Top = 355
+    Width = 80
     Command = 'cmMDI'
     ShowClicks = True
     Caption = 'MDI'
@@ -353,10 +385,10 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object ButtonModeAuto: TMocButton
-    Left = 292
-    Height = 24
-    Top = 588
-    Width = 128
+    Left = 880
+    Height = 64
+    Top = 184
+    Width = 80
     Command = 'cmJOG'
     ShowClicks = True
     Caption = 'Manuell'
@@ -364,10 +396,10 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object ButtonMachine: TMocButton
-    Left = 148
-    Height = 24
-    Top = 588
-    Width = 140
+    Left = 880
+    Height = 64
+    Top = 88
+    Width = 80
     Command = 'cmMACHINE'
     ShowClicks = True
     Caption = 'Maschine'
@@ -375,10 +407,10 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object ButtonEStop: TMocButton
-    Left = 4
-    Height = 24
-    Top = 588
-    Width = 140
+    Left = 880
+    Height = 64
+    Top = 8
+    Width = 80
     Command = 'cmESTOP'
     ShowClicks = True
     Caption = 'Notaus'
@@ -386,30 +418,30 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object ButtonSpindle: TMocButton
-    Left = 600
-    Height = 28
-    Top = 524
-    Width = 82
+    Left = 616
+    Height = 64
+    Top = 536
+    Width = 80
     ShowClicks = True
     Caption = 'Spindel An'
     Color = clBtnFace
     OnClick = BtnSpClick
   end
   object ButtonSpReverse: TMocButton
-    Left = 832
-    Height = 28
-    Top = 492
-    Width = 102
+    Left = 704
+    Height = 64
+    Top = 536
+    Width = 80
     ShowClicks = True
     Caption = 'Rückw.'
     Color = clBtnFace
     OnClick = BtnSpReverseClick
   end
   object ButtonCoolant: TMocButton
-    Left = 828
-    Height = 24
-    Top = 588
-    Width = 124
+    Left = 880
+    Height = 64
+    Top = 536
+    Width = 80
     Command = 'cmFLOOD'
     ShowClicks = True
     Caption = 'Kühlung'
@@ -417,10 +449,10 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object ButtonMist: TMocButton
-    Left = 696
-    Height = 24
-    Top = 588
-    Width = 124
+    Left = 880
+    Height = 64
+    Top = 448
+    Width = 80
     Command = 'cmMIST'
     ShowClicks = True
     Caption = 'Nebel'
@@ -428,222 +460,275 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object LedSpindleCCW: TMocLed
-    Left = 812
-    Height = 28
-    Top = 492
-    Width = 18
+    Left = 704
+    Height = 14
+    Top = 600
+    Width = 80
     LedColor = clRed
     IsOn = False
-    Color = clMedGray
+    Color = clSilver
   end
   object LedSpindleOn: TMocLed
-    Left = 584
-    Height = 28
-    Top = 524
-    Width = 14
+    Left = 616
+    Height = 14
+    Top = 600
+    Width = 80
     LedColor = clYellow
     IsOn = False
-    Color = clMedGray
+    Color = clSilver
   end
   object LedEStop: TMocLed
-    Left = 4
-    Height = 12
-    Top = 616
-    Width = 140
-    LedColor = clLime
+    Left = 880
+    Height = 14
+    Top = 72
+    Width = 80
+    LedColor = clSilver
     IsOn = False
     Color = clRed
   end
   object LedMist: TMocLed
-    Left = 696
-    Height = 12
-    Top = 616
-    Width = 124
+    Left = 880
+    Height = 14
+    Top = 512
+    Width = 80
     LedColor = clYellow
     IsOn = False
-    Color = clMedGray
+    Color = clSilver
   end
   object LedFlood: TMocLed
-    Left = 828
-    Height = 12
-    Top = 616
-    Width = 124
+    Left = 880
+    Height = 14
+    Top = 600
+    Width = 80
     LedColor = clYellow
     IsOn = False
-    Color = clMedGray
+    Color = clSilver
   end
   object LedShowMM: TMocLed
-    Left = 316
-    Height = 12
-    Top = 32
-    Width = 96
+    Left = 440
+    Height = 11
+    Top = 447
+    Width = 90
     LedColor = clYellow
     IsOn = False
+    Color = clSilver
   end
   object LedShowRelative: TMocLed
-    Left = 316
-    Height = 12
-    Top = 152
-    Width = 96
+    Left = 440
+    Height = 11
+    Top = 316
+    Width = 90
     LedColor = clYellow
     IsOn = False
+    Color = clSilver
   end
   object LedShowDtg: TMocLed
-    Left = 316
-    Height = 12
-    Top = 88
-    Width = 96
+    Left = 440
+    Height = 11
+    Top = 381
+    Width = 90
     LedColor = clYellow
     IsOn = False
+    Color = clSilver
   end
   object LedSpindlebrake: TMocLed
-    Left = 812
-    Height = 28
-    Top = 524
-    Width = 18
-    LedColor = clYellow
+    Left = 792
+    Height = 14
+    Top = 600
+    Width = 80
+    LedColor = clSkyBlue
     IsOn = False
-    Color = clMedGray
+    Color = clSilver
+  end
+  object LedFOREnabled: TMocLed
+    Left = 88
+    Height = 24
+    Top = 304
+    Width = 26
+    LedColor = clSkyBlue
+    IsOn = False
+    Color = clSilver
+    Visible = False
+  end
+  object LedSOREnabled: TMocLed
+    Left = 368
+    Height = 24
+    Top = 312
+    Width = 26
+    LedColor = clSkyBlue
+    IsOn = False
+    Color = clSilver
+    Visible = False
   end
   object ButtonUnitsMM: TMocButton
-    Left = 316
-    Height = 24
-    Top = 8
-    Width = 96
+    Left = 440
+    Height = 29
+    Top = 416
+    Width = 90
     ShowClicks = True
     Caption = 'mm'
     Color = clBtnFace
     OnClick = LabelUnitsClick
   end
   object ButtonShowRelative: TMocButton
-    Left = 316
-    Height = 24
-    Top = 128
-    Width = 96
+    Left = 440
+    Height = 29
+    Top = 286
+    Width = 90
     ShowClicks = True
     Caption = 'Masch.Koord'
     Color = clBtnFace
     OnClick = BtnCoordsClick
   end
   object ButtonShowDtg: TMocButton
-    Left = 316
-    Height = 24
-    Top = 64
-    Width = 96
+    Left = 440
+    Height = 29
+    Top = 352
+    Width = 90
     ShowClicks = True
-    Caption = 'Restweg'
+    Caption = 'DTG'
     Color = clBtnFace
     OnClick = ButtonShowDtgClick
   end
   object ButtonSpindlebrake: TMocButton
-    Left = 832
-    Height = 28
-    Top = 524
-    Width = 100
+    Left = 792
+    Height = 64
+    Top = 536
+    Width = 80
+    Command = 'cmSPBRAKE'
     ShowClicks = True
-    Caption = 'Spindelbremse'
-    Color = clBtnFace
-    OnClick = BtnSpindleBrakeClick
-  end
-  object ButtonFeedReset: TMocButton
-    Left = 264
-    Height = 24
-    Top = 524
-    Width = 148
-    Command = 'cmFEEDRESET'
-    ShowClicks = True
-    Caption = 'Vorschb. 100%'
+    Caption = 'Sp.-Bremse'
     Color = clBtnFace
     OnClick = ButtonClick
   end
-  object ButtonSpindlePlus: TMocButton
-    Left = 768
-    Height = 28
-    Top = 492
-    Width = 32
+  object ButtonFeedReset: TMocButton
+    Left = 304
+    Height = 32
+    Top = 464
+    Width = 48
+    Command = 'cmFEEDRESET'
     ShowClicks = True
-    Caption = '+'
+    Caption = '100%'
     Color = clBtnFace
-    OnClick = ButtonSpindlePlusClick
+    OnClick = ButtonClick
   end
-  object ButtonSpindleMinus: TMocButton
-    Left = 768
-    Height = 28
-    Top = 524
-    Width = 32
+  object OEMButton2: TMocButton
+    Left = 320
+    Height = 26
+    Top = 312
+    Width = 99
     ShowClicks = True
-    Caption = '-'
+    Caption = '100%'
     Color = clBtnFace
-    OnClick = ButtonSpindleMinusClick
+    Visible = False
+    OnClick = ButtonClick
+  end
+  object OEMButton1: TMocButton
+    Left = 296
+    Height = 28
+    Top = 304
+    Width = 58
+    ShowClicks = True
+    Caption = 'Vorgabe'
+    Color = clBtnFace
+    Visible = False
+    OnClick = ButtonClick
   end
   object OEMLabel1: TLabel
-    Left = 44
-    Height = 18
-    Top = 228
-    Width = 111
+    Left = 640
+    Height = 24
+    Top = 504
+    Width = 100
     AutoSize = False
-    Caption = 'OEMLabel1'
+    Caption = 'Akt. U/min'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
-    Visible = False
+    ParentFont = False
   end
   object OEMLabel2: TLabel
-    Left = 44
-    Height = 18
-    Top = 252
-    Width = 111
+    Left = 32
+    Height = 22
+    Top = 336
+    Width = 132
     AutoSize = False
-    Caption = 'Label12'
+    Caption = 'Übersteuerung'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
+    ParentFont = False
     Visible = False
   end
   object OEMLabel3: TLabel
-    Left = 160
-    Height = 18
-    Top = 188
-    Width = 111
+    Left = 224
+    Height = 22
+    Top = 288
+    Width = 151
     AutoSize = False
-    Caption = 'Label12'
+    Caption = 'Übersteuerung Ein'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
+    ParentFont = False
     Visible = False
   end
   object OEMLabel4: TLabel
-    Left = 160
-    Height = 18
-    Top = 208
-    Width = 111
+    Left = 8
+    Height = 22
+    Top = 616
+    Width = 108
     AutoSize = False
-    Caption = 'Label12'
+    Caption = 'Meldungen'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
-    Visible = False
+    ParentFont = False
   end
   object OEMLabel5: TLabel
-    Left = 160
-    Height = 18
-    Top = 232
-    Width = 111
+    Left = 8
+    Height = 20
+    Top = 560
+    Width = 108
     AutoSize = False
-    Caption = 'Label12'
+    Caption = 'Akt. G-Codes'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
     ParentColor = False
-    Visible = False
+    ParentFont = False
   end
-  object OEMLabel6: TLabel
-    Left = 160
-    Height = 18
-    Top = 256
-    Width = 111
+  object LabelFile: TLabel
+    Left = 96
+    Height = 26
+    Top = 416
+    Width = 336
     AutoSize = False
-    Caption = 'Label12'
+    Color = clWhite
+    Layout = tlCenter
     ParentColor = False
+    Transparent = False
     Visible = False
   end
   object OEMLabel7: TLabel
     Left = 44
     Height = 18
-    Top = 276
+    Top = 168
     Width = 111
     AutoSize = False
     Caption = 'Label12'
+    Color = clWhite
+    Layout = tlCenter
     ParentColor = False
+    Transparent = False
     Visible = False
   end
   object OEMLabel9: TLabel
@@ -653,7 +738,10 @@ object MainForm: TMainForm
     Width = 111
     AutoSize = False
     Caption = 'Label12'
+    Color = clWhite
+    Layout = tlCenter
     ParentColor = False
+    Transparent = False
     Visible = False
   end
   object OEMLabel10: TLabel
@@ -663,29 +751,31 @@ object MainForm: TMainForm
     Width = 111
     AutoSize = False
     Caption = 'Label12'
+    Color = clWhite
+    Layout = tlCenter
     ParentColor = False
+    Transparent = False
     Visible = False
   end
-  object LedFOREnabled: TMocLed
-    Left = 264
-    Height = 12
-    Top = 552
-    Width = 144
-    LedColor = clYellow
-    IsOn = False
-  end
-  object LedSOREnabled: TMocLed
-    Left = 748
-    Height = 28
-    Top = 492
-    Width = 11
-    LedColor = clYellow
-    IsOn = False
+  object OEMLabel11: TLabel
+    Left = 8
+    Height = 26
+    Top = 504
+    Width = 80
+    AutoSize = False
+    Caption = 'Werkzeug'
+    Font.Color = clNavy
+    Font.Height = -13
+    Font.Style = [fsBold]
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+    Visible = False
   end
   object ButtonView0: TMocButton
-    Left = 420
+    Left = 4
     Height = 34
-    Top = 344
+    Top = 376
     Width = 34
     ShowClicks = True
     Caption = 'P'
@@ -693,29 +783,29 @@ object MainForm: TMainForm
     OnClick = ButtonView0Click
   end
   object ButtonView1: TMocButton
-    Left = 460
+    Left = 44
     Height = 34
-    Top = 344
+    Top = 376
     Width = 34
     ShowClicks = True
-    Caption = 'D'
+    Caption = 'Z'
     Color = clBtnFace
     OnClick = ButtonView1Click
   end
   object ButtonView2: TMocButton
-    Left = 500
+    Left = 84
     Height = 34
-    Top = 344
+    Top = 376
     Width = 34
     ShowClicks = True
-    Caption = 'V'
+    Caption = 'Y'
     Color = clBtnFace
     OnClick = ButtonView2Click
   end
   object ButtonView3: TMocButton
-    Left = 540
+    Left = 124
     Height = 34
-    Top = 344
+    Top = 376
     Width = 34
     ShowClicks = True
     Caption = 'R'
@@ -723,9 +813,9 @@ object MainForm: TMainForm
     OnClick = ButtonView3Click
   end
   object ButtonViewPlus: TMocButton
-    Left = 596
+    Left = 172
     Height = 34
-    Top = 344
+    Top = 376
     Width = 34
     ShowClicks = True
     Caption = '+'
@@ -733,9 +823,9 @@ object MainForm: TMainForm
     OnClick = ButtonViewPlusClick
   end
   object ButtonViewMinus: TMocButton
-    Left = 636
+    Left = 212
     Height = 34
-    Top = 344
+    Top = 376
     Width = 34
     ShowClicks = True
     Caption = '-'
@@ -743,62 +833,47 @@ object MainForm: TMainForm
     OnClick = ButtonViewMinusClick
   end
   object ButtonToolPath: TMocButton
-    Left = 782
-    Height = 24
-    Top = 344
-    Width = 84
+    Left = 304
+    Height = 34
+    Top = 376
+    Width = 36
     ShowClicks = True
-    Caption = 'Wkz Pfad'
+    Caption = 'Pfad'
     Color = clBtnFace
     OnClick = ButtonToolPathClick
   end
   object ButtonClear: TMocButton
-    Left = 870
+    Left = 352
     Height = 34
-    Top = 344
-    Width = 84
+    Top = 376
+    Width = 80
     ShowClicks = True
     Caption = 'Löschen'
     Color = clBtnFace
     OnClick = ButtonClearClick
   end
-  object MocLedToolpath: TMocLed
-    Left = 782
-    Height = 10
-    Top = 368
-    Width = 84
-    LedColor = clRed
-    IsOn = False
-  end
   object ButtonShowDim: TMocButton
-    Left = 692
-    Height = 24
-    Top = 344
-    Width = 84
+    Left = 256
+    Height = 34
+    Top = 376
+    Width = 36
     ShowClicks = True
-    Caption = 'Bemaßung'
+    Caption = 'Dim'
     Color = clBtnFace
     OnClick = ButtonShowDimClick
   end
-  object MocLedShowDim: TMocLed
-    Left = 692
-    Height = 10
-    Top = 368
-    Width = 84
-    LedColor = clRed
-    IsOn = False
-  end
   object PanelDRO: TPanel
-    Left = 8
-    Height = 164
-    Top = 8
-    Width = 272
+    Left = 535
+    Height = 178
+    Top = 280
+    Width = 337
     BevelOuter = bvNone
-    Color = clSilver
+    Color = clForm
     Font.Color = clBlue
-    Font.Height = -40
-    Font.Name = 'Monospace'
+    Font.Height = -48
+    Font.Name = 'Courier 10 Pitch'
     Font.Pitch = fpFixed
+    Font.Style = [fsBold]
     FullRepaint = False
     ParentColor = False
     ParentFont = False
@@ -807,9 +882,9 @@ object MainForm: TMainForm
   object PanelButtons: TPanel
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 4
-    Height = 56
-    Top = 660
+    Left = 8
+    Height = 68
+    Top = 648
     Width = 952
     BevelOuter = bvNone
     BevelWidth = 5
@@ -820,12 +895,12 @@ object MainForm: TMainForm
   end
   object PanelMaster: TPanel
     AnchorSideRight.Side = asrBottom
-    Left = 4
-    Height = 284
-    Top = 176
-    Width = 408
+    Left = 440
+    Height = 276
+    Top = 0
+    Width = 432
     BevelOuter = bvNone
-    Color = clSilver
+    Color = clForm
     FullRepaint = False
     ParentColor = False
     TabOrder = 1
@@ -834,25 +909,25 @@ object MainForm: TMainForm
   object PanelPreview: TPanel
     AnchorSideLeft.Side = asrBottom
     AnchorSideRight.Side = asrBottom
-    Left = 420
-    Height = 328
-    Top = 8
-    Width = 532
+    Left = 0
+    Height = 368
+    Top = 0
+    Width = 432
     BevelOuter = bvNone
-    Color = clMedGray
+    Color = clForm
     ParentColor = False
     TabOrder = 2
     OnResize = PanelPreviewResize
   end
   object PanelMsg: TPanel
     AnchorSideRight.Side = asrBottom
-    Left = 4
+    Left = 128
     Height = 24
-    Top = 632
-    Width = 948
+    Top = 616
+    Width = 832
     ClientHeight = 24
-    ClientWidth = 948
-    Color = clMedGray
+    ClientWidth = 832
+    Color = clForm
     ParentColor = False
     TabOrder = 3
     object LabelMsg: TLabel
@@ -865,13 +940,12 @@ object MainForm: TMainForm
       Left = 6
       Height = 12
       Top = 6
-      Width = 936
-      Alignment = taCenter
+      Width = 820
       Anchors = [akTop, akLeft, akRight, akBottom]
       AutoSize = False
       BorderSpacing.Around = 6
       Caption = 'LabelMsg'
-      Font.Color = clRed
+      Font.Color = clBlue
       Font.Style = [fsBold]
       Layout = tlCenter
       ParentColor = False
@@ -880,34 +954,36 @@ object MainForm: TMainForm
     end
   end
   object SliderSOR: TSlider
-    Left = 584
-    Height = 28
-    Top = 492
-    Width = 160
+    Left = 712
+    Height = 32
+    Top = 464
+    Width = 144
     Position = 0
-    BarColor = clYellow
+    BarColor = clBlue
     Vertical = False
     Smooth = True
     PositionChanged = SliderSORPositionChanged
+    Caption = '0.00'
   end
   object SliderVel: TSlider
-    Left = 420
-    Height = 28
-    Top = 492
-    Width = 156
+    Left = 472
+    Height = 32
+    Top = 464
+    Width = 152
     Position = 0
-    BarColor = clYellow
+    BarColor = clBlue
     Vertical = False
     Smooth = False
     PositionChanged = SliderVelPositionChanged
+    Caption = '0.00'
   end
   object SliderFeed: TSlider
-    Left = 264
-    Height = 28
-    Top = 492
-    Width = 148
+    Left = 88
+    Height = 32
+    Top = 464
+    Width = 208
     Position = 0
-    BarColor = clYellow
+    BarColor = clBlue
     Vertical = False
     Smooth = True
     PositionChanged = SliderFeedPositionChanged

@@ -61,7 +61,7 @@ const
   cmZEROALL   = 247;
   cmOFFSDLG   = 248;
   cmSETUP     = 250;
-  cmVIEW      = 260;
+  // cmVIEW      = 260;
   cmLIMITS    = 260;
   cmOPEN      = 270;
   cmRUN       = 20;
@@ -87,9 +87,6 @@ const
   cmCLOSE      = 360;
   cmFEEDRESET  = 400;
 
-//const
-  MSG_NOTOOL : string = 'No Tool';
-
 type
   TCmdNames = record
     S: string;
@@ -97,7 +94,7 @@ type
   end;
 
 const
-  CmdNamesMax = 64;
+  CmdNamesMax = 63;
 
 const
   CmdNames: Array[0..CmdNamesMax] of TCmdNames = (
@@ -141,7 +138,7 @@ const
   (S:'cmZEROALL'   ; i:247),
   (S:'cmOFFSDLG'   ; i:248),
   (S:'cmSETUP'     ; i:250),
-  (S:'cmVIEW'      ; i:260),
+//  (S:'cmVIEW'      ; i:260),
   (S:'cmLIMITS'    ; i:260),
   (S:'cmOPEN'      ; i:270),
   (S:'cmRUN'       ; i:20),
@@ -175,16 +172,44 @@ var
   BtnDefMDI: TButtonArray;
   BtnDefRun: TButtonArray;
 
-type
-  ToolDef = record
-    Name: string;
-    Width: integer;
-  end;
+const
+   ToolHeadersMax = 15;
+   {$ifdef VER_24}
+   ToolLatheCount = 15;
+   ToolMillCount = 12;
+   {$endif}
+   {$ifdef VER_23}
+   ToolLatheCount = 8;
+   ToolMillCount = 4;
+   {$endif}
 
-//    ('Slot',' Id ','Z-Offset','X-Offset','Durchm. ',
-//      'Winkel Vorne ','Winkel Hinten','Richtung',
-//      '  Bezeichnung  ');
-//    ('Slot',' Id ','Länge   ','Durchm. ','  Bezeichnung  ');
+const
+  ToolHeaders : Array[0..ToolHeadersMax] of string =
+    ('Pocket','ToolNo','X-Offset','Y-Offset','Z-Offset',
+     'A-Offset','B-Offset','C-Offset','U-Offset','V-Offset',
+     'W-Offset','Diameter','Frontangle','Backangle','Orient.',
+     'Comment');
+
+  ToolFormats: Array[0..ToolHeadersMax] of Char =
+    ('i','i','f','f','f','f','f','f','f','f','f','f','f','f','i','s');
+
+  ToolHeaderWidths: Array[0..ToolHeadersMax] of Integer =
+    (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+
+
+  {$ifdef VER_24}
+  ToolIndicesMill: Array[0..ToolHeadersMax] of Integer =
+    (0,1,11,2,3,4,5,6,7,8,9,10,15,-1,-1,-1);
+  ToolIndicesLathe: Array[0..ToolHeadersMax] of Integer =
+    (0,1,11,2,3,4,5,6,7,8,9,10,12,13,14,15);
+  {$endif}
+
+  {$ifdef VER_23}
+  ToolIndicesMill: Array[0..ToolHeadersMax] of Integer =
+    (0,1,11,4,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
+  ToolIndicesLathe: Array[0..ToolHeadersMax] of Byte =
+    (0,1,11,3,4,12,13,14,15,-1,-1,-1,-1,-1,-1,-1);
+  {$endif}
 
 const
   CoordSysMax = 8;
@@ -259,6 +284,7 @@ type
     ShowActual: Boolean;          // actual or cmd position
     ShowRelative: Boolean;        // relative or absolute position
     HomingOrderDefined: Boolean;  // check if can do a "home all"
+    NoForceHoming: Boolean;
     JogPolarity: Array[0..MaxAxes] of integer;
     JogIncrements: Array[0..MAXJOGINCS] of TJogIncrement; // 0 = continous
     JogIncMax: integer;

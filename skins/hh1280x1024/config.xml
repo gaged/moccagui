@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <tools>
+  </tools>
+  <scripts>
+    <item index="0" name="test" script="test.nc"/>
+  </scripts>
+  <background bitmap=""/>
+  <glcolors>
+    <item name="bg" r="1" g="1" b="1"/>
+    <item name="table" r="0" g="0" b="0.9" a="0.1"/>
+    <item name="limits" r="0.7" g="0.7" b="0.6"/>    
+    <item name="cone" r="1" g="0.5" b="0" a="0.5"/>
+    <item name="traverse" r="0.5" g="0.5" b="0.5"/>
+    <item name="feed" r="0" g="0" b="1"/>
+    <item name="toolpath" r="0" g="0" b="0"/>
+  </glcolors> 
+  <menujog>
+    <item index="0" cmd="cmREF" bitmap="refall.png" text=""/>
+    <item index="1" cmd="cmTOUCHOFF" bitmap="touchoffall.png" text=""/>    
+    <item index="2" cmd="cmTOOLS" bitmap="tools.png" text=""/>
+    <item index="3" cmd="cmSCRIPTS" bitmap="" text="Scripts..."/>
+    <item index="9" cmd="cmCLOSE" bitmap="close.png" text=""/>
+  </menujog>
+  <menuref>
+    <item index="0" cmd="cmBACK" bitmap="arrowleft.png" text=""/>
+    <item index="1" cmd="cmREFALL" bitmap="refall.png" text=""/>    
+    <item index="2" cmd="cmREFX" bitmap="refx.png" text=""/>
+    <item index="3" cmd="cmREFY" bitmap="refy.png" text=""/>
+    <item index="4" cmd="cmREFZ" bitmap="refz.png" text=""/>    
+    <item index="5" cmd="cmREFA" bitmap="refa.png" text=""/>
+    <item index="6" cmd="cmREFB" bitmap="refb.png" text=""/>
+    <item index="7" cmd="cmREFC" bitmap="refc.png" text=""/>
+    <item index="8" cmd="cmUNREF" bitmap="unhome.png" text=""/>
+ </menuref>
+  <menutouchoff>
+    <item index="0" cmd="cmBACK" bitmap="arrowleft.png" text=""/>
+    <item index="1" cmd="cmTOUCHX" bitmap="touchoffx.png" text=""/>
+    <item index="2" cmd="cmTOUCHY" bitmap="touchoffy.png" text=""/>    
+    <item index="3" cmd="cmTOUCHZ" bitmap="touchoffz.png" text=""/>
+    <item index="4" cmd="cmTOUCHA" bitmap="touchoffa.png" text=""/>
+    <item index="5" cmd="cmTOUCHB" bitmap="touchoffb.png" text=""/>    
+    <item index="6" cmd="cmTOUCHC" bitmap="touchoffc.png" text=""/>
+    <item index="7" cmd="cmZEROALL" bitmap="" text="Alle 0.00"/>
+    <item index="9" cmd="cmOFFSDLG" bitmap="" text="Bearbeiten.."/> 
+  </menutouchoff>
+  <menutool>
+    <item index="0" cmd="cmBACK" bitmap="arrowleft.png" text=""/>
+    <item index="1" cmd="cmTOOLCHG" bitmap="toolchange2.png" text=""/>
+    <item index="2" cmd="cmTOOLEDT" bitmap="toolsedit.png" text=""/>    
+  </menutool>
+  <menumdi>
+    <item index="0" cmd="cmMDIEXEC" bitmap="" text="Ausführen"/>
+    <item index="2" cmd="cmMDIHIST" bitmap="" text="Hist.-Löschen"/>    
+  </menumdi>
+  <menurun>
+    <item index="0" cmd="cmRUN" bitmap="start.png" text=""/>    
+    <item index="1" cmd="cmSTOP" bitmap="stop.png" text=""/>
+    <item index="2" cmd="cmSTEP" bitmap="step.png" text=""/>
+    <item index="3" cmd="cmPAUSE" bitmap="pause.png" text=""/>    
+    <item index="4" cmd="cmRUNLINE" bitmap="runfrom.png" text=""/>
+    <item index="5" cmd="cmOPTSTOP" bitmap="" text="Opt.-Stops"/>
+    <item index="6" cmd="cmBLOCKDEL" bitmap="" text="/ Blöcke"/>
+    <item index="7" cmd="cmRELOAD" bitmap="reload.png" text=""/>
+    <item index="8" cmd="cmOPEN" bitmap="open.png" text=""/>
+    <item index="9" cmd="cmEDITOR" bitmap="editor.png" text=""/>
+  </menurun>
+</CONFIG>

@@ -1,16 +1,17 @@
 object MDIClientForm: TMDIClientForm
-  Left = 742
-  Height = 300
-  Top = 320
-  Width = 400
+  Left = 699
+  Height = 279
+  Top = 346
+  Width = 432
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
   ActiveControl = MDIHistListBox
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'MDIClientForm'
-  ClientHeight = 300
-  ClientWidth = 400
+  ClientHeight = 279
+  ClientWidth = 432
+  Color = clSilver
   KeyPreview = True
   OnClose = FormClose
   OnCreate = FormCreate
@@ -18,33 +19,61 @@ object MDIClientForm: TMDIClientForm
   OnKeyDown = FormKeyDown
   ParentFont = True
   LCLVersion = '0.9.28.2'
+  object Label1: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 28
+    Top = 251
+    Width = 52
+    Alignment = taCenter
+    Anchors = [akLeft, akBottom]
+    AutoSize = False
+    Caption = 'MDI'
+    Font.Color = clNavy
+    Font.Height = -16
+    Font.Style = [fsBold]
+    Layout = tlCenter
+    ParentColor = False
+    ParentFont = False
+  end
   object MDIHistListBox: TListBox
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = MDIEdit
+    AnchorSideBottom.Control = Label1
     Left = 0
-    Height = 273
+    Height = 249
     Top = 0
-    Width = 400
+    Width = 432
     Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Bottom = 2
     ItemHeight = 0
     OnClick = MDIHistListBoxClick
     TabOrder = 0
     TopIndex = -1
   end
   object MDIEdit: TEdit
-    AnchorSideLeft.Control = Owner
+    AnchorSideLeft.Control = Label1
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 0
-    Height = 27
-    Top = 273
-    Width = 400
-    Anchors = [akLeft, akRight, akBottom]
+    Left = 54
+    Height = 23
+    Top = 254
+    Width = 378
+    Anchors = [akTop, akLeft, akRight]
+    BorderStyle = bsNone
+    BorderSpacing.Left = 2
+    Font.Height = -16
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 1
   end
 end

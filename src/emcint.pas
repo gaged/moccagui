@@ -20,6 +20,7 @@ const
 var
   Emc2Home: string;
   Emc2LibPath: string;
+  Emc2Version: string;
 
 function InitEmcEnvironment: boolean;
 procedure DoneEmcEnvironment;
@@ -37,6 +38,7 @@ var
 function InitEmcEnvironment: boolean;
 begin
   Result:= False;
+
   Emc2Home:= '';
   Emc2Home:= GetEnvironmentVariable('EMC2_HOME');
   if Length(Emc2Home) < 1 then
@@ -44,6 +46,25 @@ begin
       writeln('Did not find the EMC2_HOME var');
       Exit;
     end;
+
+  Emc2Version:= '';
+  Emc2Version:= GetEnvironmentVariable('EMC2VERSION');
+  {$ifdef VER_23}
+  if Pos('2.3.',Emc2Version) < 1 
+  {$endif}
+  {$ifdef VER_24}
+  if Pos('2.4.',Emc2Version) < 1
+  {$endif}
+  then
+    begin
+      writeln('Wrong EMC2-Version Number, got Version ' + Emc2Version + ',' +#13);
+      writeln('This Version of Mocca was build for EMC2-' +
+        {$ifdef VER_23}'2.3.*'{$endif}{$ifdef VER_24}'2.4.1'{$endif});
+      writeln('Please install the correct version of mocca.');
+    end
+  else
+    writeln('Mocca starts with correct version EMC2-' + Emc2Version);
+	
   Emc2LibPath:= Emc2Home + '/lib/';
   writeln('Library loaded from: ' + Emc2LibPath);
   EmcIniHandle:= Pointer(LoadLibrary(Emc2LibPath + libemcini));

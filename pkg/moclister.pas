@@ -15,7 +15,7 @@ type
   private
     FItems: TStringList;
     FSelItem: integer;
-    // FTopIndex: integer;
+    FNumItems: integer;
     FActiveColor: TColor;
     FTextStyle: TTextStyle;
     procedure SetSelItem(Value: integer);
@@ -27,6 +27,7 @@ type
   published
     property Items: TStringList read FItems write FItems;
     property SelectedItem: integer read FSelItem write SetSelItem;
+    property NumItems: integer read FNumItems;
     property Align;
     property Anchors;
     property BorderSpacing;
@@ -69,7 +70,7 @@ end;
 procedure TMocLister.Paint;
 var
   R: TRect;
-  cm,c,i,idx,h: integer;
+  cm,i,idx,h: integer;
 begin
   R:= ClientRect;
   Canvas.Clipping:= True;
@@ -78,11 +79,11 @@ begin
   // Canvas.Frame3D(R,2,bvLowered);
   h:= Canvas.TextHeight('Xy') + 2;
   if h < 1 then Exit;
-  c:= clientheight div h;
-  cm:= c div 2;
-  R.Top:= (ClientHeight  - (c * h)) div 2;
+  FNumItems:= clientheight div h;
+  cm:= FNumItems div 2;
+  R.Top:= (ClientHeight  - (FNumItems * h)) div 2;
   R.Bottom:= R.Top + h;
-  for i:= 0 to c - 1 do
+  for i:= 0 to FNumItems - 1 do
     begin
       idx:= FSelItem + i - cm;
       if (idx >= FItems.Count) or (idx < 0) then

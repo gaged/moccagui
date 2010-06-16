@@ -60,6 +60,9 @@ uses
 const
   ToolsInitialized: Boolean = False;
 
+var
+  Buffer: Array[0..LINELEN + 1] of Char;
+
 procedure TEmc.EditCurrent;
 begin
   CallEditor;
@@ -77,6 +80,14 @@ begin
   DoPartAlign(X,Y,Z)
 end;
 
+procedure InitToolComments;
+var
+  i: integer;
+begin
+  for i:= 0 to CANON_TOOL_MAX do
+    ToolComments[i]:= PChar('');
+end;
+
 procedure TEmc.LoadTools;
 var
   FileName: PChar;
@@ -91,7 +102,10 @@ begin
   if WaitDone = 0 then
     begin
       if not ToolsInitialized then
-        InitToolTable;
+        begin
+          InitToolTable;
+          InitToolComments;
+        end;
       ToolsInitialized:= True;
       LoadToolTable(FileName);
     end; 
@@ -558,6 +572,7 @@ begin
     cmTOUCHA: TouchOff('A');
     cmTOUCHB: TouchOff('B');
     cmTOUCHC: TouchOff('C');
+    cmLIMITS: SetORideLimits(not State.ORideLimits);
     cmOFFSDLG:
       begin
         EditOffsets;

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Component>
+    <component name="MDIClientForm" class="TMDIClientForm">
+      <properties>
+        <integer name="Left" value="543"/>
+        <integer name="Height" value="400"/>
+        <integer name="Top" value="321"/>
+        <integer name="Width" value="512"/>
+        <integer name="HorzScrollBar.Page" value="399"/>
+        <integer name="VertScrollBar.Page" value="299"/>
+        <ident name="ActiveControl" value="MDIHistListBox"/>
+        <set name="BorderIcons" value=""/>
+        <ident name="BorderStyle" value="bsNone"/>
+        <string name="Caption" value="MDIClientForm"/>
+        <integer name="ClientHeight" value="400"/>
+        <integer name="ClientWidth" value="512"/>
+        <ident name="Color" value="clsilver"/>
+        <boolean name="KeyPreview" value="true"/>
+        <boolean name="ParentFont" value="true"/>
+        <string name="LCLVersion" value="0.9.28.2"/>
+      </properties>
+      <children>
+        <component name="Label1" class="TLabel">
+          <properties>
+            <ident name="AnchorSideLeft.Control" value="Owner"/>
+            <ident name="AnchorSideBottom.Control" value="Owner"/>
+            <ident name="AnchorSideBottom.Side" value="asrBottom"/>
+            <integer name="Left" value="0"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="372"/>
+            <integer name="Width" value="52"/>
+            <ident name="Alignment" value="taCenter"/>
+            <set name="Anchors" value="akLeft,akBottom"/>
+            <boolean name="AutoSize" value="false"/>
+            <string name="Caption" value="MDI"/>
+            <ident name="Font.Color" value="clNavy"/>
+            <integer name="Font.Height" value="-16"/>
+            <set name="Font.Style" value="fsBold"/>
+            <ident name="Layout" value="tlCenter"/>
+            <boolean name="ParentColor" value="false"/>
+            <boolean name="ParentFont" value="false"/>
+          </properties>
+        </component>
+        <component name="MDIHistListBox" class="TListBox">
+          <properties>
+            <ident name="AnchorSideLeft.Control" value="Owner"/>
+            <ident name="AnchorSideTop.Control" value="Owner"/>
+            <ident name="AnchorSideRight.Control" value="Owner"/>
+            <ident name="AnchorSideRight.Side" value="asrBottom"/>
+            <ident name="AnchorSideBottom.Control" value="Label1"/>
+            <integer name="Left" value="0"/>
+            <integer name="Height" value="370"/>
+            <integer name="Top" value="0"/>
+            <integer name="Width" value="512"/>
+            <set name="Anchors" value="akTop,akLeft,akRight,akBottom"/>
+            <integer name="BorderSpacing.Bottom" value="2"/>
+            <integer name="ItemHeight" value="0"/>
+            <integer name="TabOrder" value="0"/>
+            <integer name="TopIndex" value="-1"/>
+          </properties>
+        </component>
+        <component name="MDIEdit" class="TEdit">
+          <properties>
+            <ident name="AnchorSideLeft.Control" value="Label1"/>
+            <ident name="AnchorSideLeft.Side" value="asrBottom"/>
+            <ident name="AnchorSideTop.Control" value="Label1"/>
+            <ident name="AnchorSideTop.Side" value="asrCenter"/>
+            <ident name="AnchorSideRight.Control" value="Owner"/>
+            <ident name="AnchorSideRight.Side" value="asrBottom"/>
+            <ident name="AnchorSideBottom.Control" value="Owner"/>
+            <ident name="AnchorSideBottom.Side" value="asrBottom"/>
+            <integer name="Left" value="54"/>
+            <integer name="Height" value="29"/>
+            <integer name="Top" value="372"/>
+            <integer name="Width" value="458"/>
+            <set name="Anchors" value="akTop,akLeft,akRight"/>
+            <integer name="BorderSpacing.Left" value="2"/>
+            <integer name="Font.Height" value="-16"/>
+            <set name="Font.Style" value="fsBold"/>
+            <boolean name="ParentFont" value="false"/>
+            <integer name="TabOrder" value="1"/>
+	    <string name="Borderstyle" value="NONE"/>
+          </properties>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>

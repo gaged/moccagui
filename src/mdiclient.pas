@@ -12,6 +12,7 @@ type
   { TMDIClientForm }
 
   TMDIClientForm = class(TForm)
+    Label1: TLabel;
     MDIEdit: TEdit;
     MDIHistListBox: TListBox;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -46,7 +47,7 @@ uses
 
 procedure TMDIClientForm.FormCreate(Sender: TObject);
 begin
-  ReadStyle(Self);
+  ReadStyle(Self,'mdi.xml');
   Self.Tag:= TASKMODEMDI;
   try
     MDIHistListBox.Items.LoadFromFile(Vars.IniPath + MDI_HIST_FILENAME);

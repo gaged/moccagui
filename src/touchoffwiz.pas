@@ -5,8 +5,8 @@ unit touchoffwiz;
 interface
 
 uses
-  Classes, StdCtrls, SysUtils, FileUtil, LResources, Forms, Controls, Graphics,
-  Dialogs;
+  Classes, ExtCtrls, StdCtrls, SysUtils, FileUtil, LResources, Forms, Controls,
+  Graphics, Dialogs;
 
 type
 
@@ -20,6 +20,7 @@ type
     Edit4: TEdit;
     Edit5: TEdit;
     Edit6: TEdit;
+    Image1: TImage;
     Label1: TLabel;
     Label4: TLabel;
   private

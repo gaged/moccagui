@@ -1,42 +1,39 @@
 object RunClientForm: TRunClientForm
-  Left = 542
-  Height = 454
-  Top = 240
-  Width = 560
+  Left = 576
+  Height = 279
+  Top = 299
+  Width = 432
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'RunClientForm'
-  ClientHeight = 454
-  ClientWidth = 560
-  Color = clMedGray
+  ClientHeight = 279
+  ClientWidth = 432
+  Color = clSilver
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
   ParentFont = True
   LCLVersion = '0.9.28.2'
   object MocLister: TMocLister
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = ScrollBar
-    AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 0
-    Height = 454
+    Left = 8
+    Height = 279
     Top = 0
-    Width = 545
+    Width = 408
     SelectedItem = 0
-    Anchors = [akTop, akLeft, akRight, akBottom]
     Color = clSilver
-    ActiveColor = clYellow
+    ActiveColor = clWhite
   end
   object ScrollBar: TScrollBar
-    AnchorSideTop.Control = Owner
+    AnchorSideTop.Control = MocLister
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Control = MocLister
     AnchorSideBottom.Side = asrBottom
-    Left = 545
-    Height = 454
+    Left = 417
+    Height = 279
     Top = 0
     Width = 15
     Anchors = [akTop, akRight, akBottom]
@@ -48,7 +45,7 @@ object RunClientForm: TRunClientForm
   object OpenDialog: TOpenDialog
     DefaultExt = '.ngc'
     Filter = 'nc-files|*.ngc|gcode|*.nc'
-    left = 24
-    top = 16
+    left = 32
+    top = 48
   end
 end

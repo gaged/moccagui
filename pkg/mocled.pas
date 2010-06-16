@@ -68,8 +68,9 @@ var
   R: TRect;
 begin
   R:= ClientRect;
-  Canvas.Frame(R);
-  InflateRect(R,-1,-1);
+  //Canvas.Frame(R);
+  Canvas.Frame3d(R,2,bvRaised);
+  //InflateRect(R,-1,-1);
   if FIsOn then
     Canvas.Brush.Color:= FLedColor
   else

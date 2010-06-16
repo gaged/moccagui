@@ -18,6 +18,8 @@ type
     ScrollBar: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure ScrollBarChange(Sender: TObject);
   private
     OldInterpState: integer;
@@ -26,6 +28,7 @@ type
     OldBlockDel: Boolean;
     OldOptStop: Boolean;
     OldIsOpen: Boolean;
+    OldProgramFile: string;
     IsOpen: Boolean;
     function  HandleCommand(Cmd: integer): Boolean;
     procedure UpdateScrollBar;
@@ -40,6 +43,7 @@ type
     procedure UpdateLine;
     procedure SetCodes;
     procedure GotoLine;
+    procedure FindLine(Key: Char);
   end;
   
 var
@@ -48,7 +52,7 @@ var
 implementation
 
 uses
-  strutils,
+  LCLType,strutils,
   mocglb,mocemc,
   emc2pas,
   simclient,
@@ -134,6 +138,7 @@ end;
 
 procedure TRunClientForm.FormCreate(Sender: TObject);
 begin
+  ReadStyle(Self,'run.xml');
   OpenDialog.InitialDir:= Vars.ProgramPrefix;
   {$ifdef DEBUG_INI}
   writeln(OpenDialog.InitialDir);
@@ -271,12 +276,18 @@ begin
 end;
 
 procedure TRunClientForm.UpdateScrollBar;
+var
+  i: integer;
 begin
-  if OldActiveLn <> ScrollBar.Position then
+  if State.InterpState = INTERP_IDLE then
+    i:= MocLister.SelectedItem
+  else
+    i:= OldActiveLn;
+  if i <> ScrollBar.Position then
     begin
-      if (OldActiveLn < 0) or (OldActiveLn > ScrollBar.Max) then
+      if (i < 0) or (i > ScrollBar.Max) then
         Exit;
-      ScrollBar.Position:= OldActiveLn;
+      ScrollBar.Position:= i;
     end;
 end;
 
@@ -426,6 +437,74 @@ begin
         if not Self.HandleCommand(Tag) then
           Emc.HandleCommand(Tag);
       end;
+end;
+
+procedure TRunClientForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+
+var
+  Current: integer;
+  i: integer;
+
+procedure MoveSel(d: integer);
+begin
+  Current:= MocLister.SelectedItem + d;
+  if (Current < 0) then Current:= 0;
+  if (Current > MocLister.Items.Count - 1) then
+    Current:= MocLister.Items.Count - 1;
+  if Current <> MocLister.SelectedItem then
+    begin
+      MocLister.SelectedItem:= Current;
+      UpdateScrollBar;
+    end;
+  Key:= 0;
+end;
+
+begin
+  if State.InterpState <> INTERP_IDLE then
+    Exit;
+  case Key of
+    VK_UP: MoveSel(-1);
+    VK_DOWN: MoveSel(1);
+    VK_PRIOR: MoveSel(-MocLister.NumItems);
+    VK_NEXT: MoveSel(MocLister.NumItems);
+    VK_HOME:
+      begin
+        if MocLister.Items.Count > 0 then
+          MocLister.SelectedItem:= 0;
+        UpdateScrollBar;
+        Key:= 0;
+      end;
+    VK_END:
+      begin
+        if MocLister.Items.Count > 0 then
+          MocLister.SelectedItem:= MocLister.Items.Count - 1;
+        UpdateScrollBar;
+        Key:= 0;
+       end;
+    end;
+end;
+
+procedure TRunClientForm.FindLine(Key: Char);
+var
+  s: string;
+begin
+  if MocLister.Items.Count < 1 then Exit;
+  s:= String(Key);
+  s:= InputBox('Zeile suchen','Zeile: ',s);
+end;
+
+procedure TRunClientForm.FormKeyPress(Sender: TObject; var Key: char);
+var
+  s: string;
+begin
+  if State.InterpState <> INTERP_IDLE then
+    Exit;
+  if (Key in ['0'..'9']) then
+    begin
+      FindLine(Key);
+      Key:= #0;
+    end;
 end;
 
 procedure TRunClientForm.ScrollBarChange(Sender: TObject);

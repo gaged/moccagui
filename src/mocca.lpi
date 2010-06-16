@@ -46,7 +46,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="32">
+    <Units Count="31">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -207,32 +207,27 @@
         <UnitName Value="emcmsgbox"/>
       </Unit26>
       <Unit27>
-        <Filename Value="lang.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="lang"/>
-      </Unit27>
-      <Unit28>
         <Filename Value="stylereader.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="stylereader"/>
-      </Unit28>
-      <Unit29>
+      </Unit27>
+      <Unit28>
         <Filename Value="configreader.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="configreader"/>
-      </Unit29>
-      <Unit30>
+      </Unit28>
+      <Unit29>
         <Filename Value="touchoffwiz.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TouchOffWizDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="touchoffwiz"/>
-      </Unit30>
-      <Unit31>
+      </Unit29>
+      <Unit30>
         <Filename Value="glfont.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="glfont"/>
-      </Unit31>
+      </Unit30>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
