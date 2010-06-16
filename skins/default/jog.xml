@@ -3,9 +3,9 @@
   <Component>
     <component name="JogClientForm" class="TJogClientForm">
       <properties>
-        <integer name="Left" value="527"/>
-        <integer name="Height" value="279"/>
-        <integer name="Top" value="272"/>
+        <integer name="Left" value="625"/>
+        <integer name="Height" value="282"/>
+        <integer name="Top" value="267"/>
         <integer name="Width" value="432"/>
         <integer name="HorzScrollBar.Page" value="476"/>
         <integer name="VertScrollBar.Page" value="361"/>
@@ -13,9 +13,9 @@
         <set name="BorderIcons" value=""/>
         <ident name="BorderStyle" value="bsNone"/>
         <string name="Caption" value="JogClientForm"/>
-        <integer name="ClientHeight" value="279"/>
+        <integer name="ClientHeight" value="282"/>
         <integer name="ClientWidth" value="432"/>
-        <ident name="Color" value="clGray"/>
+        <ident name="Color" value="clSilver"/>
         <boolean name="KeyPreview" value="true"/>
         <boolean name="ParentFont" value="true"/>
         <ident name="ShowInTaskBar" value="stNever"/>
@@ -45,7 +45,7 @@
             <integer name="Top" value="4"/>
             <integer name="Width" value="136"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Schrittweite"/>
+            <string name="Caption" value="Schrittweiten"/>
             <ident name="Font.Color" value="clNavy"/>
             <integer name="Font.Height" value="-13"/>
             <set name="Font.Style" value="fsBold"/>
@@ -57,7 +57,7 @@
         <component name="LedORide" class="TMocLed">
           <properties>
             <integer name="Left" value="4"/>
-            <integer name="Height" value="20"/>
+            <integer name="Height" value="17"/>
             <integer name="Top" value="252"/>
             <integer name="Width" value="268"/>
             <ident name="LedColor" value="clRed"/>
@@ -244,6 +244,94 @@
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
+        <component name="MocButtonInc0" class="TMocButton">
+          <properties>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="48"/>
+            <integer name="Width" value="136"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="Durchgehend"/>
+            <ident name="Color" value="clBtnFace"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc1" class="TMocButton">
+          <properties>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="76"/>
+            <integer name="Width" value="136"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc2" class="TMocButton">
+          <properties>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="104"/>
+            <integer name="Width" value="136"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc3" class="TMocButton">
+          <properties>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="132"/>
+            <integer name="Width" value="136"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc4" class="TMocButton">
+          <properties>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="160"/>
+            <integer name="Width" value="136"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc5" class="TMocButton">
+          <properties>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="188"/>
+            <integer name="Width" value="136"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc6" class="TMocButton">
+          <properties>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="216"/>
+            <integer name="Width" value="136"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
+        <component name="MocButtonInc7" class="TMocButton">
+          <properties>
+            <integer name="Left" value="284"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="244"/>
+            <integer name="Width" value="136"/>
+            <boolean name="ShowClicks" value="true"/>
+            <ident name="Color" value="clBtnFace"/>
+            <boolean name="Enabled" value="false"/>
+          </properties>
+        </component>
         <component name="SliderJog" class="TSlider">
           <properties>
             <integer name="Left" value="116"/>
@@ -254,18 +342,6 @@
             <ident name="BarColor" value="clNavy"/>
             <boolean name="Vertical" value="false"/>
             <boolean name="Smooth" value="true"/>
-          </properties>
-        </component>
-        <component name="LBIncr" class="TListBox">
-          <properties>
-            <integer name="Left" value="284"/>
-            <integer name="Height" value="224"/>
-            <integer name="Top" value="48"/>
-            <integer name="Width" value="136"/>
-            <ident name="BorderStyle" value="bsNone"/>
-            <integer name="ItemHeight" value="0"/>
-            <integer name="TabOrder" value="1"/>
-            <integer name="TopIndex" value="-1"/>
           </properties>
         </component>
       </children>
