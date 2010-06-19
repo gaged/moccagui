@@ -80,14 +80,6 @@ begin
   DoPartAlign(X,Y,Z)
 end;
 
-procedure InitToolComments;
-var
-  i: integer;
-begin
-  for i:= 0 to CANON_TOOL_MAX do
-    ToolComments[i]:= PChar('');
-end;
-
 procedure TEmc.LoadTools;
 var
   FileName: PChar;
@@ -103,8 +95,10 @@ begin
     begin
       if not ToolsInitialized then
         begin
+          {$ifdef VER_24}
+          RandomToolChanger:= 0;
+          {$endif}
           InitToolTable;
-          InitToolComments;
         end;
       ToolsInitialized:= True;
       LoadToolTable(FileName);

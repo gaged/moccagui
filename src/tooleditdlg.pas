@@ -14,17 +14,25 @@ type
   TToolDlg = class(TForm)
     BtnOk: TButton;
     BtnCancel: TButton;
+    BtnAddTool: TButton;
+    BtnDeleteTool: TButton;
     Grid: TStringGrid;
+    procedure BtnAddToolClick(Sender: TObject);
+    procedure BtnChangePocClick(Sender: TObject);
+    procedure BtnDeleteToolClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure EditorKeyPress(Sender: TObject; var Key: char);
-    procedure GridSetEditText(Sender: TObject; ACol, ARow: Integer;
-      const Value: string);
+    procedure EditorEditingDone(Sender: TObject);
   private
-    FToolNo: integer;
-    procedure SetupGrid;
-    //procedure UpdateGrid;
-    //procedure UpdateRow(ARow: integer);
+    procedure InitGrid;
+    procedure UpdateCell(ACol,ARow: integer);
+    procedure UpdateRow(ARow: integer);
+    procedure UpdateTool(ACol,ARow: integer);
+    procedure AddTool;
+    procedure DeleteTool;
+    procedure ChangePocket;
+    function  CheckToolNo: Boolean;
   end;
 
 procedure EditTools;
@@ -37,9 +45,372 @@ implementation
 uses
   mocglb,emc2pas;
 
-var
-  FakePocket : Array[0..CANON_TOOL_MAX] of integer;
+const
+   MaxColumns = 15;
+   {$ifdef VER_24}
+   LatheColumns = MaxColumns;
+   MillColumns = 12;
+   {$endif}
+   {$ifdef VER_23}
+   LatheColumns = 8;
+   MillColumns = 4;
+   {$endif}
 
+const
+  TitleDef : Array[0..MaxColumns] of string =
+    ('POC','TNR','X-Offset','Y-Offset','Z-Offset',
+     'A-Offset','B-Offset','C-Offset','U-Offset','V-Offset',
+     'W-Offset','Durchmesser','Frontangle','Backangle','OR',
+     'Bezeichnung');
+  WidthsDef : Array[0..MaxColumns] of integer =
+    (30,30,60,60,60,60,60,60,60,60,60,100,60,60,30,200);
+
+  {$ifdef VER_24}
+  MillIdcDef: Array[0..MaxColumns] of Integer =
+    (0,1,11,2,3,4,5,6,7,8,9,10,15,-1,-1,-1);
+  LatheIdcDef: Array[0..MaxColumns] of Integer =
+    (0,1,11,2,3,4,5,6,7,8,9,10,12,13,14,15);
+  {$endif}
+
+  {$ifdef VER_23}
+  MillIdcDef: Array[0..MaxColumns] of Integer =
+    (0,1,11,4,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
+  LatheIdcDef: Array[0..MaxColumns] of Integer =
+    (0,1,11,3,4,12,13,14,15,-1,-1,-1,-1,-1,-1,-1);
+  {$endif}
+
+
+type
+  TToolCol = record
+    Title: string;
+    Width: integer;
+    Index: integer;
+  end;
+
+var
+  iCols: integer;
+  iPockets: integer;
+  Lathe: Boolean;
+  ToolColumns: Array[0..MaxColumns] of TToolCol;
+
+type
+  TToolItem = record
+    Pocket: integer;
+    Tool: TTool;
+    Comment: string;
+  end;
+
+var
+  T: Array[1..CANON_TOOL_MAX] of TToolItem;
+
+procedure ClearTool(var I: TToolItem);
+begin
+  I.Pocket:= 0;
+  I.Comment:= '';
+  with I.Tool do
+    begin
+      toolno:= 0; zoffset:= 0; xoffset:= 0;
+      {$ifdef VER_24}
+      yoffset:= 0; aoffset:= 0; boffset:= 0; coffset:= 0;
+      uoffset:= 0; voffset:= 0; woffset:= 0;
+      {$endif}
+      diameter:= 0; frontangle:= 0; backangle:= 0; orientation:= 0;
+    end;
+end;
+
+procedure InitPockets;
+var
+  i: integer;
+  Index: integer;
+  Comment: PChar;
+begin
+  iCols:= 0;
+  iPockets:= 0;
+  for i:= 1 to CANON_TOOL_MAX - 1 do
+    begin
+      ClearTool(T[i]);
+      if Tools[i].toolno > 0 then
+        begin
+          inc(iPockets);
+          if iPockets > CANON_TOOL_MAX then
+            break;
+          T[iPockets].Pocket:= iPockets;
+          T[iPockets].Tool:= Tools[i];
+          T[iPockets].Comment:= PChar(ToolComments[i]);
+        end;
+    end;
+  Lathe:= Vars.IsLathe;
+  for i:= 0 to MaxColumns do
+    begin
+      if Lathe then
+        Index:= LatheIdcDef[i]
+      else
+        Index:= MillIdcDef[i];
+      if Index < 0 then
+        Break;
+      inc(iCols);
+      ToolColumns[i].Title:=  TitleDef[Index];
+      ToolColumns[i].Width:=  WidthsDef[Index];
+      ToolColumns[i].Index:= Index;
+    end;
+end;
+
+procedure SavePockets;
+var
+  i: integer;
+begin
+  for i:= 1 to CANON_TOOL_MAX - 1 do
+    begin
+      Tools[i]:= T[i].Tool;
+      ToolComments[i]:= PChar(T[i].Comment);
+    end;
+  SaveToolTable(PChar(Vars.ToolFile));
+end;
+
+procedure TToolDlg.UpdateCell(ACol,ARow: integer);
+var
+  C: TToolCol;
+  s: string;
+  Item: TToolItem;
+begin
+  if (ARow < 1) or (ARow > CANON_TOOL_MAX) then
+    begin
+      writeln('Pocket out of range ' + IntToStr(ARow));
+      Exit;
+    end;
+  if (ARow > iPockets) then
+    Exit;
+  if (ACol < 0) or (ACol > MaxColumns) then
+    begin
+      writeln('Column out of range ' + IntToStr(aCol));
+      Exit;
+    end;
+  C:= ToolColumns[ACol];
+  Item:= T[ARow];
+  if Item.Pocket > 0 then
+    begin
+      case C.Index of
+        0: s:= IntToStr(Item.Pocket);
+        1: s:= IntToStr(Item.Tool.toolno);
+        2: s:= FloatToStr(Item.Tool.xoffset);
+        4: s:= FloatToStr(Item.Tool.zoffset);
+        {$ifdef VER_24}
+        3: s:= FloatToStr(Item.Tool.yoffset);
+        5: s:= FloatToStr(Item.Tool.aoffset);
+        6: s:= FloatToStr(Item.Tool.boffset);
+        7: s:= FloatToStr(Item.Tool.coffset);
+        8: s:= FloatToStr(Item.Tool.uoffset);
+        9: s:= FloatToStr(Item.Tool.voffset);
+        10: s:= FloatToStr(Item.Tool.woffset);
+        {$endif}
+        11: s:= FloatToStr(Item.Tool.diameter);
+        12: s:= FloatToStr(Item.Tool.frontangle);
+        13: s:= FloatToStr(Item.Tool.backangle);
+        14: s:= IntToStr(Item.Tool.orientation);
+        15: s:= Item.Comment;
+      end;
+    end;
+  Grid.Cells[ACol,ARow]:= s;
+end;
+
+procedure TToolDlg.UpdateTool(ACol,ARow: integer);
+var
+  C: TToolCol;
+  s: string;
+  Item: TToolItem;
+  i: integer;
+begin
+  if iPockets < 1 then Exit;
+  if (ARow < 1) or (ARow > iPockets) then
+    begin
+      writeln('Tool-Update, Invalid row: ' + IntToStr(ARow));
+      Exit;
+    end;
+  if (ACol < 1) or (ACol > iCols) then
+    begin
+      writeln('Tool-Update, Invalid Column: ' + IntToStr(ACol));
+      Exit;
+    end;
+  s:= Grid.Cells[ACol,ARow];
+  if s = '' then Exit;
+  C:= ToolColumns[ACol];
+  if (C.Index < 1) or (C.Index > MaxColumns) then
+    begin
+      writeln('Invalid Tool-Column: ' + IntToStr(C.Index));
+      Exit;
+    end;
+  i:= 0;
+  if C.Index < 15 then
+    begin;
+      i:= Pos(',',s);
+      if i > 0 then s[i]:= '.';
+    end;
+  try
+     case C.Index of
+        1: T[ARow].Tool.toolno:= StrToInt(s);
+        2: T[ARow].Tool.xoffset:= StrToFloat(s);
+        4: T[ARow].Tool.zoffset:= StrToFloat(s);
+        {$ifdef VER_24}
+        3: T[ARow].Tool.yoffset:= StrToFloat(s);
+        5: T[ARow].Tool.aoffset:= StrToFloat(s);
+        6: T[ARow].Tool.boffset:= StrToFloat(s);
+        7: T[ARow].Tool.coffset:= StrToFloat(s);
+        8: T[ARow].Tool.uoffset:= StrToFloat(s);
+        9: T[ARow].Tool.voffset:= StrToFloat(s);
+        10: T[ARow].Tool.woffset:= StrToFloat(s);
+        {$endif}
+        11: T[ARow].Tool.diameter:= StrToFloat(s);
+        12: T[ARow].Tool.frontangle:= StrToFloat(s);
+        13: T[ARow].Tool.backangle:= StrToFloat(s);
+        14: T[ARow].Tool.orientation:= StrToInt(s);
+        15: T[ARow].Comment:= s;
+      end;
+      if i > 0 then
+        UpdateCell(ACol,ARow);
+  except
+    ShowMessage('"' + s + '" is not a valid entry for ' + C.Title);
+    Grid.Cells[ACol,ARow]:= '';
+    Grid.Col:= ACol;
+    Grid.Row:= ARow;
+  end;
+end;
+
+procedure TToolDlg.UpdateRow(ARow: integer);
+var
+  i: integer;
+begin
+  for i:= 0 to iCols - 1 do
+    begin
+      UpdateCell(i,ARow);
+    end;
+end;
+
+function TToolDlg.CheckToolNo: Boolean;
+var
+  Msg: string;
+  i: integer;
+begin
+  if iPockets < 1 then
+    begin
+      Result:= True;
+      Exit;
+    end;
+  Result:= False;
+  Msg:= '';
+  for i:= 1 to iPockets do
+    begin
+      if (T[i].Pocket < 1) or (T[i].Pocket > CANON_TOOL_MAX) then
+        Msg:= 'Pocket No ' + IntToStr(i) + ' out of range'
+      else
+      if (T[i].Tool.toolno < 1) then
+        Msg:= Format('%s %d %s %d %s',['Tool Number',T[i].Tool.toolno,'of Pocket',i,'is not valid']);
+      if Msg <> '' then
+        Break;
+    end;
+  Result:= Msg = '';
+  if not Result then
+    ShowMessage(Msg);
+end;
+
+procedure TToolDlg.AddTool;
+var
+  LastRow: integer;
+begin
+  if not CheckToolNo then
+    Exit;
+  if iPockets < CANON_TOOL_MAX - 1 then
+    begin
+      Grid.RowCount:= iPockets + 2;
+      inc(iPockets);
+      T[iPockets].Pocket:= iPockets;
+      UpdateRow(iPockets);
+    end
+  else
+    ShowMessage('Too many Tools, cannot add a new tool');
+end;
+
+procedure UpdatePocketNo(StartPos: integer);
+var
+  i: integer;
+begin
+  for i:= StartPos to iPockets do
+    T[i].Pocket:= i;
+end;
+
+procedure TToolDlg.DeleteTool;
+var
+  i,Pocket: integer;
+  Msg: string;
+begin
+  if iPockets < 1 then
+    begin
+      writeln('Nothing to delete!');
+      Exit;
+    end;
+  Pocket:= Grid.Row;
+  if (Pocket < 1) or (Pocket > CANON_TOOL_MAX -1) then
+    begin
+      writeln('Delete Tool, invalid pocket.');
+      Exit;
+    end;
+  if T[Pocket].Tool.toolno > 0 then
+    with T[Pocket] do
+      begin
+        Msg:= Format('%s %d %s %d',['Delete Pocket',Pocket,'with Tool no',Tool.ToolNo]);
+        if MessageDlg(Msg,mtConfirmation,[mbOk,mbCancel],0) = mrCancel then
+          Exit;
+      end;
+  if Pocket = iPockets then
+    begin
+      Writeln('Delete End');
+      ClearTool(T[iPockets]);
+      Dec(iPockets);
+      Grid.RowCount:= iPockets + 1;
+      UpdatePocketNo(Pocket);
+    end
+  else
+    begin
+      Writeln('Delete mid');
+      for i:= Pocket + 1 to iPockets do
+        T[i-1]:= T[i];
+      ClearTool(T[iPockets]);
+      Dec(iPockets);
+      Grid.RowCount:= iPockets + 1;
+      if (iPockets > 1) then
+        begin
+          UpdatePocketNo(Pocket);
+          for i:= Pocket to iPockets do
+            UpdateRow(i);
+        end;
+    end;
+end;
+
+procedure TToolDlg.ChangePocket;
+var
+  Pocket: integer;
+  s: string;
+begin
+  Pocket:= Grid.Row;
+  s:= InputBox('New Pocket Number','Pocketnumber for Pocket ' + IntToStr(Pocket),'');
+end;
+
+procedure TToolDlg.InitGrid;
+var
+  i: integer;
+begin
+  Grid.ColCount:= iCols;
+  if iPockets < 1 then
+    Grid.RowCount:= 2
+  else
+    Grid.RowCount:= iPockets + 1;
+  for i:= 0 to iCols - 1 do
+    begin
+      Grid.Cells[i,0]:= ToolColumns[i].Title;
+      Grid.ColWidths[i]:= ToolColumns[i].Width;
+    end;
+  for i:= 1 to iPockets do
+    UpdateRow(i);
+end;
 
 procedure EditTools;
 var
@@ -50,6 +421,7 @@ begin
       ShowMessage('No Toolfile set in ' + Vars.IniFile);
       Exit;
     end;
+  InitPockets;
   Application.CreateForm(TToolDlg,Dlg);
   if Assigned(Dlg) then
     begin
@@ -58,9 +430,20 @@ begin
     end;
 end;
 
-procedure TToolDlg.EditorKeyPress(Sender: TObject; var Key: char);
+procedure TToolDlg.EditorEditingDone(Sender: TObject);
 begin
-  if (Grid.Col > 3) or (Ord(Key) = 8) then Exit;  // BkSpace
+  if Grid.Modified then
+    begin
+      UpdateTool(Grid.Col,Grid.Row);
+    end;
+end;
+
+procedure TToolDlg.EditorKeyPress(Sender: TObject; var Key: char);
+var
+  C: TToolCol;
+begin
+  C:= ToolColumns[Grid.Col];
+  if (C.Index = MaxColumns) or (Ord(Key) = 8) then Exit;  // BkSpace
   if Key = ',' then Key:= '.';
   if not (Key in ['0'..'9','.','-','+']) then
     begin
@@ -69,136 +452,33 @@ begin
     end;
 end;
 
-procedure TToolDlg.GridSetEditText(Sender: TObject; ACol, ARow: Integer;
-  const Value: string);
-begin
-  if Value = '' then Exit;
-  if (ACol < 1) or (ACol > 3) or (ARow < 1) then Exit;
-  if (Value = '?') or (Value = '-') or (Value = '+') then Exit;
-  try
-    case ACol of
-      1: Tools[ARow].toolno:= StrToInt(Value);
-      2: Tools[ARow].ZOffset:= StrToFloat(Value);
-      3: Tools[ARow].Diameter:= StrToFloat(Value);
-    end;
-  except
-    Grid.Cells[ACol,ARow]:= '?';
-    Beep;
-  end;
-end;
-
 procedure TToolDlg.FormCreate(Sender: TObject);
 begin
-  SetupGrid;
-  Self.ClientWidth:= (2 *Grid.Left) + Grid.Width;
-  //UpdateGrid;
-  //Grid.Editor.OnKeyPress:= @Self.EditorKeyPress;
+  InitGrid;
 end;
 
 procedure TToolDlg.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if ModalResult = mrOk then
-    SaveToolTable(PChar(Vars.ToolFile));
+    SavePockets;
 end;
 
-procedure TToolDlg.SetupGrid;
-var
-  i,c: integer;
-  MaxItem,MaxLen: integer;
-  w,Item: integer;
-  s: string;
+procedure TToolDlg.BtnAddToolClick(Sender: TObject);
 begin
-  if Vars.IsLathe then
-    c:= ToolLatheCount
-  else
-    c:= ToolMillCount;
-  Grid.ColCount:= c + 1;
-  Grid.RowCount:= CANON_TOOL_MAX;
-  for i:= 0 to c do
-    begin
-      if Vars.IsLathe then
-        Item:= ToolIndicesLathe[i]
-      else
-        Item:= ToolIndicesMill[i];
-      if (Item >= 0) and (Item <= ToolLatheCount) then
-        begin
-          s:= ToolHeaders[item];
-          if s = '' then
-            s:= 'Item' + IntToStr(item);
-          w:= ToolHeaderWidths[item];
-          if w < 10 then
-            w:= Grid.Canvas.TextExtent(s).cx;
-          Grid.Columns[i].Width:= w;
-          Grid.Columns[i].Title.Caption:= s;
-        end
-      else
-        begin
-          writeln('Toolheader-index out of range.' + IntToStr(Item));
-          Exit;
-        end;
-    end;
-  if (MaxLen > 0) and (MaxItem > 0) then
-    begin
-      s:= ToolHeaders[item];
-      w:= Grid.Canvas.TextExtent(s).cx;
-      Grid.Columns[0].Width:= w;
-    end;
+  AddTool;
 end;
 
-{
-procedure TToolDlg.UpdateRow(ARow: integer);
-var
-  i,c,Pocket: integer;
-  T: TTool;
-  item: integer;
-  iTool: integer;
+procedure TToolDlg.BtnChangePocClick(Sender: TObject);
 begin
-  if (ARow < 1) or (ARow > CANON_TOOL_MAX) then
-    Exit;
-  iTool:= ARow - 1;
-  Pocket:= FakePockets[iTool];
-  if (Pocket < 0) or (Pocket > CANON_TOOL_MAX) then
-    begin
-      for i:= 0 to Grid.ColCount - 1 do
-        Grid.Cells[i,ARow]:= '';
-      Exit;
-    end;
-  T:= Tools[Pocket];
-  if Vars.IsLathe then
-    c:= ToolLatheCount
-  else
-    c:= ToolMillCount;
-  for i:= 0 to c do
-    begin
-      if Vars.IsLathe then
-        Item:= ToolIndicesLathe[i]
-      else
-        Item:= ToolIndicesMill[i];
-        if (Item < 0) or (Item > ToolHeadersMax) then
-          break;
-      case Item of
-        0: Grid.Cells[i,Index]:= IntToStr(Index);
-        1: Grid.Cells[i,Index]:= IntToStr(T.toolno);
-
-          if Tool
-        end;
-    end;
-
-  for i:= 1 to CANON_TOOL_MAX - 1 do  // ??? First Pocket is 1 ???
-    with Tools[i],Grid do
-    begin
-      if Tools[i].ToolNo >= 0 then
-        begin
-          inc(r);
-          Cells[0,r]:= IntToStr(i);
-          Cells[1,r]:= IntToStr(ToolNo);
-          Cells[2,r]:= FloatToStrF(ZOffset, ffFixed, 6, 3);
-          Cells[3,r]:= FloatToStrF(Diameter, ffFixed, 6, 3);
-          // Cells[4,r]:= PChar(Comment;
-        end;
-    end;
+  ChangePocket;
 end;
-}
+
+procedure TToolDlg.BtnDeleteToolClick(Sender: TObject);
+begin
+  DeleteTool;
+end;
+
+
 
 initialization
   {$I tooleditdlg.lrs}

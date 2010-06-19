@@ -48,6 +48,9 @@ procedure AssignFontProperty(PropName,PropVal: string);
 var
   AColor: Longint;
 begin
+  {$ifdef LCLGTK}
+  Exit;
+  {$endif}
   if Pos('FONT.',PropName) = 1 then
     with Comp as TControl do
       begin

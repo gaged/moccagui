@@ -118,7 +118,7 @@ var
   {$endif}
 
   Tools: TTools; external name 'toolTable';
-  ToolComments: array[0..CANON_TOOL_MAX+ 1] of PChar; external name 'ttcomments';
+  ToolComments: Array[0..CANON_TOOL_MAX] of PChar; external name 'ttcomments';
 
 // Toolfile
 function SetCanonTool(tool: integer): boolean; cdecl; external;

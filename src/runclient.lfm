@@ -1,7 +1,7 @@
 object RunClientForm: TRunClientForm
-  Left = 576
+  Left = 572
   Height = 279
-  Top = 299
+  Top = 298
   Width = 432
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
@@ -18,10 +18,10 @@ object RunClientForm: TRunClientForm
   LCLVersion = '0.9.28.2'
   object MocLister: TMocLister
     AnchorSideBottom.Side = asrBottom
-    Left = 8
+    Left = 4
     Height = 279
     Top = 0
-    Width = 408
+    Width = 412
     SelectedItem = 0
     Color = clSilver
     ActiveColor = clWhite
