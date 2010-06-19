@@ -141,7 +141,7 @@ static bool scan_old_style(char *buffer,int &fakepocket)
 	    toolTable[pocket].frontangle = toolTable[pocket].backangle = 0.0;
 	    toolTable[pocket].offset.tran.x = 0.0;
 	    toolTable[pocket].orientation = 0;
-	    if(ttcomments && scanned == 5) strcpy(ttcomments[pocket], comment);
+	    if(ttcomments && scanned == 5) strcpy(ttcomments[pocket], comment);       
 	    return true;
 	}
     }
@@ -460,7 +460,9 @@ extern "C" int loadToolTable(char *filename)
                 toolTable[pocket].frontangle = toolTable[pocket].backangle = 0.0;
                 toolTable[pocket].xoffset = 0.0;
                 toolTable[pocket].orientation = 0;
+                //if(scanned == 5) strcpy(ttcomments[pocket], comment);
                 if(scanned == 5) strcpy(ttcomments[pocket], comment);
+                //printf("comment is %s \n", comment);
             }
         } else {
             /* invalid line. skip it silently */

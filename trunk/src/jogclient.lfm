@@ -11,7 +11,7 @@ object JogClientForm: TJogClientForm
   Caption = 'JogClientForm'
   ClientHeight = 282
   ClientWidth = 432
-  Color = clGray
+  Color = clSilver
   KeyPreview = True
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown

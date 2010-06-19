@@ -1,14 +1,14 @@
 object ToolDlg: TToolDlg
-  Left = 477
-  Height = 340
-  Top = 206
-  Width = 615
+  Left = 277
+  Height = 487
+  Top = 253
+  Width = 884
   ActiveControl = Grid
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Werkzeuge bearbeiten'
-  ClientHeight = 340
-  ClientWidth = 615
+  ClientHeight = 487
+  ClientWidth = 884
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poDesktopCenter
@@ -19,35 +19,82 @@ object ToolDlg: TToolDlg
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = BtnOk
     Left = 0
-    Height = 284
+    Height = 439
     Top = 0
-    Width = 615
-    Anchors = [akTop, akLeft, akRight]
+    Width = 884
+    Anchors = [akTop, akLeft, akRight, akBottom]
     AutoEdit = False
+    BorderSpacing.Bottom = 8
     ColCount = 1
     Flat = True
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goEditing, goAlwaysShowEditor, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goEditing, goSmoothScroll]
     ScrollBars = ssBoth
     TabOrder = 0
-    OnSetEditText = GridSetEditText
+    OnEditingDone = EditorEditingDone
   end
   object BtnOk: TButton
-    Left = 4
-    Height = 37
-    Top = 300
+    AnchorSideLeft.Control = Owner
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 2
+    Height = 38
+    Top = 447
     Width = 96
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 2
+    BorderSpacing.Bottom = 2
     Caption = '&Speichern'
     ModalResult = 1
     TabOrder = 1
   end
   object BtnCancel: TButton
-    Left = 108
-    Height = 36
-    Top = 300
+    AnchorSideLeft.Control = BtnOk
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BtnOk
+    AnchorSideBottom.Control = BtnOk
+    AnchorSideBottom.Side = asrBottom
+    Left = 106
+    Height = 38
+    Top = 447
     Width = 96
+    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 8
     Caption = '&Abbruch'
     ModalResult = 2
     TabOrder = 2
+  end
+  object BtnAddTool: TButton
+    AnchorSideLeft.Control = BtnCancel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BtnOk
+    AnchorSideBottom.Control = BtnOk
+    AnchorSideBottom.Side = asrBottom
+    Left = 222
+    Height = 38
+    Top = 447
+    Width = 96
+    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 20
+    Caption = '+'
+    OnClick = BtnAddToolClick
+    TabOrder = 3
+  end
+  object BtnDeleteTool: TButton
+    AnchorSideLeft.Control = BtnAddTool
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = BtnOk
+    AnchorSideBottom.Control = BtnOk
+    AnchorSideBottom.Side = asrBottom
+    Left = 326
+    Height = 38
+    Top = 447
+    Width = 96
+    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 8
+    Caption = 'Löschen'
+    OnClick = BtnDeleteToolClick
+    TabOrder = 4
   end
 end

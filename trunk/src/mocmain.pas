@@ -220,6 +220,7 @@ var
   i: integer;
   d,l,Scale: double;
   s: string;
+  P: PChar;
   // UpdateMsg: Boolean;
 begin
 
@@ -310,7 +311,9 @@ begin
         begin
           d:= Tools[FTool].diameter / Scale;
           l:= Tools[FTool].zoffset / Scale;
-          s:= PChar(ToolComments[FTool]);
+          s:= '';                
+          if FTool > 0 then
+            s:= PChar(ToolComments[FTool]);
           if Length(s) < 1 then s:= 'WKZ' + IntToStr(FTool);
         end;
       LabelTool.Caption:= s;

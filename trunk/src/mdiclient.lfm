@@ -1,7 +1,7 @@
 object MDIClientForm: TMDIClientForm
-  Left = 699
+  Left = 686
   Height = 279
-  Top = 346
+  Top = 332
   Width = 432
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
