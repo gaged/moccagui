@@ -125,10 +125,10 @@ begin
   {$ifdef DEBUG_CONFIG}
   writeln('reading Tools configuration...');
   {$endif}
-  for i:= 0 to ToolLatheCount do
-    ToolHeaderWidths[i]:= 0;
-  if Vars.IsLathe then MaxIndex:= ToolLatheCount else
-    MaxIndex:= ToolMillCount;
+  if Vars.IsLathe then
+    MaxIndex:= LatheColumns
+  else
+    MaxIndex:= MillColumns;
   if Node = nil then
     begin
       writeln('tool- section not found in config-file');
@@ -182,8 +182,8 @@ begin
         if (idx >= 0) and (idx <= MaxIndex) then
           begin
             if S <> '' then
-              ToolHeaders[idx]:= s;
-            if GridW > 0 then ToolHeaderWidths[idx]:= GridW;
+              TitleDef[idx]:= s;
+            if GridW > 0 then WidthsDef[idx]:= GridW;
             {$ifdef DEBUG_CONFIG}
             writeln('read toolitem: ' + S);
             {$endif}

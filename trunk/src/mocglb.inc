@@ -60,8 +60,8 @@ const
   cmTOUCHC    = 246;
   cmZEROALL   = 247;
   cmOFFSDLG   = 248;
+  cmTOUCHWIZ  = 249;
   cmSETUP     = 250;
-  // cmVIEW      = 260;
   cmLIMITS    = 260;
   cmOPEN      = 270;
   cmRUN       = 20;
@@ -94,7 +94,7 @@ type
   end;
 
 const
-  CmdNamesMax = 63;
+  CmdNamesMax = 64;
 
 const
   CmdNames: Array[0..CmdNamesMax] of TCmdNames = (
@@ -137,8 +137,8 @@ const
   (S:'cmTOUCHC'    ; i:246),
   (S:'cmZEROALL'   ; i:247),
   (S:'cmOFFSDLG'   ; i:248),
+  (S:'cmTOUCHWIZ'  ; i: cmTOUCHWIZ),
   (S:'cmSETUP'     ; i:250),
-//  (S:'cmVIEW'      ; i:260),
   (S:'cmLIMITS'    ; i:260),
   (S:'cmOPEN'      ; i:270),
   (S:'cmRUN'       ; i:20),
@@ -173,41 +173,36 @@ var
   BtnDefRun: TButtonArray;
 
 const
-   ToolHeadersMax = 15;
+   MaxColumns = 15;
    {$ifdef VER_24}
-   ToolLatheCount = 15;
-   ToolMillCount = 12;
+   LatheColumns = MaxColumns;
+   MillColumns = 12;
    {$endif}
    {$ifdef VER_23}
-   ToolLatheCount = 8;
-   ToolMillCount = 4;
+   LatheColumns = 8;
+   MillColumns = 4;
    {$endif}
 
 const
-  ToolHeaders : Array[0..ToolHeadersMax] of string =
-    ('Pocket','ToolNo','X-Offset','Y-Offset','Z-Offset',
+  TitleDef : Array[0..MaxColumns] of string =
+    ('POC','TNR','X-Offset','Y-Offset','Z-Offset',
      'A-Offset','B-Offset','C-Offset','U-Offset','V-Offset',
-     'W-Offset','Diameter','Frontangle','Backangle','Orient.',
-     'Comment');
-
-  ToolFormats: Array[0..ToolHeadersMax] of Char =
-    ('i','i','f','f','f','f','f','f','f','f','f','f','f','f','i','s');
-
-  ToolHeaderWidths: Array[0..ToolHeadersMax] of Integer =
-    (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-
+     'W-Offset','Durchmesser','Frontangle','Backangle','OR',
+     'Bezeichnung');
+  WidthsDef : Array[0..MaxColumns] of integer =
+    (30,30,60,60,60,60,60,60,60,60,60,100,60,60,30,200);
 
   {$ifdef VER_24}
-  ToolIndicesMill: Array[0..ToolHeadersMax] of Integer =
+  MillIdcDef: Array[0..MaxColumns] of Integer =
     (0,1,11,2,3,4,5,6,7,8,9,10,15,-1,-1,-1);
-  ToolIndicesLathe: Array[0..ToolHeadersMax] of Integer =
+  LatheIdcDef: Array[0..MaxColumns] of Integer =
     (0,1,11,2,3,4,5,6,7,8,9,10,12,13,14,15);
   {$endif}
 
   {$ifdef VER_23}
-  ToolIndicesMill: Array[0..ToolHeadersMax] of Integer =
+  MillIdcDef: Array[0..MaxColumns] of Integer =
     (0,1,11,4,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-  ToolIndicesLathe: Array[0..ToolHeadersMax] of Byte =
+  LatheIdcDef: Array[0..MaxColumns] of Integer =
     (0,1,11,3,4,12,13,14,15,-1,-1,-1,-1,-1,-1,-1);
   {$endif}
 

@@ -38,6 +38,7 @@ type
     procedure ChangeTool;
     procedure PartAlign;
     procedure TouchOff(Axis: Char);
+    procedure TouchWiz;
     procedure EditCurrent;
   end;
 
@@ -54,7 +55,7 @@ uses
   offsetdlg,
   tooleditdlg,
   toolchange,
-  touchoff,
+  touchoff, touchoffwiz,
   partaligndlg;
 
 const
@@ -296,6 +297,19 @@ begin
   S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,OffsetPos]);
   ExecuteSilent(s);
   clRun.UpdatePreview(True);
+end;
+
+procedure TEmc.TouchWiz;
+var
+  s: string;
+begin
+  s:= '';
+  s:= DoTouchOffWiz;
+  if s <> '' then
+    begin
+      ExecuteSilent(s);
+      clRun.UpdatePreview(True);
+    end;
 end;
 
 function TEmc.ForceTaskMode(ToMode: integer): Boolean;
@@ -566,6 +580,7 @@ begin
     cmTOUCHA: TouchOff('A');
     cmTOUCHB: TouchOff('B');
     cmTOUCHC: TouchOff('C');
+    cmTOUCHWIZ: TouchWiz;
     cmLIMITS: SetORideLimits(not State.ORideLimits);
     cmOFFSDLG:
       begin
