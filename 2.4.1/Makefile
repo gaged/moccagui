@@ -33,6 +33,9 @@ mocca.o: ../src/mocca.lpr
 	$(COMPILEMOC) -k-L$(EMCDIR)/lib $(LCL) -dVER_24 -Fl./lib -FU./lib -o./mocca2.4 ../src/mocca.lpr
 	cp ./mocca2.4 $(EMCDIR)/bin/mocca
 	
+clean:
+	rm ./lib/*
+
 all: simcanon.o emcpas.o mocca.o
 
 
