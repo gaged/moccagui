@@ -61,6 +61,7 @@ begin
       writeln('This Version of Mocca was build for EMC2-' +
         {$ifdef VER_23}'2.3.*'{$endif}{$ifdef VER_24}'2.4.1'{$endif});
       writeln('Please install the correct version of mocca.');
+      Exit;
     end
   else
     writeln('Mocca starts with correct version EMC2-' + Emc2Version);

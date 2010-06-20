@@ -377,7 +377,8 @@ begin
 
   if (FSpVel <> State.SpSpeed) then
     begin
-      LabelSpVel.Caption:= FloatToStr(State.SpSpeed) + Vars.UnitRotStr;
+      d:= State.SpSpeed * (State.ActSpORide / 100);
+      LabelSpVel.Caption:= FloatToStr(d) + Vars.UnitRotStr;
       FSpVel:= State.SpSpeed;
     end;
 
@@ -385,6 +386,7 @@ begin
     begin
       SliderSOR.Caption:= IntToStr(State.ActSpORide) + '%';
       FSpORide:= State.ActSpORide;
+      FSpVel:= 0; // trigger a update for LabelSpVel...
     end;
 
   {

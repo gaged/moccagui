@@ -375,11 +375,15 @@ begin
 end;
 
 procedure TEmc.SetSpORide(Oride: integer);
+var
+  i: integer;
 begin
   if Oride <> State.ActSpORide then
     begin
-      sendSpindleOverride(Oride / 100);
-      State.ActSpORide:= ORide;
+      i:= ORide;
+      if i < 1 then i:= 1;
+      sendSpindleOverride(i / 100);
+      State.ActSpORide:= i;
     end;
 end;
 
@@ -425,7 +429,6 @@ begin
       CurrentVel:= trajCurrentVel;
       Acc:= trajAcceleration;
       Probing:= trajProbing;
-      ORideLimits:= AxisOverrideLimits(0);
       CurrentTool:= toolInSpindle;
       ToolOffset:= toolLengthOffset;
       ORideLimits:= AxisOverrideLimits(0);

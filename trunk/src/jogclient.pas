@@ -322,7 +322,6 @@ begin
   SetButtonDown(cmJOG,True);
   SetButtonEnabled(cmREFALL,Vars.HomingOrderDefined);
   SliderJog.SetParams(0,State.MaxJogVel,State.ActJogVel);
-
   OldJogVel:= -1;
   OldORideLimits:= not State.ORideLimits;
   OldMachineOn:= not State.Machine
@@ -442,33 +441,33 @@ begin
 
    if Pos('A',Vars.CoordNames) < 1 then
     begin
-      BAPlus.Enabled:= False;
-      BAMinus.Enabled:= False;
+      BAPlus.Visible:= False;
+      BAMinus.Visible:= False;
     end;
   if Pos('B',Vars.CoordNames) < 1 then
     begin
-      BBPlus.Enabled:= False;
-      BBMinus.Enabled:= False;
+      BBPlus.Visible:= False;
+      BBMinus.visible:= False;
     end;
   if Pos('C',Vars.CoordNames) < 1 then
     begin
-      BCPlus.Enabled:= False;
-      BCMinus.Enabled:= False;
+      BCPlus.Visible:= False;
+      BCMinus.Visible:= False;
     end;
   if Pos('Z',Vars.CoordNames) < 1 then
     begin
-      BZPlus.Enabled:= False;
-      BZMinus.Enabled:= False;
+      BZPlus.Visible:= False;
+      BZMinus.Visible:= False;
     end;
   if Pos('Y',Vars.CoordNames) < 1 then
     begin
-      BYPlus.Enabled:= False;
-      BYMinus.Enabled:= False;
+      BYPlus.Visible:= False;
+      BYMinus.Visible:= False;
     end;
   if Pos('X',Vars.CoordNames) < 1 then
     begin
-      BXPlus.Enabled:= False;
-      BXMinus.Enabled:= False;
+      BXPlus.Visible:= False;
+      BXMinus.Visible:= False;
     end;
 end;
 
