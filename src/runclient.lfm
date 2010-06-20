@@ -38,7 +38,7 @@ object RunClientForm: TRunClientForm
     Width = 15
     Anchors = [akTop, akRight, akBottom]
     Kind = sbVertical
-    PageSize = 0
+    PageSize = 1
     TabOrder = 0
     OnChange = ScrollBarChange
   end
