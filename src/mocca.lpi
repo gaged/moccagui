@@ -46,7 +46,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="31">
+    <Units Count="28">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -70,164 +70,143 @@
         <UnitName Value="mocemc"/>
       </Unit3>
       <Unit4>
-        <Filename Value="mocstatusdlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="StatusDlgForm"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="mocstatusdlg"/>
-      </Unit4>
-      <Unit5>
         <Filename Value="mocjoints.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocjoints"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="mocglb.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocglb"/>
-      </Unit6>
-      <Unit7>
+      </Unit5>
+      <Unit6>
         <Filename Value="mocini.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocini"/>
-      </Unit7>
-      <Unit8>
+      </Unit6>
+      <Unit7>
         <Filename Value="mocca.inc"/>
         <IsPartOfProject Value="True"/>
-      </Unit8>
-      <Unit9>
+      </Unit7>
+      <Unit8>
         <Filename Value="jogclient.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="JogClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="jogclient"/>
-      </Unit9>
-      <Unit10>
+      </Unit8>
+      <Unit9>
         <Filename Value="runclient.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="RunClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="runclient"/>
-      </Unit10>
-      <Unit11>
+      </Unit9>
+      <Unit10>
         <Filename Value="mdiclient.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MDIClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mdiclient"/>
-      </Unit11>
-      <Unit12>
+      </Unit10>
+      <Unit11>
         <Filename Value="simclient.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SimClientForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="simclient"/>
-      </Unit12>
-      <Unit13>
+      </Unit11>
+      <Unit12>
         <Filename Value="gllist.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="gllist"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="glcanon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="glcanon"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="touchoff.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TouchOffDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="touchoff"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="offsetdlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="OffsetsDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="offsetdlg"/>
-      </Unit16>
-      <Unit17>
+      </Unit15>
+      <Unit16>
         <Filename Value="tooleditdlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ToolDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="tooleditdlg"/>
-      </Unit17>
-      <Unit18>
+      </Unit16>
+      <Unit17>
         <Filename Value="toolchange.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ToolChgDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="toolchange"/>
-      </Unit18>
-      <Unit19>
+      </Unit17>
+      <Unit18>
         <Filename Value="mocglb.inc"/>
         <IsPartOfProject Value="True"/>
-      </Unit19>
-      <Unit20>
+      </Unit18>
+      <Unit19>
         <Filename Value="hal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="hal"/>
-      </Unit20>
-      <Unit21>
+      </Unit19>
+      <Unit20>
         <Filename Value="emcint.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="emcint"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="partaligndlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="PartAlgnDlg"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="partaligndlg"/>
-      </Unit22>
-      <Unit23>
+      </Unit20>
+      <Unit21>
         <Filename Value="scripts.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="scripts"/>
-      </Unit23>
-      <Unit24>
+      </Unit21>
+      <Unit22>
         <Filename Value="logger.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="logger"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="setup.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="SetupDlg"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="setup"/>
-      </Unit25>
-      <Unit26>
+      </Unit22>
+      <Unit23>
         <Filename Value="emcmsgbox.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MsgForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="emcmsgbox"/>
-      </Unit26>
-      <Unit27>
+      </Unit23>
+      <Unit24>
         <Filename Value="stylereader.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="stylereader"/>
-      </Unit27>
-      <Unit28>
+      </Unit24>
+      <Unit25>
         <Filename Value="configreader.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="configreader"/>
-      </Unit28>
-      <Unit29>
+      </Unit25>
+      <Unit26>
         <Filename Value="touchoffwiz.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TouchOffWizDlg"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="touchoffwiz"/>
-      </Unit29>
-      <Unit30>
+      </Unit26>
+      <Unit27>
         <Filename Value="glfont.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="glfont"/>
-      </Unit30>
+      </Unit27>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -1,7 +1,7 @@
 object JogClientForm: TJogClientForm
-  Left = 624
+  Left = 567
   Height = 282
-  Top = 284
+  Top = 222
   Width = 432
   HorzScrollBar.Page = 476
   VertScrollBar.Page = 361
@@ -27,9 +27,6 @@ object JogClientForm: TJogClientForm
     Width = 104
     AutoSize = False
     Caption = 'Joggeschw.'
-    Font.Color = clNavy
-    Font.Height = -13
-    Font.Style = [fsBold]
     Layout = tlCenter
     ParentColor = False
     ParentFont = False
@@ -41,9 +38,6 @@ object JogClientForm: TJogClientForm
     Width = 136
     AutoSize = False
     Caption = 'Schrittweiten'
-    Font.Color = clNavy
-    Font.Height = -13
-    Font.Style = [fsBold]
     Layout = tlCenter
     ParentColor = False
     ParentFont = False
@@ -321,7 +315,7 @@ object JogClientForm: TJogClientForm
     Top = 4
     Width = 156
     Position = 0
-    BarColor = clNavy
+    BarColor = clBlue
     Vertical = False
     Smooth = True
     PositionChanged = SliderJogPositionChanged

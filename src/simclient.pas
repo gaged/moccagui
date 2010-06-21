@@ -15,7 +15,26 @@ uses
   {$ENDIF}
 
 type
+  TViewModes = (vmPerspective,vmZ,vmY,vmX,vmZDown);
 
+  TViewModeParams = record
+    xrot: single;
+    yrot: single;
+    zrot: single;
+  end;
+
+const
+  ViewRotation : Array[TViewModes] of TViewModeParams =
+    ((xrot: -45; yrot: 0; zrot: 0),
+     (xrot: 0; yrot: 0; zrot: 0),
+     (xrot: -90; yrot: 0; zrot: 0),
+     (xrot: -90; yrot: 0; zrot: -90),
+     (xrot: 90; yrot: 0; zrot: 0));
+
+var
+  InitialViewMode: TViewModes;
+
+type
   { TSimClientForm }
   TSimClientForm = class(TForm)
     sbH: TScrollBar;
@@ -45,7 +64,7 @@ type
 
     FShowLivePlot: Boolean;
     FShowDimensions: Boolean;
-    FViewMode: integer;
+    FViewMode: TViewModes;
     FFileName: string;
     FUnitCode: string;
     FInitCode: string;
@@ -83,7 +102,7 @@ type
     procedure ResetView;
     procedure RotateZ(Angle: integer);
     procedure RotateX(Angle: integer);
-    procedure SetViewMode(AMode: integer);
+    procedure SetViewMode(Value: TViewModes);
   public
     procedure LoadFile(FileName,UnitCode,InitCode: string);
     procedure ReloadFile;
@@ -92,9 +111,10 @@ type
     procedure Zoom(ADir: Integer);
     procedure ClearPlot;
     procedure UpdateSelf;
+    procedure InvalidateView;
     property  ShowLivePlot: Boolean read FShowLivePlot write FShowLivePlot;
     property  ShowDimensions: Boolean read FShowDimensions write FShowDimensions;
-    property  ViewMode: integer read FViewMode write SetViewMode;
+    property  ViewMode: TViewModes read FViewMode write SetViewMode;
   end;
   
 var
@@ -109,8 +129,8 @@ uses
 type
   TGlVector3 = array[0..2] of glDouble;
 
-const
-  InitialRotX = -60; InitialRotY = 0; InitialRotZ = 0;
+//const
+//  InitialRotX = -60; InitialRotY = 0; InitialRotZ = 0;
 
 procedure SetGlColor3(const c: TGlColorItem);
 begin
@@ -139,6 +159,12 @@ begin
   FFileName:= '';
   UpdateView;
  end;
+
+procedure TSimCLientForm.InvalidateView;
+begin
+  if Assigned(ogl) then
+    ogl.Invalidate;
+end;
 
 procedure TSimClientForm.ClearPlot;
 begin
@@ -206,7 +232,7 @@ begin
 
   AreaInitialized:= False;
 
-  FViewMode:= 0;
+  FViewMode:= vmPerspective;
   FShowLivePlot:= True;
   FShowDimensions:= True;
   FFileName:= '';
@@ -223,8 +249,9 @@ begin
   DimDist:= 1;
   DimDrawFlag:= True;
 
-  sbV.setParams(InitialRotX,-180,180,1);
-  sbH.SetParams(InitialRotZ,-180,180,1);
+  sbV.setParams(Round(ViewRotation[FViewMode].xrot),-90,90,1);
+  sbH.SetParams(Round(ViewRotation[FViewMode].yrot),-90,90,1);
+
   if not Assigned(MyGlList) then
     MyGlList:= TGlList.Create;
   if not Assigned(MyGlList) then
@@ -292,7 +319,7 @@ begin
     end;
 end;
 
-procedure TSimClientForm.SetViewMode(AMode: integer);
+procedure TSimClientForm.SetViewMode(Value: TViewModes);
 
   procedure SetRot(x,y,z: single);
   begin
@@ -302,16 +329,22 @@ procedure TSimClientForm.SetViewMode(AMode: integer);
 begin
   if (not Assigned(ogl)) or (not AreaInitialized) then
     Exit;
-  if (AMode <> FViewMode) and (AMode >= 0) and (AMode < 4) then
+  if (Value <> FViewMode) then
     begin
-      FViewMode:= AMode;
+      FViewMode:= Value;
       ResetView;
-      case AMode of
-        0:SetRot(-45,0,0);
+      with ViewRotation[FViewMode] do
+        begin
+          RotationX:= xrot;
+          RotationY:= yrot;
+          RotationZ:= zrot;
+        end;
+      {case Value of
+        vmPerspective: SetRot(-45,0,0);
         1:SetRot(0,0,0);
         2: SetRot(-90,0,0);
         3: SetRot(-90,0,-90);
-      end;
+      end;}
       sbV.setParams(Round(RotationX),-90,90);
       sbH.SetParams(Round(RotationZ),-90,90);
       ogl.Invalidate;
@@ -741,11 +774,14 @@ begin
   // writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
   // writeln(Format('%s %f %f %f',['Extents: ',ExtX,ExtY,ExtZ]));
   PanX:= 0; PanY:= 0; PanZ:= 0; EyeX:= 0; EyeY:= 0;
-  if FViewMode = 0 then
+  if FViewMode = vmPerspective then
     begin
-      RotationX:= InitialRotX;
-      RotationY:= InitialRotY;
-      RotationZ:= InitialRotZ;
+      with ViewRotation[vmPerspective] do
+        begin
+          RotationX:= xrot;
+          RotationY:= yrot;
+          RotationZ:= zrot;
+        end;
       if ExtX < ExtY then
         EyeZ:= (CenterZ + ExtY) * 1.2
       else
@@ -853,7 +889,7 @@ begin
     end;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity;
-  if FViewMode = 0 then
+  if FViewMode = vmPerspective then
     gluPerspective(60,ogl.Width/ogl.Height,0.1,ExtZ * 100)
   else
     begin

@@ -36,7 +36,7 @@ type
     function  WaitDone: integer;
     procedure LoadTools;
     procedure ChangeTool;
-    procedure PartAlign;
+    // procedure PartAlign;
     procedure TouchOff(Axis: Char);
     procedure TouchWiz;
     procedure EditCurrent;
@@ -53,10 +53,8 @@ uses
   mocglb,emc2pas,mocjoints,
   runclient,
   offsetdlg,
-  tooleditdlg,
-  toolchange,
-  touchoff, touchoffwiz,
-  partaligndlg;
+  tooleditdlg,toolchange,
+  touchoff, touchoffwiz;
 
 const
   ToolsInitialized: Boolean = False;
@@ -69,6 +67,7 @@ begin
   CallEditor;
 end;
 
+{
 procedure TEmc.PartAlign;
 var
   X,Y,Z: Double;
@@ -80,6 +79,7 @@ begin
   Z:= GetAbsPos(Joints.AxisByChar('Z'));
   DoPartAlign(X,Y,Z)
 end;
+}
 
 procedure TEmc.LoadTools;
 var
