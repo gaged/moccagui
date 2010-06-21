@@ -439,6 +439,14 @@ begin
   FIncrement:= 1;
   SetIncrement(0);
 
+  if MocButtonInc1.Caption = '' then MocButtonInc1.Visible:= False;
+  if MocButtonInc2.Caption = '' then MocButtonInc2.Visible:= False;
+  if MocButtonInc3.Caption = '' then MocButtonInc3.Visible:= False;
+  if MocButtonInc4.Caption = '' then MocButtonInc4.Visible:= False;
+  if MocButtonInc5.Caption = '' then MocButtonInc5.Visible:= False;
+  if MocButtonInc6.Caption = '' then MocButtonInc6.Visible:= False;
+  if MocButtonInc7.Caption = '' then MocButtonInc7.Visible:= False;
+
    if Pos('A',Vars.CoordNames) < 1 then
     begin
       BAPlus.Visible:= False;

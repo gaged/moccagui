@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 165
   Height = 724
-  Top = 97
+  Top = 149
   Width = 961
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -34,7 +34,7 @@ object MainForm: TMainForm
   object Label9: TLabel
     AnchorSideTop.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 356
+    Left = 340
     Height = 32
     Top = 536
     Width = 92
@@ -46,7 +46,7 @@ object MainForm: TMainForm
   end
   object Label10: TLabel
     AnchorSideTop.Side = asrBottom
-    Left = 356
+    Left = 340
     Height = 32
     Top = 464
     Width = 91
@@ -91,8 +91,8 @@ object MainForm: TMainForm
     AnchorSideBottom.Side = asrBottom
     Left = 80
     Height = 20
-    Top = 452
-    Width = 208
+    Top = 448
+    Width = 244
     AutoSize = False
     BorderSpacing.Left = 4
     Caption = 'LabelTool'
@@ -105,7 +105,7 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrBottom
     Left = 4
     Height = 20
-    Top = 592
+    Top = 588
     Width = 312
     AutoSize = False
     BorderSpacing.Left = 2
@@ -120,10 +120,10 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 108
-    Height = 36
-    Top = 548
-    Width = 208
+    Left = 88
+    Height = 38
+    Top = 544
+    Width = 228
     AutoSize = False
     Caption = 'LabelGCodes'
     Color = clWhite
@@ -133,9 +133,9 @@ object MainForm: TMainForm
   end
   object LabelS: TLabel
     AnchorSideLeft.Side = asrBottom
-    Left = 96
+    Left = 28
     Height = 18
-    Top = 524
+    Top = 564
     Width = 54
     AutoSize = False
     BorderSpacing.Left = 4
@@ -148,10 +148,10 @@ object MainForm: TMainForm
   object LabelF: TLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideRight.Side = asrBottom
-    Left = 24
+    Left = 28
     Height = 18
-    Top = 524
-    Width = 52
+    Top = 544
+    Width = 54
     AutoSize = False
     BorderSpacing.Left = 4
     Caption = 'LabelF'
@@ -165,8 +165,8 @@ object MainForm: TMainForm
     AnchorSideBottom.Side = asrBottom
     Left = 80
     Height = 20
-    Top = 476
-    Width = 34
+    Top = 472
+    Width = 24
     AutoSize = False
     BorderSpacing.Left = 4
     Caption = '0'
@@ -181,7 +181,7 @@ object MainForm: TMainForm
     AnchorSideBottom.Side = asrBottom
     Left = 80
     Height = 20
-    Top = 500
+    Top = 496
     Width = 92
     AutoSize = False
     BorderSpacing.Left = 4
@@ -195,9 +195,9 @@ object MainForm: TMainForm
   object LabelToolLen: TLabel
     AnchorSideLeft.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 176
+    Left = 168
     Height = 20
-    Top = 476
+    Top = 472
     Width = 68
     AutoSize = False
     BorderSpacing.Left = 4
@@ -208,9 +208,9 @@ object MainForm: TMainForm
     Transparent = False
   end
   object Label2: TLabel
-    Left = 120
+    Left = 108
     Height = 20
-    Top = 476
+    Top = 472
     Width = 52
     AutoSize = False
     Caption = 'Länge'
@@ -221,7 +221,7 @@ object MainForm: TMainForm
   object Label3: TLabel
     Left = 4
     Height = 20
-    Top = 500
+    Top = 496
     Width = 76
     AutoSize = False
     Caption = 'Durchm.'
@@ -232,7 +232,7 @@ object MainForm: TMainForm
   object Label4: TLabel
     Left = 4
     Height = 20
-    Top = 476
+    Top = 472
     Width = 76
     AutoSize = False
     Caption = 'Wkz. Nr.'
@@ -254,7 +254,7 @@ object MainForm: TMainForm
   object Label6: TLabel
     Left = 4
     Height = 18
-    Top = 524
+    Top = 544
     Width = 16
     AutoSize = False
     Caption = 'F'
@@ -262,9 +262,9 @@ object MainForm: TMainForm
     ParentFont = False
   end
   object Label7: TLabel
-    Left = 80
+    Left = 4
     Height = 18
-    Top = 524
+    Top = 564
     Width = 16
     AutoSize = False
     Caption = 'S'
@@ -272,7 +272,7 @@ object MainForm: TMainForm
     ParentFont = False
   end
   object LabelCurrentVel: TLabel
-    Left = 452
+    Left = 440
     Height = 24
     Top = 504
     Width = 152
@@ -285,7 +285,7 @@ object MainForm: TMainForm
     Transparent = False
   end
   object Label8: TLabel
-    Left = 356
+    Left = 340
     Height = 24
     Top = 504
     Width = 91
@@ -571,7 +571,7 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object ButtonFeedReset: TMocButton
-    Left = 556
+    Left = 544
     Height = 28
     Top = 576
     Width = 48
@@ -652,7 +652,7 @@ object MainForm: TMainForm
   object OEMLabel5: TLabel
     Left = 4
     Height = 20
-    Top = 548
+    Top = 520
     Width = 94
     AutoSize = False
     Caption = 'Akt. G-Codes'
@@ -713,7 +713,7 @@ object MainForm: TMainForm
   object OEMLabel11: TLabel
     Left = 4
     Height = 20
-    Top = 452
+    Top = 448
     Width = 76
     AutoSize = False
     Caption = 'Werkzeug'
@@ -730,9 +730,10 @@ object MainForm: TMainForm
     ShowClicks = True
     Caption = 'P'
     Color = clBtnFace
-    OnClick = ButtonView0Click
+    OnClick = ButtonViewClick
   end
   object ButtonView1: TMocButton
+    Tag = 1
     Left = 44
     Height = 34
     Top = 376
@@ -740,9 +741,10 @@ object MainForm: TMainForm
     ShowClicks = True
     Caption = 'XY'
     Color = clBtnFace
-    OnClick = ButtonView1Click
+    OnClick = ButtonViewClick
   end
   object ButtonView2: TMocButton
+    Tag = 2
     Left = 84
     Height = 34
     Top = 376
@@ -750,9 +752,10 @@ object MainForm: TMainForm
     ShowClicks = True
     Caption = 'XZ'
     Color = clBtnFace
-    OnClick = ButtonView2Click
+    OnClick = ButtonViewClick
   end
   object ButtonView3: TMocButton
+    Tag = 3
     Left = 124
     Height = 34
     Top = 376
@@ -760,10 +763,10 @@ object MainForm: TMainForm
     ShowClicks = True
     Caption = 'YZ'
     Color = clBtnFace
-    OnClick = ButtonView3Click
+    OnClick = ButtonViewClick
   end
   object ButtonViewPlus: TMocButton
-    Left = 172
+    Left = 232
     Height = 34
     Top = 376
     Width = 34
@@ -773,7 +776,7 @@ object MainForm: TMainForm
     OnClick = ButtonViewPlusClick
   end
   object ButtonViewMinus: TMocButton
-    Left = 212
+    Left = 272
     Height = 34
     Top = 376
     Width = 34
@@ -783,7 +786,7 @@ object MainForm: TMainForm
     OnClick = ButtonViewMinusClick
   end
   object ButtonToolPath: TMocButton
-    Left = 304
+    Left = 356
     Height = 34
     Top = 376
     Width = 36
@@ -793,17 +796,17 @@ object MainForm: TMainForm
     OnClick = ButtonToolPathClick
   end
   object ButtonClear: TMocButton
-    Left = 352
+    Left = 396
     Height = 34
     Top = 376
-    Width = 80
+    Width = 36
     ShowClicks = True
-    Caption = 'Löschen'
+    Caption = 'Lö.'
     Color = clBtnFace
     OnClick = ButtonClearClick
   end
   object ButtonShowDim: TMocButton
-    Left = 256
+    Left = 316
     Height = 34
     Top = 376
     Width = 36
@@ -811,6 +814,17 @@ object MainForm: TMainForm
     Caption = 'Dim'
     Color = clBtnFace
     OnClick = ButtonShowDimClick
+  end
+  object ButtonView4: TMocButton
+    Tag = 4
+    Left = 164
+    Height = 34
+    Top = 376
+    Width = 34
+    ShowClicks = True
+    Caption = 'Z-'
+    Color = clBtnFace
+    OnClick = ButtonViewClick
   end
   object PanelDRO: TPanel
     Left = 535
@@ -914,7 +928,7 @@ object MainForm: TMainForm
     Caption = '0.00'
   end
   object SliderVel: TSlider
-    Left = 452
+    Left = 440
     Height = 32
     Top = 464
     Width = 152
@@ -926,7 +940,7 @@ object MainForm: TMainForm
     Caption = '0.00'
   end
   object SliderFeed: TSlider
-    Left = 452
+    Left = 440
     Height = 32
     Top = 536
     Width = 152

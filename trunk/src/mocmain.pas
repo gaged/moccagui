@@ -21,6 +21,7 @@ type
     ButtonView3: TMocButton;
     ButtonToolPath: TMocButton;
     ButtonClear: TMocButton;
+    ButtonView4: TMocButton;
     ButtonViewMinus: TMocButton;
     ButtonViewPlus: TMocButton;
     OEMLabel11: TLabel;
@@ -109,10 +110,7 @@ type
     procedure BtnSpindleBrakeClick(Sender: TObject);
     procedure ButtonShowDimClick(Sender: TObject);
     procedure ButtonToolPathClick(Sender: TObject);
-    procedure ButtonView0Click(Sender: TObject);
-    procedure ButtonView1Click(Sender: TObject);
-    procedure ButtonView2Click(Sender: TObject);
-    procedure ButtonView3Click(Sender: TObject);
+    procedure ButtonViewClick(Sender: TObject);
     procedure ButtonViewMinusClick(Sender: TObject);
     procedure ButtonViewPlusClick(Sender: TObject);
 
@@ -180,10 +178,7 @@ implementation
 { TMainForm }
 
 uses
-  emc2pas,
-  mocemc,
-  setup,
-  mocstatusdlg;
+  emc2pas,mocemc;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -467,10 +462,11 @@ begin
       begin
         ButtonToolPath.Down:= ShowLivePlot;
         ButtonShowDim.Down:= ShowDimensions;
-        ButtonView0.Down:= ViewMode = 0;
-        ButtonView1.Down:= ViewMode = 1;
-        ButtonView2.Down:= ViewMode = 2;
-        ButtonView3.Down:= ViewMode = 3;
+        ButtonView0.Down:= ViewMode = vmPerspective;
+        ButtonView1.Down:= ViewMode = vmZ;
+        ButtonView2.Down:= ViewMode = vmY;
+        ButtonView3.Down:= ViewMode = vmX;
+        ButtonView4.Down:= ViewMode = vmZDown;
       end;
 
   for i:= 0 to Self.ComponentCount - 1 do
@@ -516,18 +512,21 @@ end;
 
 procedure TMainForm.UpdateView(Mode: integer);
 var
-  OldMode: integer;
+  OldMode: TViewModes;
 begin
+  if (Mode < Integer(vmPerspective)) or (Mode > Integer(vmZDown)) then
+    Exit;
   if Assigned(clSim) then
     begin
       OldMode:= clSim.ViewMode;
-      if OldMode = Mode then
+      if OldMode = TViewModes(Mode) then
         Exit;
-      clSim.ViewMode:= Mode;
-      ButtonView0.Down:= Mode = 0;
-      ButtonView1.Down:= Mode = 1;
-      ButtonView2.Down:= Mode = 2;
-      ButtonView3.Down:= Mode = 3;
+      clSim.ViewMode:= TViewModes(Mode);
+      ButtonView0.Down:= TViewModes(Mode) = vmPerspective;
+      ButtonView1.Down:= TViewModes(Mode) = vmZ;
+      ButtonView2.Down:= TViewModes(Mode) = vmY;
+      ButtonView3.Down:= TViewModes(Mode) = vmX;
+      ButtonView4.Down:= TViewModes(Mode) = vmzDown;
     end;
 end;
 
@@ -689,6 +688,7 @@ begin
     Exit;
   clSim.ShowDimensions:= not clSim.ShowDimensions;
   ButtonShowDim.Down:= clSim.ShowDimensions;
+  clSim.InvalidateView;
 end;
 
 procedure TMainForm.ButtonToolPathClick(Sender: TObject);
@@ -701,24 +701,11 @@ begin
     clSim.ClearPlot;
 end;
 
-procedure TMainForm.ButtonView0Click(Sender: TObject);
+procedure TMainForm.ButtonViewClick(Sender: TObject);
 begin
-  UpdateView(0);
-end;
-
-procedure TMainForm.ButtonView1Click(Sender: TObject);
-begin
-  UpdateView(1);
-end;
-
-procedure TMainForm.ButtonView2Click(Sender: TObject);
-begin
-  UpdateView(2);
-end;
-
-procedure TMainForm.ButtonView3Click(Sender: TObject);
-begin
-  UpdateView(3);
+  if Sender <> nil then
+    with Sender as TMocButton do
+      UpdateView(Tag);
 end;
 
 procedure TMainForm.ButtonViewMinusClick(Sender: TObject);
@@ -820,9 +807,9 @@ begin
           MsgForm.Hide;
 
         end
-      else
-      if (Key = 83) then
-        ShowStatusDlg
+      // else
+      //if (Key = 83) then
+      //  ShowStatusDlg
       {$IFDEF LCLGTK2}
       else
       if (Key = 123) then
