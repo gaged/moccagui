@@ -119,13 +119,8 @@ end;
 
 procedure TTouchOffDlg.InitControls;
 var
-  ToolAxis: Char;
   i: integer;
 begin
-  if State.TloAlongW then
-    ToolAxis:= 'W'
-  else
-    ToolAxis:= 'Z';
   FValue:= GetRelPos(FAxisNo);
   EditV.Text:= '0.00';
   LabelPos.Caption:= PosToString(FValue);

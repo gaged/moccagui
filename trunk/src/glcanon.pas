@@ -536,7 +536,7 @@ begin
   lo:= l
 end;
     
-procedure straightprobe(x,y,z,a,b,c,d,u,v,w: double); cdecl; export;
+procedure straightprobe(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 begin
   straightfeed(x,y,z,a,b,c,u,v,w);
 end;

@@ -383,7 +383,9 @@ end;
 function TJoints.JogCont(Ch: Char; Speed: Double): integer;
 var
   i: Integer;
+  {$IFDEF LCLGTK2}
   d: longint;
+  {$ENDIF}
 begin
   Result:= -1;
   i:= AxisByChar(Ch);
@@ -521,7 +523,7 @@ procedure TJoints.CreateJoints(CoordNames: string; NumAxes: integer);
 var
   i: integer;
   c: Char;
-  IsLinear: Boolean;
+  // IsLinear: Boolean;
   Ax: TAxis;
 begin
   if (Length(CoordNames) < 1) or (Length(CoordNames) > MAX_JOINTS) or

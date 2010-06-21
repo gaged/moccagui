@@ -3,9 +3,9 @@
   <Component>
     <component name="JogClientForm" class="TJogClientForm">
       <properties>
-        <integer name="Left" value="625"/>
+        <integer name="Left" value="567"/>
         <integer name="Height" value="282"/>
-        <integer name="Top" value="267"/>
+        <integer name="Top" value="222"/>
         <integer name="Width" value="432"/>
         <integer name="HorzScrollBar.Page" value="476"/>
         <integer name="VertScrollBar.Page" value="361"/>
@@ -30,9 +30,6 @@
             <integer name="Width" value="104"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Joggeschw."/>
-            <ident name="Font.Color" value="clNavy"/>
-            <integer name="Font.Height" value="-13"/>
-            <set name="Font.Style" value="fsBold"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -46,9 +43,6 @@
             <integer name="Width" value="136"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Schrittweiten"/>
-            <ident name="Font.Color" value="clNavy"/>
-            <integer name="Font.Height" value="-13"/>
-            <set name="Font.Style" value="fsBold"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -339,7 +333,7 @@
             <integer name="Top" value="4"/>
             <integer name="Width" value="156"/>
             <integer name="Position" value="0"/>
-            <ident name="BarColor" value="clNavy"/>
+            <ident name="BarColor" value="clBlue"/>
             <boolean name="Vertical" value="false"/>
             <boolean name="Smooth" value="true"/>
           </properties>

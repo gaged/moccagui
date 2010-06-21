@@ -91,10 +91,7 @@ end;
 
 procedure RunScript(Cmd: integer);
 var
-  s: string;
-  e: string;
-  i,OldMode: integer;
-
+  s,e: string;
 begin
   e:= '';
   if State.TaskMode <> TASKMODEMANUAL then

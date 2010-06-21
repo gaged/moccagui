@@ -17,9 +17,10 @@
   </glcolors> 
   <menujog>
     <item index="0" cmd="cmREF" bitmap="" text="Ref.-Fahrt..."/>
-    <item index="1" cmd="cmTOUCHOFF" bitmap="" text="Antasten..."/>    
-    <item index="2" cmd="cmTOOLS" bitmap="" text="Werkzg."/>
-    <item index="3" cmd="cmSCRIPTS" bitmap="" text="Scripts..."/>
+    <item index="1" cmd="cmTOUCHOFF" bitmap="" text="Antasten"/>    
+    <item index="2" cmd="cmTOUCHWIZ" bitmap="" text="Antasten..."/>    
+    <item index="3" cmd="cmTOOLS" bitmap="" text="Werkzg."/>
+    <item index="4" cmd="cmSCRIPTS" bitmap="" text="Scripts..."/>
     <item index="9" cmd="cmCLOSE" bitmap="" text="Beenden"/>
   </menujog>
   <menuref>

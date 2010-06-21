@@ -36,7 +36,6 @@ type
     function  WaitDone: integer;
     procedure LoadTools;
     procedure ChangeTool;
-    // procedure PartAlign;
     procedure TouchOff(Axis: Char);
     procedure TouchWiz;
     procedure EditCurrent;
@@ -59,27 +58,10 @@ uses
 const
   ToolsInitialized: Boolean = False;
 
-var
-  Buffer: Array[0..LINELEN + 1] of Char;
-
 procedure TEmc.EditCurrent;
 begin
   CallEditor;
 end;
-
-{
-procedure TEmc.PartAlign;
-var
-  X,Y,Z: Double;
-begin
-  if not Assigned(Joints) then
-    Exit;
-  X:= GetAbsPos(Joints.AxisByChar('X'));
-  Y:= GetAbsPos(Joints.AxisByChar('Y'));
-  Z:= GetAbsPos(Joints.AxisByChar('Z'));
-  DoPartAlign(X,Y,Z)
-end;
-}
 
 procedure TEmc.LoadTools;
 var
@@ -111,6 +93,7 @@ begin
   {$IFDEF DEBUG_EMC}
   writeln('ExecToolChange: ',Cmd);
   {$ENDIF}
+  Result:= False;
   ScriptRunning:= True;
   try
     sendMDI;
@@ -131,6 +114,7 @@ begin
       begin
         Application.ProcessMessages;
       end;
+    Result:= True;
   finally
       SendManual;
       ScriptRunning:= False;
@@ -276,20 +260,13 @@ procedure TEmc.TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
 var
   s: string;
   IsInch: Boolean;
-  AbsPos,OffsetPos,V: Double;
+  AbsPos,OffsetPos: Double;
   i: integer;
-  IsLinear: Boolean;
 begin
   IsInch:= GetActiveIsInch;
   i:= Pos(Axis,Vars.CoordNames);
-  if i > 0 then
-    IsLinear:= Vars.Axis[i-1].IsLinear
-  else
+  if i < 1 then
     raise Exception.Create('Touchoff: invalid Axis: ' + Axis);
-  //IsLinear then
-  //  Scale:= 25.4
-  //else
-  //  Scale:= 1;
   AbsPos:= GetAbsPos(Joints.AxisByChar(Axis));
   OffsetPos:= AbsPos - Value;
   if IsInch and Vars.Metric then OffsetPos:= OffsetPos / 25.4;

@@ -16,9 +16,6 @@ uses
   Dom,XMLRead,
   mocglb;
 
-const
-  Msg1 = 'Error reading config-file.' + #13;
-
 var
   FileName: string;
 
@@ -302,7 +299,6 @@ procedure ReadMenu(Node: TDomNode; P: Pointer);
 var
   N: TDOMNode;
   i: integer;
-  iItem: integer;
   S: string;
 begin
   if (Node = nil) then
@@ -359,8 +355,8 @@ end;
 function ReadConfig(const AFileName: string): Boolean;
 var
   Doc:  TXMLDocument;
-  Node: TDOMNode;
-  S: string;
+  //Node: TDOMNode;
+  //S: string;
 
 function GetNode(Name: string): TDOMNode;
 begin

@@ -87,7 +87,6 @@ procedure InitPockets;
 var
   i: integer;
   Index: integer;
-  Comment: PChar;
 begin
   iCols:= 0;
   iPockets:= 0;
@@ -182,7 +181,7 @@ procedure TToolDlg.UpdateTool(ACol,ARow: integer);
 var
   C: TToolCol;
   s: string;
-  Item: TToolItem;
+  // Item: TToolItem;
   i: integer;
 begin
   if iPockets < 1 then Exit;
@@ -278,8 +277,6 @@ begin
 end;
 
 procedure TToolDlg.AddTool;
-var
-  LastRow: integer;
 begin
   if not CheckToolNo then
     Exit;
@@ -351,12 +348,7 @@ begin
 end;
 
 procedure TToolDlg.ChangePocket;
-var
-  Pocket: integer;
-  s: string;
 begin
-  Pocket:= Grid.Row;
-  s:= InputBox('New Pocket Number','Pocketnumber for Pocket ' + IntToStr(Pocket),'');
 end;
 
 procedure TToolDlg.InitGrid;
