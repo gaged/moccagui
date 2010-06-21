@@ -84,6 +84,7 @@ var
   Sec,tmp: string;
 begin
   Result:= False;
+  i:= 0; Min:= 0; Max:= 0; tmp:= ''; Sec:= '';
   if (Vars.NumAxes < 1) or (Length(Vars.CoordNames) < 1) then
     begin
       writeln('No Axes defined or no coords given.');
@@ -140,7 +141,7 @@ var
   i: integer;
 begin
   Result:= false;
-  tmp:= ''; d:= 0;
+  tmp:= ''; d:= 0; i:= 0;
 
   {$ifdef DEBUG_INI}
     writeln('Ini: Inifile: ' + Filename);

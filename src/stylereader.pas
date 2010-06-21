@@ -180,7 +180,7 @@ end;
 
 procedure ParseNode(Node: TDOMNode);
 var
-  nn,vn,s: string;
+  nn,vn: string;
 begin
   if Node.NodeName = 'properties' then
     begin
@@ -226,7 +226,6 @@ var
   procedure ProcessNode(Node: TDOMNode);
   var
     cNode: TDOMNode;
-    s: string;
   begin
     if Node = nil then Exit;
     ParseNode(Node);

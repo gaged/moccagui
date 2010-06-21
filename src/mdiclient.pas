@@ -130,9 +130,10 @@ function TMDIClientForm.FormatMdi(S0: string): string;
 var
   i: integer;
   S,SF: string;
-  c: char;
+  // c: char;
  begin
   result:= '';
+  SF:= '';
   if S0 = '' then Exit;
   S:= '';
   for i:= 1 to Length(S0) do
@@ -150,7 +151,7 @@ end;
 
 procedure TMDIClientForm.ExecuteMdi;
 var
-  i: integer;
+  // i: integer;
   S,SF: string;
   NewOne: Boolean;
 begin

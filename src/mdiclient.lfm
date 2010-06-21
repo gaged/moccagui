@@ -1,7 +1,7 @@
 object MDIClientForm: TMDIClientForm
-  Left = 686
+  Left = 665
   Height = 279
-  Top = 332
+  Top = 316
   Width = 432
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
@@ -31,9 +31,6 @@ object MDIClientForm: TMDIClientForm
     Anchors = [akLeft, akBottom]
     AutoSize = False
     Caption = 'MDI'
-    Font.Color = clNavy
-    Font.Height = -16
-    Font.Style = [fsBold]
     Layout = tlCenter
     ParentColor = False
     ParentFont = False

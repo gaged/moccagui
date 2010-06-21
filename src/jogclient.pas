@@ -270,7 +270,7 @@ end;
 procedure TJogClientForm.UpdateSelf;
 var
   i: integer;
-  s: string;
+  // s: string;
 begin
 
   if State.Machine then
@@ -316,8 +316,6 @@ begin
 end;
 
 procedure TJogClientForm.InitControls;
-var
-  i: integer;
 begin
   SetButtonDown(cmJOG,True);
   SetButtonEnabled(cmREFALL,Vars.HomingOrderDefined);

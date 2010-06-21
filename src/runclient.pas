@@ -28,7 +28,6 @@ type
     OldBlockDel: Boolean;
     OldOptStop: Boolean;
     OldIsOpen: Boolean;
-    OldProgramFile: string;
     IsOpen: Boolean;
     function  HandleCommand(Cmd: integer): Boolean;
     procedure UpdateScrollBar;
@@ -52,7 +51,7 @@ var
 implementation
 
 uses
-  LCLType,strutils,
+  LCLType,
   mocglb,mocemc,
   emc2pas,
   simclient,
@@ -444,7 +443,6 @@ procedure TRunClientForm.FormKeyDown(Sender: TObject; var Key: Word;
 
 var
   Current: integer;
-  i: integer;
 
 procedure MoveSel(d: integer);
 begin
@@ -495,8 +493,6 @@ begin
 end;
 
 procedure TRunClientForm.FormKeyPress(Sender: TObject; var Key: char);
-var
-  s: string;
 begin
   if State.InterpState <> INTERP_IDLE then
     Exit;

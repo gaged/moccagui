@@ -3,9 +3,9 @@
   <Component>
     <component name="MainForm" class="TMainForm">
       <properties>
-        <integer name="Left" value="165"/>
+        <integer name="Left" value="183"/>
         <integer name="Height" value="724"/>
-        <integer name="Top" value="97"/>
+        <integer name="Top" value="127"/>
         <integer name="Width" value="961"/>
         <integer name="HorzScrollBar.Page" value="1278"/>
         <integer name="HorzScrollBar.Range" value="1272"/>
@@ -36,7 +36,7 @@
           <properties>
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="356"/>
+            <integer name="Left" value="340"/>
             <integer name="Height" value="32"/>
             <integer name="Top" value="536"/>
             <integer name="Width" value="92"/>
@@ -50,7 +50,7 @@
         <component name="Label10" class="TLabel">
           <properties>
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
-            <integer name="Left" value="356"/>
+            <integer name="Left" value="340"/>
             <integer name="Height" value="32"/>
             <integer name="Top" value="464"/>
             <integer name="Width" value="91"/>
@@ -101,8 +101,8 @@
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
             <integer name="Left" value="80"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="452"/>
-            <integer name="Width" value="208"/>
+            <integer name="Top" value="448"/>
+            <integer name="Width" value="244"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
             <string name="Caption" value="LabelTool"/>
@@ -117,7 +117,7 @@
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
             <integer name="Left" value="4"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="592"/>
+            <integer name="Top" value="588"/>
             <integer name="Width" value="312"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="2"/>
@@ -134,10 +134,10 @@
             <ident name="AnchorSideTop.Side" value="asrBottom"/>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="108"/>
-            <integer name="Height" value="36"/>
-            <integer name="Top" value="548"/>
-            <integer name="Width" value="208"/>
+            <integer name="Left" value="88"/>
+            <integer name="Height" value="38"/>
+            <integer name="Top" value="544"/>
+            <integer name="Width" value="228"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="LabelGCodes"/>
             <ident name="Color" value="clWhite"/>
@@ -149,9 +149,9 @@
         <component name="LabelS" class="TLabel">
           <properties>
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
-            <integer name="Left" value="96"/>
+            <integer name="Left" value="28"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="524"/>
+            <integer name="Top" value="564"/>
             <integer name="Width" value="54"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
@@ -166,10 +166,10 @@
           <properties>
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
             <ident name="AnchorSideRight.Side" value="asrBottom"/>
-            <integer name="Left" value="24"/>
+            <integer name="Left" value="28"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="524"/>
-            <integer name="Width" value="52"/>
+            <integer name="Top" value="544"/>
+            <integer name="Width" value="54"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
             <string name="Caption" value="LabelF"/>
@@ -185,8 +185,8 @@
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
             <integer name="Left" value="80"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="476"/>
-            <integer name="Width" value="34"/>
+            <integer name="Top" value="472"/>
+            <integer name="Width" value="24"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
             <string name="Caption" value="0"/>
@@ -203,7 +203,7 @@
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
             <integer name="Left" value="80"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="500"/>
+            <integer name="Top" value="496"/>
             <integer name="Width" value="92"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
@@ -219,9 +219,9 @@
           <properties>
             <ident name="AnchorSideLeft.Side" value="asrBottom"/>
             <ident name="AnchorSideBottom.Side" value="asrBottom"/>
-            <integer name="Left" value="176"/>
+            <integer name="Left" value="168"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="476"/>
+            <integer name="Top" value="472"/>
             <integer name="Width" value="68"/>
             <boolean name="AutoSize" value="false"/>
             <integer name="BorderSpacing.Left" value="4"/>
@@ -234,9 +234,9 @@
         </component>
         <component name="Label2" class="TLabel">
           <properties>
-            <integer name="Left" value="120"/>
+            <integer name="Left" value="108"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="476"/>
+            <integer name="Top" value="472"/>
             <integer name="Width" value="52"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Länge"/>
@@ -249,7 +249,7 @@
           <properties>
             <integer name="Left" value="4"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="500"/>
+            <integer name="Top" value="496"/>
             <integer name="Width" value="76"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Durchm."/>
@@ -262,7 +262,7 @@
           <properties>
             <integer name="Left" value="4"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="476"/>
+            <integer name="Top" value="472"/>
             <integer name="Width" value="76"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Wkz. Nr."/>
@@ -288,7 +288,7 @@
           <properties>
             <integer name="Left" value="4"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="524"/>
+            <integer name="Top" value="544"/>
             <integer name="Width" value="16"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="F"/>
@@ -298,9 +298,9 @@
         </component>
         <component name="Label7" class="TLabel">
           <properties>
-            <integer name="Left" value="80"/>
+            <integer name="Left" value="4"/>
             <integer name="Height" value="18"/>
-            <integer name="Top" value="524"/>
+            <integer name="Top" value="564"/>
             <integer name="Width" value="16"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="S"/>
@@ -310,7 +310,7 @@
         </component>
         <component name="LabelCurrentVel" class="TLabel">
           <properties>
-            <integer name="Left" value="452"/>
+            <integer name="Left" value="440"/>
             <integer name="Height" value="24"/>
             <integer name="Top" value="504"/>
             <integer name="Width" value="152"/>
@@ -325,7 +325,7 @@
         </component>
         <component name="Label8" class="TLabel">
           <properties>
-            <integer name="Left" value="356"/>
+            <integer name="Left" value="340"/>
             <integer name="Height" value="24"/>
             <integer name="Top" value="504"/>
             <integer name="Width" value="91"/>
@@ -656,7 +656,7 @@
         </component>
         <component name="ButtonFeedReset" class="TMocButton">
           <properties>
-            <integer name="Left" value="556"/>
+            <integer name="Left" value="544"/>
             <integer name="Height" value="28"/>
             <integer name="Top" value="576"/>
             <integer name="Width" value="48"/>
@@ -748,7 +748,7 @@
           <properties>
             <integer name="Left" value="4"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="548"/>
+            <integer name="Top" value="520"/>
             <integer name="Width" value="94"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Akt. G-Codes"/>
@@ -819,7 +819,7 @@
           <properties>
             <integer name="Left" value="4"/>
             <integer name="Height" value="20"/>
-            <integer name="Top" value="452"/>
+            <integer name="Top" value="448"/>
             <integer name="Width" value="76"/>
             <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Werkzeug"/>
@@ -842,6 +842,7 @@
         </component>
         <component name="ButtonView1" class="TMocButton">
           <properties>
+            <integer name="Tag" value="1"/>
             <integer name="Left" value="44"/>
             <integer name="Height" value="34"/>
             <integer name="Top" value="376"/>
@@ -853,6 +854,7 @@
         </component>
         <component name="ButtonView2" class="TMocButton">
           <properties>
+            <integer name="Tag" value="2"/>
             <integer name="Left" value="84"/>
             <integer name="Height" value="34"/>
             <integer name="Top" value="376"/>
@@ -864,6 +866,7 @@
         </component>
         <component name="ButtonView3" class="TMocButton">
           <properties>
+            <integer name="Tag" value="3"/>
             <integer name="Left" value="124"/>
             <integer name="Height" value="34"/>
             <integer name="Top" value="376"/>
@@ -875,7 +878,7 @@
         </component>
         <component name="ButtonViewPlus" class="TMocButton">
           <properties>
-            <integer name="Left" value="172"/>
+            <integer name="Left" value="232"/>
             <integer name="Height" value="34"/>
             <integer name="Top" value="376"/>
             <integer name="Width" value="34"/>
@@ -886,7 +889,7 @@
         </component>
         <component name="ButtonViewMinus" class="TMocButton">
           <properties>
-            <integer name="Left" value="212"/>
+            <integer name="Left" value="272"/>
             <integer name="Height" value="34"/>
             <integer name="Top" value="376"/>
             <integer name="Width" value="34"/>
@@ -897,7 +900,7 @@
         </component>
         <component name="ButtonToolPath" class="TMocButton">
           <properties>
-            <integer name="Left" value="304"/>
+            <integer name="Left" value="356"/>
             <integer name="Height" value="34"/>
             <integer name="Top" value="376"/>
             <integer name="Width" value="36"/>
@@ -908,23 +911,35 @@
         </component>
         <component name="ButtonClear" class="TMocButton">
           <properties>
-            <integer name="Left" value="352"/>
+            <integer name="Left" value="396"/>
             <integer name="Height" value="34"/>
             <integer name="Top" value="376"/>
-            <integer name="Width" value="80"/>
+            <integer name="Width" value="36"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Löschen"/>
+            <string name="Caption" value="Lö."/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
         <component name="ButtonShowDim" class="TMocButton">
           <properties>
-            <integer name="Left" value="256"/>
+            <integer name="Left" value="316"/>
             <integer name="Height" value="34"/>
             <integer name="Top" value="376"/>
             <integer name="Width" value="36"/>
             <boolean name="ShowClicks" value="true"/>
             <string name="Caption" value="Dim"/>
+            <ident name="Color" value="clBtnFace"/>
+          </properties>
+        </component>
+        <component name="ButtonView4" class="TMocButton">
+          <properties>
+            <integer name="Tag" value="4"/>
+            <integer name="Left" value="164"/>
+            <integer name="Height" value="34"/>
+            <integer name="Top" value="376"/>
+            <integer name="Width" value="34"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value="Z-"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -1042,7 +1057,7 @@
         </component>
         <component name="SliderVel" class="TSlider">
           <properties>
-            <integer name="Left" value="452"/>
+            <integer name="Left" value="440"/>
             <integer name="Height" value="32"/>
             <integer name="Top" value="464"/>
             <integer name="Width" value="152"/>
@@ -1055,7 +1070,7 @@
         </component>
         <component name="SliderFeed" class="TSlider">
           <properties>
-            <integer name="Left" value="452"/>
+            <integer name="Left" value="440"/>
             <integer name="Height" value="32"/>
             <integer name="Top" value="536"/>
             <integer name="Width" value="152"/>

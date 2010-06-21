@@ -215,7 +215,7 @@ var
   i: integer;
   d,l,Scale: double;
   s: string;
-  P: PChar;
+  // P: PChar;
   // UpdateMsg: Boolean;
 begin
 
@@ -275,6 +275,7 @@ begin
   if State.UnitsChanged then
     begin
       LedShowMM.IsOn:= (LinearUnitConversion = linear_units_mm);
+      FCurrentVel:= -1; // trigger update fpr Label Currentvel
       State.UnitsChanged:= False;
     end;
 
@@ -329,8 +330,11 @@ begin
   if FCurrentVel <> State.CurrentVel then
     begin
       FCurrentVel:= State.CurrentVel;
-      d:= State.CurrentVel * 60;
-      s:= FloatToStrF(d * 60, ffFixed, 6, 3) + Vars.UnitStr + '/min';
+      if Vars.Metric then
+        d:= State.CurrentVel
+      else
+        d:= State.CurrentVel / 25.4;
+      s:= IntToStr(Round(d * 60)) + #32 + Vars.UnitStr + '/min';
       LabelCurrentVel.Caption:=  s;
     end;
 

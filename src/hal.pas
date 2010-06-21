@@ -5,7 +5,7 @@ unit hal;
 interface
 
 uses
-  dynlibs,crt,sysutils,classes,ctypes,emcint;
+  crt,sysutils,classes,ctypes,emcint;
 
 const
   HAL_SUCCESS = 0;
@@ -73,7 +73,7 @@ procedure SetSkew(Axis: integer; Skew: double);
 implementation
 
 var
-  HalHandle: Pointer;
+  // HalHandle: Pointer;
   HalData: PHalStruct;
   CompId: cInt;
 
@@ -242,7 +242,7 @@ begin
 end;
 }
 
-begin
-  HalHandle:= nil;
+// begin
+// HalHandle:= nil;
 end.
 
