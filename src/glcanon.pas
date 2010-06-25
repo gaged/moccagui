@@ -198,7 +198,7 @@ begin
   y:= ToCanonUnits(GetOrigin(1));
   z:= ToCanonUnits(GetOrigin(2));
   SetCoords(Offset,x,y,z,0,0,0,0,0,0);
-  writeln(Format('%s %f %f',['Canon Offsets: ',x,y]));
+  writeln(Format('%s %f %f %f',['Canon Offsets: ',x,y,z]));
 end;
 
 procedure CanonInitOffsets;

@@ -9,6 +9,9 @@ uses
   
 type
   TEMC = class
+
+    constructor Create;
+
     procedure Execute(cmd: string);
     procedure ExecuteSilent(cmd: string);
     function  ForceTaskMode(ToMode: integer): Boolean;
@@ -22,9 +25,7 @@ type
     function  UpdateState: Boolean;
     procedure SetCoordsZero;
     procedure SetDisplayUnits(UseMetric: Boolean);
-    procedure SetFeedORide(Feed: integer);
-    procedure SetSpORide(ORide: integer);
-    procedure SetMaxVel(NewVel: integer);
+
     procedure SetORideLimits(ORide: Boolean);
     procedure TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
     procedure TaskStop;
@@ -39,24 +40,92 @@ type
     procedure TouchOff(Axis: Char);
     procedure TouchWiz;
     procedure EditCurrent;
+
+  private
+    FFeedOverride: integer;
+    FSpindleOverride: integer;
+    FMaxVelocity: integer;
+    procedure SetFeedOverride(Value: integer);
+    procedure SetMaxVelocity(Value: integer);
+    procedure SetSpindleOverride(Value: integer);
+  public
+    property FeedOverride: integer read FFeedOverride write SetFeedOverride;
+    property SpindleOverride: integer read FSpindleOverride write SetSpindleOverride;
+    property MaxVelocity: integer read FMaxVelocity write SetMaxVelocity;
   end;
 
 var
   Emc: TEMC;                    // the base class of the emc interface
 
+var
+  UpdateCounter: integer;
 
 implementation
 
 uses
   Forms,
-  mocglb,emc2pas,mocjoints,
+  mocglb,emc2pas,hal,mocjoints,
   runclient,
   offsetdlg,
   tooleditdlg,toolchange,
-  touchoff, touchoffwiz;
+  touchoff, touchoffwiz,
+  coordrotate;
 
 const
   ToolsInitialized: Boolean = False;
+
+constructor TEmc.Create;
+begin
+  inherited Create;
+  FFeedOverride:= 100;
+  FSpindleOverride:= 100;
+end;
+
+procedure TEmc.SetFeedOverride(Value: integer);
+var
+  HalFeed: integer;
+begin
+  if (Value < 1) or (Value > Vars.MaxFeedOverride) then
+    Exit;
+  if (Value <> FFeedOverride) then
+    begin
+      FFeedOverride:= Value;
+      HalFeed:= GetHalFeed;
+      if HalFeed <> FFeedOverride then
+        SetHalFeed(FFeedOverride);
+    end;
+end;
+
+procedure TEmc.SetSpindleOverride(Value: integer);
+var
+  HalSpindle: integer;
+begin
+  if (Value < 1) or (Value > Vars.MaxSpORide) then
+    Exit;
+  if (Value <> FSpindleOverride) then
+    begin
+      FSpindleOverride:= Value;
+      HalSpindle:= GetHalSpindle;
+      if HalSpindle <> FSpindleOverride then
+        SetHalSpindle(FSpindleOverride);
+    end;
+end;
+
+procedure TEmc.SetMaxVelocity(Value: integer);
+var
+  HalVel: integer;
+begin
+  if (Value < 1) or (Value > State.MaxVel) then
+    Exit;
+  if (Value <> FMaxVelocity) then
+    begin
+      FMaxVelocity:= Value;
+      HalVel:= GetHalVelocity;
+      if HalVel <> FMaxVelocity then
+        SetHalVelocity(FMaxVelocity);
+    end;
+end;
+
 
 procedure TEmc.EditCurrent;
 begin
@@ -342,38 +411,6 @@ begin
     end;
 end;
 
-procedure TEmc.SetFeedORide(Feed: integer);
-begin
-  if Feed <> State.ActFeed then
-    begin
-      sendFeedOverride(Feed / 100);
-      State.ActFeed:= Feed;
-    end;
-end;
-
-procedure TEmc.SetSpORide(Oride: integer);
-var
-  i: integer;
-begin
-  if Oride <> State.ActSpORide then
-    begin
-      i:= ORide;
-      if i < 1 then i:= 1;
-      sendSpindleOverride(i / 100);
-      State.ActSpORide:= i;
-    end;
-end;
-
-procedure TEmc.SetMaxVel(NewVel: integer);
-begin
-  if NewVel <> State.ActVel then
-    begin
-      State.ActVel:= NewVel;
-      if State.ActVel < 1 then State.ActVel:= 1;
-      sendMaxVelocity(State.ActVel / 60);
-    end;
-end;
-
 function TEmc.UpdateState: Boolean;
 var
   i: integer;
@@ -426,6 +463,44 @@ begin
         end;
      end;
   taskActiveCodes;  // update active G,MCodes, FWords, SWords;
+
+  Inc(UpdateCounter);
+
+  if UpdateCounter > 10 then
+    begin
+      UpdateCounter:= 1;
+      // Update Feed, Velocity etc
+
+      i:= GetHalFeed;  // Check if Hal-Feed changed
+      if (i <> FFeedOverride) then FeedOverride:= i;
+      if FFeedOverride <> State.ActFeed then
+        begin
+          SendFeedOverride(FFeedOverride / 100);
+          State.ActFeed:= FFeedOVerride;
+        end;
+
+      i:= GetHalSpindle;
+      if (i <> FSpindleOverride) then
+        SpindleOverride:= i;
+
+      if FSpindleOverride <> State.ActSpORide then
+        begin
+          // if FSpindleOverride < 1 then FSpindleOverride:= 1;
+          sendSpindleOverride(FSpindleOverride / 100);
+          State.ActSpORide:= FSpindleOverride;
+        end;
+
+      i:= GetHalVelocity;
+      if (i <> FMaxVelocity) then
+        MaxVelocity:= i;
+
+      if FMaxVelocity <> State.ActVel then
+        begin
+          State.ActVel:= FMaxVelocity;
+          if State.ActVel < 1 then State.ActVel:= 1;
+          sendMaxVelocity(State.ActVel / 60);
+        end
+   end;
 end;
 
 procedure TEmc.TaskRun;
@@ -507,12 +582,7 @@ begin
     cmJOG: ForceTaskMode(TASKMODEMANUAL);
     cmAUTO: ForceTaskMode(TASKMODEAUTO);
     cmMDI: ForceTaskMode(TASKMODEMDI);
-    cmFEEDRESET:
-      begin
-        SetFeedORide(100);
-        State.ActFeed:= 100;
-        Writeln('Feed Reset');
-      end;
+    cmFEEDRESET: FeedOverride:= 100;
     cmSPCW:
       if State.SpDir <> 0 then
         sendSpindleOff
@@ -575,6 +645,7 @@ begin
     cmTOOLCHG: ChangeTool;
     cmUNITS: SetDisplayUnits(not Vars.Metric);
     cmEDITOR: EditCurrent;
+    cmCOORDROT: DoCoordRotate;
   else
     begin
       Result:= False;
@@ -582,6 +653,7 @@ begin
     end;
   end; //case
   Result:= true;
+
 end;
   
 end.

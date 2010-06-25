@@ -22,6 +22,10 @@ var
   Emc2LibPath: string;
   Emc2Version: string;
 
+{$ifdef VER_24}
+  Emc2NmlFile: string;
+{$endif}
+
 function InitEmcEnvironment: boolean;
 procedure DoneEmcEnvironment;
 
@@ -46,6 +50,16 @@ begin
       writeln('Did not find the EMC2_HOME var');
       Exit;
     end;
+
+  {$ifdef VER_24}
+  Emc2NmlFile:= '';
+  Emc2NmlFile:=  GetEnvironmentVariable('NMLFILE');
+  if Length(Emc2NmlFile) < 1 then
+    begin
+      writeln('Did not find the NMLFILE var');
+      Exit;
+    end;
+  {$endif}
 
   Emc2Version:= '';
   Emc2Version:= GetEnvironmentVariable('EMC2VERSION');

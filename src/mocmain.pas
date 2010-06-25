@@ -102,14 +102,10 @@ type
     procedure BtnSpCCWClick(Sender: TObject);
     procedure BtnSpClick(Sender: TObject);
     procedure BtnSpReverseClick(Sender: TObject);
-    procedure BtnFeedRstClick(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
-
-    procedure ButtonSpindleMinusClick(Sender: TObject);
-    procedure ButtonSpindlePlusClick(Sender: TObject);
-    procedure BtnSpindleBrakeClick(Sender: TObject);
     procedure ButtonShowDimClick(Sender: TObject);
     procedure ButtonToolPathClick(Sender: TObject);
+    procedure ButtonUnitsMMClick(Sender: TObject);
     procedure ButtonViewClick(Sender: TObject);
     procedure ButtonViewMinusClick(Sender: TObject);
     procedure ButtonViewPlusClick(Sender: TObject);
@@ -121,9 +117,8 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
+
     procedure LabelMsgClick(Sender: TObject);
-    procedure LabelUnitsClick(Sender: TObject);
-    procedure LabelViewClick(Sender: TObject);
     procedure ButtonShowDtgClick(Sender: TObject);
 
     procedure OnTimer(Sender: TObject);
@@ -178,7 +173,7 @@ implementation
 { TMainForm }
 
 uses
-  emc2pas,mocemc;
+  emc2pas,mocemc,hal;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -187,9 +182,10 @@ end;
 
 procedure TMainForm.TaskModeChanged;  // called by MainForm.UpdateTaskMode
 begin
+  UpdateHalTaskMode(State.TaskMode);
   if ScriptRunning then
     begin
-      writeln('ignore taskmode');
+      writeln('Scrip is running: ignore taskmode');
       Exit;
     end;
   clJog.Visible:= (State.TaskMode = TaskModeManual);
@@ -215,20 +211,23 @@ var
   i: integer;
   d,l,Scale: double;
   s: string;
-  // P: PChar;
-  // UpdateMsg: Boolean;
 begin
+
+  i:= GetHalTaskMode;
+  if i  <> State.TaskMode then
+    begin
+      if i = TaskModeManual then Emc.HandleCommand(cmJOG) else
+      if i = TaskModeAuto then Emc.HandleCommand(cmAuto) else
+      if i = TaskModeMdi then Emc.HandleCommand(cmMDI);
+    end;
 
   if EMC.UpdateState then
     TaskModeChanged;
-
-  // UpdateMsg:= False;
 
   if LastError <> '' then
     begin
       GlobalErrors.Add(LastError);
       LabelMsg.Caption:= LastError;
-      // UpdateMsg:= True;
       LastError:= '';
     end;
 
@@ -236,11 +235,24 @@ begin
     begin
       GlobalErrors.Add(PChar(ErrorStr));
       LabelMsg.Caption:= PChar(ErrorStr);
-      // UpdateMsg:= True;
       ErrorStr[0]:= #0;
     end;
 
   Joints.Update;
+
+  for i:= HalButtonMin to HalButtonMax do
+    begin
+      if GetHalButtonDown(i) then
+        if Assigned(MocBtns[i]) then
+          if MocBtns[i].Tag > 0 then
+            begin
+              if TaskMode = TASKMODEMANUAL then
+                clJog.HandleCommand(MocBtns[i].Tag)
+              else
+                Emc.HandleCommand(MocBtns[i].Tag);
+              Exit;  // we exit here and wait for the next update cycle
+            end;
+    end;
 
   LabelGCodes.Caption:= TrimLeft(PChar(ACTIVEGCODES));
   LabelMCodes.Caption:= TrimLeft(PChar(ACTIVEMCODES));
@@ -253,14 +265,12 @@ begin
   if OperatorTextStr[0] <> #0 then
     begin
       GlobalErrors.Add(PChar(OperatorTextStr));
-      // UpdateMsg:= True;
       OperatorTextStr[0]:= #0;
     end;
 
   if OperatorDisplayStr[0] <> #0 then
     begin
       GlobalErrors.Add(PChar(OperatorDisplayStr));
-      // UpdateMsg:= True;
       OperatorDisplayStr[0]:= #0;
     end;
 
@@ -279,18 +289,20 @@ begin
       State.UnitsChanged:= False;
     end;
 
-  if FFeed <> State.ActFeed then
+  if FFeed <> Emc.FeedOverride then
     begin
-      SliderFeed.Caption:= IntToStr(State.ActFeed) + '%';
-      SliderFeed.Position:= State.ActFeed;
-      FFeed:= State.ActFeed;
+      i:= Emc.FeedOverride;
+      SliderFeed.Caption:= IntToStr(i) + '%';
+      SliderFeed.Position:= i;
+      FFeed:= i;
     end;
 
-  if FMaxVel <> State.ActVel then
+  if FMaxVel <> Emc.MaxVelocity then
     begin
-      i:= Round(Emc.ToLinearUnits(State.ActVel));
-      SliderVel.Caption:= IntToStr(i) + Vars.UnitVelStr;
-      FMaxVel:= State.ActVel;
+      i:= Emc.MaxVelocity;
+      SliderVel.Caption:= IntToStr(Round(Emc.ToLinearUnits(i))) + Vars.UnitVelStr;
+      SliderVel.Position:= i;
+      FMaxVel:= i;
     end;
 
   if FTool <> State.CurrentTool then
@@ -384,20 +396,10 @@ begin
   if (FSpORide <> State.ActSpORide) then
     begin
       SliderSOR.Caption:= IntToStr(State.ActSpORide) + '%';
+      SliderSOR.Position:= State.ActSpORide;
       FSpORide:= State.ActSpORide;
       FSpVel:= 0; // trigger a update for LabelSpVel...
     end;
-
-  {
-  if FAtSpeed <> (State.SpIncreasing = 0) then
-    begin
-      FAtSpeed:= (State.SpIncreasing = 0);
-      if FAtSpeed then
-        LedSpAtSpeed.Brush.Color:= clGreen
-      else
-        LedSpAtSpeed.Brush.Color:= clRed;
-    end;
-  }
 
   if FSpDir <> State.SpDir then
     begin
@@ -405,15 +407,12 @@ begin
       if FSpDir <> 0 then
         FSpReverse:= (FSpDir < 0);
       UpdateSpindle;
-      //BtnSpCW.Enabled:= (FSpDir = 0);
-      //BtnSpCCW.Enabled:= (FSpDir = 0);
     end;
 
   if FEStop <> State.EStop then
     begin
       FEStop:= State.EStop;
       LedEStop.IsOn:= not FEStop;
-      ButtonMachine.Enabled:= not State.EStop;
     end;
 
   if FOn <> State.Machine then
@@ -494,6 +493,9 @@ begin
   FSpORide:= -1;
   FShowRelative:= not Joints.ShowRelative;
   State.UnitsChanged:= True;
+
+  InitHalPins;
+
 end;
 
 procedure TMainForm.InitButtons; // This creates the buttons used by mocca
@@ -658,38 +660,14 @@ begin
   UpdateSpindle;
 end;
 
-procedure TMainForm.BtnFeedRstClick(Sender: TObject);
-begin
-  //SliderFeed.Position:= 100;
-  //State.ActFeed:= 100;
-  //SliderFeed.Invalidate;
-end;
-
 procedure TMainForm.ButtonClearClick(Sender: TObject);
 begin
-  if Assigned(clSim) then
-    clSim.ClearPlot;
-end;
-
-procedure TMainForm.ButtonSpindleMinusClick(Sender: TObject);
-begin
-  HandleCommand(cmSPMINUS);
-end;
-
-procedure TMainForm.ButtonSpindlePlusClick(Sender: TObject);
-begin
-  HandleCommand(cmSPPLUS);
-end;
-
-procedure TMainForm.BtnSpindleBrakeClick(Sender: TObject);
-begin
-  HandleCommand(cmSPBRAKE);
+  if Assigned(clSim) then clSim.ClearPlot;
 end;
 
 procedure TMainForm.ButtonShowDimClick(Sender: TObject);
 begin
-  if not Assigned(clSim) then
-    Exit;
+  if not Assigned(clSim) then Exit;
   clSim.ShowDimensions:= not clSim.ShowDimensions;
   ButtonShowDim.Down:= clSim.ShowDimensions;
   clSim.InvalidateView;
@@ -697,12 +675,16 @@ end;
 
 procedure TMainForm.ButtonToolPathClick(Sender: TObject);
 begin
-  if not Assigned(clSim) then
-    Exit;
+  if not Assigned(clSim) then Exit;
   clSim.ShowLivePlot:= not clSim.ShowLivePlot;
   ButtonToolPath.Down:= clSim.ShowLivePlot;
   if not clSim.ShowLivePlot then
     clSim.ClearPlot;
+end;
+
+procedure TMainForm.ButtonUnitsMMClick(Sender: TObject);
+begin
+  Vars.Metric:= not Vars.Metric;
 end;
 
 procedure TMainForm.ButtonViewClick(Sender: TObject);
@@ -714,19 +696,22 @@ end;
 
 procedure TMainForm.ButtonViewMinusClick(Sender: TObject);
 begin
-  if Assigned(clSim) then
-    clSim.Zoom(-1);
+  if Assigned(clSim) then clSim.Zoom(-1);
 end;
 
 procedure TMainForm.ButtonViewPlusClick(Sender: TObject);
 begin
-  if Assigned(clSim) then
-    clSim.Zoom(1);
+  if Assigned(clSim) then clSim.Zoom(1);
 end;
 
 procedure TMainForm.BtnCoordsClick(Sender: TObject);
 begin
   Joints.ShowRelative:= not Joints.ShowRelative;
+end;
+
+procedure TMainForm.ButtonShowDtgClick(Sender: TObject);
+begin
+  Joints.ShowDtg:= not Joints.ShowDtg;
 end;
 
 procedure TMainForm.ButtonClick(Sender: TObject);
@@ -745,7 +730,7 @@ var
   i: integer;
 begin
   UpdateLock:= True;  // prevent from updates during destroy
-  Timer.Enabled:= False;
+  Timer.Enabled:= False;  //turn off Timer
   if Assigned(clJog) then FreeAndNil(clJog);
   if Assigned(clMDI) then FreeAndNil(clMDI);
   if Assigned(clRun) then FreeAndNil(clRun);
@@ -755,14 +740,7 @@ begin
   if Assigned(EMC) then FreeAndNil(Emc);
   if Assigned(Joints) then FreeAndNil(Joints);
   if Assigned(GlobalBitmaps) then
-    begin
-      for i:= 0 to GlobalBitmaps.Count - 1 do
-        begin
-          if Assigned(GlobalBitmaps.Objects[i]) then
-            GlobalBitmaps.Objects[i].Free;
-        end;
-      GlobalBitmaps.Free;
-    end;
+    FreeBitmapList;
   if Assigned(GlobalErrors) then GlobalErrors.Free;
 end;
 
@@ -809,11 +787,7 @@ begin
           LabelMsg.Caption:= '';
           if Assigned(MsgForm) then
           MsgForm.Hide;
-
         end
-      // else
-      //if (Key = 83) then
-      //  ShowStatusDlg
       {$IFDEF LCLGTK2}
       else
       if (Key = 123) then
@@ -825,7 +799,6 @@ begin
         end
       {$ENDIF};
     end;
-
   if (State.TaskMode = TaskModeManual) then
     clJog.FormKeyDown(nil,Key,Shift) else
   if (State.TaskMode = TaskModeAuto) then
@@ -856,22 +829,6 @@ begin
       end;
 end;
 
-procedure TMainForm.LabelUnitsClick(Sender: TObject);
-begin
-  Emc.HandleCommand(cmUNITS);
-end;
-
-procedure TMainForm.LabelViewClick(Sender: TObject);
-begin
-  if Assigned(Joints) then
-    Joints.ShowActual:= not Joints.ShowActual;
-end;
-
-procedure TMainForm.ButtonShowDtgClick(Sender: TObject);
-begin
-  Joints.ShowDtg:= not Joints.ShowDtg;
-end;
-
 procedure TMainForm.OnTimer(Sender: TObject);
 begin
   Self.UpdateState;
@@ -888,7 +845,6 @@ begin
   if Assigned(clMDI) then clMDI.SetBounds(0,0,w,h);
   if Assigned(clRun) then clRun.SetBounds(0,0,w,h);
 end;
-
 
 procedure TMainForm.PanelButtonsResize(Sender: TObject);
 const
@@ -926,22 +882,20 @@ end;
 procedure TMainForm.SliderFeedPositionChanged(Sender: TObject; NewPos: integer);
 begin
   if UpdateLock then Exit;
-  Emc.SetFeedORide(NewPos);
+  Emc.FeedOverride:= NewPos;
 end;
 
 procedure TMainForm.SliderSORPositionChanged(Sender: TObject; NewPos: integer);
 begin
   if UpdateLock then Exit;
-  Emc.SetSpORide(NewPos);
+  Emc.SpindleOverride:= NewPos;
 end;
 
 procedure TMainForm.SliderVelPositionChanged(Sender: TObject; NewPos: integer);
 begin
   if UpdateLock then Exit;
-  Emc.SetMaxVel(NewPos);
+  Emc.MaxVelocity:= NewPos;
 end;
-
-
 
 initialization
 {$I mocmain.lrs}

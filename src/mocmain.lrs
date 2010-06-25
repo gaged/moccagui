@@ -1,7 +1,7 @@
 { Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
 
 LazarusResources.Add('TMainForm','FORMDATA',[
-  'TPF0'#9'TMainForm'#8'MainForm'#4'Left'#3#165#0#6'Height'#3#212#2#3'Top'#3#149
+  'TPF0'#9'TMainForm'#8'MainForm'#4'Left'#3#203#0#6'Height'#3#212#2#3'Top'#3#145
   +#0#5'Width'#3#193#3#18'HorzScrollBar.Page'#3#254#4#19'HorzScrollBar.Range'#3
   +#248#4#21'HorzScrollBar.Visible'#8#18'VertScrollBar.Page'#3#180#3#19'VertScr'
   +'ollBar.Range'#3#164#3#21'VertScrollBar.Visible'#8#13'ActiveControl'#7#11'Pa'
@@ -135,16 +135,16 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +#24#3'Top'#3'8'#1#5'Width'#2#26#8'LedColor'#7#9'clSkyBlue'#4'IsOn'#8#5'Color'
   +#7#8'clSilver'#7'Visible'#8#0#0#10'TMocButton'#13'ButtonUnitsMM'#4'Left'#3
   +#184#1#6'Height'#2#29#3'Top'#3#160#1#5'Width'#2'Z'#10'ShowClicks'#9#7'Captio'
-  +'n'#6#2'mm'#5'Color'#7#9'clBtnFace'#7'OnClick'#7#15'LabelUnitsClick'#0#0#10
-  +'TMocButton'#18'ButtonShowRelative'#4'Left'#3#184#1#6'Height'#2#29#3'Top'#3
-  +#30#1#5'Width'#2'Z'#10'ShowClicks'#9#7'Caption'#6#11'Masch.Koord'#5'Color'#7
-  +#9'clBtnFace'#7'OnClick'#7#14'BtnCoordsClick'#0#0#10'TMocButton'#13'ButtonSh'
-  +'owDtg'#4'Left'#3#184#1#6'Height'#2#29#3'Top'#3'`'#1#5'Width'#2'Z'#10'ShowCl'
-  +'icks'#9#7'Caption'#6#3'DTG'#5'Color'#7#9'clBtnFace'#7'OnClick'#7#18'ButtonS'
-  +'howDtgClick'#0#0#10'TMocButton'#18'ButtonSpindlebrake'#4'Left'#3#24#3#6'Hei'
-  +'ght'#2'4'#3'Top'#3#24#2#5'Width'#2'P'#7'Command'#6#9'cmSPBRAKE'#10'ShowClic'
-  +'ks'#9#7'Caption'#6#10'Sp.-Bremse'#5'Color'#7#9'clBtnFace'#7'OnClick'#7#11'B'
-  +'uttonClick'#0#0#10'TMocButton'#15'ButtonFeedReset'#4'Left'#3' '#2#6'Height'
+  +'n'#6#2'mm'#5'Color'#7#9'clBtnFace'#7'OnClick'#7#18'ButtonUnitsMMClick'#0#0
+  +#10'TMocButton'#18'ButtonShowRelative'#4'Left'#3#184#1#6'Height'#2#29#3'Top'
+  +#3#30#1#5'Width'#2'Z'#10'ShowClicks'#9#7'Caption'#6#11'Masch.Koord'#5'Color'
+  +#7#9'clBtnFace'#7'OnClick'#7#14'BtnCoordsClick'#0#0#10'TMocButton'#13'Button'
+  +'ShowDtg'#4'Left'#3#184#1#6'Height'#2#29#3'Top'#3'`'#1#5'Width'#2'Z'#10'Show'
+  +'Clicks'#9#7'Caption'#6#3'DTG'#5'Color'#7#9'clBtnFace'#7'OnClick'#7#18'Butto'
+  +'nShowDtgClick'#0#0#10'TMocButton'#18'ButtonSpindlebrake'#4'Left'#3#24#3#6'H'
+  +'eight'#2'4'#3'Top'#3#24#2#5'Width'#2'P'#7'Command'#6#9'cmSPBRAKE'#10'ShowCl'
+  +'icks'#9#7'Caption'#6#10'Sp.-Bremse'#5'Color'#7#9'clBtnFace'#7'OnClick'#7#11
+  +'ButtonClick'#0#0#10'TMocButton'#15'ButtonFeedReset'#4'Left'#3' '#2#6'Height'
   +#2#28#3'Top'#3'@'#2#5'Width'#2'0'#7'Command'#6#11'cmFEEDRESET'#10'ShowClicks'
   +#9#7'Caption'#6#4'100%'#5'Color'#7#9'clBtnFace'#7'OnClick'#7#11'ButtonClick'
   +#0#0#10'TMocButton'#10'OEMButton2'#4'Left'#3'@'#1#6'Height'#2#26#3'Top'#3'8'
@@ -210,8 +210,8 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'Name'#6#16'Courier 10 Pitch'#10'Font.Pitch'#7#7'fpFixed'#10'Font.Style'#11#6
   +'fsBold'#0#11'FullRepaint'#8#11'ParentColor'#8#10'ParentFont'#8#8'TabOrder'#2
   +#4#0#0#6'TPanel'#12'PanelButtons'#20'AnchorSideRight.Side'#7#9'asrBottom'#21
-  +'AnchorSideBottom.Side'#7#9'asrBottom'#4'Left'#2#0#6'Height'#2'H'#3'Top'#3
-  +#136#2#5'Width'#3#192#3#10'BevelOuter'#7#6'bvNone'#10'BevelWidth'#2#5#11'Bor'
+  +'AnchorSideBottom.Side'#7#9'asrBottom'#4'Left'#2#252#6'Height'#2'H'#3'Top'#3
+  +#132#2#5'Width'#3#192#3#10'BevelOuter'#7#6'bvNone'#10'BevelWidth'#2#5#11'Bor'
   +'derStyle'#7#8'bsSingle'#11'FullRepaint'#8#8'TabOrder'#2#0#8'OnResize'#7#18
   +'PanelButtonsResize'#0#0#6'TPanel'#11'PanelMaster'#20'AnchorSideRight.Side'#7
   +#9'asrBottom'#4'Left'#3#184#1#6'Height'#3#20#1#3'Top'#2#0#5'Width'#3#176#1#10
@@ -235,7 +235,7 @@ LazarusResources.Add('TMainForm','FORMDATA',[
   +'Position'#2#0#8'BarColor'#7#6'clBlue'#8'Vertical'#8#6'Smooth'#9#15'Position'
   +'Changed'#7#24'SliderSORPositionChanged'#7'Caption'#6#4'0.00'#0#0#7'TSlider'
   +#9'SliderVel'#4'Left'#3#184#1#6'Height'#2' '#3'Top'#3#208#1#5'Width'#3#152#0
-  +#8'Position'#2#0#8'BarColor'#7#6'clBlue'#8'Vertical'#8#6'Smooth'#8#15'Positi'
+  +#8'Position'#2#0#8'BarColor'#7#6'clBlue'#8'Vertical'#8#6'Smooth'#9#15'Positi'
   +'onChanged'#7#24'SliderVelPositionChanged'#7'Caption'#6#4'0.00'#0#0#7'TSlide'
   +'r'#10'SliderFeed'#4'Left'#3#184#1#6'Height'#2' '#3'Top'#3#24#2#5'Width'#3
   +#152#0#8'Position'#2#0#8'BarColor'#7#6'clBlue'#8'Vertical'#8#6'Smooth'#9#15

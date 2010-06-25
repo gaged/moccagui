@@ -5,12 +5,16 @@ unit hal;
 interface
 
 uses
-  crt,sysutils,classes,ctypes,emcint;
+  crt,sysutils,classes,ctypes, emcint;
 
 const
   HAL_SUCCESS = 0;
 
   HalName = 'moc';
+
+const
+  HalButtonMin = 0;
+  HalButtonMax = 9;
 
 type
   THalBit = Byte;
@@ -31,16 +35,31 @@ type
 type
   PHalStruct = ^THalStruct;
   THalStruct = packed record
-    Increment: ^THalFLoat;
+    increment: ^THalFLoat;
     x,y,z,b,c: ^THalBit;
-    cmd: ^THalU32;
-    skewx: ^THalFloat;
-    skewy: ^THalFloat;
-    skewz: ^THalFloat;
-    feed: ^THalFloat;
-    maxvel: ^THalFloat;
-    jogvel: ^THalFloat;
+    command: ^THalU32;
+    rotation_x: ^THalFloat;
+    rotation_y: ^THalFloat;
+    rotation_z: ^THalFloat;
+    feed: ^THalS32;
+    maxvel: ^THalS32;
+    spindle: ^THalS32;
+    jogvel: ^THalS32;
+    modeauto: ^THalBit;
+    modemanual: ^THalBit;
+    modemdi: ^THalBit;
+    button0: ^THalBit;
+    button1: ^THalBit;
+    button2: ^THalBit;
+    button3: ^THalBit;
+    button4: ^THalBit;
+    button5: ^THalBit;
+    button6: ^THalBit;
+    button7: ^THalBit;
+    button8: ^THalBit;
+    button9: ^THalBit;
   end;
+
 
 function InitHal(Name: string): boolean;
 procedure DoneHal;
@@ -63,17 +82,28 @@ function hal_pin_u32_new(const name: PChar; dir: TPinDir;
 function hal_pin_s32_new(const name: PChar; dir: TPinDir;
   Data: PPHalS32; comp_id: cint): cint; cdecl; external libemchal;
 
+procedure InitHalPins;
+
 procedure SetHalJogAxis(Axis: Char);
-function  GetHalJogAxis: Char;
-procedure SetHalJogIncrement(Incr: double);
-function GetHalJogIncrement: double;
-function GetSkew(Axis: integer): double;
-procedure SetSkew(Axis: integer; Skew: double);
+
+function GetHalButtonDown(Id: integer): Boolean;
+
+function GetHalFeed: integer;
+procedure SetHalFeed(Value: integer);
+function GetHalVelocity: integer;
+procedure SetHalVelocity(Value: integer);
+function GetHalSpindle: integer;
+procedure SetHalSpindle(Value: integer);
+
+function GetHalTaskMode: integer;
+procedure UpdateHalTaskMode(Mode: integer);
 
 implementation
 
+uses
+   emc2pas,mocglb;
+
 var
-  // HalHandle: Pointer;
   HalData: PHalStruct;
   CompId: cInt;
 
@@ -100,10 +130,81 @@ begin
     Result:= #0;
 end;
 
+function GetHalCommand(var Command: integer): Boolean;
+begin
+  Result:= False;
+  if HalData^.command^ > 0 then
+    begin
+      Command:= HalData^.command^;
+      HalData^.command^ := 0;
+      Result:= True;
+    end;
+end;
+
+function GetHalFeed: integer;
+begin
+  Result:= HalData^.feed^;
+end;
+
+procedure SetHalFeed(Value: integer);
+begin
+  HalData^.feed^:= Value;
+end;
+
+function GetHalVelocity: integer;
+begin
+  Result:= HalData^.maxvel^;
+end;
+
+procedure SetHalVelocity(Value: integer);
+begin
+  HalData^.maxvel^:= Value;
+end;
+
+function GetHalSpindle: integer;
+begin
+  Result:= HalData^.spindle^;
+end;
+
+procedure SetHalSpindle(Value: integer);
+begin
+  HalData^.spindle^:= Value;
+end;
+
+function GetHalTaskMode: integer;
+begin
+  if HalData^.modemdi^ <> 0 then
+    begin
+      HalData^.modeauto^:=  0;
+      HalData^.modemanual^:= 0;
+      Result:= TASKMODEMDI;
+    end
+  else
+  if HalData^.modeauto^ <> 0 then
+    begin
+      HalData^.modemanual^:= 0;
+      HalData^.modemdi^:= 0;
+      Result:= TASKMODEAUTO;
+    end
+  else
+    begin
+      HalData^.modemdi^:= 0;
+      HalData^.modeauto^:= 0;
+      Result:= TASKMODEMANUAL;
+    end;
+end;
+
+procedure UpdateHalTaskMode(Mode: integer);
+begin
+  HalData^.modemanual^:= Byte(Mode = TASKMODEMANUAL);
+  HalData^.modeauto^:= Byte(Mode = TASKMODEAUTO);
+  HalData^.modemdi^:= Byte(Mode = TASKMODEMDI);
+end;
+
 procedure SetHalJogIncrement(Incr: double);
 begin
   if HalData = nil then
-    raise Exception.Create('HalData = nil!');
+    raise Exception.Create('Set_Hal_Jogincrement: HalData = nil!');
   HalData^.Increment^ := Incr;
 end;
 
@@ -114,23 +215,49 @@ begin
   Result:= HalData^.Increment^;
 end;
 
-function GetSkew(Axis: integer): double;
+procedure SetHalRotation(x,y,z: Double);
 begin
   if HalData = nil then
-    raise Exception.Create('HalData = nil!');
-  if Axis = 0 then Result:= HalData^.skewx^ else
-  if Axis = 1 then Result:= HalData^.skewy^ else
-  if Axis = 2 then Result:= HalData^.skewz^ else
-    Result:= 0;
+    raise Exception.Create('Set_Hal_Rotation: HalData = nil!');
+  HalData^.rotation_x^:= x;
+  HalData^.rotation_y^:= y;
+  HalData^.rotation_z^:= z;
 end;
 
-procedure SetSkew(Axis: integer; Skew: double);
+function CheckButtonDown(Bit: PHalBit): Boolean;
 begin
+  Result:= Byte(Bit^) <> 0;
+  if Result then Byte(Bit^) := 0;
+end;
+
+function GetHalButtonDown(Id: integer): Boolean;
+begin
+  Result:= False;
   if HalData = nil then
-    raise Exception.Create('HalData = nil!');
-  if Axis = 0 then HalData^.skewx^:= skew else
-  if Axis = 1 then HalData^.skewy^:= skew else
-  if Axis = 2 then HalData^.skewz^:= skew;
+    raise Exception.Create('Get_Hal_ButtonDown: HalData = nil!');
+  case Id of 
+    0:  Result:= CheckButtonDown(HalData^.button0);
+    1:  Result:= CheckButtonDown(HalData^.button1);
+    2:  Result:= CheckButtonDown(HalData^.button2);
+    3:  Result:= CheckButtonDown(HalData^.button3);
+    4:  Result:= CheckButtonDown(HalData^.button4);
+    5:  Result:= CheckButtonDown(HalData^.button5);
+    6:  Result:= CheckButtonDown(HalData^.button6);
+    7:  Result:= CheckButtonDown(HalData^.button7);
+    8:  Result:= CheckButtonDown(HalData^.button8);
+    9:  Result:= CheckButtonDown(HalData^.button9);
+  end;
+end;
+
+procedure InitHalPins;
+begin
+  SetHalRotation(0,0,0);
+  HalData^.feed^:= State.ActFeed;
+  HalData^.maxvel^:= State.MaxVel;
+  HalData^.jogvel^:= State.ActJogVel;
+  HalData^.modeauto^:= 0;
+  HalData^.modemdi^:= 0;
+  HalData^.modemanual^:= 1;
 end;
 
 function CheckPin(RetVal: integer): Boolean;
@@ -144,40 +271,57 @@ begin
     end;
 end;
 
-function ExportPinBit(pin: PPHalBit; Name: string): Boolean;
+function ExportPinBit(pin: PPHalBit; Dir: TPinDir; Name: string): Boolean;
 begin
-  Result:= CheckPin((hal_pin_bit_new(PChar(name),HAL_OUT,pin,compid)));
+  Result:= CheckPin((hal_pin_bit_new(PChar(name),dir,pin,compid)));
 end;
 
-function ExportPinFloat(pin: PPHalFloat; Name: string): Boolean;
+function ExportPinFloat(pin: PPHalFloat; Dir: TPinDir; Name: string): Boolean;
 begin
-  Result:= CheckPin((hal_pin_float_new(PChar(name),HAL_OUT,pin,compid)));
+  Result:= CheckPin((hal_pin_float_new(PChar(name),dir,pin,compid)));
 end;
 
-function ExportPinU32(pin: PPHalU32; Name: string): Boolean;
+function ExportPinU32(pin: PPHalU32; Dir: TPinDir; Name: string): Boolean;
 begin
-  Result:= CheckPin((hal_pin_u32_new(PChar(name),HAL_OUT,pin,compid)));
+  Result:= CheckPin((hal_pin_u32_new(PChar(name),dir,pin,compid)));
 end;
 
-function ExportPinS32(pin: PPHalS32; Name: string): Boolean;
-begin
-  Result:= CheckPin((hal_pin_s32_new(PChar(name),HAL_OUT,pin,compid)));
+function ExportPinS32(pin: PPHalS32; Dir: TPinDir; Name: string): Boolean;
+begin  
+  Result:= CheckPin((hal_pin_s32_new(PChar(name),dir,pin,compid)));
 end;
 
-procedure InitPins;
+function InitPins: Boolean;
 begin
-  if not ExportPinBit(@HalData^.x,'moc.jog.x') then Exit;
-  if not ExportPinBit(@HalData^.y,'moc.jog.y') then Exit;
-  if not ExportPinBit(@HalData^.z,'moc.jog.z') then Exit;
-  if not ExportPinBit(@HalData^.b,'moc.jog.b') then Exit;
-  if not ExportPinBit(@HalData^.c,'moc.jog.c') then Exit;
-  if not ExportPinFloat(@HalData^.Increment,'moc.jog.increment') then Exit;
-  if not ExportPinU32(@HalData^.cmd,'moc.command') then Exit;
-  if not ExportPinFloat(@HalData^.skewx,'moc.skew.x') then Exit;
-  if not ExportPinFloat(@HalData^.skewy,'moc.skew.y') then Exit;
-  if not ExportPinFloat(@HalData^.skewz,'moc.skew.z') then Exit;
-  if not ExportPinFloat(@HalData^.jogvel,'moc.jog.vel') then Exit;
-  if not ExportPinFloat(@HalData^.maxvel,'moc.maxvel') then Exit;
+  Result:= False;
+  if not ExportPinFloat(@HalData^.Increment,HAL_OUT,'moc.jog.increment') then Exit;  
+  if not ExportPinBit(@HalData^.x,HAL_OUT,'moc.jog.x') then Exit;
+  if not ExportPinBit(@HalData^.y,HAL_OUT,'moc.jog.y') then Exit;
+  if not ExportPinBit(@HalData^.z,HAL_OUT,'moc.jog.z') then Exit;
+  if not ExportPinBit(@HalData^.b,HAL_OUT,'moc.jog.b') then Exit;
+  if not ExportPinBit(@HalData^.c,HAL_OUT,'moc.jog.c') then Exit;
+  if not ExportPinU32(@HalData^.command,HAL_IN,'moc.command') then Exit;
+  if not ExportPinFloat(@HalData^.rotation_x,HAL_OUT,'moc.rot.x') then Exit;
+  if not ExportPinFloat(@HalData^.rotation_y,HAL_OUT,'moc.rot.y') then Exit;
+  if not ExportPinFloat(@HalData^.rotation_z,HAL_OUT,'moc.rot.z') then Exit;
+  if not ExportPinS32(@HalData^.feed,HAL_IO,'moc.feed') then Exit;
+  if not ExportPinS32(@HalData^.maxvel,HAL_IO,'moc.maxvel') then Exit;
+  if not ExportPinS32(@HalData^.spindle,HAL_IO,'moc.spindle') then Exit;
+  if not ExportPinS32(@HalData^.jogvel,HAL_IO,'moc.jog.vel') then Exit;
+  if not ExportPinBit(@HalData^.modeauto,HAL_IN,'moc.mode.auto') then Exit;
+  if not ExportPinBit(@HalData^.modemanual,HAL_IN,'moc.mode.manual') then Exit;
+  if not ExportPinBit(@HalData^.modemdi,HAL_IN,'moc.mode.mdi') then Exit;
+  if not ExportPinBit(@HalData^.button0,HAL_IN,'moc.button.0') then Exit;
+  if not ExportPinBit(@HalData^.button1,HAL_IN,'moc.button.1') then Exit;
+  if not ExportPinBit(@HalData^.button2,HAL_IN,'moc.button.2') then Exit;
+  if not ExportPinBit(@HalData^.button3,HAL_IN,'moc.button.3') then Exit;
+  if not ExportPinBit(@HalData^.button4,HAL_IN,'moc.button.4') then Exit;
+  if not ExportPinBit(@HalData^.button5,HAL_IN,'moc.button.5') then Exit;
+  if not ExportPinBit(@HalData^.button6,HAL_IN,'moc.button.6') then Exit;
+  if not ExportPinBit(@HalData^.button7,HAL_IN,'moc.button.7') then Exit;
+  if not ExportPinBit(@HalData^.button8,HAL_IN,'moc.button.8') then Exit;
+  if not ExportPinBit(@HalData^.button9,HAL_IN,'moc.button.9') then Exit;
+  Result:= True;
 end;
 
 function InitHal(Name: string): boolean;
@@ -216,33 +360,6 @@ begin
     hal_exit(CompId);
 end;
 
-{
-procedure TestLoop;
-var
-  Flag: Integer;
-begin
-  if HalData <> nil then
-    begin
-      writeln('press a key to abort...');
-      HalData^.increment^ :=  0;
-      HalData^.x^ := 0;
-      Flag:= 0;
-      while not Keypressed do
-      begin
-        HalData^.increment^ :=  HalData^.increment^ + 0.1;
-        inc(Flag);
-        if Flag > 9 then Flag:= 0;
-        HalData^.x^ := Byte(Boolean(Flag < 5));
-        sleep(500);
-      end;
-      writeln('done...');
-    end
-  else
-    writeln('HalData = nil!');
-end;
-}
 
-// begin
-// HalHandle:= nil;
 end.
 

@@ -1,7 +1,7 @@
 object TouchOffWizDlg: TTouchOffWizDlg
-  Left = 587
+  Left = 520
   Height = 490
-  Top = 237
+  Top = 291
   Width = 397
   ActiveControl = EditY2
   BorderIcons = [biSystemMenu]

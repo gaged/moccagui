@@ -94,8 +94,7 @@ const
 var
   ErrorStr: Array[0..LINELEN-1] of Char; external name 'errorString';
   EMC_NMLFILE: Array[0..LINELEN-1] of Char; external name 'EMC_NMLFILE';
-  // DEFAULT_EMC_NMLFILE: Array[0..LINELEN-1] of Char; external name 'EMC_DEFAULT_NMLFILE';
-
+  
   OperatorTextStr: Array[0..LINELEN-1] of Char; external name 'operatorTextStr';
   OperatorDisplayStr: Array[0..LINELEN-1] of Char; external name 'operatorDisplayStr';
 

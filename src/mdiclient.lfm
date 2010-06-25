@@ -1,7 +1,7 @@
 object MDIClientForm: TMDIClientForm
-  Left = 665
+  Left = 767
   Height = 279
-  Top = 316
+  Top = 630
   Width = 432
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
@@ -70,6 +70,7 @@ object MDIClientForm: TMDIClientForm
     BorderSpacing.Left = 2
     Font.Height = -16
     Font.Style = [fsBold]
+    OnKeyPress = MDIEditKeyPress
     ParentFont = False
     TabOrder = 1
   end
