@@ -219,7 +219,8 @@
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
-      <Libraries Value="/home/gtom/emc/lib/"/>
+      <Libraries Value="/home/gtom/mocca/2.4.1/lib/"/>
+      <OtherUnitFiles Value="../pkg/"/>
       <UnitOutputDirectory Value="/home/gtom/mocca/lib"/>
       <LCLWidgetType Value="gtk2"/>
     </SearchPaths>

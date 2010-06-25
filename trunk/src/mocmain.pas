@@ -24,6 +24,7 @@ type
     ButtonView4: TMocButton;
     ButtonViewMinus: TMocButton;
     ButtonViewPlus: TMocButton;
+    OEMLed1: TMocLed;
     OEMLabel11: TLabel;
     LedFOREnabled: TMocLed;
     LedSOREnabled: TMocLed;
@@ -87,6 +88,10 @@ type
     LedModeManual: TMocLed;
     LedShowRelative: TMocLed;
     LedShowDtg: TMocLed;
+    OEMLed2: TMocLed;
+    OEMLed3: TMocLed;
+    OEMLed4: TMocLed;
+    OEMLed0: TMocLed;
     PanelDRO: TPanel;
     PanelMsg: TPanel;
     PanelPreview: TPanel;
@@ -420,6 +425,12 @@ begin
       FOn:= State.Machine;
       LedMachineOn.IsOn:= FOn;
     end;
+
+  OemLed0.IsOn:= GetHalLedState(0);
+  OemLed1.IsOn:= GetHalLedState(1);
+  OemLed2.IsOn:= GetHalLedState(2);
+  OemLed3.IsOn:= GetHalLedState(3);
+  OemLed4.IsOn:= GetHalLedState(4);
 
  end;
 

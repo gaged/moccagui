@@ -58,8 +58,12 @@ type
     button7: ^THalBit;
     button8: ^THalBit;
     button9: ^THalBit;
+    oemled0: ^THalBit;
+    oemled1: ^THalBit;
+    oemled2: ^THalBit;
+    oemled3: ^THalBit;
+    oemled4: ^THalBit;
   end;
-
 
 function InitHal(Name: string): boolean;
 procedure DoneHal;
@@ -98,6 +102,8 @@ procedure SetHalSpindle(Value: integer);
 function GetHalTaskMode: integer;
 procedure UpdateHalTaskMode(Mode: integer);
 
+function GetHalLedState(Led: integer): Boolean;
+
 implementation
 
 uses
@@ -116,6 +122,17 @@ begin
   HalData^.z^:= Byte(Axis = 'Z');
   HalData^.b^:= Byte(Axis = 'B');
   HalData^.c^:= Byte(Axis = 'C');
+end;
+
+function GetHalLedState(Led: integer): Boolean;
+begin
+  case LEd of
+    0: Result:= HalData^.oemled0^ <> 0;
+    1: Result:= HalData^.oemled1^ <> 0;
+    2: Result:= HalData^.oemled2^ <> 0;
+    3: Result:= HalData^.oemled3^ <> 0;
+    4: Result:= HalData^.oemled4^ <> 0;
+  end;
 end;
 
 function  GetHalJogAxis: Char;
@@ -321,6 +338,11 @@ begin
   if not ExportPinBit(@HalData^.button7,HAL_IN,'moc.button.7') then Exit;
   if not ExportPinBit(@HalData^.button8,HAL_IN,'moc.button.8') then Exit;
   if not ExportPinBit(@HalData^.button9,HAL_IN,'moc.button.9') then Exit;
+  if not ExportPinBit(@HalData^.oemled0,HAL_IN,'moc.led.0') then Exit;
+  if not ExportPinBit(@HalData^.oemled1,HAL_IN,'moc.led.1') then Exit;
+  if not ExportPinBit(@HalData^.oemled2,HAL_IN,'moc.led.2') then Exit;
+  if not ExportPinBit(@HalData^.oemled3,HAL_IN,'moc.led.3') then Exit;
+  if not ExportPinBit(@HalData^.oemled4,HAL_IN,'moc.led.4') then Exit;
   Result:= True;
 end;
 
