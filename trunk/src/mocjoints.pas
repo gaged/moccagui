@@ -16,10 +16,10 @@ const
 
   {$IFDEF LCLGTK2}
   KeyDelayTime = 20;
-  {$ELSE}
-  KeyDelayTime = 20;
-  {$ENDIF}
   KeySleepAfterUp = 10;
+  {$ELSE}
+  KeyDelayTime = 100;
+  {$ENDIF}
 
 type
   TAxis = class
@@ -114,7 +114,6 @@ type
     property  ShowDtg: Boolean read FShowDtg write FShowDtg;
     property  BorderWidth: integer read FBorderWidth write FBorderWidth;
     property  ShowBox: Boolean write SetShowBox;
-
   end;
   
 var
@@ -380,35 +379,6 @@ begin
   sendHome(i);
 end;
 
-function TJoints.JogCont(Ch: Char; Speed: Double): integer;
-var
-  i: Integer;
-  {$IFDEF LCLGTK2}
-  d: longint;
-  {$ENDIF}
-begin
-  Result:= -1;
-  i:= AxisByChar(Ch);
-  if i < 0 then Exit;
-  FAxes[i].Jogging:= True;
-  {$IFDEF LCLGTK2}
-  d:= GetTickDiff(AxisTicks[i]);
-  if d < KeyDelayTime then
-    begin
-      {$IFDEF DEBUG_EMC}
-       writeln('key skipped ',d);
-      {$ENDIF}
-      Exit;
-    end;
-  {$ENDIF}
-  Result:= sendJogCont(i,Speed);
-  {$IFNDEF LCLGKT2}
-  Sleep(5);
-  {$ENDIF}
-  if i <> Vars.ActiveAxis then
-    Vars.ActiveAxis:= i;
-end;
-
 function TJoints.JogIncr(Ch: Char; Speed,Incr: Double): integer;
 var
   i: Integer;
@@ -423,17 +393,46 @@ begin
     Vars.ActiveAxis:= i;
 end;
 
+function TJoints.JogCont(Ch: Char; Speed: Double): integer;
+var
+  i: Integer;
+  d: longint;
+begin
+  Result:= -1;
+  i:= AxisByChar(Ch);
+  if i < 0 then Exit;
+  FAxes[i].Jogging:= True;
+  {$IFDEF LCLGTK2}
+  d:= GetTickDiff(AxisTicks[i]);
+  if d < KeyDelayTime then
+    begin
+      {$IFDEF DEBUG_EMC}
+       writeln('key skipped ',d);
+      {$ENDIF}
+      Exit;
+    end;
+  {$ELSE}
+  AxisTicks[i]:= GetTickCount;
+  Sleep(20);
+  {$ENDIF}
+  Result:= sendJogCont(i,Speed);
+  if i <> Vars.ActiveAxis then
+    Vars.ActiveAxis:= i;
+end;
+
 function TJoints.JogStop(Ch: Char): integer;
 var
   i: Integer;
 begin
   Result:= -1;
+  {$IFDEF LCLGTK2}
   i:= AxisByChar(Ch);
   if i < 0 then Exit;
   Result:= sendJogStop(i);
   if i <> Vars.ActiveAxis then
     Vars.ActiveAxis:= i;
   FAxes[i].Jogging:= False;
+  {$ENDIF}
 end;
 
 procedure TJoints.JogStopAll;
@@ -523,7 +522,6 @@ procedure TJoints.CreateJoints(CoordNames: string; NumAxes: integer);
 var
   i: integer;
   c: Char;
-  // IsLinear: Boolean;
   Ax: TAxis;
 begin
   if (Length(CoordNames) < 1) or (Length(CoordNames) > MAX_JOINTS) or
@@ -542,11 +540,30 @@ end;
 procedure TJoints.Update;
 var
   i: integer;
+ {$IFNDEF LCLGTK2}
+ d: dWord;
+ {$ENDIF}
 begin
   if FNumAxes < 1 then Exit;
   for i:= 0 to FNumAxes - 1 do
     begin
       FAxes[i].Update(FShowActual,FShowRelative,FShowDtg);
+      {$IFNDEF LCLGTK2}
+      if (FAxes[i].Jogging) then
+        begin
+          d:= GetTickCount - AxisTicks[i];
+          if d > KeyDelayTime then
+          begin
+            AxisTicks[i]:= 0;
+            FAxes[i].Jogging:= False;
+            Writeln('Stopped');
+            Sleep(10);
+            sendJogStop(i);
+            if i <> Vars.ActiveAxis then
+            Vars.ActiveAxis:= i;
+          end;
+        end;
+      {$ENDIF}
     end;
   if FShowBox then
     if FOldActiveAxis <> Vars.ActiveAxis then

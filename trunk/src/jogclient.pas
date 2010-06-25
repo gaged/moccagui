@@ -13,7 +13,6 @@ type
   { TJogClientForm }
 
   TJogClientForm = class(TForm)
-    BtnORideLimits: TMocButton;
     BXMinus: TMocButton;
     BBPlus: TMocButton;
     BCMinus: TMocButton;
@@ -26,9 +25,6 @@ type
     BAMinus: TMocButton;
     BAPlus: TMocButton;
     BBMinus: TMocButton;
-    LabelJ1: TLabel;
-    LabelJ2: TLabel;
-    LedORide: TMocLed;
     MocButtonInc0: TMocButton;
     MocButtonInc1: TMocButton;
     MocButtonInc2: TMocButton;
@@ -37,7 +33,11 @@ type
     MocButtonInc5: TMocButton;
     MocButtonInc6: TMocButton;
     MocButtonInc7: TMocButton;
+    BtnORideLimits: TMocButton;
+    LedORide: TMocLed;
     SliderJog: TSlider;
+    LabelJ1: TLabel;
+    LabelJ2: TLabel;
     procedure BJogMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure BJogMouseUp(Sender: TObject; Button: TMouseButton;
@@ -46,7 +46,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Click(Sender: TObject);
+    procedure UserClick(Sender: TObject);
     procedure MocButtonIncClick(Sender: TObject);
     procedure SliderJogPositionChanged(Sender: TObject; NewPos: integer);
   private
@@ -311,7 +311,7 @@ begin
     3: V:= @BtnDefJogTool;
     4: V:= @BtnDefScripts;
   end;
-  SetButtonMap(V,@Self.Click);
+  SetButtonMap(V,@Self.UserClick);
   UpdateButtons;
 end;
 
@@ -348,7 +348,9 @@ begin
   if Vars.JogContinous then
     begin
       Joints.JogStop(Ch);
+      {$IFDEF LCLGKT2}
       Sleep(KeySleepAfterUp);
+      {$ENDIF}
     end;
   Key:= 0;
 end;
@@ -376,7 +378,7 @@ begin
   Result:= (Key = 0);
 end;
 
-procedure TJogClientForm.Click(Sender: TObject);
+procedure TJogClientForm.UserClick(Sender: TObject);
 begin
   if Assigned(Sender) then
     with Sender as TMocButton do
@@ -515,7 +517,11 @@ end;
 procedure TJogClientForm.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if HandleJogKeys(Key,False,False) then Key:= 0;
+   {$ifdef LCLGTK2}
+   if HandleJogKeys(Key,False,False) then Key:= 0;
+   {$else}
+   Key:= 0;
+   {$endif}
 end;
 
 

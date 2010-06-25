@@ -11,7 +11,7 @@ uses
   {$IFNDEF OWNGL}
   OpenGlContext;
   {$ELSE}
-  glcontext;
+  mocgl;
   {$ENDIF}
 
 type
@@ -59,7 +59,7 @@ type
     {$IFNDEF OWNGL}
     ogl: TOpenGlControl;
     {$ELSE}
-    ogl: TGlControl;
+    ogl: TMocGlControl;
     {$ENDIF}
 
     FShowLivePlot: Boolean;
@@ -128,9 +128,6 @@ uses
 
 type
   TGlVector3 = array[0..2] of glDouble;
-
-//const
-//  InitialRotX = -60; InitialRotY = 0; InitialRotZ = 0;
 
 procedure SetGlColor3(const c: TGlColorItem);
 begin
@@ -210,9 +207,9 @@ begin
       ix:= Joints.AxisByChar('X');
       iy:= Joints.AxisByChar('Y');
       iz:= Joints.AxisByChar('Z');
-      if ix >= 0 then X:= GetRelPos(ix) else Exit;
-      if iy >= 0 then Y:= GetRelPos(iy) else Exit;
-      if iz >= 0 then Z:= GetRelPos(iz) else Exit;
+      if ix >= 0 then X:= GetRelPos(ix) else X:= 0;
+      if iy >= 0 then Y:= GetRelPos(iy) else Y:= 0;
+      if iz >= 0 then Z:= GetRelPos(iz) else Z:= 0;
       MoveCone(x,y,z);
     end;
 end;
@@ -262,10 +259,7 @@ begin
   ogl.RGBA:= GlSettings.UseRGBA;
   ogl.DoubleBuffered:= GlSettings.UseDoubleBuffered;
   {$ELSE}
-  GlRGBA:= GlSettings.UseRGBA;
-  GlDirect:= GlSettings.UseDirect;
-  GlDoubleBuffered:= GlSettings.UseDoubleBuffered;
-  ogl:= TGlControl.Create(Self);
+  ogl:= TMocGlControl.Create(Self);
   {$ENDIF}
   if not Assigned(ogl) then
     RaiseError('could not create opengl-control');
@@ -339,12 +333,6 @@ begin
           RotationY:= yrot;
           RotationZ:= zrot;
         end;
-      {case Value of
-        vmPerspective: SetRot(-45,0,0);
-        1:SetRot(0,0,0);
-        2: SetRot(-90,0,0);
-        3: SetRot(-90,0,-90);
-      end;}
       sbV.setParams(Round(RotationX),-90,90);
       sbH.SetParams(Round(RotationZ),-90,90);
       ogl.Invalidate;
@@ -800,14 +788,17 @@ begin
     if ZoomMax < 10 then ZoomMax:= 10;
   if Round(EyeZ) < 1 then EyeZ:= 1;
 
-  if Ogl.MakeCurrent then
+  if AreaInitialized then
     begin
-      MakeCone;
-      MakeCoords;
-      MakeLimits;
-      MakeList;
+      if Ogl.MakeCurrent then
+        begin
+          MakeCone;
+          MakeCoords;
+          MakeLimits;
+          MakeList;
+        end;
+      Ogl.Invalidate;
     end;
-  Ogl.Invalidate;
 end;
 
 procedure TSimClientForm.MakeList;
@@ -885,7 +876,7 @@ begin
   if not AreaInitialized then
     begin
       InitGL;
-      AreaInitialized:=true;
+      AreaInitialized:= True;
     end;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity;

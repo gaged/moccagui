@@ -41,7 +41,7 @@ var
   ConfigDir: string;
   BackGroundImage: string;
 
-  PartBaseCoord : record
+  CoordRef : record
     x,y,z: double;
     IsSet: Boolean;
   end;
@@ -60,6 +60,7 @@ function  SetExtents(xa,xb,ya,yb,za,zb: double): TExtents;
 procedure RaiseError(const Msg: string);
 
 function AddBitmap(const AName: string): integer;
+procedure FreeBitmapList;
 
 {$IFDEF LCLGTK2}
 procedure FullScreen(WinControl: TWinControl);
@@ -287,6 +288,19 @@ begin
   Result:= i;
 end;
 
+procedure FreeBitmapList;
+var
+  i: integer;
+begin
+ if Assigned(GlobalBitmaps) then
+   for i:= 0 to GlobalBitmaps.Count - 1 do
+     if Assigned(GlobalBitmaps.Objects[i]) then
+       begin
+         GlobalBitmaps.Objects[i].Free;
+         GlobalBitmaps.Objects[i]:= nil;
+        end;
+ GlobalBitmaps.Free;
+end;
 
 initialization
 
@@ -294,7 +308,7 @@ GlobalBitmaps:= nil;
 LastError:= '';
 BackGroundImage:= '';
 
-GlSettings.UseDirect:= True;
+GlSettings.UseDirect:= False;
 GlSettings.UseDoubleBuffered:= True;
 GlSettings.UseRGBA:= True;
 

@@ -1,8 +1,8 @@
 { Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
 
 LazarusResources.Add('TMDIClientForm','FORMDATA',[
-  'TPF0'#14'TMDIClientForm'#13'MDIClientForm'#4'Left'#3#153#2#6'Height'#3#23#1#3
-  +'Top'#3'<'#1#5'Width'#3#176#1#18'HorzScrollBar.Page'#3#143#1#18'VertScrollBa'
+  'TPF0'#14'TMDIClientForm'#13'MDIClientForm'#4'Left'#3#255#2#6'Height'#3#23#1#3
+  +'Top'#3'v'#2#5'Width'#3#176#1#18'HorzScrollBar.Page'#3#143#1#18'VertScrollBa'
   +'r.Page'#3'+'#1#13'ActiveControl'#7#14'MDIHistListBox'#11'BorderIcons'#11#0
   +#11'BorderStyle'#7#6'bsNone'#7'Caption'#6#13'MDIClientForm'#12'ClientHeight'
   +#3#23#1#11'ClientWidth'#3#176#1#5'Color'#7#8'clSilver'#10'KeyPreview'#9#7'On'
@@ -26,5 +26,6 @@ LazarusResources.Add('TMDIClientForm','FORMDATA',[
   +'orSideBottom.Side'#7#9'asrBottom'#4'Left'#2'6'#6'Height'#2#23#3'Top'#3#254#0
   +#5'Width'#3'z'#1#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#0#11'BorderStyl'
   +'e'#7#6'bsNone'#18'BorderSpacing.Left'#2#2#11'Font.Height'#2#240#10'Font.Sty'
-  +'le'#11#6'fsBold'#0#10'ParentFont'#8#8'TabOrder'#2#1#0#0#0
+  +'le'#11#6'fsBold'#0#10'OnKeyPress'#7#15'MDIEditKeyPress'#10'ParentFont'#8#8
+  +'TabOrder'#2#1#0#0#0
 ]);

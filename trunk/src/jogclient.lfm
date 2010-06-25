@@ -61,6 +61,7 @@ object JogClientForm: TJogClientForm
     Caption = '- X'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -75,6 +76,7 @@ object JogClientForm: TJogClientForm
     Caption = 'X +'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -89,6 +91,7 @@ object JogClientForm: TJogClientForm
     Caption = '+ Y'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -103,6 +106,7 @@ object JogClientForm: TJogClientForm
     Caption = '+ Z'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -117,6 +121,7 @@ object JogClientForm: TJogClientForm
     Caption = '- Y'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -131,6 +136,7 @@ object JogClientForm: TJogClientForm
     Caption = '- Z'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -145,6 +151,7 @@ object JogClientForm: TJogClientForm
     Caption = '- A'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -159,6 +166,7 @@ object JogClientForm: TJogClientForm
     Caption = 'A +'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -173,6 +181,7 @@ object JogClientForm: TJogClientForm
     Caption = '- B'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -187,6 +196,7 @@ object JogClientForm: TJogClientForm
     Caption = 'B +'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -201,6 +211,7 @@ object JogClientForm: TJogClientForm
     Caption = '- C'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -215,6 +226,7 @@ object JogClientForm: TJogClientForm
     Caption = 'C +'
     Color = clBtnFace
     Font.Style = [fsBold]
+    OnClick = UserClick
     OnMouseDown = BJogMouseDown
     OnMouseUp = BJogMouseUp
     ParentFont = False
@@ -227,7 +239,7 @@ object JogClientForm: TJogClientForm
     ShowClicks = True
     Caption = 'Grenzwerte An/Aus'
     Color = clBtnFace
-    OnClick = Click
+    OnClick = UserClick
   end
   object MocButtonInc0: TMocButton
     Left = 284

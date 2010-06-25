@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 165
+  Left = 203
   Height = 724
-  Top = 149
+  Top = 145
   Width = 961
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -537,7 +537,7 @@ object MainForm: TMainForm
     ShowClicks = True
     Caption = 'mm'
     Color = clBtnFace
-    OnClick = LabelUnitsClick
+    OnClick = ButtonUnitsMMClick
   end
   object ButtonShowRelative: TMocButton
     Left = 440
@@ -846,9 +846,9 @@ object MainForm: TMainForm
   object PanelButtons: TPanel
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Side = asrBottom
-    Left = 0
+    Left = -4
     Height = 72
-    Top = 648
+    Top = 644
     Width = 960
     BevelOuter = bvNone
     BevelWidth = 5
@@ -935,7 +935,7 @@ object MainForm: TMainForm
     Position = 0
     BarColor = clBlue
     Vertical = False
-    Smooth = False
+    Smooth = True
     PositionChanged = SliderVelPositionChanged
     Caption = '0.00'
   end

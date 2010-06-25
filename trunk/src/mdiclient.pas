@@ -20,9 +20,10 @@ type
     procedure Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure MDIEditKeyPress(Sender: TObject; var Key: char);
     procedure MDIHistListBoxClick(Sender: TObject);
   private
-    function FormatMdi(S0: string): string;
+    function FormatMdi(sMdi: string): string;
     procedure ExecuteMdi;
   public
     procedure ActivateSelf;
@@ -121,23 +122,30 @@ begin
     end;
 end;
 
+procedure TMDIClientForm.MDIEditKeyPress(Sender: TObject; var Key: char);
+begin
+  if (Key in ['a'..'c','f'..'k','m','p','r'..'z']) then
+    Key:= UpCase(Key)
+  else
+    if (Key = ',') then Key:= '.';
+end;
+
 procedure TMDIClientForm.MDIHistListBoxClick(Sender: TObject);
 begin
   with MdiHistListbox do MdiEdit.Text:=items[itemindex];
 end;
 
-function TMDIClientForm.FormatMdi(S0: string): string;
+function TMDIClientForm.FormatMdi(sMdi: string): string;
 var
   i: integer;
   S,SF: string;
-  // c: char;
  begin
   result:= '';
+  if sMdi = '' then Exit;
   SF:= '';
-  if S0 = '' then Exit;
   S:= '';
-  for i:= 1 to Length(S0) do
-    if S0[i] <> #32 then S:= S + UpCase(S0[i]);
+  for i:= 1 to Length(sMdi) do
+    if SMdi[i] <> #32 then S:= S + UpCase(sMdi[i]);
   SF:= SF + S[1];
   if Length(S) > 1 then
     for i:= 2 to Length(S) do
@@ -157,7 +165,7 @@ var
 begin
   S:= MdiEdit.Text;
   if Length(S) < 1 then Exit;
-  SF := FormatMDI(S);
+  SF:= FormatMDI(S);
   // hier MDI senden:
   Emc.Execute(S);  // send mdi command
   Sleep(10);

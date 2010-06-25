@@ -2,16 +2,20 @@
 
 {$H+}
 
-//{$define DEBUG_EMC}
-//{$define DEBUG_CONFIG}
-//{$define DEBUG_INI}
-//{$define PRINT_CANON}
-//{$define DEBUG_GL}
-
-{$define OWNGL}
+{$ifdef DEBUG_ALL}
+  {$define DEBUG_EMC} 
+  {$define DEBUG_CONFIG}
+  {$define DEBUG_INI}
+  {$define PRINT_CANON}
+  {$define DEBUG_GL}
+{$endif}
 
 {$ifndef VER_23}
   {$define VER_24}
+{$endif}
+
+{$ifdef LCLGTK2}
+  {$define OWNGL}
 {$endif}
 
 {$define HAS_SLEEP}

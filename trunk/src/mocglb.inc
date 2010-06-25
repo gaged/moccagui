@@ -79,7 +79,7 @@ const
   cmINCRUP     = 321;
   cmSHIFTUP    = 330;
   cmSHIFTDN    = 331;
-  cmPARTALGN   = 340;
+  cmCOORDROT   = 340;
   cmUNITS      = 350;
   cmBACK       = 999;
   cmSCRIPTBASE = 1000;
@@ -156,7 +156,7 @@ const
   (S:'cmINCRUP'    ; i:321),
   (S:'cmSHIFTUP'   ; i:330),
   (S:'cmSHIFTDN'   ; i:331),
-  (S:'cmPARTALGN'  ; i:340),
+  (S:'cmCOORDROT'  ; i:340),
   (S:'cmUNITS'     ; i:350),
   (S:'cmCLOSE'     ; i:360),
   (S:'cmBACK'      ; i:999),

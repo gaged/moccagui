@@ -12,7 +12,7 @@ function IniRead(FileName: string): Boolean;
 implementation
 
 uses
-  mocglb,emc2pas;
+  mocglb,emc2pas,emcint;
   
 function StripBlank(var S: string): Boolean;
 var
@@ -33,16 +33,14 @@ function GetIniStr(secstr,varstr: string; var s: string; defval: string): Boolea
 var
   Buffer: Array[0..LINELEN-1] of Char;
 begin
+  Result:= False;
   if iniGet(PChar(secstr),PChar(varstr),PChar(Buffer)) then
     begin
       s:= PChar(Buffer);
       Result:= True;
     end
   else
-    begin
-      s:= defval;
-      Result:= False;
-    end;
+    s:= defval;
 end;
 
 function GetIniDouble(secstr,varstr: string;var d: double; defval: Double): Boolean;
@@ -92,8 +90,14 @@ begin
     end;
   if Length(Vars.CoordNames) <> Vars.NumAxes then
     begin
-      writeln('mismatch in geometry & number of axes.');
-      Exit;
+      writeln('mismatch in given coords and number of axes.');
+      if Length(Vars.CoordNames) < Vars.NumAxes then
+        begin
+          Vars.NumAxes:= Length(Vars.CoordNames);
+          writeln('Using ' + IntToStr(Vars.NumAxes) + ' for ' + Vars.CoordNames);
+        end
+      else
+        Exit;
     end;
   for i:= 0 to Vars.NumAxes - 1 do
     begin
@@ -162,7 +166,10 @@ begin
   // first we try to find the nml-file
   // emc2-2.4 uses the default NML_FILE;
   // emc2-2.3 needs the NML_FILE set up in the ini-file
-  writeln('Default NML- File: ', PChar(EMC_NMLFILE));
+  {$ifdef VER_24}
+  writeln('Default NML- File: ', Emc2NmlFile);
+  EMC_NMLFILE:= PChar(Emc2NmlFile);
+  {$endif}
   if GetIniStr('EMC','NML_FILE',tmp,'') then
     EMC_NMLFILE:= PChar(tmp)
   else
@@ -191,7 +198,8 @@ begin
   GetIniDouble('DISPLAY','MAX_FEED_OVERRIDE',d,1);
   Vars.MaxFeedOverride:= Round(d * 100);
 
-  GetIniDouble('DISPLAY','MAX_SPINDLE_OVERRIDE',d,0);
+  // Max-Spindle
+  GetIniDouble('DISPLAY','MAX_SPINDLE_OVERRIDE',d,1);
   Vars.MaxSpORide:= Round(d * 100);
 
   GetIniDouble('DISPLAY','MIN_SPINDLE_OVERRIDE',d,0);
@@ -286,13 +294,14 @@ begin
       Exit;
     end;
   Vars.NumAxes:= i;
+
   if GetIniStr('TRAJ','COORDINATES',tmp,'') then
     begin
       if not StripBlank(tmp) then tmp:= '';
-      if Length(tmp) <> Vars.NumAxes then
+      if Length(tmp) < 1 then
         begin
-          writeln('missmatch in number of joints and coord names');
-          Exit;
+           writeln('No Coordinates in [TRAJ] found.');
+           Exit;
         end;
     end;
   Vars.CoordNames:= tmp;
