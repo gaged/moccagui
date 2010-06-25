@@ -952,7 +952,12 @@ begin
   if not Assigned(ogl) then Exit;
   ToolRad:= GetToolDiameter(ToolNo) / 2;
   ToolLen:= GetToolLength(ToolNo);
-  MakeCone;
+  if AreaInitialized then
+    begin 
+      if Ogl.MakeCurrent then
+        MakeCone;
+      Ogl.Invalidate;
+    end;
 end;
 
 procedure TSimClientForm.MakeCone;
