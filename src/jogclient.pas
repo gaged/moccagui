@@ -477,6 +477,8 @@ begin
       BXPlus.Visible:= False;
       BXMinus.Visible:= False;
     end;
+
+  BtnORideLimits.Tag:= cmLIMITS;
 end;
 
 procedure TJogClientForm.BJogMouseDown(Sender: TObject;
