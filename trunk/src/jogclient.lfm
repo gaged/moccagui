@@ -236,6 +236,7 @@ object JogClientForm: TJogClientForm
     Height = 32
     Top = 216
     Width = 268
+    Command = 'cmLIMITS'
     ShowClicks = True
     Caption = 'Grenzwerte An/Aus'
     Color = clBtnFace
