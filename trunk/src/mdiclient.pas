@@ -92,9 +92,15 @@ begin
 end;
 
 procedure TMDIClientForm.InitControls;
+var
+  i: integer;
 begin
   SetButtonDown(cmMDI,True);
   MDIEdit.SetFocus;
+  i:= MDIHistListBox.Count - 1;
+  if i < 0 then Exit;
+  MDIHistListBox.ItemIndex:= i;
+  MDIHistListBox.MakeCurrentVisible;
 end;
 
 procedure TMDIClientForm.Click(Sender: TObject);
@@ -176,7 +182,11 @@ begin
   if MdiHistListbox.Count > 0 then
     NewOne:= MdiHistListBox.Items.IndexOf(SF) < 0;
   if NewOne then
-    MdiHistListbox.Items.Add(SF);
+    begin
+      MdiHistListbox.Items.Add(SF);
+      MDIHistListBox.ItemIndex:= MDIHistListBox.Count - 1;
+      MDIHistListBox.MakeCurrentVisible;
+    end;
   MdiEdit.Text:= '';
 end;
 
