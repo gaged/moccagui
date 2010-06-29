@@ -16,54 +16,55 @@
     <item name="toolpath" r="0" g="0" b="0"/>
   </glcolors> 
   <menujog>
-    <item index="0" cmd="cmREF" bitmap="" text="Ref.-Fahrt..."/>
-    <item index="1" cmd="cmTOUCHOFF" bitmap="" text="Antasten"/>    
-    <item index="2" cmd="cmTOUCHWIZ" bitmap="" text="Antasten..."/>    
-    <item index="3" cmd="cmTOOLS" bitmap="" text="Werkzg."/>
+    <item index="0" cmd="cmREF" bitmap="" text="Home..."/>
+    <item index="1" cmd="cmTOUCHOFF" bitmap="" text="Touchoff"/>    
+    <item index="2" cmd="cmTOUCHWIZ" bitmap="" text="Touchoff..."/>    
+    <item index="3" cmd="cmTOOLS" bitmap="" text="Tools"/>
     <item index="4" cmd="cmSCRIPTS" bitmap="" text="Scripts..."/>
-    <item index="9" cmd="cmCLOSE" bitmap="" text="Beenden"/>
+    <item index="5" cmd="cmCOORDROT" bitmap="" text="Adjust..."/>
+    <item index="9" cmd="cmCLOSE" bitmap="" text="Exit"/>
   </menujog>
   <menuref>
     <item index="0" cmd="cmBACK" bitmap="" text="&lt;"/>
-    <item index="1" cmd="cmREFALL" bitmap="" text="Alle Achsen"/>    
-    <item index="2" cmd="cmREFX" bitmap="" text="X-Achse"/>
-    <item index="3" cmd="cmREFY" bitmap="" text="Y-Achse"/>
-    <item index="4" cmd="cmREFZ" bitmap="" text="Z-Achse"/>    
-    <item index="5" cmd="cmREFA" bitmap="" text="A-Achse"/>
-    <item index="6" cmd="cmREFB" bitmap="" text="B-Achse"/>
-    <item index="7" cmd="cmREFC" bitmap="" text="C-Achse"/>
-    <item index="8" cmd="cmUNREF" bitmap="" text="Ref.Aufheben"/>
+    <item index="1" cmd="cmREFALL" bitmap="" text="All Axes"/>    
+    <item index="2" cmd="cmREFX" bitmap="" text="X-Axis"/>
+    <item index="3" cmd="cmREFY" bitmap="" text="Y-Axis"/>
+    <item index="4" cmd="cmREFZ" bitmap="" text="Z-Axis"/>    
+    <item index="5" cmd="cmREFA" bitmap="" text="A-Axis"/>
+    <item index="6" cmd="cmREFB" bitmap="" text="B-Axis"/>
+    <item index="7" cmd="cmREFC" bitmap="" text="C-Axis"/>
+    <item index="8" cmd="cmUNREF" bitmap="" text="Unhome active"/>
  </menuref>
   <menutouchoff>
     <item index="0" cmd="cmBACK" bitmap="" text="&lt;"/>
-    <item index="1" cmd="cmTOUCHX" bitmap="" text="X-Achse"/>
-    <item index="2" cmd="cmTOUCHY" bitmap="" text="Y-Achse"/>    
-    <item index="3" cmd="cmTOUCHZ" bitmap="" text="Z-Achse"/>
-    <item index="4" cmd="cmTOUCHA" bitmap="" text="A-Achse"/>
-    <item index="5" cmd="cmTOUCHB" bitmap="" text="B-Achse"/>    
-    <item index="6" cmd="cmTOUCHC" bitmap="" text="C-Achse"/>
-    <item index="7" cmd="cmZEROALL" bitmap="" text="Alle 0.00"/>
-    <item index="9" cmd="cmOFFSDLG" bitmap="" text="Bearbeiten.."/> 
+    <item index="1" cmd="cmTOUCHX" bitmap="" text="X-Axis"/>
+    <item index="2" cmd="cmTOUCHY" bitmap="" text="Y-Axis"/>    
+    <item index="3" cmd="cmTOUCHZ" bitmap="" text="Z-Axis"/>
+    <item index="4" cmd="cmTOUCHA" bitmap="" text="A-Axis"/>
+    <item index="5" cmd="cmTOUCHB" bitmap="" text="B-Axis"/>    
+    <item index="6" cmd="cmTOUCHC" bitmap="" text="C-Axis"/>
+    <item index="7" cmd="cmZEROALL" bitmap="" text="All 0.00"/>
+    <item index="9" cmd="cmOFFSDLG" bitmap="" text="Offsets.."/> 
   </menutouchoff>
   <menutool>
     <item index="0" cmd="cmBACK" bitmap="" text="&lt;"/>
-    <item index="1" cmd="cmTOOLCHG" bitmap="" text="Wkz-Wechsel"/>
-    <item index="2" cmd="cmTOOLEDT" bitmap="" text="Wkz bearbeiten..."/>    
+    <item index="1" cmd="cmTOOLCHG" bitmap="" text="Change tool"/>
+    <item index="2" cmd="cmTOOLEDT" bitmap="" text="Edit tool"/>    
   </menutool>
   <menumdi>
-    <item index="0" cmd="cmMDIEXEC" bitmap="" text="Ausführen"/>
-    <item index="2" cmd="cmMDIHIST" bitmap="" text="Hist.-Löschen"/>    
+    <item index="0" cmd="cmMDIEXEC" bitmap="" text="Execute"/>
+    <item index="2" cmd="cmMDIHIST" bitmap="" text="Clear Hist."/>    
   </menumdi>
   <menurun>
     <item index="0" cmd="cmRUN" bitmap="" text="Start"/>    
     <item index="1" cmd="cmSTOP" bitmap="" text="Stop"/>
-    <item index="2" cmd="cmSTEP" bitmap="" text="Schritt"/>
+    <item index="2" cmd="cmSTEP" bitmap="" text="Step"/>
     <item index="3" cmd="cmPAUSE" bitmap="" text="Pause"/>    
-    <item index="4" cmd="cmRUNLINE" bitmap="" text="Start ab Zeile"/>
+    <item index="4" cmd="cmRUNLINE" bitmap="" text="Start from"/>
     <item index="5" cmd="cmOPTSTOP" bitmap="" text="Opt.-Stops"/>
-    <item index="6" cmd="cmBLOCKDEL" bitmap="" text="/ Blöcke"/>
-    <item index="7" cmd="cmRELOAD" bitmap="" text="Neu Laden"/>
-    <item index="8" cmd="cmOPEN" bitmap="" text="Öffnen..."/>
+    <item index="6" cmd="cmBLOCKDEL" bitmap="" text="/ Blockdel."/>
+    <item index="7" cmd="cmRELOAD" bitmap="" text="Reload"/>
+    <item index="8" cmd="cmOPEN" bitmap="" text="Open..."/>
     <item index="9" cmd="cmEDITOR" bitmap="" text="Editor..."/>
   </menurun>
 </CONFIG>

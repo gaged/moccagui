@@ -7,7 +7,19 @@
         <integer name="Height" value="282"/>
         <integer name="Top" value="222"/>
         <integer name="Width" value="432"/>
-        <string name="Caption" value=""/>
+        <integer name="HorzScrollBar.Page" value="476"/>
+        <integer name="VertScrollBar.Page" value="361"/>
+        <ident name="ActiveControl" value="SliderJog"/>
+        <set name="BorderIcons" value=""/>
+        <ident name="BorderStyle" value="bsNone"/>
+        <string name="Caption" value="JogClientForm"/>
+        <integer name="ClientHeight" value="282"/>
+        <integer name="ClientWidth" value="432"/>
+        <ident name="Color" value="clSilver"/>
+        <boolean name="KeyPreview" value="true"/>
+        <boolean name="ParentFont" value="true"/>
+        <ident name="ShowInTaskBar" value="stNever"/>
+        <string name="LCLVersion" value="0.9.28.2"/>
       </properties>
       <children>
         <component name="LabelJ1" class="TLabel">
@@ -17,7 +29,7 @@
             <integer name="Top" value="4"/>
             <integer name="Width" value="104"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Jogspeed"/>
+            <string name="Caption" value="Joggeschw."/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -30,7 +42,7 @@
             <integer name="Top" value="4"/>
             <integer name="Width" value="136"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="jog increments"/>
+            <string name="Caption" value="Schrittweiten"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -222,7 +234,7 @@
             <integer name="Top" value="216"/>
             <integer name="Width" value="268"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Override limits On/Off"/>
+            <string name="Caption" value="Grenzwerte An/Aus"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -233,7 +245,7 @@
             <integer name="Top" value="48"/>
             <integer name="Width" value="136"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Continous"/>
+            <string name="Caption" value="Durchgehend"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>

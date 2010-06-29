@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Component>
+    <component name="ToolChgDlg" class="TToolChgDlg">
+      <properties>
+        <integer name="Left" value="434"/>
+        <integer name="Height" value="384"/>
+        <integer name="Top" value="287"/>
+        <integer name="Width" value="428"/>
+        <ident name="ActiveControl" value="LbTools"/>
+        <set name="BorderIcons" value="biSystemMenu"/>
+        <ident name="BorderStyle" value="bsDialog"/>
+        <string name="Caption" value="Werkzeug auswählen"/>
+        <integer name="ClientHeight" value="384"/>
+        <integer name="ClientWidth" value="428"/>
+        <boolean name="KeyPreview" value="true"/>
+        <ident name="Position" value="poScreenCenter"/>
+        <string name="LCLVersion" value="0.9.28.2"/>
+      </properties>
+      <children>
+        <component name="LbTools" class="TListBox">
+          <properties>
+            <integer name="Left" value="0"/>
+            <integer name="Height" value="320"/>
+            <integer name="Top" value="4"/>
+            <integer name="Width" value="425"/>
+            <boolean name="ExtendedSelect" value="false"/>
+            <integer name="Font.Height" value="-16"/>
+            <string name="Font.Name" value="Courier 10 Pitch"/>
+            <integer name="ItemHeight" value="0"/>
+            <boolean name="ParentFont" value="false"/>
+            <integer name="TabOrder" value="0"/>
+            <integer name="TopIndex" value="-1"/>
+          </properties>
+        </component>
+        <component name="Button1" class="TButton">
+          <properties>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="352"/>
+            <integer name="Width" value="75"/>
+            <string name="Caption" value="&amp;Ok"/>
+            <boolean name="Default" value="true"/>
+            <integer name="ModalResult" value="1"/>
+            <integer name="TabOrder" value="1"/>
+          </properties>
+        </component>
+        <component name="Button2" class="TButton">
+          <properties>
+            <integer name="Left" value="96"/>
+            <integer name="Height" value="25"/>
+            <integer name="Top" value="352"/>
+            <integer name="Width" value="75"/>
+            <boolean name="Cancel" value="true"/>
+            <string name="Caption" value="Abbruch"/>
+            <integer name="ModalResult" value="2"/>
+            <integer name="TabOrder" value="2"/>
+          </properties>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>

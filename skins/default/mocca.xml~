@@ -7,8 +7,21 @@
         <integer name="Height" value="724"/>
         <integer name="Top" value="127"/>
         <integer name="Width" value="961"/>
+        <integer name="HorzScrollBar.Page" value="1278"/>
+        <integer name="HorzScrollBar.Range" value="1272"/>
+        <boolean name="HorzScrollBar.Visible" value="false"/>
+        <integer name="VertScrollBar.Page" value="948"/>
+        <integer name="VertScrollBar.Range" value="932"/>
+        <boolean name="VertScrollBar.Visible" value="false"/>
+        <ident name="ActiveControl" value="PanelMaster"/>
         <string name="Caption" value="Mocca"/>
+        <integer name="ClientHeight" value="724"/>
+        <integer name="ClientWidth" value="961"/>
         <ident name="Color" value="clSilver"/>
+        <boolean name="KeyPreview" value="true"/>
+        <ident name="Position" value="poScreenCenter"/>
+        <boolean name="ShowHint" value="true"/>
+        <string name="LCLVersion" value="0.9.28.2"/>
       </properties>
       <children>
         <component name="BgImage" class="TImage">
@@ -28,7 +41,7 @@
             <integer name="Top" value="536"/>
             <integer name="Width" value="92"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Feed"/>
+            <string name="Caption" value="Vorschub"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -42,7 +55,7 @@
             <integer name="Top" value="464"/>
             <integer name="Width" value="91"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Max. Vel"/>
+            <string name="Caption" value="Max. Geschw."/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -56,7 +69,7 @@
             <integer name="Top" value="464"/>
             <integer name="Width" value="80"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Spindle"/>
+            <string name="Caption" value="Spindel"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -226,7 +239,7 @@
             <integer name="Top" value="472"/>
             <integer name="Width" value="52"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Length"/>
+            <string name="Caption" value="Länge"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -239,7 +252,7 @@
             <integer name="Top" value="496"/>
             <integer name="Width" value="76"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Diam."/>
+            <string name="Caption" value="Durchm."/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -252,7 +265,7 @@
             <integer name="Top" value="472"/>
             <integer name="Width" value="76"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Toolno."/>
+            <string name="Caption" value="Wkz. Nr."/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -265,7 +278,7 @@
             <integer name="Top" value="416"/>
             <integer name="Width" value="76"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Program"/>
+            <string name="Caption" value="Programm"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -317,7 +330,7 @@
             <integer name="Top" value="504"/>
             <integer name="Width" value="91"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Act vel."/>
+            <string name="Caption" value="Akt. Geschw."/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -375,7 +388,7 @@
             <integer name="Width" value="80"/>
             <string name="Command" value="cmAUTO"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Run"/>
+            <string name="Caption" value="Satzlauf"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -399,7 +412,7 @@
             <integer name="Width" value="80"/>
             <string name="Command" value="cmJOG"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Manual"/>
+            <string name="Caption" value="Manuell"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -411,7 +424,7 @@
             <integer name="Width" value="80"/>
             <string name="Command" value="cmMACHINE"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Machine"/>
+            <string name="Caption" value="Maschine"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -423,7 +436,7 @@
             <integer name="Width" value="80"/>
             <string name="Command" value="cmESTOP"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="EStop"/>
+            <string name="Caption" value="Notaus"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -434,7 +447,7 @@
             <integer name="Top" value="536"/>
             <integer name="Width" value="80"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Spindle On"/>
+            <string name="Caption" value="Spindel An"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -445,7 +458,7 @@
             <integer name="Top" value="536"/>
             <integer name="Width" value="80"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Reverse"/>
+            <string name="Caption" value="Rückw."/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -457,7 +470,7 @@
             <integer name="Width" value="80"/>
             <string name="Command" value="cmFLOOD"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Coolant"/>
+            <string name="Caption" value="Kühlung"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -469,7 +482,7 @@
             <integer name="Width" value="80"/>
             <string name="Command" value="cmMIST"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Mist"/>
+            <string name="Caption" value="Nebel"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -614,7 +627,7 @@
             <integer name="Top" value="286"/>
             <integer name="Width" value="90"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Mach.Coord."/>
+            <string name="Caption" value="Masch.Koord"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -637,7 +650,7 @@
             <integer name="Width" value="80"/>
             <string name="Command" value="cmSPBRAKE"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Sp. brake"/>
+            <string name="Caption" value="Sp.-Bremse"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -672,7 +685,7 @@
             <integer name="Top" value="304"/>
             <integer name="Width" value="58"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="preset"/>
+            <string name="Caption" value="Vorgabe"/>
             <ident name="Color" value="clBtnFace"/>
             <boolean name="Visible" value="false"/>
           </properties>
@@ -684,7 +697,7 @@
             <integer name="Top" value="504"/>
             <integer name="Width" value="80"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Act U/min"/>
+            <string name="Caption" value="Akt. U/min"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -697,7 +710,7 @@
             <integer name="Top" value="336"/>
             <integer name="Width" value="132"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Override"/>
+            <string name="Caption" value="Übersteuerung"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -711,7 +724,7 @@
             <integer name="Top" value="288"/>
             <integer name="Width" value="151"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Override on"/>
+            <string name="Caption" value="Übersteuerung Ein"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -725,7 +738,7 @@
             <integer name="Top" value="616"/>
             <integer name="Width" value="112"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Messages"/>
+            <string name="Caption" value="Meldungen"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -738,7 +751,7 @@
             <integer name="Top" value="520"/>
             <integer name="Width" value="94"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Active G-Codes"/>
+            <string name="Caption" value="Akt. G-Codes"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -809,7 +822,7 @@
             <integer name="Top" value="448"/>
             <integer name="Width" value="76"/>
             <boolean name="AutoSize" value="false"/>
-            <string name="Caption" value="Tool"/>
+            <string name="Caption" value="Werkzeug"/>
             <ident name="Layout" value="tlCenter"/>
             <boolean name="ParentColor" value="false"/>
             <boolean name="ParentFont" value="false"/>
@@ -892,7 +905,7 @@
             <integer name="Top" value="376"/>
             <integer name="Width" value="36"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Path"/>
+            <string name="Caption" value="Pfad"/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
@@ -903,7 +916,7 @@
             <integer name="Top" value="376"/>
             <integer name="Width" value="36"/>
             <boolean name="ShowClicks" value="true"/>
-            <string name="Caption" value="Del"/>
+            <string name="Caption" value="Lö."/>
             <ident name="Color" value="clBtnFace"/>
           </properties>
         </component>
