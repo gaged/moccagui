@@ -1,5 +1,3 @@
-{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
-
 LazarusResources.Add('TToolChgDlg','FORMDATA',[
   'TPF0'#11'TToolChgDlg'#10'ToolChgDlg'#4'Left'#3#178#1#6'Height'#3#128#1#3'Top'
   +#3#31#1#5'Width'#3#172#1#13'ActiveControl'#7#7'LbTools'#11'BorderIcons'#11#12

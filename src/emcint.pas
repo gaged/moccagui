@@ -78,26 +78,26 @@ begin
       Exit;
     end
   else
-    writeln('Mocca starts with correct version EMC2-' + Emc2Version);
+    writeln('mocca starts with correct emc version: emc2-' + Emc2Version);
 	
   Emc2LibPath:= Emc2Home + '/lib/';
   writeln('Library loaded from: ' + Emc2LibPath);
   EmcIniHandle:= Pointer(LoadLibrary(Emc2LibPath + libemcini));
   if EmcIniHandle = nil then
     begin
-      writeln('error loading libemcini.so: ',Emc2LibPath);
+      writeln('Error loading libemcini.so from ',Emc2LibPath);
       Exit;
     end;
   Emc274Handle:= Pointer(LoadLibrary(Emc2LibPath + libemcini));
   if Emc274Handle = nil then
     begin
-      writeln('error loading librs272.so: ',Emc2LibPath);
+      writeln('Error loading librs274.so from ',Emc2LibPath);
       Exit;
     end;
   EmcHalHandle:= Pointer(LoadLibrary(Emc2LibPath + libemchal));
   if EmcHalHandle = nil then
     begin
-      writeln('error loading libemchal.so: ',Emc2LibPath);
+      writeln('Error loading libemchal.so from ',Emc2LibPath);
       Exit;
     end;
   Result:= True;

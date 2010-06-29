@@ -10,7 +10,7 @@ uses
 const
   HAL_SUCCESS = 0;
 
-  HalName = 'moc';
+  MOC_HAL_NAME = 'mocca';
 
 const
   HalButtonMin = 0;
@@ -65,7 +65,7 @@ type
     oemled4: ^THalBit;
   end;
 
-function InitHal(Name: string): boolean;
+function InitHal: boolean;
 procedure DoneHal;
 
 function hal_init(const name: PChar): longint; cdecl; external libemchal;
@@ -346,22 +346,22 @@ begin
   Result:= True;
 end;
 
-function InitHal(Name: string): boolean;
+function InitHal: boolean;
 begin
   Result:= False;
   HalData:= nil;
   CompId:= 0;
-  CompId:= hal_init(PChar(Name));
+  CompId:= hal_init(PChar(MOC_HAL_NAME));
   if CompId < 0 then
     begin
-      writeln('init failed: ',Name);
+      writeln('init failed: ',MOC_HAL_NAME);
       Exit;
     end;
   HalData:= hal_malloc(SizeOf(THalStruct));
   if HalData = nil then
     begin
       hal_exit(CompId);
-      writeln('malloc failed: ',Name);
+      writeln('malloc failed: ',MOC_HAL_NAME);
       Exit;
     end;
   InitPins;
@@ -369,10 +369,10 @@ begin
     Exit;
   if hal_ready(CompId) <> HAL_SUCCESS then
     begin
-      writeln('Hal component "' + Name + '" failed.');
+      writeln('Hal component "' + MOC_HAL_NAME + '" failed.');
       Exit;
     end;
-  writeln('Hal component "' + Name + '" loaded.');
+  writeln('Hal component "' + MOC_HAL_NAME + '" loaded.');
   Result:= True;
 end;
 

@@ -12,6 +12,7 @@ const
   ShowGlPreview: Boolean = True;
 
 {$I mocglb.inc}
+// {$i mocmsg.inc}
 
 const
   UseDefaultLayout: Boolean = False;
@@ -112,6 +113,8 @@ begin
 end;
 
 procedure ReadStyle(const Form: TForm; AFileName: string);
+const
+  Msg = 'Error reading style from ';
 var
   FileName: string;
 begin
@@ -131,7 +134,8 @@ begin
   try
     ReadXMLStyle(Form,FileName);
   except
-    writeln('Error reading style: ' + Filename);
+    on E: Exception do
+      writeln(Msg + Filename + E.Message);
   end;
 end;
 

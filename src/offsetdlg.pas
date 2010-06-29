@@ -65,7 +65,7 @@ end;
 
 procedure TOffsetsDlg.FormCreate(Sender: TObject);
 begin
-  ReadStyle(Self,'offsetdialog.xml');
+  ReadStyle(Self,'offsets.xml');
   VarFile:= TStringList.Create;
   VOffs:= -1;
   InitControls;

@@ -19,6 +19,12 @@ uses
 var
   FileName: string;
 
+const
+  ERR_CONFIGREAD = 'Error reading the config-file: ';
+  ERR_CONFIGDOCNIL = 'Error in configfile. No data read from ';
+  ERR_NOSCRIPTSINCONFIG = 'No Scripts found in config-file.';
+  ERR_CONFIGSCRIPTS = 'Error in config file: ';
+
 procedure Error(const Msg: string);
 begin
   raise Exception.Create(Msg);
@@ -55,7 +61,7 @@ begin
     end;
   if Node = nil then
     begin
-      writeln('No Scripts found in config-file.');
+      writeln(ERR_NOSCRIPTSINCONFIG);
       Exit;
     end;
   N:= Node.FirstChild;
@@ -75,10 +81,13 @@ begin
             try
               iNr:= StrToInt(nv);
             except
-              iNr:= -1;
-              writeln('Error in Configfile, Scripts: ' + NV +
-                'is not a valid integer');
-              Exit;
+              on E: Exception do
+                begin
+                  writeln(ERR_CONFIGSCRIPTS + NV + #13 + E.Message);
+                  iNr:= -1;
+                  Exit;
+
+                end;
             end;
           if nn = 'name' then
             sName:= nv;
@@ -355,8 +364,6 @@ end;
 function ReadConfig(const AFileName: string): Boolean;
 var
   Doc:  TXMLDocument;
-  //Node: TDOMNode;
-  //S: string;
 
 function GetNode(Name: string): TDOMNode;
 begin
@@ -377,13 +384,15 @@ begin
   try
     ReadXMLFile(Doc,FileName);
   except
-    writeln('cannot open config-file: ' + FileName);
-    raise;
-    Exit;
+    on E: Exception do
+      begin
+        writeln(ERR_CONFIGREAD + FileName + #13 + E.Message);
+        Exit;
+      end;
   end;
   if Doc = nil then
     begin
-      writeln('error reading xml- file: ' + AFileName);
+      writeln(ERR_CONFIGDOCNIL + AFileName);
       Exit;
     end;
   try

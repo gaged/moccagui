@@ -225,7 +225,7 @@ end;
 
 procedure TCoordRotDlg.FormCreate(Sender: TObject);
 begin
-
+  ReadStyle(self,'coordrotate.xml');
 end;
 
 initialization

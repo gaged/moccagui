@@ -62,8 +62,7 @@ begin
         else
         if PropName = 'FONT.COLOR' then
           begin
-            if IdentToColor(PropVal,AColor) then
-            Font.Color:= AColor;
+            Font.Color:= StringToColor(PropVal);
           end;
         if PropName = 'FONT.STYLE' then
           begin
@@ -72,6 +71,7 @@ begin
           end;
       end;
 end;
+
 
 procedure AssignProperty(const PropName,PropVal: string);
 var
@@ -92,10 +92,7 @@ begin
           Caption:= PropVal
         else
         if PropName = 'COLOR' then
-          begin
-            if IdentToColor(PropVal,AColor) then
-              Color:= AColor;
-          end
+          Color:=  StringToColor(PropVal)
         else
         if PropName = 'WIDTH' then
           Width:= StrToInt(PropVal)
@@ -122,10 +119,7 @@ begin
     with Comp as TMocLed do
       begin
         if PropName = 'LEDCOLOR' then
-          begin
-            if IdentToColor(PropVal,AColor) then
-              LedColor:= AColor;
-          end;
+          LedColor:= StringToColor(PropVal);
       end;
   if Comp is TLabel then
     with Comp as TLabel do
@@ -172,10 +166,7 @@ begin
   if Comp is TSlider then
     if PropName = 'BARCOLOR' then
       with Comp as TSlider do
-        begin
-          if IdentToColor(PropVal,AColor) then
-             BarColor:= AColor;
-        end;
+        BarColor:= StringToColor(PropVal);
 end;
 
 procedure ParseNode(Node: TDOMNode);
