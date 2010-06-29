@@ -60,7 +60,7 @@ end;
 
 procedure TToolChgDlg.FormCreate(Sender: TObject);
 begin
-  // ReadStyle(Self);
+  ReadStyle(Self,'toolchange.xml');
   InitControls;
 end;
 

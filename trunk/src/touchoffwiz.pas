@@ -346,6 +346,7 @@ end;
 
 procedure TTouchOffWizDlg.FormCreate(Sender: TObject);
 begin
+  Readstyle(Self,'touchoffwiz.xml');
   FAxisMask:= '';
   FEdgeFinderDia:= 10;
   EditDia.Text:= PosToString(FEdgeFinderDia);

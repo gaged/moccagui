@@ -11,7 +11,7 @@ object SimClientForm: TSimClientForm
   Caption = 'SimClientForm'
   ClientHeight = 377
   ClientWidth = 685
-  Color = clMedGray
+  Color = clNone
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize

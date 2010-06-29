@@ -13,7 +13,28 @@ implementation
 
 uses
   mocglb,emc2pas,emcint;
-  
+
+const
+  ERR_INI_OPEN = 'Cannot open inifile:';
+  MSG_INI_READ_FROM = 'mocca reads from :';
+  {$ifdef VER_24}
+  MSG_NMLFILE = 'Default NMLFile = ';
+  {$endif}
+  {$ifdef VER_23}
+  ERR_NO_NMLFILE = 'Cannot find NMLFILE';
+  {$endif}
+  ERR_SPINDLEOVERRIDE = 'Error in inifile: MIN_SPINDLE_OVERRIDE > MAX_SPINDLE_OVERRIDE';
+  ERR_MAXSPINDLEORIDE = 'Error in inifile: MAX_SPINDLE_OVERRIDE < 1.0';
+  ERR_NOUNITS = 'Linear units not defined in inifile, using mm as default units';
+  MSG_INIMETRIC = 'Setup is metric';
+  MSG_INIINCHES = 'Setup is inches';
+  ERR_INIAXESCOUNT = 'Error in inifile: Number of Axes not defined or zero.';
+  ERR_INITRAJNOAXES = 'Error in inifile: No Coordinates in [TRAJ] found.';
+  ERR_ININOCONFIG1 = 'Error: There is no entry "CONFIG" in the Emc2 inifile.';
+  ERR_ININOCONFIG2 = 'Mocca needs the file "config.xml" to start.';
+  ERR_ININOCONFIG3 = 'Please check your installation of mocca.';
+  MSG_CONFIGDIR = 'Config path is: ';
+
 function StripBlank(var S: string): Boolean;
 var
   i: integer;
@@ -154,20 +175,20 @@ begin
   // try to open the ini-file, filename is passed by paramstr(2)
   if not IniOpen(PChar(FileName)) then
     begin
-      writeln('Cannot open inifile: "' + FileName + '"');
+      writeln(ERR_INI_OPEN + '"' + FileName + '"');
       Exit;
     end;
 
   Vars.IniFile:= FileName;
   Vars.IniPath:= ExtractFilePath(Vars.IniFile);
 
-  writeln('mocca reads from :',Vars.IniPath);
+  writeln(MSG_INI_READ_FROM,Vars.IniPath);
 
   // first we try to find the nml-file
   // emc2-2.4 uses the default NML_FILE;
   // emc2-2.3 needs the NML_FILE set up in the ini-file
   {$ifdef VER_24}
-  writeln('Default NML- File: ', Emc2NmlFile);
+  writeln(MSG_NMLFILE, Emc2NmlFile);
   EMC_NMLFILE:= PChar(Emc2NmlFile);
   {$endif}
   if GetIniStr('EMC','NML_FILE',tmp,'') then
@@ -175,7 +196,7 @@ begin
   else
     begin
       {$ifdef VER_23}
-      writeln('Cannot find NMLFILE');
+      writeln(ERR_NO_NMLFILE);
       Exit;
       {$endif}
     end;
@@ -208,12 +229,12 @@ begin
     begin
       if Vars.MinSpORide >= Vars.MaxSpORide then
         begin
-          writeln('Error: MIN_SPINDLE_OVERRIDE > MAX_SPINDLE_OVERRIDE');
+          writeln(ERR_SPINDLEOVERRIDE);
           Exit;
         end;
       if Vars.MaxSpORide < 100 then
         begin
-          writeln('MAX_SPINDLE_OVERRIDE is less than 100%');
+          writeln(ERR_MAXSPINDLEORIDE);
           Exit;
         end;
     end;
@@ -271,8 +292,7 @@ begin
     end;
   if linearUnitConversion = 0 then
     begin
-      writeln('Linear Units not defined.');
-      writeln('Setting Units to "mm"');
+      writeln(ERR_NOUNITS);
       LinearUnitConversion:= LINEAR_UNITS_MM;
     end;
   case linearUnitConversion of
@@ -282,15 +302,15 @@ begin
   Vars.Metric:= LinearUnitConversion = LINEAR_UNITS_MM;
   Vars.UnitVelStr:= Vars.UnitStr + '/min';
   if Vars.Metric then
-    writeln('Setup is metric')
+    writeln(MSG_INIMETRIC)
   else
-    writeln('Setup are Inches');
+    writeln(MSG_INIINCHES);
 
   // *todo: angularUnitsConversion
   GetIniInt('TRAJ','AXES',i,0);
   if (i < 1) or (i > 9) then
     begin
-      writeln('Number of Axes not defined or zero.');
+      writeln(ERR_INIAXESCOUNT);
       Exit;
     end;
   Vars.NumAxes:= i;
@@ -300,7 +320,7 @@ begin
       if not StripBlank(tmp) then tmp:= '';
       if Length(tmp) < 1 then
         begin
-           writeln('No Coordinates in [TRAJ] found.');
+           writeln(ERR_INITRAJNOAXES);
            Exit;
         end;
     end;
@@ -374,9 +394,9 @@ begin
 
   if ConfigDir = '' then
     begin
-      writeln('Error: There is no entry "CONFIG" in the Emc2 inifile.');
-      writeln('Mocca needs the file "config.xml" to start.');
-      writeln('Please check your installation of mocca.');
+      writeln(ERR_ININOCONFIG1);
+      writeln(ERR_ININOCONFIG2);    
+      writeln(ERR_ININOCONFIG3);
       Exit;
     end;
 
@@ -386,7 +406,8 @@ begin
       if ConfigDir[i] <> '/' then
         ConfigDir:= ConfigDir + '/';
     end;
-  writeln('Config directory = "' + ConfigDir + '"');
+
+  writeln(MSG_CONFIGDIR + ConfigDir);
 
   GetIniInt('MOCCA','DEFAULT_LAYOUT',i,0);
   if i > 0 then

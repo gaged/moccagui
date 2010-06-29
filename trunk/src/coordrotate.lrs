@@ -1,13 +1,13 @@
 { Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
 
 LazarusResources.Add('TCoordRotDlg','FORMDATA',[
-  'TPF0'#12'TCoordRotDlg'#11'CoordRotDlg'#4'Left'#3#205#1#6'Height'#3#238#0#3'T'
-  +'op'#3'}'#1#5'Width'#3'N'#2#13'ActiveControl'#7#6'EditRX'#7'Caption'#6#27'Ko'
-  +'orinatensystem ausrichten'#12'ClientHeight'#3#238#0#11'ClientWidth'#3'N'#2#8
-  +'OnCreate'#7#10'FormCreate'#10'LCLVersion'#6#8'0.9.28.2'#0#6'TLabel'#6'Label'
-  +'1'#4'Left'#2#4#6'Height'#2#18#3'Top'#2#16#5'Width'#2's'#7'Caption'#6#18'Ref'
-  +'erenz- Position'#11'ParentColor'#8#0#0#6'TLabel'#6'Label2'#4'Left'#3#188#0#6
-  +'Height'#2#18#3'Top'#2#16#5'Width'#2'j'#7'Caption'#6#17'Aktuelle Position'#11
+  'TPF0'#12'TCoordRotDlg'#11'CoordRotDlg'#4'Left'#3#17#2#6'Height'#3#238#0#3'To'
+  +'p'#3'Y'#1#5'Width'#3'N'#2#13'ActiveControl'#7#6'EditRX'#7'Caption'#6#24'Adj'
+  +'ust coordinate system'#12'ClientHeight'#3#238#0#11'ClientWidth'#3'N'#2#8'On'
+  +'Create'#7#10'FormCreate'#10'LCLVersion'#6#8'0.9.28.2'#0#6'TLabel'#6'Label1'
+  +#4'Left'#2#4#6'Height'#2#18#3'Top'#2#16#5'Width'#2'{'#7'Caption'#6#19'Refere'
+  +'nce- Position'#11'ParentColor'#8#0#0#6'TLabel'#6'Label2'#4'Left'#3#188#0#6
+  +'Height'#2#18#3'Top'#2#16#5'Width'#2'_'#7'Caption'#6#15'Actual Position'#11
   +'ParentColor'#8#0#0#6'TLabel'#6'Label3'#4'Left'#2#10#6'Height'#2#27#3'Top'#2
   +'.'#5'Width'#2#17#8'AutoSize'#8#7'Caption'#6#1'X'#6'Layout'#7#8'tlCenter'#11
   +'ParentColor'#8#0#0#6'TLabel'#6'Label4'#4'Left'#3#194#0#6'Height'#2#27#3'Top'
@@ -40,18 +40,17 @@ LazarusResources.Add('TCoordRotDlg','FORMDATA',[
   +'op'#2'n'#5'Width'#2'x'#8'TabOrder'#2#4#4'Text'#6#5'Edit1'#0#0#5'TEdit'#5'Ed'
   +'itZ'#4'Left'#3#188#0#6'Height'#2#27#3'Top'#2'n'#5'Width'#2'x'#8'TabOrder'#2
   +#5#4'Text'#6#5'Edit1'#0#0#7'TButton'#5'BtnXR'#4'Left'#3'>'#1#6'Height'#2#27#3
-  +'Top'#2'.'#5'Width'#2'|'#7'Caption'#6#12'X-Ausrichten'#7'OnClick'#7#10'BtnXR'
-  +'Click'#8'TabOrder'#2#6#0#0#7'TButton'#5'BtnYR'#4'Left'#3'>'#1#6'Height'#2#27
-  +#3'Top'#2'N'#5'Width'#2'|'#7'Caption'#6#12'Y-Ausrichten'#8'TabOrder'#2#7#0#0
-  +#7'TButton'#5'BtnZR'#4'Left'#3'>'#1#6'Height'#2#27#3'Top'#2'n'#5'Width'#2'|'
-  +#7'Caption'#6#12'Z-Ausrichten'#8'TabOrder'#2#8#0#0#7'TButton'#6'BtnRef'#4'Le'
-  +'ft'#2#10#6'Height'#2#28#3'Top'#3#156#0#5'Width'#3#138#0#7'Caption'#6#16'Ref'
-  +'.-Pos. setzen'#7'OnClick'#7#11'BtnRefClick'#8'TabOrder'#2#9#0#0#7'TButton'#8
-  +'BtnReset'#4'Left'#3'>'#1#6'Height'#2#27#3'Top'#3#156#0#5'Width'#2'|'#7'Capt'
-  +'ion'#6#13'Zur'#195#188'cksetzen'#7'OnClick'#7#13'BtnResetClick'#8'TabOrder'
-  +#2#10#0#0#7'TButton'#7'Button1'#4'Left'#2#10#6'Height'#2#25#3'Top'#3#208#0#5
-  +'Width'#2'K'#7'Caption'#6#2'Ok'#11'ModalResult'#2#1#8'TabOrder'#2#11#0#0#7'T'
-  +'Button'#7'Button2'#4'Left'#2'g'#6'Height'#2#25#3'Top'#3#208#0#5'Width'#2'K'
-  +#6'Cancel'#9#7'Caption'#6#7'Abbruch'#11'ModalResult'#2#2#8'TabOrder'#2#12#0#0
-  +#0
+  +'Top'#2'.'#5'Width'#2'|'#7'Caption'#6#8'X-adjust'#7'OnClick'#7#10'BtnXRClick'
+  +#8'TabOrder'#2#6#0#0#7'TButton'#5'BtnYR'#4'Left'#3'>'#1#6'Height'#2#27#3'Top'
+  +#2'N'#5'Width'#2'|'#7'Caption'#6#8'Y-adjust'#8'TabOrder'#2#7#0#0#7'TButton'#5
+  +'BtnZR'#4'Left'#3'>'#1#6'Height'#2#27#3'Top'#2'n'#5'Width'#2'|'#7'Caption'#6
+  +#8'Z-adjust'#8'TabOrder'#2#8#0#0#7'TButton'#6'BtnRef'#4'Left'#2#10#6'Height'
+  +#2#28#3'Top'#3#156#0#5'Width'#3#138#0#7'Caption'#6#12'Set Ref.-Pos'#7'OnClic'
+  +'k'#7#11'BtnRefClick'#8'TabOrder'#2#9#0#0#7'TButton'#8'BtnReset'#4'Left'#3'>'
+  +#1#6'Height'#2#27#3'Top'#3#156#0#5'Width'#2'|'#7'Caption'#6#5'Reset'#7'OnCli'
+  +'ck'#7#13'BtnResetClick'#8'TabOrder'#2#10#0#0#7'TButton'#7'Button1'#4'Left'#2
+  +#10#6'Height'#2#25#3'Top'#3#208#0#5'Width'#2'K'#7'Caption'#6#2'Ok'#11'ModalR'
+  +'esult'#2#1#8'TabOrder'#2#11#0#0#7'TButton'#7'Button2'#4'Left'#2'g'#6'Height'
+  +#2#25#3'Top'#3#208#0#5'Width'#2'K'#6'Cancel'#9#7'Caption'#6#6'Cancel'#11'Mod'
+  +'alResult'#2#2#8'TabOrder'#2#12#0#0#0
 ]);

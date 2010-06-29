@@ -46,6 +46,9 @@ uses
   emc2pas,
   mocbtn;
 
+const
+  ERR_MDIHISTOPEN = 'Error loading MDI- history file: ';
+
 procedure TMDIClientForm.FormCreate(Sender: TObject);
 begin
   ReadStyle(Self,'mdi.xml');
@@ -53,7 +56,7 @@ begin
   try
     MDIHistListBox.Items.LoadFromFile(Vars.IniPath + MDI_HIST_FILENAME);
   except
-    writeln('could not open: ' + Vars.IniPath + MDI_HIST_FILENAME);
+    writeln(ERR_MDIHISTOPEN + Vars.IniPath + MDI_HIST_FILENAME);
   end;
 end;
 

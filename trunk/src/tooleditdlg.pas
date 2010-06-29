@@ -411,6 +411,7 @@ end;
 
 procedure TToolDlg.FormCreate(Sender: TObject);
 begin
+  Readstyle(Self,'tooledit.xml');
   InitGrid;
 end;
 

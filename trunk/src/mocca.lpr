@@ -18,19 +18,17 @@ uses
   touchoffwiz, coordrotate;
 
 const
-//  __LC_CTYPE    = 0;
   __LC_NUMERIC  = 1;
-//  __LC_TIME     = 2;
-//  __LC_COLLATE  = 3;
-//  __LC_MONETARY = 4;
-//  __LC_MESSAGES = 5;
-//  __LC_ALL      = 6;
 
-Const
+
+const
   clib = 'c';
 
+const
+  ERR_INIT_PARAMS : string = 'Error starting mocca, check params.';
+  ERR_EMCCONNECT = 'Error: Can not connect to EMC';
+
 function setlocale(category: integer; locale: pchar): pchar; cdecl; external clib name 'setlocale';
-// function nl_langinfo(__item: cint):Pchar; cdecl; external clib name 'nl_langinfo';
 
 function InitEmc: Boolean;
 var
@@ -42,27 +40,21 @@ begin
   if not InitEmcEnvironment then Halt(1);
   if (ParamCount < 2) then
     begin
-      writeln('Error starting mocca, check params.');
+      writeln(ERR_INIT_PARAMS);
       Exit;
     end;
   s:= ParamStr(2); // the paramstr(2) is the ini-file
   if not IniRead(S) then  // iniread: see mocini.pas
-    begin
-      writeln('Cannot open inifile: ' + '"' + s + '"');
-      Exit;
-    end;
+    Exit;
   Vars.IniFile:= s;
   if not ReadConfig(ConfigDir + 'config.xml') then
-    begin
-      writeln('Cannot find a config- file in "' + ConfigDir + '"');
-      Exit;
-    end;
+    Exit;
   if (emcNmlInit <> 0) then
     begin
-      writeln('Error: Cannot connect to emc');
+      writeln(ERR_EMCCONNECT);
       Exit;
     end;
-  if not InitHal('mocca') then
+  if not InitHal then
     Exit;
   Result:= True;
 end;

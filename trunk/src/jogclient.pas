@@ -409,6 +409,9 @@ end;
 procedure TJogClientForm.FormCreate(Sender: TObject);
 var
   i: integer;
+const
+  MSG1 = 'No Jog-Increments set in config-file';
+  MSG2 = 'Using default configuration';
 begin
   ReadStyle(Self,'jog.xml');
   Self.Tag:= TASKMODEMANUAL;
@@ -416,8 +419,8 @@ begin
   FBtnDown:= 0;
   if Vars.JogIncMax < 1 then
     begin
-      writeln('No Jog-Increments set in config-file');
-      writeln('Using default configuration');
+      writeln(MSG1);
+      writeln(MSG2);	
       with Vars do
         begin
           JogIncrements[0].Text:= 'Durchgehend';
