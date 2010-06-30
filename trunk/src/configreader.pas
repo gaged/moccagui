@@ -24,10 +24,44 @@ const
   ERR_CONFIGDOCNIL = 'Error in configfile. No data read from ';
   ERR_NOSCRIPTSINCONFIG = 'No Scripts found in config-file.';
   ERR_CONFIGSCRIPTS = 'Error in config file: ';
+  ERR_NOGLOBALCONFIG = 'Error: no global config entrys found.';
 
 procedure Error(const Msg: string);
 begin
   raise Exception.Create(Msg);
+end;
+
+procedure ReadGlobals(Node: TDomNode);
+var
+  N: TDomNode;
+  nn,nv: string;
+begin
+  if Node = nil then
+    begin
+      writeln(ERR_NOGLOBALCONFIG);
+      Exit;
+    end;
+  N:= Node.FirstChild;
+  writeln('reading global configuration');
+  while N <> nil do
+    begin
+       if N.HasAttributes then
+         if (N.Attributes.Length = 2) then
+           begin
+             nn:= UpperCase(N.Attributes[0].NodeValue);
+             nv:= N.Attributes[1].NodeValue;
+             if nn = 'EDGEFINDERDIA' then
+               begin
+                 try
+                   EdgeFinderDia:= StrToFloat(nv);
+                 except
+                   on E: Exception do
+                     writeln('Config.xml: <EdgefinderDia> ' + E.Message);
+                 end;
+               end;
+             end;
+      N:= N.NextSibling;
+    end;
 end;
 
 procedure ReadScripts(Node: TDomNode);
@@ -405,6 +439,7 @@ begin
     ReadMenu(GetNode('menuref'),@BtnDefJogRef);
     ReadMenu(GetNode('menutouchoff'),@BtnDefJogTouch);
     ReadMenu(GetNode('menutool'),@BtnDefJogTool);
+    ReadGlobals(GetNode('global'));
   finally
     Doc.Free;
   end;

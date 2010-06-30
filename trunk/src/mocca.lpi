@@ -46,7 +46,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="30">
+    <Units Count="29">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -214,10 +214,6 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="coordrotate"/>
       </Unit28>
-      <Unit29>
-        <Filename Value="mocmsg.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit29>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

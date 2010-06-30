@@ -48,6 +48,9 @@ var
   end;
 
 const
+  EdgeFinderDia: double = 5;
+
+const
   Verbose: Boolean = true;
 
 function PosToString(const Value: Double): string;

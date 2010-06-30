@@ -20,7 +20,6 @@ uses
 const
   __LC_NUMERIC  = 1;
 
-
 const
   clib = 'c';
 

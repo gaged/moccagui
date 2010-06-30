@@ -43,7 +43,6 @@ type
     procedure FormCreate(Sender: TObject);
   private
     FAxisMask: string;
-    FEdgeFinderDia: double;
     FCoord: integer;
     FG10Code: string;
     procedure GetCode;
@@ -51,7 +50,6 @@ type
     procedure InitControls;
   public
     property AxisMask: string write FAxisMask;
-    property EdgeFinderDia: double write FEdgeFinderDia;
     property G10Code: string read FG10Code;
   end;
 
@@ -135,7 +133,7 @@ begin
   if HasY then OffsetPosY:= OffsetPos('Y',YOffset);
   if HasZ then OffsetPosZ:= OffsetPos('Z',ZOffset);
 
-  Ef:= FEdgeFinderDia / 2;
+  Ef:= EdgeFinderDia / 2;
 
   if IsInch and Vars.Metric then
     begin
@@ -237,7 +235,7 @@ var
 begin
   try
     d:= StrToFloat(EditDia.Text);
-    FEdgeFinderDia:= d;
+    EdgeFinderDia:= d;
     EditDia.Text:= PosToString(d);
   except
     EditDia.Text:= '?';
@@ -348,8 +346,7 @@ procedure TTouchOffWizDlg.FormCreate(Sender: TObject);
 begin
   Readstyle(Self,'touchoffwiz.xml');
   FAxisMask:= '';
-  FEdgeFinderDia:= 10;
-  EditDia.Text:= PosToString(FEdgeFinderDia);
+  EditDia.Text:= PosToString(EdgeFinderDia);
   YDir:= 0;
   XDir:= 0;
   ZDir:= 0;
