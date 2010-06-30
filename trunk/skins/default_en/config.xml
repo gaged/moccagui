@@ -1,7 +1,23 @@
 <?xml version="1.0"?>
 <CONFIG>
   <tools>
-  </tools>
+    <item index="0" width="40" title="Poc"/>
+    <item index="1" width="40" title="No."/>
+    <item index="2" width="60" title="X-Offset"/>
+    <item index="3" width="60" title="Y-Offset"/>
+    <item index="4" width="60" title="Z-Offset"/>
+    <item index="5" width="60" title="A-Offset"/>
+    <item index="6" width="60" title="B-Offset"/>
+    <item index="7" width="60" title="C-Offset"/>
+    <item index="8" width="60" title="U-Offset"/>
+    <item index="9" width="60" title="V-Offset"/>
+    <item index="10" width="60" title="W-Offset"/>
+    <item index="11" width="100" title="Diameter"/>
+    <item index="12" width="60" title="Frontangle"/>
+    <item index="13" width="60" title="Backangle"/>
+    <item index="14" width="40" title="Orient."/>
+    <item index="15" width="220" title="Comment"/>
+  </tools> 
   <scripts>
     <item index="0" name="test" script="test.nc"/>
   </scripts>
