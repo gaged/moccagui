@@ -12,7 +12,7 @@ function ReadXMLStyle(const AForm: TForm; AFileName: string): Boolean;
 implementation
 
 uses
-  Dom,XMLRead,Graphics,StdCtrls,Controls,mocglb,mocbtn,mocled,mocslider;
+  Dom,XMLRead,Graphics,StdCtrls,Controls,ExtCtrls,mocglb,mocbtn,mocled,mocslider;
 
 const
   Msg1 = 'Error reading style-file.' + #13;
@@ -71,7 +71,6 @@ begin
           end;
       end;
 end;
-
 
 procedure AssignProperty(const PropName,PropVal: string);
 var
@@ -135,13 +134,6 @@ begin
   if Comp is TForm then
     with Comp as TForm do
       begin
-        if PropName = 'IMAGE' then
-          begin
-            if PropVal <> '' then
-              BackGroundImage:= ConfigDir + PropVal
-            else
-              BackGroundImage:= '';
-          end;
         if PropName = 'BORDERSTYLE' then
           begin
             S:= UpperCase(PropVal);
@@ -167,6 +159,17 @@ begin
     if PropName = 'BARCOLOR' then
       with Comp as TSlider do
         BarColor:= StringToColor(PropVal);
+  if Comp is TImage then
+    with Comp as TImage do
+      begin
+        if PropName = 'PICTURE' then
+          try
+            Picture.LoadFromFile(configdir + PropVal);
+          except
+            on E: Exception do
+              writeln(E.Message);
+          end;
+      end;
 end;
 
 procedure ParseNode(Node: TDOMNode);

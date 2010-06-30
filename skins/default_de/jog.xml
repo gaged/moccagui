@@ -7,19 +7,8 @@
         <integer name="Height" value="282"/>
         <integer name="Top" value="222"/>
         <integer name="Width" value="432"/>
-        <integer name="HorzScrollBar.Page" value="476"/>
-        <integer name="VertScrollBar.Page" value="361"/>
-        <ident name="ActiveControl" value="SliderJog"/>
-        <set name="BorderIcons" value=""/>
         <ident name="BorderStyle" value="bsNone"/>
-        <string name="Caption" value="JogClientForm"/>
-        <integer name="ClientHeight" value="282"/>
-        <integer name="ClientWidth" value="432"/>
         <ident name="Color" value="clSilver"/>
-        <boolean name="KeyPreview" value="true"/>
-        <boolean name="ParentFont" value="true"/>
-        <ident name="ShowInTaskBar" value="stNever"/>
-        <string name="LCLVersion" value="0.9.28.2"/>
       </properties>
       <children>
         <component name="LabelJ1" class="TLabel">
@@ -28,11 +17,8 @@
             <integer name="Height" value="28"/>
             <integer name="Top" value="4"/>
             <integer name="Width" value="104"/>
-            <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Joggeschw."/>
             <ident name="Layout" value="tlCenter"/>
-            <boolean name="ParentColor" value="false"/>
-            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="LabelJ2" class="TLabel">
@@ -41,11 +27,7 @@
             <integer name="Height" value="28"/>
             <integer name="Top" value="4"/>
             <integer name="Width" value="136"/>
-            <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="Schrittweiten"/>
-            <ident name="Layout" value="tlCenter"/>
-            <boolean name="ParentColor" value="false"/>
-            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="LedORide" class="TMocLed">
@@ -66,7 +48,6 @@
             <integer name="Height" value="48"/>
             <integer name="Top" value="100"/>
             <integer name="Width" value="48"/>
-            <boolean name="ShowClicks" value="true"/>
             <string name="Caption" value="- X"/>
             <ident name="Color" value="clBtnFace"/>
             <set name="Font.Style" value="fsBold"/>

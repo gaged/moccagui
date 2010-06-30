@@ -7,80 +7,36 @@
         <integer name="Height" value="279"/>
         <integer name="Top" value="346"/>
         <integer name="Width" value="432"/>
-        <integer name="HorzScrollBar.Page" value="399"/>
-        <integer name="VertScrollBar.Page" value="299"/>
-        <ident name="ActiveControl" value="MDIHistListBox"/>
-        <set name="BorderIcons" value=""/>
         <ident name="BorderStyle" value="bsNone"/>
-        <string name="Caption" value="MDIClientForm"/>
-        <integer name="ClientHeight" value="279"/>
-        <integer name="ClientWidth" value="432"/>
         <ident name="Color" value="clSilver"/>
-        <boolean name="KeyPreview" value="true"/>
-        <boolean name="ParentFont" value="true"/>
-        <string name="LCLVersion" value="0.9.28.2"/>
       </properties>
       <children>
         <component name="Label1" class="TLabel">
           <properties>
-            <ident name="AnchorSideLeft.Control" value="Owner"/>
-            <ident name="AnchorSideBottom.Control" value="Owner"/>
-            <ident name="AnchorSideBottom.Side" value="asrBottom"/>
             <integer name="Left" value="0"/>
             <integer name="Height" value="28"/>
             <integer name="Top" value="251"/>
             <integer name="Width" value="52"/>
             <ident name="Alignment" value="taCenter"/>
-            <set name="Anchors" value="akLeft,akBottom"/>
-            <boolean name="AutoSize" value="false"/>
             <string name="Caption" value="MDI"/>
             <ident name="Font.Color" value="clNavy"/>
             <integer name="Font.Height" value="-16"/>
             <set name="Font.Style" value="fsBold"/>
-            <ident name="Layout" value="tlCenter"/>
-            <boolean name="ParentColor" value="false"/>
-            <boolean name="ParentFont" value="false"/>
           </properties>
         </component>
         <component name="MDIHistListBox" class="TListBox">
           <properties>
-            <ident name="AnchorSideLeft.Control" value="Owner"/>
-            <ident name="AnchorSideTop.Control" value="Owner"/>
-            <ident name="AnchorSideRight.Control" value="Owner"/>
-            <ident name="AnchorSideRight.Side" value="asrBottom"/>
-            <ident name="AnchorSideBottom.Control" value="Label1"/>
-            <integer name="Left" value="0"/>
-            <integer name="Height" value="249"/>
-            <integer name="Top" value="0"/>
-            <integer name="Width" value="432"/>
-            <set name="Anchors" value="akTop,akLeft,akRight,akBottom"/>
-            <integer name="BorderSpacing.Bottom" value="2"/>
-            <integer name="ItemHeight" value="0"/>
-            <integer name="TabOrder" value="0"/>
-            <integer name="TopIndex" value="-1"/>
           </properties>
         </component>
         <component name="MDIEdit" class="TEdit">
           <properties>
-            <ident name="AnchorSideLeft.Control" value="Label1"/>
-            <ident name="AnchorSideLeft.Side" value="asrBottom"/>
-            <ident name="AnchorSideTop.Control" value="Label1"/>
-            <ident name="AnchorSideTop.Side" value="asrCenter"/>
-            <ident name="AnchorSideRight.Control" value="Owner"/>
-            <ident name="AnchorSideRight.Side" value="asrBottom"/>
-            <ident name="AnchorSideBottom.Control" value="Owner"/>
-            <ident name="AnchorSideBottom.Side" value="asrBottom"/>
             <integer name="Left" value="54"/>
             <integer name="Height" value="23"/>
             <integer name="Top" value="254"/>
             <integer name="Width" value="378"/>
-            <set name="Anchors" value="akTop,akLeft,akRight"/>
             <ident name="BorderStyle" value="bsNone"/>
-            <integer name="BorderSpacing.Left" value="2"/>
             <integer name="Font.Height" value="-16"/>
             <set name="Font.Style" value="fsBold"/>
-            <boolean name="ParentFont" value="false"/>
-            <integer name="TabOrder" value="1"/>
           </properties>
         </component>
       </children>

@@ -7,50 +7,14 @@
         <integer name="Height" value="351"/>
         <integer name="Top" value="328"/>
         <integer name="Width" value="589"/>
-        <ident name="ActiveControl" value="Grid"/>
-        <set name="BorderIcons" value="biSystemMenu"/>
         <ident name="BorderStyle" value="bsDialog"/>
         <string name="Caption" value="Koordinaten bearbeiten"/>
-        <integer name="ClientHeight" value="351"/>
-        <integer name="ClientWidth" value="589"/>
-        <ident name="Position" value="poScreenCenter"/>
-        <ident name="ShowInTaskBar" value="stNever"/>
-        <string name="LCLVersion" value="0.9.28.2"/>
       </properties>
       <children>
         <component name="Grid" class="TStringGrid">
           <properties>
-            <ident name="AnchorSideLeft.Control" value="Owner"/>
-            <ident name="AnchorSideTop.Control" value="Owner"/>
-            <integer name="Left" value="0"/>
-            <integer name="Height" value="128"/>
-            <integer name="Top" value="0"/>
-            <integer name="Width" value="488"/>
             <integer name="Font.Height" value="-16"/>
             <string name="Font.Name" value="Courier 10 Pitch"/>
-            <set name="Options" value="goFixedVertLine,goFixedHorzLine,goVertLine,goHorzLine,goEditing,goAlwaysShowEditor,goSmoothScroll"/>
-            <boolean name="ParentFont" value="false"/>
-            <ident name="ScrollBars" value="ssNone"/>
-            <integer name="TabOrder" value="0"/>
-            <integer name="TitleFont.Height" value="-16"/>
-            <string name="TitleFont.Name" value="Courier 10 Pitch"/>
-            <ident name="TitleStyle" value="tsNative"/>
-            <list>
-              <integer value="70"/>
-              <integer value="169"/>
-              <integer value="64"/>
-              <integer value="64"/>
-              <integer value="64"/>
-            </list>
-            <list>
-              <integer value="2"/>
-              <integer value="0"/>
-              <integer value="0"/>
-              <string value="Offset"/>
-              <integer value="1"/>
-              <integer value="0"/>
-              <string value="Bezeichnung"/>
-            </list>
           </properties>
         </component>
         <component name="PanelBottom" class="TPanel">
@@ -59,9 +23,6 @@
             <integer name="Height" value="50"/>
             <integer name="Top" value="272"/>
             <integer name="Width" value="552"/>
-            <integer name="ClientHeight" value="50"/>
-            <integer name="ClientWidth" value="552"/>
-            <integer name="TabOrder" value="1"/>
           </properties>
           <children>
             <component name="BtnOk" class="TButton">
@@ -71,8 +32,6 @@
                 <integer name="Top" value="16"/>
                 <integer name="Width" value="110"/>
                 <string name="Caption" value="&amp;Ok"/>
-                <integer name="ModalResult" value="1"/>
-                <integer name="TabOrder" value="0"/>
               </properties>
             </component>
             <component name="BtnCancel" class="TButton">
@@ -81,10 +40,7 @@
                 <integer name="Height" value="25"/>
                 <integer name="Top" value="16"/>
                 <integer name="Width" value="110"/>
-                <boolean name="Cancel" value="true"/>
                 <string name="Caption" value="&amp;Abbruch"/>
-                <integer name="ModalResult" value="2"/>
-                <integer name="TabOrder" value="1"/>
               </properties>
             </component>
           </children>

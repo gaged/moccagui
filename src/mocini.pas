@@ -306,6 +306,11 @@ begin
   else
     writeln(MSG_INIINCHES);
 
+  if Vars.Metric then
+     EdgeFinderDia:= 5
+  else
+    EdgeFinderDia:= 0.1;
+
   // *todo: angularUnitsConversion
   GetIniInt('TRAJ','AXES',i,0);
   if (i < 1) or (i > 9) then

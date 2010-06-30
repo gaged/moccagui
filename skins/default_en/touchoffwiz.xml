@@ -6,8 +6,7 @@
         <integer name="Height" value="490"/>
         <integer name="Width" value="397"/>
         <ident name="BorderStyle" value="bsDialog"/>
-        <string name="Caption" value="Touchoff"/>
-        <string name="Image" value="touchoffwiz.png"/>     
+        <string name="Caption" value="Touchoff"/>   
       </properties>
       <children>
         <component name="Label1" class="TLabel">
@@ -42,7 +41,7 @@
             <integer name="Top" value="0"/>
             <integer name="Height" value="360"/>
             <integer name="Width" value="400"/>
-            <boolean name="AutoSize" value="true"/>
+            <string name="Picture" value="touchoffwiz.png"/>
           </properties>
         </component>
         <component name="LabelUnit" class="TLabel">

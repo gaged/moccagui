@@ -1,5 +1,3 @@
-{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
-
 LazarusResources.Add('TTouchOffWizDlg','FORMDATA',[
   'TPF0'#15'TTouchOffWizDlg'#14'TouchOffWizDlg'#4'Left'#3')'#2#6'Height'#3#234#1
   +#3'Top'#3#14#1#5'Width'#3#141#1#13'ActiveControl'#7#6'EditY2'#11'BorderIcons'
