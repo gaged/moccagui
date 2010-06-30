@@ -1,6 +1,22 @@
 <?xml version="1.0"?>
 <CONFIG>
   <tools>
+    <item index="0" width="40" title="Platz"/>
+    <item index="1" width="40" title="Wkznr"/>
+    <item index="2" width="60" title="X-Offset"/>
+    <item index="3" width="60" title="Y-Offset"/>
+    <item index="4" width="60" title="Z-Offset"/>
+    <item index="5" width="60" title="A-Offset"/>
+    <item index="6" width="60" title="B-Offset"/>
+    <item index="7" width="60" title="C-Offset"/>
+    <item index="8" width="60" title="U-Offset"/>
+    <item index="9" width="60" title="V-Offset"/>
+    <item index="10" width="60" title="W-Offset"/>
+    <item index="11" width="100" title="Durchmesser"/>
+    <item index="12" width="60" title="Winkel Vorne"/>
+    <item index="13" width="60" title="Winkel Hinten"/>
+    <item index="14" width="40" title="Ausr."/>
+    <item index="15" width="220" title="Bezeichnung"/>
   </tools>
   <scripts>
     <item index="0" name="test" script="test.nc"/>
