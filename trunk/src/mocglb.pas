@@ -10,6 +10,7 @@ uses
 
 const
   ShowGlPreview: Boolean = True;
+  InitialFullscreen: Boolean = False;
 
 {$I mocglb.inc}
 

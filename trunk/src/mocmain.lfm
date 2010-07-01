@@ -31,9 +31,8 @@ object MainForm: TMainForm
   LCLVersion = '0.9.28.2'
   object BgImage: TImage
     Left = 0
-    Height = 20
     Top = 0
-    Width = 20
+    AutoSize = True
   end
   object Label9: TLabel
     AnchorSideTop.Side = asrBottom

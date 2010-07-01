@@ -561,32 +561,22 @@ begin
 
   ScriptRunning:= False;
   UpdateLock:= True; // prevent from update in on_idle
-  if BackGroundImage <> '' then
+  
+  if BgImage.Picture <> nil then
     begin
-      try
-        BgImage.AutoSize:= True;
-        BgImage.Picture.LoadFromFile(BackGroundImage);
-        cw:= BgImage.Picture.Width;
-        ch:= BgImage.Picture.Height;
-        if (cw > 100) and (ch > 100) then
-          begin
-            Self.ClientWidth:= cw;
-            Self.ClientHeight:= ch;
-          end
-        else
-          writeln('Background imgage seems to be too small!');
-      except
-        writeln('Error loading background- image: ' + BackGroundImage);
-      end;
+      cw:= BgImage.Picture.Width;
+      ch:= BgImage.Picture.Height;
+      if (cw > 100) and (ch > 100) then
+        begin
+          Self.ClientWidth:= cw;
+          Self.ClientHeight:= ch;
+        end;
     end;
 
-//  {$IFDEF LCLGTK2}
-//  if (Vars.WindowSize = 2) then
-//    begin
-//      Self.WindowState:= wsNormal;
-//      FullScreen(Self);
-//    end
-//  {$ENDIF};
+  {$IFDEF LCLGTK2}
+  if InitialFullscreen then
+    FullScreen(Self);
+  {$ENDIF};
 
   Caption:='Mocca ' + Vars.Machine;
 
@@ -850,6 +840,11 @@ begin
   if Sender = nil then ;
   if Assigned(clSim) then
     clSim.FormResize(nil);
+  if InitialFullScreen then
+    begin
+      writeln('mocca is setup for fullscreen.');
+      FullScreen(Self);
+    end;
 end;
 
 procedure TMainForm.LabelMsgClick(Sender: TObject);
