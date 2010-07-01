@@ -31,6 +31,19 @@ begin
   raise Exception.Create(Msg);
 end;
 
+procedure ReadGlobalItem(nn,nv: string);
+begin
+  if (nn = '') then Exit;
+  try
+    if nn = 'EDGEFINDERDIA' then EdgeFinderDia:= StrToFloat(nv) else
+    if nn = 'VERBOSE' then Verbose:= (UpperCase(nv) = 'TRUE') or (nv = '1') else
+    if nn = 'INITIALFULLSCREEN' then InitialFullscreen:= (UpperCase(nv) = 'TRUE') or (nv = '1');
+  except
+    on E: Exception do
+      writeln('Error in config.xml: ' + E.Message);
+  end;
+end;
+
 procedure ReadGlobals(Node: TDomNode);
 var
   N: TDomNode;
@@ -50,16 +63,8 @@ begin
            begin
              nn:= UpperCase(N.Attributes[0].NodeValue);
              nv:= N.Attributes[1].NodeValue;
-             if nn = 'EDGEFINDERDIA' then
-               begin
-                 try
-                   EdgeFinderDia:= StrToFloat(nv);
-                 except
-                   on E: Exception do
-                     writeln('Config.xml: <EdgefinderDia> ' + E.Message);
-                 end;
-               end;
-             end;
+             ReadGlobalItem(nn,nv);
+           end;         
       N:= N.NextSibling;
     end;
 end;

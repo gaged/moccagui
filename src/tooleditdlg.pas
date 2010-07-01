@@ -380,11 +380,11 @@ begin
     end;
   InitPockets;
   Application.CreateForm(TToolDlg,Dlg);
-  if Assigned(Dlg) then
-    begin
-      Dlg.ShowModal;
-      Dlg.Free;
-    end;
+  try
+    Dlg.ShowModal;
+  finally
+    Dlg.Free;
+  end;
 end;
 
 procedure TToolDlg.EditorEditingDone(Sender: TObject);

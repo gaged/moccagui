@@ -1,5 +1,10 @@
 <?xml version="1.0"?>
 <CONFIG>
+  <global>
+    <float name="Edgefinderdia" value="8"/>
+    <boolean name="InitialFullscreen" value="True"/>
+    <boolean name="Verbose" value="False"/>
+  </global>
   <tools>
     <item index="0" width="40" title="Platz"/>
     <item index="1" width="40" title="Wkznr"/>
