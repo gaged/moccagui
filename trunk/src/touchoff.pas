@@ -69,6 +69,7 @@ end;
 
 procedure TTouchOffDlg.EditVKeyPress(Sender: TObject; var Key: char);
 begin
+  if Sender = nil then ;
   if Ord(Key) = 8 then Exit;
   if Key = ',' then Key:= '.';
   if not (Key in ['0'..'9','.','-','+']) then
@@ -80,6 +81,7 @@ end;
 
 procedure TTouchOffDlg.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
+  if Sender = nil then ;
   if ModalResult = mrOk then
     begin
       try
@@ -99,12 +101,15 @@ end;
 
 procedure TTouchOffDlg.FormCreate(Sender: TObject);
 begin
+  if Sender = nil then ;
   ReadStyle(Self,'touchoff.xml');
 end;
 
 procedure TTouchOffDlg.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  if Sender = nil then ;
+  if (ssShift in Shift) then ;
   if (Key = 13) then
     ModalResult:= mrOk
   else
@@ -114,6 +119,10 @@ end;
 
 procedure TTouchOffDlg.FormShow(Sender: TObject);
 begin
+  if Sender = nil then ;
+  {$IFDEF LCLGTK2}
+  DoBringToFront(Self);
+  {$ENDIF}
   EditV.SetFocus;
 end;
 

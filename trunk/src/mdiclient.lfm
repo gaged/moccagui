@@ -1,18 +1,19 @@
 object MDIClientForm: TMDIClientForm
-  Left = 767
-  Height = 279
-  Top = 630
-  Width = 432
+  Left = 679
+  Height = 277
+  Top = 533
+  Width = 437
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299
   ActiveControl = MDIHistListBox
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'MDIClientForm'
-  ClientHeight = 279
-  ClientWidth = 432
+  ClientHeight = 277
+  ClientWidth = 437
   Color = clSilver
   KeyPreview = True
+  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -25,7 +26,7 @@ object MDIClientForm: TMDIClientForm
     AnchorSideBottom.Side = asrBottom
     Left = 0
     Height = 28
-    Top = 251
+    Top = 249
     Width = 52
     Alignment = taCenter
     Anchors = [akLeft, akBottom]
@@ -42,9 +43,9 @@ object MDIClientForm: TMDIClientForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Label1
     Left = 0
-    Height = 249
+    Height = 247
     Top = 0
-    Width = 432
+    Width = 437
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
     ItemHeight = 0
@@ -63,8 +64,8 @@ object MDIClientForm: TMDIClientForm
     AnchorSideBottom.Side = asrBottom
     Left = 54
     Height = 23
-    Top = 254
-    Width = 378
+    Top = 252
+    Width = 383
     Anchors = [akTop, akLeft, akRight]
     BorderStyle = bsNone
     BorderSpacing.Left = 2

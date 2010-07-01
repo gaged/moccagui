@@ -64,7 +64,7 @@ type
     procedure MapButtons;
     procedure UpdateButtons;
     procedure SetIncrement(Index: integer);
-    procedure SetButtonParams(Index: integer; s: string; ATag: integer);
+    procedure SetButtonParams(Index: integer; s: string);
     procedure SetButtonState(Index: integer; ADown: Boolean);
     procedure ChangeButtons(ToMap: integer);
     procedure ChangeIncrement(i: integer);
@@ -161,7 +161,7 @@ begin
     end;
 end;
 
-procedure TJogClientForm.SetButtonParams(Index: integer; s: string; ATag: integer);
+procedure TJogClientForm.SetButtonParams(Index: integer; s: string);
 begin
   case Index of
     0: begin
@@ -396,6 +396,7 @@ procedure TJogClientForm.SliderJogPositionChanged(Sender: TObject; NewPos: integ
 var
   Vel: integer;
 begin
+  if Sender = nil then ;
   if UpdateLock then Exit;
   Vel:= SliderJog.Position;
   if Vel <> State.ActJogVel then
@@ -413,6 +414,7 @@ const
   MSG1 = 'No Jog-Increments set in config-file';
   MSG2 = 'Using default configuration';
 begin
+  if Sender = nil then ;
   ReadStyle(Self,'jog.xml');
   Self.Tag:= TASKMODEMANUAL;
   FCurrentMap:= 0;
@@ -437,7 +439,7 @@ begin
       Vars.JogIncMax:= 4;
     end;
   for i:= 0 to Vars.JogIncMax do
-    SetButtonParams(i,Vars.JogIncrements[i].Text,i);
+    SetButtonParams(i,Vars.JogIncrements[i].Text);
   Vars.JogContinous:= True;
   FIncrement:= 1;
   SetIncrement(0);
@@ -498,6 +500,7 @@ end;
 procedure TJogClientForm.BJogMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
+  if Sender = nil then ;
   UpdateBtnState(False);
   FBtnDown:= 0;
 end;
@@ -505,11 +508,13 @@ end;
 procedure TJogClientForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  if Sender = nil then ;
   if HandleJogKeys(Key,True,(ssShift in Shift)) then Key:= 0;
 end;
 
 procedure TJogClientForm.FormKeyPress(Sender: TObject; var Key: char);
 begin
+  if Sender = nil then ;
   if not Assigned(Joints) then Exit;
   case Key of
     'u'..'z': Joints.SetActiveChar(Key);
@@ -522,11 +527,8 @@ end;
 procedure TJogClientForm.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-   {$ifdef LCLGTK2}
-   if HandleJogKeys(Key,False,False) then Key:= 0;
-   {$else}
-   Key:= 0;
-   {$endif}
+  if Sender = nil then ;
+  if HandleJogKeys(Key,False,False) then Key:= 0;
 end;
 
 

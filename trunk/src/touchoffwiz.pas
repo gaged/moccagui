@@ -38,9 +38,9 @@ type
     procedure EditY2Change(Sender: TObject);
     procedure EditY2Exit(Sender: TObject);
     procedure EditZExit(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     FAxisMask: string;
     FCoord: integer;
@@ -77,14 +77,9 @@ var
   Dlg: TTouchOffWizDlg;
 begin
   Result:= '';
-  if not Assigned(Joints) then
-    begin
-      writeln('Error on Touchoff- Wizzard: joints = nil!');
-      Exit;
-    end;
   Application.CreateForm(TTouchOffWizDlg,Dlg);
   try
-    if Dlg.ShowModal = mrOk then
+  if Dlg.ShowModal = mrOk then
       Result:= Dlg.G10Code;
   finally
     Dlg.Free;
@@ -180,6 +175,7 @@ end;
 
 procedure TTouchOffWizDlg.EditKeyPress(Sender: TObject; var Key: char);
 begin
+  if Sender = nil then ;
   if Key > #31 then
     begin
       if Key = ',' then Key:= '.';
@@ -227,12 +223,16 @@ end;
 
 procedure TTouchOffWizDlg.BtnOkClick(Sender: TObject);
 begin
+  if Sender = nil then ;
+  ModalResult:= mrOk;
+  Close;
 end;
 
 procedure TTouchOffWizDlg.EditDiaExit(Sender: TObject);
 var
   d: double;
 begin
+  if Sender = nil then ;
   try
     d:= StrToFloat(EditDia.Text);
     EdgeFinderDia:= d;
@@ -252,6 +252,7 @@ end;
 
 procedure TTouchOffWizDlg.EditX1Exit(Sender: TObject);
 begin
+  if Sender = nil then ;
   if GetEditValue(EditX1,XOffset) then
     XDir:= 1;
 end;
@@ -265,6 +266,7 @@ end;
 
 procedure TTouchOffWizDlg.EditX2Exit(Sender: TObject);
 begin
+  if Sender = nil then ;
   if GetEditValue(EditX2,XOffset) then
     XDir:= 2;
 end;
@@ -278,6 +280,7 @@ end;
 
 procedure TTouchOffWizDlg.EditY1Exit(Sender: TObject);
 begin
+  if Sender = nil then ;
   if GetEditValue(EditY1,YOffset) then
     YDir:= 1;
 end;
@@ -291,24 +294,20 @@ end;
 
 procedure TTouchOffWizDlg.EditY2Exit(Sender: TObject);
 begin
+  if Sender = nil then ;
   if GetEditValue(EditY2,YOffset) then
     Ydir:= 2;
 end;
 
 procedure TTouchOffWizDlg.EditZExit(Sender: TObject);
 begin
+  if Sender = nil then ;
   GetEditValue(EditZ,ZOffset);
 end;
 
-procedure TTouchOffWizDlg.FormClose(Sender: TObject;
-  var CloseAction: TCloseAction);
+procedure TTouchOffWizDlg.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-
-end;
-
-procedure TTouchOffWizDlg.FormCloseQuery(Sender: TObject; var CanClose: boolean
-  );
-begin
+  if Sender = nil then ;
   if ModalResult <> mrCancel then
     begin
        FG10Code:= '';
@@ -324,15 +323,11 @@ var
   i: integer;
   s: string;
 begin
-  //FValue:= GetRelPos(FAxisNo);
-  // LabelPos.Caption:= PosToString(FValue);
   s:= '';
   if Pos('X',Vars.CoordNames) > 0 then s:= 'X';
   if Pos('Y',Vars.CoordNames) > 0 then s:= s + 'Y';
   if Pos('Z',Vars.CoordNames) > 0 then s:= s + 'Z';
-
   FAxisMask:= s;
-
   cbCoords.Items.Clear;
   for i:= 0 to CoordSysMax do
     cbCoords.Items.Add(CoordSys[i]);
@@ -344,6 +339,7 @@ end;
 
 procedure TTouchOffWizDlg.FormCreate(Sender: TObject);
 begin
+  if Sender = nil then ;
   Readstyle(Self,'touchoffwiz.xml');
   FAxisMask:= '';
   EditDia.Text:= PosToString(EdgeFinderDia);
@@ -352,6 +348,15 @@ begin
   ZDir:= 0;
   InitControls;
 end;
+
+procedure TTouchOffWizDlg.FormShow(Sender: TObject);
+begin
+  if Sender = nil then ;
+  {$IFDEF LCLGTK2}
+  DoBringToFront(Self);
+  {$ENDIF}
+end;
+
 
 initialization
   {$I touchoffwiz.lrs}

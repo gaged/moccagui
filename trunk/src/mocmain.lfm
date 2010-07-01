@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 201
+  Left = 222
   Height = 724
-  Top = 27
+  Top = 165
   Width = 961
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -11,6 +11,10 @@ object MainForm: TMainForm
   VertScrollBar.Visible = False
   ActiveControl = PanelMaster
   Caption = 'Mocca'
+  ChildSizing.EnlargeHorizontal = crsScaleChilds
+  ChildSizing.EnlargeVertical = crsScaleChilds
+  ChildSizing.ShrinkHorizontal = crsScaleChilds
+  ChildSizing.ShrinkVertical = crsScaleChilds
   ClientHeight = 724
   ClientWidth = 961
   Color = clSilver

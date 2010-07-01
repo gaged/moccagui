@@ -551,6 +551,9 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   cw,ch: integer;
 begin
+  // BeginGDKErrorTrap;
+  if Sender = nil then ;
+  MainForm:= Self;
   if not UseDefaultLayout then
     ReadStyle(Self,'mocca.xml')
   else
@@ -651,6 +654,7 @@ end;
 
 procedure TMainForm.BtnSpCCWClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if FSpDir <> 0 then Exit;
   FSpReverse:= True;
   UpdateSpindle;
@@ -658,6 +662,7 @@ end;
 
 procedure TMainForm.BtnSpClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if FSpReverse then
     HandleCommand(cmSPCCW)
   else
@@ -666,6 +671,7 @@ end;
 
 procedure TMainForm.BtnSpReverseClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if FSpDir <> 0 then Exit;
   FSpReverse:= not FSpReverse;
   UpdateSpindle;
@@ -673,11 +679,13 @@ end;
 
 procedure TMainForm.ButtonClearClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if Assigned(clSim) then clSim.ClearPlot;
 end;
 
 procedure TMainForm.ButtonShowDimClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if not Assigned(clSim) then Exit;
   clSim.ShowDimensions:= not clSim.ShowDimensions;
   ButtonShowDim.Down:= clSim.ShowDimensions;
@@ -686,6 +694,7 @@ end;
 
 procedure TMainForm.ButtonToolPathClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if not Assigned(clSim) then Exit;
   clSim.ShowLivePlot:= not clSim.ShowLivePlot;
   ButtonToolPath.Down:= clSim.ShowLivePlot;
@@ -695,6 +704,7 @@ end;
 
 procedure TMainForm.ButtonUnitsMMClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   Vars.Metric:= not Vars.Metric;
 end;
 
@@ -707,21 +717,25 @@ end;
 
 procedure TMainForm.ButtonViewMinusClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if Assigned(clSim) then clSim.Zoom(-1);
 end;
 
 procedure TMainForm.ButtonViewPlusClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if Assigned(clSim) then clSim.Zoom(1);
 end;
 
 procedure TMainForm.BtnCoordsClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   Joints.ShowRelative:= not Joints.ShowRelative;
 end;
 
 procedure TMainForm.ButtonShowDtgClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   Joints.ShowDtg:= not Joints.ShowDtg;
 end;
 
@@ -740,6 +754,7 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 var
   i: integer;
 begin
+  if Sender = nil then ;
   UpdateLock:= True;  // prevent from updates during destroy
   Timer.Enabled:= False;  //turn off Timer
   if Assigned(clJog) then FreeAndNil(clJog);
@@ -753,10 +768,12 @@ begin
   if Assigned(GlobalBitmaps) then
     FreeBitmapList;
   if Assigned(GlobalErrors) then GlobalErrors.Free;
+  //EndGDKErrorTrap;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
+  if Sender = nil then ;
   if Assigned(Joints) then
     Joints.DoResize(nil);
   PanelPreviewResize(nil);
@@ -765,6 +782,7 @@ end;
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
 begin
+  if Sender = nil then ;
   if State.TaskMode = TASKMODEMANUAL then
     clJog.FormKeyPress(nil,Key)
   else
@@ -782,6 +800,7 @@ begin
 end;
 
 begin
+  if Sender = nil then ;
   if Key = 27 then  // handle the escape key first
     begin
       DoAction(cmABORT);
@@ -807,6 +826,8 @@ begin
             UnFullScreen(Self)
           else
             FullScreen(Self);
+          //IsFullScreen:= not IsFullScreen;
+          //SetWindowFullscreen(Self,IsFullScreen);
         end
       {$ENDIF};
     end;
@@ -818,6 +839,7 @@ end;
 
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
+  if Sender = nil then ;
   if (State.TaskMode = TaskModeManual) then
     if Assigned(clJog) then
       clJog.FormKeyUp(nil,Key,Shift)
@@ -825,12 +847,14 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
+  if Sender = nil then ;
   if Assigned(clSim) then
     clSim.FormResize(nil);
 end;
 
 procedure TMainForm.LabelMsgClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   if GlobalErrors.Count > 0 then
     if Assigned(MsgForm) then
       begin
@@ -842,6 +866,7 @@ end;
 
 procedure TMainForm.OnTimer(Sender: TObject);
 begin
+  if Sender = nil then ;
   Self.UpdateState;
 end;
 
@@ -863,6 +888,7 @@ const
 var
   w,h,x,i: integer;
 begin
+  if Sender = nil then ;
   //if PanelButtons.Width > PanalButtons.Height then
   //  begin
       w:= PanelButtons.ClientWidth div NumButtons;
@@ -880,6 +906,7 @@ end;
 
 procedure TMainForm.PanelPreviewResize(Sender: TObject);
 begin
+  if Sender = nil then ;
   if ShowGlPreview then
     if Assigned(clSim) then
       begin
@@ -892,18 +919,21 @@ end;
 
 procedure TMainForm.SliderFeedPositionChanged(Sender: TObject; NewPos: integer);
 begin
+  if Sender = nil then ;
   if UpdateLock then Exit;
   Emc.FeedOverride:= NewPos;
 end;
 
 procedure TMainForm.SliderSORPositionChanged(Sender: TObject; NewPos: integer);
 begin
+  if Sender = nil then ;
   if UpdateLock then Exit;
   Emc.SpindleOverride:= NewPos;
 end;
 
 procedure TMainForm.SliderVelPositionChanged(Sender: TObject; NewPos: integer);
 begin
+  if Sender = nil then ;
   if UpdateLock then Exit;
   Emc.MaxVelocity:= NewPos;
 end;

@@ -42,6 +42,7 @@ type
     procedure BtnResetClick(Sender: TObject);
     procedure BtnXRClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   protected
     procedure InitControls;
     procedure UpdateLabels;
@@ -62,7 +63,7 @@ uses
 
 var
   rx,ry,rz: double;
-  px,py,pz: double;
+  px,py: double;
 
 function DoCoordRotate: boolean;
 var
@@ -102,6 +103,7 @@ end;
 
 procedure TCoordRotDlg.BtnRefClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   with CoordRef do
     begin
       EditVal(EditRX,x);
@@ -114,6 +116,7 @@ end;
 
 procedure TCoordRotDlg.BtnResetClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   with CoordRef do
     begin
       isSet:= False;
@@ -125,7 +128,7 @@ end;
 
 procedure CalcRotationX(x1,y1,x2,y2: double);
 var
-  dx,dy,r: double;
+  dx,dy: double;
 begin
   dx:= x2 - x1;
   dy:= y2 - y1;
@@ -146,7 +149,7 @@ end;
 
 procedure CalcRotationY(x1,y1,x2,y2: double);
 var
-  dx,dy,r: double;
+  dx,dy: double;
 begin
   dx:= x2 - x1;
   dy:= y2 - y1;
@@ -167,6 +170,7 @@ end;
 
 procedure TCoordRotDlg.BtnXRClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   EditVal(EditX,px);
   EditVal(EditY,py);
   CalcRotationX(CoordRef.x,CoordRef.y,px,py);
@@ -225,7 +229,14 @@ end;
 
 procedure TCoordRotDlg.FormCreate(Sender: TObject);
 begin
+  if Sender = nil then ;
   ReadStyle(self,'coordrotate.xml');
+end;
+
+procedure TCoordRotDlg.FormShow(Sender: TObject);
+begin
+  if Sender = nil then ;
+  DoBringToFront(Self);
 end;
 
 initialization
