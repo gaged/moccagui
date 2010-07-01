@@ -1,18 +1,18 @@
 object TouchOffWizDlg: TTouchOffWizDlg
-  Left = 553
+  Left = 544
   Height = 490
-  Top = 270
+  Top = 299
   Width = 397
   ActiveControl = EditY2
-  BorderIcons = [biSystemMenu]
-  BorderStyle = bsDialog
   Caption = 'Antasten Dialog'
   ClientHeight = 490
   ClientWidth = 397
-  OnClose = FormClose
+  KeyPreview = True
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poScreenCenter
+  ShowInTaskBar = stNever
   LCLVersion = '0.9.28.2'
   object Label1: TLabel
     Left = 0

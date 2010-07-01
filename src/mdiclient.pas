@@ -15,9 +15,10 @@ type
     Label1: TLabel;
     MDIEdit: TEdit;
     MDIHistListBox: TListBox;
+    procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure Click(Sender: TObject);
+
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MDIEditKeyPress(Sender: TObject; var Key: char);
@@ -25,6 +26,7 @@ type
   private
     function FormatMdi(sMdi: string): string;
     procedure ExecuteMdi;
+    procedure UserClick(Sender: TObject);
   public
     procedure ActivateSelf;
     procedure UpdateSelf;
@@ -51,6 +53,7 @@ const
 
 procedure TMDIClientForm.FormCreate(Sender: TObject);
 begin
+  if Sender = nil then ;
   ReadStyle(Self,'mdi.xml');
   Self.Tag:= TASKMODEMDI;
   try
@@ -63,6 +66,12 @@ end;
 procedure TMDIClientForm.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
+  if Sender = nil then ;
+end;
+
+procedure TMDIClientForm.FormActivate(Sender: TObject);
+begin
+  writeln('Activate');
 end;
 
 function TMDIClientForm.HandleCommand(Cmd: integer): Boolean;
@@ -91,39 +100,49 @@ end;
 
 procedure TMDIClientForm.MapButtons;
 begin
-  SetButtonMap(@BtnDefMDI,@Self.Click);
+  SetButtonMap(@BtnDefMDI,@Self.UserClick);
 end;
 
 procedure TMDIClientForm.InitControls;
 var
   i: integer;
 begin
-  SetButtonDown(cmMDI,True);
-  MDIEdit.SetFocus;
   i:= MDIHistListBox.Count - 1;
-  if i < 0 then Exit;
-  MDIHistListBox.ItemIndex:= i;
-  MDIHistListBox.MakeCurrentVisible;
+  if i >= 0 then
+   if MDIHistListBox.Visible then
+     begin
+        MDIHistListBox.ItemIndex:= i;
+        MDIHistListBox.MakeCurrentVisible;
+     end;
+  MDIEdit.SetFocus;
 end;
 
-procedure TMDIClientForm.Click(Sender: TObject);
+procedure TMDIClientForm.UserClick(Sender: TObject);
 begin
   if Assigned(Sender) then
-    with Sender as TMocButton do
-      begin
-        if not Self.HandleCommand(Tag) then
-          Emc.HandleCommand(Tag);
-      end;
+    if Sender is TMocButton then
+      with Sender as TMocButton do
+        begin
+          if not Self.HandleCommand(Tag) then
+            Emc.HandleCommand(Tag);
+        end;
 end;
 
 procedure TMDIClientForm.FormDestroy(Sender: TObject);
 begin
-  MDIHistListBox.Items.SaveToFile(Vars.IniPath + MDI_HIST_FILENAME);
+  if Sender = nil then ;
+  try
+    MDIHistListBox.Items.SaveToFile(Vars.IniPath + MDI_HIST_FILENAME);
+  except
+    on E:Exception do
+      writeln(E.Message);
+  end;
 end;
 
 procedure TMDIClientForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  if Sender = nil then ;
   if Key = 13 then
     begin
       HandleCommand(cmMDIExec);
@@ -133,6 +152,7 @@ end;
 
 procedure TMDIClientForm.MDIEditKeyPress(Sender: TObject; var Key: char);
 begin
+  if Sender = nil then ;
   if (Key in ['a'..'c','f'..'k','m','p','r'..'z']) then
     Key:= UpCase(Key)
   else
@@ -141,6 +161,7 @@ end;
 
 procedure TMDIClientForm.MDIHistListBoxClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   with MdiHistListbox do MdiEdit.Text:=items[itemindex];
 end;
 
@@ -168,7 +189,6 @@ end;
 
 procedure TMDIClientForm.ExecuteMdi;
 var
-  // i: integer;
   S,SF: string;
   NewOne: Boolean;
 begin

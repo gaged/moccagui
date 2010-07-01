@@ -286,7 +286,8 @@ procedure TSimClientForm.FormResize(Sender: TObject);
 begin
   if (sbV.Height > 0) and (sbH.Width > 0) then
     Ogl.SetBounds(sbH.Left,sbV.Top,sbH.Width,sbV.Height);
-  OglResize(nil);
+  if Assigned(ogl) then
+    OglResize(nil);
 end;
 
 procedure TSimClientForm.FormShow(Sender: TObject);
@@ -300,7 +301,8 @@ begin
   if Round(RotationZ) <> Angle then
     begin
       RotationZ:= Angle;
-      Ogl.Invalidate;
+      if Assigned(ogl) then
+        ogl.Invalidate;
     end;
 end;
 
@@ -309,7 +311,8 @@ begin
   if Round(RotationX) <> Angle then
     begin
       RotationX:= Angle;
-      Ogl.Invalidate;
+      if Assigned(ogl) then
+        ogl.Invalidate;
     end;
 end;
 
@@ -367,8 +370,12 @@ end;
 
 procedure TSimClientForm.OglMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
+var
+  Shifted: Boolean;
 begin
   if not AreaInitialized then Exit;
+  Shifted:= (ssShift in Shift);
+  if (Button = mbRight) or Shifted then Exit;
   MouseX:= X;
   MouseY:= Y;
   PanX:= 0;
@@ -426,6 +433,7 @@ var
   cx,cy,cz: Double;
 
 begin
+  if not Assigned(ogl) then Exit; 
   if not AreaInitialized then Exit;
   cx:= ToCanonPos(x,0);
   cy:= ToCanonPos(y,1);
@@ -443,7 +451,6 @@ procedure TSimClientForm.UpdateDim;
 var
   ExtMax: Double;
 begin
-  // if not DimDrawFlag then Exit;
   ExtMax:= 1;
   if ExtX > ExtMax then ExtMax:= ExtX;
   if ExtY > ExtMax then ExtMax:= ExtY;
@@ -717,9 +724,12 @@ end;
 procedure TSimClientForm.DrawDim;
 begin
   // if not DimDrawFlag then Exit;
-  DrawDimX;
-  DrawDimY;
-  DrawDimZ;
+  if Assigned(ogl) and AreaInitialized then
+    begin
+      DrawDimX;
+      DrawDimY;
+      DrawDimZ;
+    end;
 end;
 
 procedure TSimClientForm.UpdateView;
@@ -735,10 +745,7 @@ begin
   L:= SetExtents(0,0,0,0,0,0);
   // DimDrawFlag:= False;
   if (Assigned(MyGlList)) and (FFileName <> '') then
-    begin
-      MyGlList.GetExtents(L);
-      // DimDrawFlag:= True;
-    end
+    MyGlList.GetExtents(L)
   else
     L:= Vars.MLimits;
   CalcExtents;
@@ -747,7 +754,6 @@ begin
       Writeln('Preview is too small. Using Machine Limits...');
       L:= Vars.MLimits;
       CalcExtents;
-      // DimDrawFlag:= False;
     end;
   GetCanonOffset(Offset);
   UpdateDim;
@@ -788,6 +794,8 @@ begin
     if ZoomMax < 10 then ZoomMax:= 10;
   if Round(EyeZ) < 1 then EyeZ:= 1;
 
+  if not Assigned(ogl) then Exit;
+
   if AreaInitialized then
     begin
       if Ogl.MakeCurrent then
@@ -806,6 +814,7 @@ var
   P: PListItem;
 begin
   if not Assigned(ogl) then Exit;
+  if not AreaInitialized then Exit;
   glDeleteLists(ListL,1);
   glNewList(ListL,GL_COMPILE);
   if Assigned(MyGlList) then

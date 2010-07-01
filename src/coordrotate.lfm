@@ -8,6 +8,7 @@ object CoordRotDlg: TCoordRotDlg
   ClientHeight = 238
   ClientWidth = 590
   OnCreate = FormCreate
+  OnShow = FormShow
   LCLVersion = '0.9.28.2'
   object Label1: TLabel
     Left = 4

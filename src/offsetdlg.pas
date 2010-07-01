@@ -20,6 +20,7 @@ type
     procedure BtnOkClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure GridSetEditText(Sender: TObject; ACol, ARow: Integer;
       const Value: string);
     procedure EditorKeyPress(Sender: TObject; var Key: char);
@@ -65,6 +66,7 @@ end;
 
 procedure TOffsetsDlg.FormCreate(Sender: TObject);
 begin
+  if Sender = nil then ;
   ReadStyle(Self,'offsets.xml');
   VarFile:= TStringList.Create;
   VOffs:= -1;
@@ -81,17 +83,26 @@ end;
 
 procedure TOffsetsDlg.BtnOkClick(Sender: TObject);
 begin
+  if Sender = nil then ;
   SaveVars;
   sendTaskPlanInit;
 end;
 
 procedure TOffsetsDlg.FormDestroy(Sender: TObject);
 begin
+  if Sender = nil then ;
   if Assigned(VarFile) then VarFile.Free;
+end;
+
+procedure TOffsetsDlg.FormShow(Sender: TObject);
+begin
+  if Sender = nil then ;
+  DoBringToFront(Self);
 end;
 
 procedure TOffsetsDlg.EditorKeyPress(Sender: TObject; var Key: char);
 begin
+  if Sender = nil then ;
   if (Grid.Col < 2) or (Ord(Key) = 8) then Exit;  // BkSpace
   // make german keyboards usable, this allows to use the keypad
   // as emc does not use the locales settings in the interpreter STRTOD
@@ -107,6 +118,7 @@ end;
 procedure TOffsetsDlg.GridSetEditText(Sender: TObject; ACol, ARow: Integer;
   const Value: string);
 begin
+  if Sender = nil then ;
   if (Value = '?') or (Value = '-') or (Value = '+') then Exit;
   if (ACol > 1) and (ARow > 0) and (Value <> '') then
     begin

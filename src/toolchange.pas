@@ -60,12 +60,14 @@ end;
 
 procedure TToolChgDlg.FormCreate(Sender: TObject);
 begin
+  if Sender = nil then ;
   ReadStyle(Self,'toolchange.xml');
   InitControls;
 end;
 
 procedure TToolChgDlg.FormKeyPress(Sender: TObject; var Key: char);
 begin
+  if Sender = nil then ;
   if Key = #13 then ModalResult:= mrOk else
     if Key = #27 then ModalResult:= mrCancel;
 end;
@@ -75,27 +77,32 @@ var
  i,c: integer;
  s: string;
 begin
- CanClose:= True;
- if ModalResult <> mrOk then Exit;
- i:= LbTools.ItemIndex;
- if i < 0 then Exit;
- s:= TrimLeft(LbTools.Items[i]);
- if Length(s) < 1 then Exit;
- c:= 1;
- while (s[c] in ['0'..'9']) and (c < Length(s)) do inc(c);
- s:= Copy(s,1,c);
- {$IFDEF DEBUG_EMC}
- writeln('Getting Tool: ' + s);
- {$ENDIF}
- try
-   iTool:= StrToInt(Trim(s));
- except
+  if Sender = nil then ;
+  CanClose:= True;
+  if ModalResult <> mrOk then Exit;
+  i:= LbTools.ItemIndex;
+  if i < 0 then Exit;
+  s:= TrimLeft(LbTools.Items[i]);
+  if Length(s) < 1 then Exit;
+  c:= 1;
+  while (s[c] in ['0'..'9']) and (c < Length(s)) do inc(c);
+  s:= Copy(s,1,c);
+  {$IFDEF DEBUG_EMC}
+  writeln('Getting Tool: ' + s);
+  {$ENDIF}
+  try
+    iTool:= StrToInt(Trim(s));
+  except
    writeln('error in tool-file, got integer as: ' + s);
- end;
+  end;
 end;
 
 procedure TToolChgDlg.FormShow(Sender: TObject);
 begin
+  if Sender = nil then ;
+  {$IFDEF LCLGTK2}
+  DoBringToFront(Self);
+  {$ENDIF}
   LbTools.SetFocus;
 end;
 

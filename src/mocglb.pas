@@ -12,13 +12,14 @@ const
   ShowGlPreview: Boolean = True;
 
 {$I mocglb.inc}
-// {$i mocmsg.inc}
+
 
 const
   UseDefaultLayout: Boolean = False;
 
-
 var
+  MainForm: TForm;
+
   LastError: string;
   UpdateLock: Boolean;
   ScriptRunning: Boolean;
@@ -69,6 +70,7 @@ procedure FreeBitmapList;
 {$IFDEF LCLGTK2}
 procedure FullScreen(WinControl: TWinControl);
 procedure UnFullScreen(WinControl: TWinControl);
+procedure DoBringToFront(AForm: TForm);
 {$ENDIF}
 
 procedure CallEditor;
@@ -86,6 +88,21 @@ uses
  {$ENDIF}
  Process,
  stylereader;
+
+{$IFDEF LCLGTK2}
+procedure DoBringToFront(AForm: TForm);
+var
+  W: PGtkWindow;
+begin
+  if not IsFullScreen then Exit;
+  if not Assigned(AForm) then Exit;
+  w:= PGtkWindow(AForm.Handle);
+  if w = nil then Exit;
+  gtk_window_set_skip_taskbar_hint(w,true);
+  gtk_window_set_skip_pager_hint(w,true);
+  gtk_window_present(w);
+end;
+{$ENDIF}
 
 function PosToString(const Value: Double): string;
 var
@@ -192,7 +209,7 @@ end;
 
 procedure SetButtonMap(M: PButtonArray; ObjClick: TOnClick);
 var
-  i,ii: Integer;
+  i: Integer;
   iBmp: Integer;
 begin
   if M <> nil then
@@ -310,6 +327,8 @@ begin
 end;
 
 initialization
+
+MainForm:= nil;
 
 GlobalBitmaps:= nil;
 LastError:= '';

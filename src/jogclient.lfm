@@ -1,5 +1,5 @@
 object JogClientForm: TJogClientForm
-  Left = 578
+  Left = 579
   Height = 282
   Top = 222
   Width = 432
