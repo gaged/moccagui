@@ -168,6 +168,7 @@ function GetToolDiameter(i: integer): double;
 var
   d: double;
 begin
+  writeln('gettooldiameter ' + IntToStr(i));
   if (i < 0) or (i > CANON_TOOL_MAX) then
     d:= DEFAULT_TOOL_DIA
   else
@@ -293,6 +294,7 @@ end;
 
 procedure use_tool_length_offset(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 begin
+  writeln('use_tool_length_offset');
 end;
 
 {$endif}
@@ -309,9 +311,10 @@ end;
 
 procedure tooloffset(zt, xt, wt: double); cdecl; export;
 begin
-  {$ifdef PRINT_CANON}
+  writeln('Tooloffset');
+  //{$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Tooloffset: ',zt,xt,wt]));
-  {$endif}
+  //{$endif}
   FirstMove:= True;
   lo.x:= lo.x - xt + xo;
   lo.z:= lo.z - zt + zo;
@@ -334,14 +337,6 @@ begin
   Plane:= pl;
 end;
 
-procedure changetool(Tool: integer); cdecl; export;
-begin
-  FirstMove:= True;
-  {$ifdef PRINT_CANON}
-  writeln(Format('%s %d',['change_tool: ',Tool]));
-  {$endif}
-end;
-
 function gettool(i: integer): integer; cdecl; export;
 begin
   if (i < 0) or (i >= CANON_TOOL_MAX) then
@@ -353,9 +348,9 @@ begin
         xoffset:= ToCanonUnits(Tools[i].xoffset);
         {$ifdef VER_24}
         yoffset:= ToCanonUnits(Tools[i].yoffset);
-       {$endif}
+        {$endif}
         zoffset:= ToCanonUnits(Tools[i].zoffset);
-       {$ifdef VER_24}
+        {$ifdef VER_24}
         aoffset:= ToCanonUnits(Tools[i].aoffset);
         boffset:= ToCanonUnits(Tools[i].boffset);
         coffset:= ToCanonUnits(Tools[i].coffset);
@@ -368,11 +363,37 @@ begin
         backangle:= ToCanonUnits(Tools[i].backangle);
         orientation:= Tools[i].orientation;
         Result:= 1;
+        //writeln('Tool: '+ IntToStr(i) + ' Dia: ' + FloatToStr(Tools[i].diameter));
       end;
+end;
+
+procedure changetool(Tool: integer); cdecl; export;
+begin
+  FirstMove:= True;
+  {$ifdef VER_24}
+  if (Tool > 0) and (Tool < CANON_TOOL_MAX) then
+    begin
+      Tools[0]:= Tools[Tool];
+    end;
+  {$endif}
+  {$ifdef PRINT_CANON}
+  writeln(Format('%s %d',['change_tool: ',Tool]));
+  {$endif}
+end;
+
+procedure changetoolnumber(Tool: integer); cdecl; export;
+begin
+  FirstMove:= True;
+  {$ifdef PRINT_CANON}
+  writeln(Format('%s %d',['change_tool_number: ',Tool]));
+  {$endif}
 end;
 
 procedure selecttool(tool: integer); cdecl; export;
 begin
+  {$ifdef PRINT_CANON} 
+  writeln('Select tool: ' + IntToStr(tool));
+  {$endif}
 end;
 
 procedure setspindlerate(rate: double); cdecl; export;

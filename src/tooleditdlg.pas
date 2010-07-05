@@ -24,6 +24,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure EditorKeyPress(Sender: TObject; var Key: char);
     procedure EditorEditingDone(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     procedure InitGrid;
     procedure UpdateCell(ACol,ARow: integer);
@@ -393,6 +394,14 @@ begin
     begin
       UpdateTool(Grid.Col,Grid.Row);
     end;
+end;
+
+procedure TToolDlg.FormShow(Sender: TObject);
+begin
+  if Sender = nil then ;
+  {$ifdef LCLGTK2}
+  DoBringToFront(Self);
+  {$endif}
 end;
 
 procedure TToolDlg.EditorKeyPress(Sender: TObject; var Key: char);

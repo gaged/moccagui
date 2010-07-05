@@ -70,6 +70,7 @@ type
 
 const
   MocButtonFrameWidth: integer = 2;
+  MocButtonWordBreak: Boolean = True;
 
 procedure Register;
 
@@ -88,6 +89,7 @@ begin
   Caption:= '';
   FTextStyle.Alignment:= taCenter;
   FTextStyle.Layout:= tlCenter;
+  FTextStyle.Wordbreak:= MocButtonWordBreak;
   FShowClicks:= True;
   FState:= bsUp;
 end;

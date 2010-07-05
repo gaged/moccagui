@@ -6,6 +6,9 @@ const
 
 
 type
+  TDROLayoutStyle = (dlsVertical,dlsHorizontal);
+
+type
   TButtonDef = record
     T: integer;
     G: integer;
@@ -14,6 +17,8 @@ type
 
   PButtonArray = ^TButtonArray;
   TButtonArray = Array[0..NumButtons-1] of TButtonDef;
+
+
 
 // these are the commands send by Buttonclick or Keyboard
 // values > 100 define the button as a std button

@@ -8,15 +8,14 @@ uses
   Graphics,Classes, SysUtils, LResources, Forms, Controls, Dialogs, ExtCtrls,
   ExtDlgs, ComCtrls, mocbtn;
 
-const
-  ShowGlPreview: Boolean = True;
-  InitialFullscreen: Boolean = False;
 
 {$I mocglb.inc}
 
-
 const
+  ShowGlPreview: Boolean = True;
+  InitialFullscreen: Boolean = False;
   UseDefaultLayout: Boolean = False;
+  DROLayoutStyle: TDROLayoutStyle = dlsVertical;
 
 var
   MainForm: TForm;

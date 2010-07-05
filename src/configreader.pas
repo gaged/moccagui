@@ -14,7 +14,7 @@ implementation
 
 uses
   Dom,XMLRead,
-  mocglb;
+  mocglb,mocbtn;
 
 var
   FileName: string;
@@ -32,12 +32,34 @@ begin
 end;
 
 procedure ReadGlobalItem(nn,nv: string);
+var
+  s: string;
 begin
   if (nn = '') then Exit;
   try
-    if nn = 'EDGEFINDERDIA' then EdgeFinderDia:= StrToFloat(nv) else
-    if nn = 'VERBOSE' then Verbose:= (UpperCase(nv) = 'TRUE') or (nv = '1') else
-    if nn = 'INITIALFULLSCREEN' then InitialFullscreen:= (UpperCase(nv) = 'TRUE') or (nv = '1');
+    if nn = 'EDGEFINDERDIA' then
+      EdgeFinderDia:= StrToFloat(nv)
+    else
+    if nn = 'VERBOSE' then
+      Verbose:= (UpperCase(nv) = 'TRUE') or (nv = '1')
+    else
+    if nn = 'INITIALFULLSCREEN' then
+      InitialFullscreen:= (UpperCase(nv) = 'TRUE') or (nv = '1')
+    else
+    if nn = 'DROLAYOUTSTYLE' then
+      begin
+        s:= UpperCase(nv);
+        if s = 'HORIZONTAL' then
+          DroLayoutStyle:= dlsHorizontal else
+        if s <> 'VERTICAL' then
+          begin
+            writeln('Invalid Value for DroLayoutStyle:' + nv);
+            writeln('Valid entrys are: Vertical,Horizontal');
+          end;
+      end
+    else
+    if nn = 'BUTTONWORDBREAK' then
+      MocButtonWordBreak:= (UpperCase(nv) = 'TRUE') or (nv = '1');
   except
     on E: Exception do
       writeln('Error in config.xml: ' + E.Message);

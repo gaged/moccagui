@@ -12,7 +12,7 @@ function ReadXMLStyle(const AForm: TForm; AFileName: string): Boolean;
 implementation
 
 uses
-  Dom,XMLRead,Graphics,StdCtrls,Controls,ExtCtrls,mocglb,mocbtn,mocled,mocslider;
+  Dom,XMLRead,Graphics,StdCtrls,Controls,ExtCtrls,mocglb,mocbtn,mocled,mocslider,moclister;
 
 const
   Msg1 = 'Error reading style-file.' + #13;
@@ -170,6 +170,10 @@ begin
               writeln(E.Message);
           end;
       end;
+  if Comp is TMocLister then
+    if PropName = 'ACTIVECOLOR' then
+      with Comp as TMocLister do
+        ActiveColor:= StringToColor(PropVal);
 end;
 
 procedure ParseNode(Node: TDOMNode);

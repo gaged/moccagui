@@ -97,7 +97,9 @@ end;
 procedure TOffsetsDlg.FormShow(Sender: TObject);
 begin
   if Sender = nil then ;
+  {$ifdef LCLGTK2}
   DoBringToFront(Self);
+  {$endif}
 end;
 
 procedure TOffsetsDlg.EditorKeyPress(Sender: TObject; var Key: char);
