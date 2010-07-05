@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Component>
+    <component name="MDIClientForm" class="TMDIClientForm">
+      <properties>
+        <integer name="Left" value="679"/>
+        <integer name="Height" value="300"/>
+        <integer name="Top" value="533"/>
+        <integer name="Width" value="400"/>
+        <ident name="BorderStyle" value="bsNone"/>
+        <integer name="Color" value="10255189"/>
+      </properties>
+      <children>
+        <component name="Label1" class="TLabel">
+          <properties>
+            <integer name="Left" value="0"/>
+            <integer name="Height" value="28"/>
+            <integer name="Top" value="272"/>
+            <integer name="Width" value="52"/>
+            <ident name="Alignment" value="taCenter"/>
+            <string name="Caption" value="MDI"/>
+          </properties>
+        </component>
+        <component name="MDIHistListBox" class="TListBox">
+          <properties>
+          </properties>
+        </component>
+        <component name="MDIEdit" class="TEdit">
+          <properties>
+          </properties>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>
