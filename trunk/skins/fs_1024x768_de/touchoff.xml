@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Component>
+    <component name="TouchOffDlg" class="TTouchOffDlg">
+      <properties>
+        <integer name="Left" value="590"/>
+        <integer name="Height" value="189"/>
+        <integer name="Top" value="386"/>
+        <integer name="Width" value="330"/>
+        <ident name="ActiveControl" value="EditV"/>
+        <set name="BorderIcons" value="biSystemMenu"/>
+        <string name="Caption" value="Antasten"/>
+        <integer name="ClientHeight" value="189"/>
+        <integer name="ClientWidth" value="330"/>
+        <boolean name="KeyPreview" value="true"/>
+        <ident name="Position" value="poScreenCenter"/>
+        <string name="LCLVersion" value="0.9.28.2"/>
+      </properties>
+      <children>
+        <component name="LabelUnit" class="TLabel">
+          <properties>
+            <ident name="AnchorSideLeft.Control" value="EditV"/>
+            <ident name="AnchorSideLeft.Side" value="asrBottom"/>
+            <ident name="AnchorSideTop.Control" value="EditV"/>
+            <ident name="AnchorSideTop.Side" value="asrCenter"/>
+            <integer name="Left" value="247"/>
+            <integer name="Height" value="18"/>
+            <integer name="Top" value="54"/>
+            <integer name="Width" value="61"/>
+            <set name="Anchors" value=""/>
+            <integer name="BorderSpacing.Left" value="6"/>
+            <string name="Caption" value="LabelUnit"/>
+            <boolean name="ParentColor" value="false"/>
+          </properties>
+        </component>
+        <component name="LabelPos" class="TLabel">
+          <properties>
+            <integer name="Left" value="112"/>
+            <integer name="Height" value="18"/>
+            <integer name="Top" value="13"/>
+            <integer name="Width" value="120"/>
+            <set name="Anchors" value=""/>
+            <boolean name="AutoSize" value="false"/>
+            <string name="Caption" value="LabelPos"/>
+            <boolean name="ParentColor" value="false"/>
+          </properties>
+        </component>
+        <component name="Label2" class="TLabel">
+          <properties>
+            <integer name="Left" value="9"/>
+            <integer name="Height" value="18"/>
+            <integer name="Top" value="12"/>
+            <integer name="Width" value="80"/>
+            <set name="Anchors" value=""/>
+            <string name="Caption" value="Akt. Position"/>
+            <boolean name="ParentColor" value="false"/>
+          </properties>
+        </component>
+        <component name="Label3" class="TLabel">
+          <properties>
+            <integer name="Left" value="9"/>
+            <integer name="Height" value="18"/>
+            <integer name="Top" value="54"/>
+            <integer name="Width" value="89"/>
+            <set name="Anchors" value=""/>
+            <string name="Caption" value="Neue Position"/>
+            <boolean name="ParentColor" value="false"/>
+          </properties>
+        </component>
+        <component name="Label4" class="TLabel">
+          <properties>
+            <integer name="Left" value="9"/>
+            <integer name="Height" value="18"/>
+            <integer name="Top" value="99"/>
+            <integer name="Width" value="78"/>
+            <set name="Anchors" value=""/>
+            <string name="Caption" value="Koord.-Syst."/>
+            <boolean name="ParentColor" value="false"/>
+          </properties>
+        </component>
+        <component name="Button1" class="TButton">
+          <properties>
+            <integer name="Left" value="9"/>
+            <integer name="Height" value="29"/>
+            <integer name="Top" value="156"/>
+            <integer name="Width" value="88"/>
+            <set name="Anchors" value=""/>
+            <string name="Caption" value="&amp;Ok"/>
+            <boolean name="Default" value="true"/>
+            <integer name="ModalResult" value="1"/>
+            <integer name="TabOrder" value="0"/>
+          </properties>
+        </component>
+        <component name="EditV" class="TEdit">
+          <properties>
+            <ident name="AnchorSideLeft.Control" value="cbCoords"/>
+            <ident name="AnchorSideLeft.Side" value="asrBottom"/>
+            <ident name="AnchorSideTop.Control" value="cbCoords"/>
+            <integer name="Left" value="108"/>
+            <integer name="Height" value="32"/>
+            <integer name="Top" value="47"/>
+            <integer name="Width" value="128"/>
+            <set name="Anchors" value=""/>
+            <boolean name="AutoSize" value="false"/>
+            <integer name="BorderSpacing.Left" value="8"/>
+            <integer name="TabOrder" value="1"/>
+          </properties>
+        </component>
+        <component name="cbCoords" class="TComboBox">
+          <properties>
+            <ident name="AnchorSideLeft.Control" value="Owner"/>
+            <ident name="AnchorSideTop.Control" value="Owner"/>
+            <integer name="Left" value="108"/>
+            <integer name="Height" value="31"/>
+            <integer name="Top" value="93"/>
+            <integer name="Width" value="80"/>
+            <set name="Anchors" value=""/>
+            <integer name="BorderSpacing.Left" value="8"/>
+            <integer name="BorderSpacing.Top" value="8"/>
+            <integer name="ItemHeight" value="0"/>
+            <ident name="Style" value="csDropDownList"/>
+            <integer name="TabOrder" value="2"/>
+          </properties>
+        </component>
+        <component name="BtnCancel" class="TButton">
+          <properties>
+            <integer name="Left" value="108"/>
+            <integer name="Height" value="29"/>
+            <integer name="Top" value="156"/>
+            <integer name="Width" value="89"/>
+            <set name="Anchors" value=""/>
+            <boolean name="Cancel" value="true"/>
+            <string name="Caption" value="Abbruch"/>
+            <integer name="ModalResult" value="2"/>
+            <integer name="TabOrder" value="3"/>
+          </properties>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Component>
+    <component name="RunClientForm" class="TRunClientForm">
+      <properties>
+        <integer name="Color" value="clSilver"/>
+      </properties>
+      <children>
+        <component name="MocLister" class="TMocLister">
+          <properties>
+            <ident name="Color" value="clWhite"/>
+            <integer name="ActiveColor" value="clGray"/>
+          </properties>
+        </component>
+        <component name="ScrollBar" class="TScrollBar">
+          <properties>
+          </properties>
+        </component>
+        <component name="OpenDialog" class="TOpenDialog">
+          <properties>
+          </properties>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>
