@@ -59,7 +59,7 @@ implementation
 { TCoordRotDlg }
 
 uses
-  math,emc2pas,mocglb,mocjoints;
+  math,emc2pas,mocglb,mocjoints,hal;
 
 var
   rx,ry,rz: double;
@@ -74,9 +74,10 @@ begin
   if Assigned(Dlg) then
     begin
       Dlg.InitControls;
-      Result:= Dlg.ShowModal = mrOk;
+      Result:= Dlg.ShowModal = mrOk;	
       Dlg.Free;
     end;
+  if Result then SetHalRotation(rx,ry,rz);
 end;
 
 function EditVal(const Edit: TEdit; var Value: double): Boolean;

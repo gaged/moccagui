@@ -104,6 +104,8 @@ procedure UpdateHalTaskMode(Mode: integer);
 
 function GetHalLedState(Led: integer): Boolean;
 
+procedure SetHalRotation(x,y,z: Double);
+
 implementation
 
 uses
