@@ -3,7 +3,7 @@
   <global>
     <float name="Edgefinderdia" value="8"/>
     <boolean name="InitialFullscreen" value="True"/>
-    <boolean name="Verbose" value="False"/>
+    <boolean name="Verbose" value="True"/>
     <ident name="DroLayoutStyle" value="Vertical"/>
   </global>
   <tools>

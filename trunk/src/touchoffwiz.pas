@@ -149,17 +149,17 @@ begin
   if HasX then
     begin
       if XDir = 1 then
-        OffsetPosX:= OffsetPosX - Ef
+        OffsetPosX:= OffsetPosX + Ef
       else
-        OffsetPosX:= OffsetPosX + Ef;
+        OffsetPosX:= OffsetPosX - Ef;
     end;
 
   if HasY then
     begin
       if YDir = 1 then
-        OffsetPosY:= OffsetPosY - Ef
+        OffsetPosY:= OffsetPosY + Ef
       else
-        OffsetPosY:= OffsetPosY + Ef;
+        OffsetPosY:= OffsetPosY - Ef;
     end;
 
   S:= 'G10L2P' + IntToStr(FCoord);
@@ -225,7 +225,7 @@ procedure TTouchOffWizDlg.BtnOkClick(Sender: TObject);
 begin
   if Sender = nil then ;
   ModalResult:= mrOk;
-  Close;
+  //Close;
 end;
 
 procedure TTouchOffWizDlg.EditDiaExit(Sender: TObject);
@@ -313,6 +313,8 @@ begin
        FG10Code:= '';
        GetCode;
        CanClose:= FG10Code <> '';
+       if Verbose then
+         writeln('Touchoffwiz: ' + FG10Code);	
     end
   else
     CanClose:= True;

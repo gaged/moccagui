@@ -41,7 +41,10 @@ begin
       EdgeFinderDia:= StrToFloat(nv)
     else
     if nn = 'VERBOSE' then
-      Verbose:= (UpperCase(nv) = 'TRUE') or (nv = '1')
+      begin
+        Verbose:= (UpperCase(nv) = 'TRUE') or (nv = '1');
+        writeln('Verbose messages are enabled');
+      end
     else
     if nn = 'INITIALFULLSCREEN' then
       InitialFullscreen:= (UpperCase(nv) = 'TRUE') or (nv = '1')

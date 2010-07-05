@@ -150,7 +150,8 @@ begin
       Exit;
     end;
   FileName:= ConfigDir + AFileName;
-  writeln('Reading layout from ' + FileName);
+  if Verbose then
+    writeln('Reading layout from ' + FileName);
   try
     ReadXMLStyle(Form,FileName);
   except
