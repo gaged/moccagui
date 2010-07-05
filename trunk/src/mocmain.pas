@@ -551,7 +551,6 @@ procedure TMainForm.FormCreate(Sender: TObject);
 var
   cw,ch: integer;
 begin
-  // BeginGDKErrorTrap;
   if Sender = nil then ;
   MainForm:= Self;
   if not UseDefaultLayout then
@@ -574,6 +573,13 @@ begin
     end;
 
   {$IFDEF LCLGTK2}
+  if InitialFullScreen then
+    begin
+      cw:= Screen.Width;
+      ch:= Screen.Height;
+      if (Self.Width < cw) and (Self.Height < ch) then
+        InitialFullScreen:= False;
+    end;
   if InitialFullscreen then
     FullScreen(Self);
   {$ENDIF};
@@ -816,8 +822,6 @@ begin
             UnFullScreen(Self)
           else
             FullScreen(Self);
-          //IsFullScreen:= not IsFullScreen;
-          //SetWindowFullscreen(Self,IsFullScreen);
         end
       {$ENDIF};
     end;
@@ -840,11 +844,13 @@ begin
   if Sender = nil then ;
   if Assigned(clSim) then
     clSim.FormResize(nil);
+  {$ifdef LCLGTK2}
   if InitialFullScreen then
     begin
       writeln('mocca is setup for fullscreen.');
       FullScreen(Self);
     end;
+  {$endif}
 end;
 
 procedure TMainForm.LabelMsgClick(Sender: TObject);

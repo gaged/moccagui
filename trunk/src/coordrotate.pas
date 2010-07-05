@@ -236,7 +236,9 @@ end;
 procedure TCoordRotDlg.FormShow(Sender: TObject);
 begin
   if Sender = nil then ;
+  {$ifdef LCLGTK2}
   DoBringToFront(Self);
+  {$endif}
 end;
 
 initialization

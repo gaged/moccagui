@@ -1,15 +1,15 @@
 object RunClientForm: TRunClientForm
-  Left = 572
-  Height = 279
-  Top = 298
-  Width = 432
+  Left = 728
+  Height = 260
+  Top = 287
+  Width = 392
   HorzScrollBar.Page = 615
   VertScrollBar.Page = 423
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'RunClientForm'
-  ClientHeight = 279
-  ClientWidth = 432
+  ClientHeight = 260
+  ClientWidth = 392
   Color = clSilver
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
@@ -17,23 +17,29 @@ object RunClientForm: TRunClientForm
   ParentFont = True
   LCLVersion = '0.9.28.2'
   object MocLister: TMocLister
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = ScrollBar
+    AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 4
-    Height = 279
+    Left = 0
+    Height = 260
     Top = 0
-    Width = 412
+    Width = 377
     SelectedItem = 0
+    Anchors = [akTop, akLeft, akRight, akBottom]
     Color = clSilver
     ActiveColor = clWhite
   end
   object ScrollBar: TScrollBar
-    AnchorSideTop.Control = MocLister
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = MocLister
+    AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 417
-    Height = 279
+    Left = 377
+    Height = 260
     Top = 0
     Width = 15
     Anchors = [akTop, akRight, akBottom]

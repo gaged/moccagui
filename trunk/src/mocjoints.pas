@@ -35,9 +35,9 @@ type
     FPanel: TWinControl;
     FPosLabel: TLabel;
     FValue: Double;
-    FTop: integer;
+    FTopLeft: TPoint;
     procedure SetHomed(const Value: Boolean);
-    procedure SizeLabels(y,w,h: integer);
+    procedure SizeLabels(x,y,w,h: integer);
     procedure Update(ShowActual,ShowRelative,ShowDtg: Boolean);
     function GetAxisType: integer;
     function GetUnits: double;
@@ -57,7 +57,6 @@ type
     property Jogging: Boolean read FJogging write FJogging;
     property Linear: Boolean read FLinear;
     property Panel: TWinControl read FPanel write FPanel;
-    property Top: integer read FTop;
     property Homed: Boolean read FHomed write SetHomed;
     property AxisType: integer read GetAxisType;
     property Units: double read GetUnits;
@@ -126,6 +125,7 @@ uses
 
 var
   AxisTicks: Array[0..MAX_JOINTS - 1] of longint;
+  Layout: TDROLayoutStyle;
 
 function GetTickDiff(var t: longint): longint;
 var
@@ -179,15 +179,16 @@ begin
   inherited;
 end;
 
-procedure TAxis.SizeLabels(y,w,h: integer);
+procedure TAxis.SizeLabels(x,y,w,h: integer);
 var
-  x1: integer;
+  LeftPart: integer;
 begin
-  x1:= round(w * 0.1);
-  if x1 < 10 then x1:= 10;
-  FDesLabel.SetBounds(1,y,x1 - 1,h - 1);
-  FPosLabel.SetBounds(x1,y,w - x1 - 1,h - 1);
-  FTop:= y;
+  LeftPart:= Round(w * 0.1);
+  if LeftPart < 10 then LeftPart:= 10;
+  FDesLabel.SetBounds(x,y,LeftPart-1,h-1);
+  FPosLabel.SetBounds(x+LeftPart,y,w-LeftPart-1,h-1);
+  FTopLeft.Y:= y;
+  FTopLeft.X:= x;
 end;
 
 procedure TAxis.SetHomed(const Value: Boolean);
@@ -298,6 +299,7 @@ end;
 
 constructor TJoints.Create(APanel: TPanel);
 begin
+  Layout:= DROLayoutStyle; // read from global config.
   FBorderWidth:= 4;
   FPanel:= APanel;
   FNumAxes:= 0;
@@ -569,7 +571,8 @@ begin
     if FOldActiveAxis <> Vars.ActiveAxis then
       if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then
         begin
-          FBox.Top:= FAxes[Vars.ActiveAxis].Top - 1;
+          FBox.Top := FAxes[Vars.ActiveAxis].FTopLeft.Y;
+          FBox.Left := FAxes[Vars.ActiveAxis].FTopLeft.X;
           FOldActiveAxis:= Vars.ActiveAxis;
           SetHalJogAxis(GetAxisChar(Vars.ActiveAxis));
         end;
@@ -577,23 +580,41 @@ end;
 
 procedure TJoints.DoResize(Sender: TObject);
 var
-  w,h,Y,i: integer;
+  w,h,x,y,i: integer;
 begin
   if (FNumAxes < 1) or (not Assigned(FPanel)) then
     Exit;
-  h:= FPanel.ClientHeight div FNumAxes;
-  w:= FPanel.ClientWidth - 2;
-  y:= (FPanel.CLientHeight - (h * FNumAxes)) div 2;
-  y:= y + 1;
-  if y < 0 then y:= 0;
-  for i:= 0 to FNumAxes - 1 do
+  if Layout = dlsVertical then
     begin
-      FAxes[i].SizeLabels(y,w,h);
-      y:= y + h + 1;
+      h:= FPanel.ClientHeight div FNumAxes;
+      w:= FPanel.ClientWidth - 2;
+      y:= (FPanel.CLientHeight - (h * FNumAxes)) div 2;
+      y:= y + 1;
+      if y < 0 then y:= 0;
+      for i:= 0 to FNumAxes - 1 do
+        begin
+          FAxes[i].SizeLabels(0,y,w,h);
+          y:= y + h + 1;
+        end;
+      FBox.Left:= 0;
+      FBox.Width:= FPanel.ClientWidth;
+      FBox.Height:= h-2;
+    end
+  else
+    begin
+      h:= FPanel.ClientHeight - 2;
+      w:= FPanel.ClientWidth div FNumAxes;
+      x:= (FPanel.ClientWidth - (w * FNumAxes)) div 2;
+      x:= x + 1;
+      if x < 0 then x:= 0;
+      for i:= 0 to FNumAxes - 1 do
+        begin
+          FAxes[i].SizeLabels(x,0,w,h);
+          x:= x + w + 1;
+        end;
+      FBox.Width:= w - 2;
+      FBox.Height:= FPanel.ClientHeight;
     end;
-  FBox.Left:= 0;
-  FBox.Width:= FPanel.ClientWidth;
-  FBox.Height:= h-2;
 end;
 
 end.

@@ -29,7 +29,6 @@ object JogClientForm: TJogClientForm
     Caption = 'Joggeschw.'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object LabelJ2: TLabel
     Left = 284
@@ -40,7 +39,6 @@ object JogClientForm: TJogClientForm
     Caption = 'Schrittweiten'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object LedORide: TMocLed
     Left = 4
@@ -62,6 +60,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -76,6 +75,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -90,6 +90,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -104,6 +105,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -118,6 +120,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -132,6 +135,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -146,6 +150,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -160,6 +165,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -174,6 +180,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -188,6 +195,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -202,6 +210,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end
@@ -216,6 +225,7 @@ object JogClientForm: TJogClientForm
     Color = clBtnFace
     Font.Style = [fsBold]
     OnMouseDown = BJogMouseDown
+    OnMouseLeave = BJogMouseLeave
     OnMouseUp = BJogMouseUp
     ParentFont = False
   end

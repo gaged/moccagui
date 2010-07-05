@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 222
+  Left = 191
   Height = 724
-  Top = 165
+  Top = 140
   Width = 961
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -11,10 +11,6 @@ object MainForm: TMainForm
   VertScrollBar.Visible = False
   ActiveControl = PanelMaster
   Caption = 'Mocca'
-  ChildSizing.EnlargeHorizontal = crsScaleChilds
-  ChildSizing.EnlargeVertical = crsScaleChilds
-  ChildSizing.ShrinkHorizontal = crsScaleChilds
-  ChildSizing.ShrinkVertical = crsScaleChilds
   ClientHeight = 724
   ClientWidth = 961
   Color = clSilver
@@ -31,7 +27,9 @@ object MainForm: TMainForm
   LCLVersion = '0.9.28.2'
   object BgImage: TImage
     Left = 0
+    Height = 90
     Top = 0
+    Width = 90
     AutoSize = True
   end
   object Label9: TLabel
@@ -45,7 +43,6 @@ object MainForm: TMainForm
     Caption = 'Vorschub'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object Label10: TLabel
     AnchorSideTop.Side = asrBottom
@@ -57,7 +54,6 @@ object MainForm: TMainForm
     Caption = 'Max. Geschw.'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object Label11: TLabel
     AnchorSideTop.Side = asrBottom
@@ -69,7 +65,6 @@ object MainForm: TMainForm
     Caption = 'Spindel'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object LabelSpVel: TLabel
     AnchorSideLeft.Side = asrCenter
@@ -219,7 +214,6 @@ object MainForm: TMainForm
     Caption = 'Länge'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object Label3: TLabel
     Left = 4
@@ -230,7 +224,6 @@ object MainForm: TMainForm
     Caption = 'Durchm.'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object Label4: TLabel
     Left = 4
@@ -241,7 +234,6 @@ object MainForm: TMainForm
     Caption = 'Wkz. Nr.'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object OEMLabel12: TLabel
     Left = 4
@@ -252,7 +244,6 @@ object MainForm: TMainForm
     Caption = 'Programm'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object Label6: TLabel
     Left = 4
@@ -262,7 +253,6 @@ object MainForm: TMainForm
     AutoSize = False
     Caption = 'F'
     ParentColor = False
-    ParentFont = False
   end
   object Label7: TLabel
     Left = 4
@@ -272,7 +262,6 @@ object MainForm: TMainForm
     AutoSize = False
     Caption = 'S'
     ParentColor = False
-    ParentFont = False
   end
   object LabelCurrentVel: TLabel
     Left = 440
@@ -296,7 +285,6 @@ object MainForm: TMainForm
     Caption = 'Akt. Geschw.'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object LedModeMDI: TMocLed
     Left = 880
@@ -513,20 +501,20 @@ object MainForm: TMainForm
     Color = clSilver
   end
   object LedFOREnabled: TMocLed
-    Left = 24
-    Height = 24
-    Top = 248
-    Width = 26
+    Left = 4
+    Height = 12
+    Top = 244
+    Width = 46
     LedColor = clSkyBlue
     IsOn = False
     Color = clSilver
     Visible = False
   end
   object LedSOREnabled: TMocLed
-    Left = 72
-    Height = 24
-    Top = 248
-    Width = 26
+    Left = 56
+    Height = 12
+    Top = 244
+    Width = 42
     LedColor = clSkyBlue
     IsOn = False
     Color = clSilver
@@ -586,23 +574,23 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object OEMButton2: TMocButton
-    Left = 88
+    Left = 8
     Height = 26
-    Top = 328
-    Width = 56
+    Top = 292
+    Width = 108
     ShowClicks = True
-    Caption = '100%'
+    Caption = 'OEMButton2'
     Color = clBtnFace
     Visible = False
     OnClick = ButtonClick
   end
   object OEMButton1: TMocButton
-    Left = 24
+    Left = 8
     Height = 28
-    Top = 328
-    Width = 58
+    Top = 260
+    Width = 112
     ShowClicks = True
-    Caption = 'Vorgabe'
+    Caption = 'OEMButton1'
     Color = clBtnFace
     Visible = False
     OnClick = ButtonClick
@@ -616,30 +604,27 @@ object MainForm: TMainForm
     Caption = 'Akt. U/min'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object OEMLabel2: TLabel
-    Left = 24
+    Left = 8
     Height = 22
-    Top = 280
-    Width = 132
+    Top = 208
+    Width = 111
     AutoSize = False
     Caption = 'OEMLabel2'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
     Visible = False
   end
   object OEMLabel3: TLabel
-    Left = 24
+    Left = 8
     Height = 22
-    Top = 304
-    Width = 151
+    Top = 180
+    Width = 111
     AutoSize = False
     Caption = 'OEMLabel3'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
     Visible = False
   end
   object OEMLabel4: TLabel
@@ -651,7 +636,6 @@ object MainForm: TMainForm
     Caption = 'Meldungen'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object OEMLabel5: TLabel
     Left = 4
@@ -662,7 +646,6 @@ object MainForm: TMainForm
     Caption = 'Akt. G-Codes'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
   end
   object LabelFile: TLabel
     Left = 80
@@ -676,42 +659,36 @@ object MainForm: TMainForm
     Transparent = False
   end
   object OEMLabel7: TLabel
-    Left = 44
+    Left = 8
     Height = 18
-    Top = 168
+    Top = 108
     Width = 111
     AutoSize = False
     Caption = 'OEMLabel7'
-    Color = clWhite
     Layout = tlCenter
     ParentColor = False
-    Transparent = False
     Visible = False
   end
   object OEMLabel9: TLabel
-    Left = 44
+    Left = 8
     Height = 18
-    Top = 188
+    Top = 132
     Width = 111
     AutoSize = False
     Caption = 'OEMLabel9'
-    Color = clWhite
     Layout = tlCenter
     ParentColor = False
-    Transparent = False
     Visible = False
   end
   object OEMLabel10: TLabel
-    Left = 44
+    Left = 8
     Height = 18
-    Top = 208
+    Top = 156
     Width = 111
     AutoSize = False
     Caption = 'OEMLabel10'
-    Color = clWhite
     Layout = tlCenter
     ParentColor = False
-    Transparent = False
     Visible = False
   end
   object OEMLabel11: TLabel
@@ -723,7 +700,6 @@ object MainForm: TMainForm
     Caption = 'Werkzeug'
     Layout = tlCenter
     ParentColor = False
-    ParentFont = False
     Visible = False
   end
   object ButtonView0: TMocButton
@@ -831,27 +807,27 @@ object MainForm: TMainForm
     OnClick = ButtonViewClick
   end
   object OEMLed1: TMocLed
-    Left = 120
+    Left = 104
     Height = 12
-    Top = 248
+    Top = 244
     Width = 28
     LedColor = clRed
     IsOn = False
     Visible = False
   end
   object OEMLed2: TMocLed
-    Left = 152
+    Left = 136
     Height = 12
-    Top = 248
+    Top = 244
     Width = 28
     LedColor = clRed
     IsOn = False
     Visible = False
   end
   object OEMLed3: TMocLed
-    Left = 184
+    Left = 168
     Height = 12
-    Top = 248
+    Top = 244
     Width = 28
     LedColor = clRed
     IsOn = False
@@ -958,9 +934,10 @@ object MainForm: TMainForm
       AutoSize = False
       BorderSpacing.Around = 6
       Caption = 'LabelMsg'
+      Color = clForm
       Layout = tlCenter
       ParentColor = False
-      ParentFont = False
+      Transparent = False
       OnClick = LabelMsgClick
     end
   end

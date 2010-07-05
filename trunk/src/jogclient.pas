@@ -42,6 +42,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure BJogMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure BJogMouseLeave(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: char);
@@ -501,6 +502,12 @@ procedure TJogClientForm.BJogMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Sender = nil then ;
+  UpdateBtnState(False);
+  FBtnDown:= 0;
+end;
+
+procedure TJogClientForm.BJogMouseLeave(Sender: TObject);
+begin
   UpdateBtnState(False);
   FBtnDown:= 0;
 end;

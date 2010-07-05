@@ -162,7 +162,11 @@ end;
 procedure TMDIClientForm.MDIHistListBoxClick(Sender: TObject);
 begin
   if Sender = nil then ;
-  with MdiHistListbox do MdiEdit.Text:=items[itemindex];
+  with MdiHistListbox do
+    begin
+      if Items.Count < 1 then Exit;
+      MdiEdit.Text:=items[itemindex];
+    end;
 end;
 
 function TMDIClientForm.FormatMdi(sMdi: string): string;
