@@ -156,7 +156,7 @@ var
   StartLine,EndLine: integer;
   InterpResult: integer;
   Cmd: string;
-  SaveGlList: TGlList;
+  SaveGlList: TGlRenderer;
 begin
   if (MocLister.Items.Count > 0) and (MocLister.SelectedItem > 0) then
     begin
@@ -165,9 +165,9 @@ begin
       EndLine:= MocLister.SelectedItem;
       InterpResult:= interpreter_exec(PChar('M2'));
       InterpResult:= 0;
-      SaveGlList:= MyGlList;
+      SaveGlList:= Renderer;
       try
-        MyGlList:= nil;
+        Renderer:= nil;
         while (CurrentLine < EndLine) and (InterpResult = 0) do
           begin
             Cmd:= MocLister.Items[CurrentLine];
@@ -183,7 +183,7 @@ begin
             Vars.StartLine:= CurrentLine;
           end;
       finally
-        MyGlList:= SaveGlList;
+        Renderer:= SaveGlList;
       end;
     SetCodes;
   end;

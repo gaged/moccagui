@@ -41,7 +41,7 @@ var
   GlobalErrors: TStringList;
 
   ConfigDir: string;
-  BackGroundImage: string;
+  // BackGroundImage: string;
 
   CoordRef : record
     x,y,z: double;
@@ -52,7 +52,7 @@ const
   EdgeFinderDia: double = 5;
 
 const
-  Verbose: Boolean = true;
+  Verbose: integer = 1;
 
 function PosToString(const Value: Double): string;
 
@@ -150,7 +150,7 @@ begin
       Exit;
     end;
   FileName:= ConfigDir + AFileName;
-  if Verbose then
+  if Verbose > 0 then
     writeln('Reading layout from ' + FileName);
   try
     ReadXMLStyle(Form,FileName);
@@ -333,7 +333,7 @@ MainForm:= nil;
 
 GlobalBitmaps:= nil;
 LastError:= '';
-BackGroundImage:= '';
+// BackGroundImage:= '';
 
 GlSettings.UseDirect:= False;
 GlSettings.UseDoubleBuffered:= True;

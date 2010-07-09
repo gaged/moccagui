@@ -42,8 +42,9 @@ begin
     else
     if nn = 'VERBOSE' then
       begin
-        Verbose:= (UpperCase(nv) = 'TRUE') or (nv = '1');
-        writeln('Verbose messages are enabled');
+        Verbose:= StrToInt(nv);
+        if Verbose > 0 then
+          writeln('Verbose messages are enabled');
       end
     else
     if nn = 'INITIALFULLSCREEN' then

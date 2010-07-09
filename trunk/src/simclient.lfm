@@ -1,7 +1,7 @@
 object SimClientForm: TSimClientForm
-  Left = 439
+  Left = 392
   Height = 377
-  Top = 372
+  Top = 323
   Width = 685
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
@@ -52,5 +52,19 @@ object SimClientForm: TSimClientForm
     PageSize = 10
     TabOrder = 1
     OnChange = sbVChange
+  end
+  object Popup: TPopupMenu
+    left = 28
+    top = 20
+    object MItem3D: TMenuItem
+      Caption = '3-D Vorschau'
+      OnClick = MItem3DClick
+    end
+    object MItemReset: TMenuItem
+      Caption = 'Reset'
+    end
+    object MItemInfo: TMenuItem
+      Caption = 'Info...'
+    end
   end
 end

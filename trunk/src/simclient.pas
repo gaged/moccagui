@@ -5,7 +5,7 @@ unit simclient;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics,
+  Classes, Menus, SysUtils, LResources, Forms, Controls, Graphics,
   Dialogs, StdCtrls, Buttons, ExtCtrls,gllist,glu,gl,
   mocglb,
   {$IFNDEF OWNGL}
@@ -37,12 +37,17 @@ var
 type
   { TSimClientForm }
   TSimClientForm = class(TForm)
+    MItem3D: TMenuItem;
+    MItemInfo: TMenuItem;
+    MItemReset: TMenuItem;
+    Popup: TPopupMenu;
     sbH: TScrollBar;
     sbV: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure MItem3DClick(Sender: TObject);
     procedure sbHChange(Sender: TObject);
     procedure sbVChange(Sender: TObject);
     procedure OglPaint(Sender: TObject);
@@ -104,6 +109,7 @@ type
     procedure RotateX(Angle: integer);
     procedure SetViewMode(Value: TViewModes);
   public
+    procedure Show3D;
     procedure LoadFile(FileName,UnitCode,InitCode: string);
     procedure ReloadFile;
     procedure ClearFile;
@@ -124,20 +130,18 @@ implementation
 
 uses
   mocjoints,emc2pas,glcanon,
-  logger, glfont;
+  logger, glfont, simulator;
+
+const
+  mat_ambient: Array[0..3] of glFLoat = (0.2, 0.2, 0.2,0);
+  light_amb: Array[0..3] of glFloat = (0.8,0.8,0.2,1);
+  light_dif: Array[0..3] of glFloat = (0.8,0.8,0.2,0);
 
 type
   TGlVector3 = array[0..2] of glDouble;
 
-procedure SetGlColor3(const c: TGlColorItem);
-begin
-  glColor3f(c.r,c.g,c.b);
-end;
-
-procedure SetGlColor4(const c: TGlColorItem);
-begin
-  glColor4f(c.r,c.g,c.b,c.a);
-end;
+var
+  LightPosition: Array[0..3] of glFloat;
 
 function v3distsq(a,b: TGlVector3): glDouble;
 var
@@ -149,10 +153,29 @@ begin
   Result:= d[0]*d[0] + d[1]*d[1] + d[2]*d[2]
 end;
 
+procedure TSimClientForm.Show3D;
+var
+  Res: integer;
+  ToolDia: single;
+begin
+  if Assigned(Renderer) then
+    if FFileName <> '' then
+      if Assigned(ogl) and AreaInitialized then
+        if Show3DPreviewDlg(Res,ToolDia) then
+          begin
+            Renderer.Render3D(Res,ToolDia);
+            writeln('rendering file: ' + FFileName);
+            ParseGCode(FFileName,FUnitCode,FInitCode);
+            if Renderer.Is3D then
+              Renderer.Make3DList(ListL);
+            Ogl.Invalidate;
+          end;
+end;
+
 procedure TSimClientForm.ClearFile;
 begin
-  if Assigned(MyGlList) then
-    MyGlList.Clear;
+  if Assigned(Renderer) then
+    Renderer.Clear(True);
   FFileName:= '';
   UpdateView;
  end;
@@ -166,8 +189,7 @@ end;
 procedure TSimClientForm.ClearPlot;
 begin
   LoggerClear;
-  if Assigned(ogl) then
-    ogl.Invalidate;
+  InvalidateView;
 end;
 
 procedure TSimClientForm.LoadFile(FileName,UnitCode,InitCode: string);
@@ -175,7 +197,6 @@ begin
   FFileName:= FileName;
   FUnitCode:= UnitCode;
   FInitCode:= InitCode;
-  writeln('Sim: loading file ' + FileName);
   ReloadFile;
 end;
 
@@ -183,12 +204,11 @@ procedure TSimClientForm.ReloadFile;
 var
   Error: integer;
 begin
-  if (not Assigned(MyGlList)) then
-    raise Exception.Create('cannot show preview without a gl-list');
-  if FFileName = '' then
-    writeln('Sim: reload failed, no File.')
-  else
+  if (not Assigned(Renderer)) then
+    raise Exception.Create('cannot show preview without a gl_renderer');
+  if FFileName <> '' then
     begin
+      Renderer.Clear(True);
       Error:= ParseGCode(FFileName,FUnitCode,FInitCode);
       if Error <> 0 then
         LastError:= GetGCodeError(Error);
@@ -249,9 +269,9 @@ begin
   sbV.setParams(Round(ViewRotation[FViewMode].xrot),-90,90,1);
   sbH.SetParams(Round(ViewRotation[FViewMode].yrot),-90,90,1);
 
-  if not Assigned(MyGlList) then
-    MyGlList:= TGlList.Create;
-  if not Assigned(MyGlList) then
+  if not Assigned(Renderer) then
+    Renderer:= TGlRenderer.Create;
+  if not Assigned(Renderer) then
     RaiseError('could not create gllist');
   {$IFNDEF OWNGL}
   ogl:= TOpenGlControl.Create(Self);
@@ -270,6 +290,7 @@ begin
   ogl.OnMouseDown:= @self.OglMouseDown;
   ogl.OnMouseMove:= @self.OglMouseMove;
   ogl.OnMouseUp:= @self.OglMouseUp;
+  ogl.PopupMenu:= Self.PopUp;
   CanonInitOffsets;
   GetCanonOffset(Offset);
 end;
@@ -278,8 +299,8 @@ procedure TSimClientForm.FormDestroy(Sender: TObject);
 begin
   if Assigned(ogl) then
     FreeAndNil(ogl);
-  if Assigned(MyGlList) then
-    FreeAndNil(MyGlList);
+  if Assigned(Renderer) then
+    FreeAndNil(Renderer);
 end;
 
 procedure TSimClientForm.FormResize(Sender: TObject);
@@ -294,6 +315,17 @@ procedure TSimClientForm.FormShow(Sender: TObject);
 begin
   FormResize(nil);
   UpdateView;
+end;
+
+procedure TSimClientForm.MItem3DClick(Sender: TObject);
+begin
+  if Assigned(Renderer) then
+    begin
+      if Renderer.Is3D then
+        ReloadFile
+      else
+        Show3D;
+    end;
 end;
 
 procedure TSimClientForm.RotateZ(Angle: integer);
@@ -370,12 +402,8 @@ end;
 
 procedure TSimClientForm.OglMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
-var
-  Shifted: Boolean;
 begin
   if not AreaInitialized then Exit;
-  Shifted:= (ssShift in Shift);
-  if (Button = mbRight) or Shifted then Exit;
   MouseX:= X;
   MouseY:= Y;
   PanX:= 0;
@@ -744,8 +772,8 @@ procedure TSimClientForm.UpdateView;
 begin
   L:= SetExtents(0,0,0,0,0,0);
   // DimDrawFlag:= False;
-  if (Assigned(MyGlList)) and (FFileName <> '') then
-    MyGlList.GetExtents(L)
+  if (Assigned(Renderer)) and (FFileName <> '') then
+    Renderer.GetExtents(L)
   else
     L:= Vars.MLimits;
   CalcExtents;
@@ -810,53 +838,17 @@ begin
 end;
 
 procedure TSimClientForm.MakeList;
-var
-  P: PListItem;
 begin
   if not Assigned(ogl) then Exit;
   if not AreaInitialized then Exit;
-  glDeleteLists(ListL,1);
-  glNewList(ListL,GL_COMPILE);
-  if Assigned(MyGlList) then
-    begin
-      MyGlList.First;
-      P:= MyGlList.Get;
-      glLineWidth(3);
-      while (P <> nil) do
-        begin
-          if (P^.ltype = ltFeed) or (P^.ltype = ltArcFeed) then
-            begin
-              glBegin(GL_LINES);
-              SetGlColor3(GlColors.feed);
-              // with GlSettings.clFeed do glColor3f(r,g,b);
-              glVertex3f(P^.l1.x,P^.l1.y,P^.l1.z);
-              glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
-              glEnd();
-            end;
-          P:= MyGlList.Get;
-        end;
-      MyGlList.First;
-      P:= MyGlList.Get;
-      glLineWidth(1);
-      while (P <> nil) do
-        begin
-          if (P^.ltype = ltTraverse) or (P^.ltype = ltDwell) then
-            begin
-              glBegin(GL_LINES);
-              SetGlColor3(GlColors.traverse);
-              //with GlSettings.clTraverse do glColor3f(r,g,b);
-              glVertex3f(P^.l1.x,P^.l1.y,P^.l1.z);
-              glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
-              glEnd();
-            end;
-          P:= MyGlList.Get;
-        end;
-    end;
-  glLineWidth(1);
-  glEndList;
+  if Assigned(Renderer) then
+    Renderer.MakeList(ListL);
 end;
 
 procedure TSimClientForm.OglPaint(sender: TObject);
+
+var
+  F3D: Boolean;
 
 const GLInitialized: boolean = false;
 var
@@ -874,6 +866,7 @@ begin
       glViewPort(0,0,ogl.Width,ogl.Height);
   EyeX:= 0;
   EyeY:= 0;
+  F3D:= False;
   MakeCone;
   MakeCoords;
   MakeLimits;
@@ -897,10 +890,35 @@ begin
       n:= k * ogl.height / ogl.width;
       glOrtho(-k,k,-n,n, -1000, 1000);
     end;
+
+  if Assigned(Renderer) then
+    F3D:= Renderer.Is3D;
+
+  if F3D then
+    begin
+      glClearColor(0,0,0,1);
+      LightPosition[0]:= ExtX / 2; //L.MinX + (ExtX/ 2);
+      LightPosition[1]:= ExtY / 2; // L.MinY + (ExtY / 2);
+      LightPosition[2]:= ExtZ * 10; // L.MaxZ + ExtZ;
+      LightPosition[3]:= 1; // position light (0 = directional light)
+
+      glEnable(GL_LIGHTING);
+      glLightfv(GL_LIGHT0, GL_POSITION,LightPosition);
+      glLightfv(GL_LIGHT0, GL_AMBIENT,light_amb);
+      glLightfv(GL_LIGHT0, GL_DIFFUSE,light_dif);
+      glEnable(GL_LIGHT0);
+        //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,mat_Ambient);
+      glDisable(GL_POLYGON_OFFSET_FILL);
+        //glEnable(GL_CULL_FACE);
+    end
+  else
+    glDisable(GL_LIGHTING);
+
   glTranslatef(-eyex -panx,-eyey -pany, -eyez);
   glMatrixMode(GL_MODELVIEW);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
   glLoadIdentity;
+
   {$IFDEF LINESMOOTH}
   glEnable(GL_LINE_SMOOTH);
   {$ENDIF}
@@ -908,21 +926,27 @@ begin
   glRotatef(RotationY,0.0,1.0,0.0);
   glRotatef(RotationZ,0.0,0.0,1.0);
   glTranslatef(-centerx,-centery,-centerz);
-  glCallList(LimitsL);
-  glPushMatrix;
-  glTranslatef(offset.x,offset.y,offset.z);
-  glCallList(CoordsL);
-  glPopMatrix;
+  if not F3D then
+    begin
+      glCallList(LimitsL);
+      glPushMatrix;
+      glTranslatef(offset.x,offset.y,offset.z);
+      glCallList(CoordsL);
+      glPopMatrix;
+    end;
   glCallList(ListL);
-  glPushMatrix;
-  glTranslatef(ConeX,ConeY,ConeZ);
-  glCallList(ConeL);
-  glPopMatrix;
-  SetGlColor3(GlColors.toolpath);
-  if FShowLivePlot then
-    LoggerCall;
-  if FShowDimensions then
-    DrawDim;
+  if not F3D then
+    begin
+      glPushMatrix;
+      glTranslatef(ConeX,ConeY,ConeZ);
+      glCallList(ConeL);
+      glPopMatrix;
+      SetGlColor3(GlColors.toolpath);
+      if FShowLivePlot then
+        LoggerCall;
+      if FShowDimensions then
+      DrawDim;
+    end;
   {$IFDEF LINESMOOTH}
   glDisable(GL_LINE_SMOOTH);
   {$ENDIF}
@@ -933,7 +957,7 @@ procedure TSimClientForm.OglMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
   if Assigned(ogl) then
-    if Assigned(MyGlList) then
+    if Assigned(Renderer) then
       begin
         if WheelDelta < 0 then
           EyeZ:= EyeZ / 1.2
@@ -977,7 +1001,7 @@ begin
   q := gluNewQuadric();
   glDeleteLists(ConeL,1);
   glNewList(ConeL, GL_COMPILE);
-  glEnable (GL_BLEND);
+  glEnable(GL_BLEND);
   //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   SetGlColor4(GlColors.cone);
   // glColor4f(r,g,b,0.5);
@@ -986,6 +1010,7 @@ begin
     glVertex3f(0,0,0);
     glVertex3f(0,0,ToolLen + 5);
   glEnd;
+  glDisable(GL_BLEND);
   glEndList;
   gluDeleteQuadric(q);
 end;
@@ -1037,8 +1062,13 @@ const
 var
   W,H,D: double;
   ML: TExtents;
+  ShowTable: Boolean;
 begin
   if not Assigned(ogl) then Exit;
+  if Assigned(Renderer) then
+    ShowTable:= not Renderer.Is3D
+  else
+    ShowTable:= True;
   ML:= Vars.MLimits;
   glDeleteLists(LimitsL,1);
   glNewList(LimitsL, GL_COMPILE);
@@ -1047,17 +1077,20 @@ begin
   d:= ML.MaxZ - ML.MinZ;
   if (W <> 0) and (H <> 0) and (D <> 0) then
     begin
-      glEnable (GL_BLEND);
-      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      SetGlColor4(GlColors.table);
-      glColor4f(0,0,0.9, 0.1);
-      glBegin(GL_QUADS);
-        glVertex3f(ML.minX,ML.minY,ML.minZ);
-        glVertex3f(ML.maxX,ML.minY,ML.minZ);
-        glVertex3f(ML.maxX,ML.maxY,ML.minZ);
-        glVertex3f(ML.minX,ML.maxY,ML.minZ);
-      glEnd();
-
+      if ShowTable then
+        begin
+          glEnable(GL_BLEND);
+          glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          SetGlColor4(GlColors.table);
+          glColor4f(0,0,0.9, 0.1);
+          glBegin(GL_QUADS);
+            glVertex3f(ML.minX,ML.minY,ML.minZ);
+            glVertex3f(ML.maxX,ML.minY,ML.minZ);
+            glVertex3f(ML.maxX,ML.maxY,ML.minZ);
+            glVertex3f(ML.minX,ML.maxY,ML.minZ);
+          glEnd();
+          glDisable(GL_BLEND);
+        end;
       if GlSettings.UseStipple then
         begin
           glEnable(GL_LINE_STIPPLE);

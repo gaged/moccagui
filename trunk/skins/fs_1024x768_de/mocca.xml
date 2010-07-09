@@ -35,11 +35,11 @@
       <children>
         <component name="BgImage" class="TImage">
           <properties>
-            <integer name="Left" value="0"/>
+            <integer name="Left" value="824"/>
             <integer name="Height" value="90"/>
-            <integer name="Top" value="0"/>
+            <integer name="Top" value="440"/>
             <integer name="Width" value="90"/>
-            <boolean name="AutoSize" value="true"/>
+            <boolean name="Picture" value="mocca_logo.png"/>
           </properties>
         </component>
         <component name="Label9" class="TLabel">
