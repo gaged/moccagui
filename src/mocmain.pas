@@ -560,17 +560,6 @@ begin
 
   ScriptRunning:= False;
   UpdateLock:= True; // prevent from update in on_idle
-  
-  if BgImage.Picture <> nil then
-    begin
-      cw:= BgImage.Picture.Width;
-      ch:= BgImage.Picture.Height;
-      if (cw > 100) and (ch > 100) then
-        begin
-          Self.ClientWidth:= cw;
-          Self.ClientHeight:= ch;
-        end;
-    end;
 
   {$IFDEF LCLGTK2}
   if InitialFullScreen then

@@ -39,7 +39,7 @@ procedure interpreter_codes; cdecl; external;
 function GetGCodeError(code: integer): string;
 
 function ToCanonUnits(Value: Double): Double;
-function ToCanonPos(Value: double; Index: integer): double;
+function ToCanonPos(Value: double; Axis: integer): double;
 
 procedure GetCanonOffset(var Ofs: tlo);
 procedure CanonInitOffsets;
@@ -87,6 +87,7 @@ procedure initgcode; cdecl; external;
 function parsefile(filename,unitcode,initcode: PChar): integer; cdecl; external;
 function converterror(Err: integer): integer; cdecl; external;
 function goto_line(line_no: integer; filename,unitcode,initcode: PChar): integer; cdecl; external;
+
 
 function GCodeToStr(i: integer): string;
 var
@@ -143,12 +144,13 @@ begin
     Result:= Value;
 end;
 
-function ToCanonPos(Value: double; Index: integer): double;
+
+function ToCanonPos(Value: double; Axis: integer): double;
 var
   P: double;
 begin
-  if Index = 0 then P:= offset.x else
-    if Index = 1 then P:= offset.y else
+  if Axis = 0 then P:= offset.x else
+    if Axis = 1 then P:= offset.y else
       P:= offset.z;
  if Vars.Metric then
     Result:= (Value / 25.4) + P
@@ -168,7 +170,7 @@ function GetToolDiameter(i: integer): double;
 var
   d: double;
 begin
-  writeln('gettooldiameter ' + IntToStr(i));
+  // writeln('gettooldiameter ' + IntToStr(i));
   if (i < 0) or (i > CANON_TOOL_MAX) then
     d:= DEFAULT_TOOL_DIA
   else
@@ -233,9 +235,9 @@ end;
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 begin
   Result:= -1;
-  if not Assigned(MyGlList) then
+  if not Assigned(Renderer) then
     begin
-      writeln('glcanon: gllist = nil!');
+      writeln('glcanon: gl_renderer = nil!');
       Exit;
     end;
   Init;
@@ -243,7 +245,7 @@ begin
   if maxerror < 0 then
     InitGCode;
   {$endif}
-  MyGlList.Clear;
+  // Renderer.Clear(False);
   Result:= parsefile(PChar(FileName),PChar(UnitCode),PChar(InitCode));
   if linearUnitConversion = LINEAR_UNITS_MM then
     writeln('Units are mm') else writeln('Units are Inches');
@@ -256,8 +258,8 @@ begin
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Traverse ',l.x,l.y,l.z]));
   {$endif}
-  if Assigned(MyGlList) then
-    MyGlList.AddTraverse(lineno,lo,l);
+  if Assigned(Renderer) then
+    Renderer.Traverse(lineno,lo,l);
 end;
 
 procedure AppendFeed(l: tlo);
@@ -265,8 +267,8 @@ begin
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Feed ',l.x,l.y,l.z]));
   {$endif}
- if Assigned(MyGlList) then
-   MyGlList.AddFeed(lineno,lo,l);
+ if Assigned(Renderer) then
+   Renderer.Feed(lineno,lo,l);
 end;
 
 procedure AppendArcFeed(l: tlo);
@@ -274,8 +276,8 @@ begin
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Arcfeed ',l.x,l.y,l.z]));
   {$endif}
-  if Assigned(MyGlList) then
-    MyGlList.AddArcFeed(lineno,lo,l);
+  if Assigned(Renderer) then
+    Renderer.ArcFeed(lineno,lo,l);
 end;
 
 procedure AppendDwell(x,y,z: double);
@@ -283,8 +285,8 @@ begin
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Dwell ',x,y,z]));
   {$endif}
-  if Assigned(MyGlList) then
-    MyGlList.AddDwell(lineno,x,y,z);
+  if Assigned(Renderer) then
+    Renderer.Dwell(lineno,x,y,z);
 end;
 
 {$ifdef VER_24}
@@ -294,7 +296,7 @@ end;
 
 procedure use_tool_length_offset(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 begin
-  writeln('use_tool_length_offset');
+  // writeln('use_tool_length_offset');
 end;
 
 {$endif}
@@ -311,10 +313,9 @@ end;
 
 procedure tooloffset(zt, xt, wt: double); cdecl; export;
 begin
-  writeln('Tooloffset');
-  //{$ifdef PRINT_CANON}
+  {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Tooloffset: ',zt,xt,wt]));
-  //{$endif}
+  {$endif}
   FirstMove:= True;
   lo.x:= lo.x - xt + xo;
   lo.z:= lo.z - zt + zo;
@@ -363,7 +364,6 @@ begin
         backangle:= ToCanonUnits(Tools[i].backangle);
         orientation:= Tools[i].orientation;
         Result:= 1;
-        //writeln('Tool: '+ IntToStr(i) + ' Dia: ' + FloatToStr(Tools[i].diameter));
       end;
 end;
 
@@ -374,6 +374,8 @@ begin
   if (Tool > 0) and (Tool < CANON_TOOL_MAX) then
     begin
       Tools[0]:= Tools[Tool];
+      if Assigned(Renderer) then
+        Renderer.SetTool(ToCanonUnits(Tools[0].diameter));
     end;
   {$endif}
   {$ifdef PRINT_CANON}

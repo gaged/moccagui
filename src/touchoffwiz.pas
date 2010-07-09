@@ -313,7 +313,7 @@ begin
        FG10Code:= '';
        GetCode;
        CanClose:= FG10Code <> '';
-       if Verbose then
+       if Verbose > 0 then
          writeln('Touchoffwiz: ' + FG10Code);	
     end
   else
