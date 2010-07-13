@@ -18,9 +18,11 @@
       <OutDir Value="../po"/>
     </i18n>
     <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
       <CurrentMajorRevNr Value="2"/>
       <CurrentMinorRevNr Value="1"/>
-      <CurrentBuildNr Value="2"/>
+      <CurrentBuildNr Value="3"/>
       <ProjectVersion Value="0.2.1.2"/>
       <Language Value="0407"/>
       <CharSet Value="04B0"/>

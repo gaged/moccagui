@@ -91,6 +91,7 @@ type
     ToolRad,ToolLen: double;
     AreaInitialized: Boolean;
     ZoomMax: integer;
+    View3D: Boolean;
 
     procedure MakeLimits;
     procedure MakeCoords;
@@ -133,9 +134,9 @@ uses
   logger, glfont, simulator;
 
 const
-  mat_ambient: Array[0..3] of glFLoat = (0.2, 0.2, 0.2,0);
-  light_amb: Array[0..3] of glFloat = (0.8,0.8,0.2,1);
-  light_dif: Array[0..3] of glFloat = (0.8,0.8,0.2,0);
+  mat_ambient: Array[0..3] of glFLoat = (0.5, 0.5, 0.5,1);
+  light_amb: Array[0..3] of glFloat = (0.8,0.8,0.8,1);
+  light_dif: Array[0..3] of glFloat = (0.8,0.8,0.8,0);
 
 type
   TGlVector3 = array[0..2] of glDouble;
@@ -161,21 +162,19 @@ begin
   if Assigned(Renderer) then
     if FFileName <> '' then
       if Assigned(ogl) and AreaInitialized then
-        if Show3DPreviewDlg(Res,ToolDia) then
-          begin
-            Renderer.Render3D(Res,ToolDia);
-            writeln('rendering file: ' + FFileName);
-            ParseGCode(FFileName,FUnitCode,FInitCode);
-            if Renderer.Is3D then
-              Renderer.Make3DList(ListL);
-            Ogl.Invalidate;
-          end;
+        try
+          if Show3DPreviewDlg(ListL) then
+            View3D:= True;
+        except
+          on E:Exception do
+            writeln(E.Message);
+        end;
 end;
 
 procedure TSimClientForm.ClearFile;
 begin
   if Assigned(Renderer) then
-    Renderer.Clear(True);
+    Renderer.Clear;
   FFileName:= '';
   UpdateView;
  end;
@@ -208,7 +207,7 @@ begin
     raise Exception.Create('cannot show preview without a gl_renderer');
   if FFileName <> '' then
     begin
-      Renderer.Clear(True);
+      Renderer.Clear;
       Error:= ParseGCode(FFileName,FUnitCode,FInitCode);
       if Error <> 0 then
         LastError:= GetGCodeError(Error);
@@ -266,8 +265,10 @@ begin
   DimDist:= 1;
   DimDrawFlag:= True;
 
-  sbV.setParams(Round(ViewRotation[FViewMode].xrot),-90,90,1);
-  sbH.SetParams(Round(ViewRotation[FViewMode].yrot),-90,90,1);
+  View3D:= False;
+
+  sbV.setParams(Round(ViewRotation[FViewMode].xrot),-180,180,1);
+  sbH.SetParams(Round(ViewRotation[FViewMode].yrot),-180,180,1);
 
   if not Assigned(Renderer) then
     Renderer:= TGlRenderer.Create;
@@ -297,10 +298,15 @@ end;
 
 procedure TSimClientForm.FormDestroy(Sender: TObject);
 begin
-  if Assigned(ogl) then
-    FreeAndNil(ogl);
-  if Assigned(Renderer) then
-    FreeAndNil(Renderer);
+  try
+    if Assigned(ogl) then
+      FreeAndNil(ogl);
+    if Assigned(Renderer) then
+      FreeAndNil(Renderer);
+  except
+    on E:Exception do
+      writeln('Destroy Renderer: ' + E.Message);
+  end;
 end;
 
 procedure TSimClientForm.FormResize(Sender: TObject);
@@ -321,10 +327,7 @@ procedure TSimClientForm.MItem3DClick(Sender: TObject);
 begin
   if Assigned(Renderer) then
     begin
-      if Renderer.Is3D then
-        ReloadFile
-      else
-        Show3D;
+      Show3D;
     end;
 end;
 
@@ -771,7 +774,6 @@ procedure TSimClientForm.UpdateView;
 
 begin
   L:= SetExtents(0,0,0,0,0,0);
-  // DimDrawFlag:= False;
   if (Assigned(Renderer)) and (FFileName <> '') then
     Renderer.GetExtents(L)
   else
@@ -796,6 +798,7 @@ begin
   // writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
   // writeln(Format('%s %f %f %f',['Extents: ',ExtX,ExtY,ExtZ]));
   PanX:= 0; PanY:= 0; PanZ:= 0; EyeX:= 0; EyeY:= 0;
+  View3D:= False;
   if FViewMode = vmPerspective then
     begin
       with ViewRotation[vmPerspective] do
@@ -845,10 +848,39 @@ begin
     Renderer.MakeList(ListL);
 end;
 
-procedure TSimClientForm.OglPaint(sender: TObject);
+type
+  Float4 = Array[0..3] of GLFloat;
 
-var
-  F3D: Boolean;
+function Glf4(v1,v2,v3,v4: GlFloat): Float4;
+begin
+  Result[0]:= v1;
+  Result[1]:= v2;
+  Result[2]:= v3;
+  Result[3]:= v4;
+end;
+
+procedure Lightning(x,y,z: double);
+begin
+   glClearColor(0,0,0,0);
+   glEnable(GL_NORMALIZE);
+   glLightfv(GL_LIGHT0, GL_POSITION,Glf4(x,y,z,0));
+   glLightfv(GL_LIGHT0, GL_AMBIENT, Glf4(0.2,0.2,0.3,0));
+   glLightfv(GL_LIGHT0, GL_DIFFUSE,Glf4(0.4,0.4,0.6,0));
+   //glLightfv(GL_LIGHT0+1, GL_POSITION,Glf4(0,0,-500, 0));
+   //glLightfv(GL_LIGHT0+1, GL_AMBIENT, Glf4(0.8,0,0,1));
+   //glLightfv(GL_LIGHT0+1, GL_DIFFUSE, Glf4(0.8,0,0,0));
+   //glPopMatrix;
+   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,Glf4 (1,1,1,1));
+   glEnable(GL_LIGHTING);
+   glEnable(GL_LIGHT0);
+   //glEnable(GL_LIGHT0+1);
+   glDepthFunc(GL_LESS);
+   glEnable(GL_DEPTH_TEST);
+   glEnable(GL_CULL_FACE);
+   glDisable(GL_NORMALIZE);
+end;
+
+procedure TSimClientForm.OglPaint(sender: TObject);
 
 const GLInitialized: boolean = false;
 var
@@ -866,7 +898,6 @@ begin
       glViewPort(0,0,ogl.Width,ogl.Height);
   EyeX:= 0;
   EyeY:= 0;
-  F3D:= False;
   MakeCone;
   MakeCoords;
   MakeLimits;
@@ -874,7 +905,7 @@ begin
 end;
 
 begin
-  if sender = nil then ;
+  if Sender = nil then ;
   if not AreaInitialized then
     begin
       InitGL;
@@ -890,30 +921,6 @@ begin
       n:= k * ogl.height / ogl.width;
       glOrtho(-k,k,-n,n, -1000, 1000);
     end;
-
-  if Assigned(Renderer) then
-    F3D:= Renderer.Is3D;
-
-  if F3D then
-    begin
-      glClearColor(0,0,0,1);
-      LightPosition[0]:= ExtX / 2; //L.MinX + (ExtX/ 2);
-      LightPosition[1]:= ExtY / 2; // L.MinY + (ExtY / 2);
-      LightPosition[2]:= ExtZ * 10; // L.MaxZ + ExtZ;
-      LightPosition[3]:= 1; // position light (0 = directional light)
-
-      glEnable(GL_LIGHTING);
-      glLightfv(GL_LIGHT0, GL_POSITION,LightPosition);
-      glLightfv(GL_LIGHT0, GL_AMBIENT,light_amb);
-      glLightfv(GL_LIGHT0, GL_DIFFUSE,light_dif);
-      glEnable(GL_LIGHT0);
-        //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,mat_Ambient);
-      glDisable(GL_POLYGON_OFFSET_FILL);
-        //glEnable(GL_CULL_FACE);
-    end
-  else
-    glDisable(GL_LIGHTING);
-
   glTranslatef(-eyex -panx,-eyey -pany, -eyez);
   glMatrixMode(GL_MODELVIEW);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -922,20 +929,31 @@ begin
   {$IFDEF LINESMOOTH}
   glEnable(GL_LINE_SMOOTH);
   {$ENDIF}
+
+
+
   glRotatef(RotationX,1.0,0.0,0.0);
   glRotatef(RotationY,0.0,1.0,0.0);
   glRotatef(RotationZ,0.0,0.0,1.0);
   glTranslatef(-centerx,-centery,-centerz);
-  if not F3D then
+
+  if not View3D then
     begin
+      glDisable(GL_LIGHTING);
       glCallList(LimitsL);
       glPushMatrix;
       glTranslatef(offset.x,offset.y,offset.z);
       glCallList(CoordsL);
       glPopMatrix;
+    end
+  else
+    begin
+      Lightning(0,0,-ExtZ * 5);
     end;
+
   glCallList(ListL);
-  if not F3D then
+
+  if not View3D then
     begin
       glPushMatrix;
       glTranslatef(ConeX,ConeY,ConeZ);
@@ -1062,13 +1080,8 @@ const
 var
   W,H,D: double;
   ML: TExtents;
-  ShowTable: Boolean;
 begin
   if not Assigned(ogl) then Exit;
-  if Assigned(Renderer) then
-    ShowTable:= not Renderer.Is3D
-  else
-    ShowTable:= True;
   ML:= Vars.MLimits;
   glDeleteLists(LimitsL,1);
   glNewList(LimitsL, GL_COMPILE);
@@ -1077,7 +1090,7 @@ begin
   d:= ML.MaxZ - ML.MinZ;
   if (W <> 0) and (H <> 0) and (D <> 0) then
     begin
-      if ShowTable then
+      if not View3D then
         begin
           glEnable(GL_BLEND);
           glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

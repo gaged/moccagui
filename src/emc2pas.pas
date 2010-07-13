@@ -120,11 +120,11 @@ var
   ToolComments: Array[0..CANON_TOOL_MAX] of PChar; external name 'ttcomments';
 
 // Toolfile
-function SetCanonTool(tool: integer): boolean; cdecl; external;
+function  SetCanonTool(tool: integer): boolean; cdecl; external;
 procedure InitToolTable; cdecl; external;
 procedure DoneToolTable; cdecl; external;
-function loadToolTable(const filename: PChar): integer; cdecl; external;
-function saveToolTable(const filename: PChar): integer; cdecl; external;
+function  loadToolTable(const filename: PChar): integer; cdecl; external;
+function  saveToolTable(const filename: PChar): integer; cdecl; external;
 
 function taskGetFile(ProgFile: PChar): boolean; cdecl; external;
 

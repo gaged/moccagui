@@ -1,6 +1,6 @@
 const
 
-  MaxAxes = 5;                   // maimum number of axes, default 5 XYZCB
+  MaxAxes = 9;                   // maimum number of axes, default 9 XYZABCUVW
   MaxJogIncs = 10;               // numer of joc-increments
   NumButtons  = 10;              // Number of User-Defined Buttons
 
@@ -17,8 +17,6 @@ type
 
   PButtonArray = ^TButtonArray;
   TButtonArray = Array[0..NumButtons-1] of TButtonDef;
-
-
 
 // these are the commands send by Buttonclick or Keyboard
 // values > 100 define the button as a std button
@@ -243,6 +241,8 @@ type
   TAxisDef = record
     AxisChar: Char;
     IsLinear: Boolean;
+    UseGeometry: Boolean;
+    Sign: integer;
   end;
 
   TAxisDefs = Array[0..MaxAxes - 1] of TAxisDef;
