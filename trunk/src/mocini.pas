@@ -96,69 +96,6 @@ begin
     i:= defval;
 end;
 
-function IniReadAxes: Boolean;
-var
-  Min,Max: Double;
-  i: integer;
-  Sec,tmp: string;
-begin
-  Result:= False;
-  i:= 0; Min:= 0; Max:= 0; tmp:= ''; Sec:= '';
-  if (Vars.NumAxes < 1) or (Length(Vars.CoordNames) < 1) then
-    begin
-      writeln('No Axes defined or no coords given.');
-      Exit;
-    end;
-  if Length(Vars.CoordNames) <> Vars.NumAxes then
-    begin
-      writeln('mismatch in given coords and number of axes.');
-      if Length(Vars.CoordNames) < Vars.NumAxes then
-        begin
-          Vars.NumAxes:= Length(Vars.CoordNames);
-          writeln('Using ' + IntToStr(Vars.NumAxes) + ' for ' + Vars.CoordNames);
-        end
-      else
-        Exit;
-    end;
-  for i:= 0 to Vars.NumAxes - 1 do
-    begin
-      Sec:= 'AXIS_' + IntToStr(i);
-
-      GetIniStr(Sec,'TYPE',tmp,'');
-      tmp:= UpCase(Trim(tmp));
-      Vars.Axis[i].IsLinear:= True;
-      Vars.Axis[i].AxisChar:= Vars.CoordNames[i+1];
-      if Length(tmp) > 0 then
-        if (tmp = 'ANGULAR') or (tmp = 'ANG') then
-          Vars.Axis[i].IsLinear:= False;
-
-      GetIniDouble(Sec,'MIN_LIMIT',Min,0);
-      GetIniDouble(Sec,'MAX_LIMIT',Max,0);
-
-      if Vars.Metric and (Vars.Axis[i].IsLinear) then
-        begin
-          Min:= Min / 25.4;
-          Max:= Max / 25.4;
-        end;
-
-      case Vars.CoordNames[i+1] of
-        'X': begin
-               Vars.MLimits.MinX:= Min;
-               Vars.MLimits.MaxX:= Max;
-             end;
-        'Y': begin
-               Vars.MLimits.MinY:= Min;
-               Vars.MLimits.MaxY:= Max;
-             end;
-        'Z': begin
-               Vars.MLimits.MinZ:= Min;
-               Vars.MLimits.MaxZ:= Max;
-             end;
-      end;
-    end;
-  Result:= True;
-end;
-
 function IniRead(FileName: string): Boolean;
 var
   d: Double;
@@ -240,8 +177,7 @@ begin
     end;
   State.ActSpORide:= 100;
 
-  if not GetIniStr('DISPLAY','GEOMETRY',tmp,'XYZBC') then
-  if Length(tmp) < 1 then Exit;  // no geometry
+  GetIniStr('DISPLAY','GEOMETRY',tmp,'');
   Vars.Geometry:= tmp;
 
   if not GetIniDouble('DISPLAY','DEFAULT_LINEAR_VELOCITY',d,1) then
@@ -390,9 +326,6 @@ begin
   Vars.IsLathe:= False;
   if GetIniInt('DISPLAY','LATHE',i,0) then
     if i = 1 then Vars.IsLathe:= True;
-
-  if not IniReadAxes then
-    Exit;
 
   GetIniStr('MOCCA','CONFIG',tmp,'');
   ConfigDir:= Trim(tmp);

@@ -605,7 +605,6 @@ begin
   clRun.Parent:= PanelMaster;
   clRun.Visible:= False;
 
-
   if ShowGlPreview then
     begin
       clSim:= TSimClientForm.Create(self);

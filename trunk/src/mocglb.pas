@@ -54,6 +54,9 @@ const
 const
   Verbose: integer = 1;
 
+
+function StripBlank(var S: string): Boolean;
+
 function PosToString(const Value: Double): string;
 
 procedure SetButtonEnabled(ACmd: integer; Enable: Boolean);
@@ -103,6 +106,21 @@ begin
   gtk_window_present(w);
 end;
 {$ENDIF}
+
+function StripBlank(var S: string): Boolean;
+var
+  i: integer;
+  Tmp: string;
+begin
+  tmp:= '';
+  Result:= False;
+  if Length(S) < 1 then Exit;
+  for i:= 1 to Length(S) do
+    if S[i] <> #32 then
+      Tmp:= Tmp + S[i];
+  S:= Tmp;
+  Result:= Length(S) > 0;
+end;
 
 function PosToString(const Value: Double): string;
 var
@@ -333,7 +351,6 @@ MainForm:= nil;
 
 GlobalBitmaps:= nil;
 LastError:= '';
-// BackGroundImage:= '';
 
 GlSettings.UseDirect:= False;
 GlSettings.UseDoubleBuffered:= True;

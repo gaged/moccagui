@@ -12,6 +12,9 @@ type
 
     constructor Create;
 
+    function CreateAxisDef: boolean;
+    procedure SetupLimits;
+
     procedure Execute(cmd: string);
     procedure ExecuteSilent(cmd: string);
     function  ForceTaskMode(ToMode: integer): Boolean;
@@ -77,9 +80,134 @@ const
 constructor TEmc.Create;
 begin
   inherited Create;
+  if not CreateAxisDef then
+    raise Exception.Create('Error creating Axes');
+  SetupLimits;
   FFeedOverride:= 100;
   FSpindleOverride:= 100;
 end;
+
+procedure TEmc.SetupLimits;
+var
+  AMin,AMax: Double;
+  i: integer;
+begin
+  Vars.MLimits:= SetExtents(0,10,0,10,0,10);
+  for i:= 0 to Vars.NumAxes - 1 do
+    begin
+      AMin:= AxisMinPositionLimit(i);
+      AMax:= AxisMaxPositionLimit(i);
+      Vars.Axis[i].IsLinear:= (AxisAxisType(i) = 1);
+
+      if Vars.Metric and (Vars.Axis[i].IsLinear) then
+        begin
+          AMin:= AMin / 25.4;
+          AMax:= AMax / 25.4;
+        end;
+
+      case Vars.Axis[i].AxisChar of
+        'X': begin
+               Vars.MLimits.MinX:= AMin;
+               Vars.MLimits.MaxX:= AMax;
+             end;
+        'Y': begin
+               Vars.MLimits.MinY:= AMin;
+               Vars.MLimits.MaxY:= AMax;
+             end;
+        'Z': begin
+               Vars.MLimits.MinZ:= AMin;
+               Vars.MLimits.MaxZ:= AMax;
+             end;
+      end;
+    end;
+end;
+
+procedure AddAxisGeometry(C: Char; var Sign: integer);
+var
+  i: integer;
+begin
+  if not (C in ['U'..'Z','A'..'C']) then
+    Exit;
+  for i:= 0 to Vars.NumAxes - 1 do
+    if Vars.Axis[i].AxisChar = C then
+      begin
+        Vars.Axis[i].UseGeometry:= True;
+        Vars.Axis[i].Sign:= Sign;
+        Sign:= 1;
+        Exit;
+    end;
+end;
+
+procedure SetupGeometry;
+var
+  i,Sign: integer;
+  s: string;
+  c: char;
+begin
+  if Vars.Geometry = '' then Exit;
+  s:= UpperCase(Vars.Geometry);
+  Sign:= 1;
+  for i:= 1 to Length(s) do
+    begin
+      c:= s[i];
+      if c <> #32 then
+        begin
+          if c = '-' then Sign:= -1;
+          AddAxisGeometry(C,Sign);
+        end;
+    end;
+end;
+
+function TEmc.CreateAxisDef: boolean;
+const
+  Mask = 'XYZABCUVW';
+var
+  FailCount: integer;
+  i,Axes: integer;
+  AxisMask: Word;
+  AxisCount: integer;
+begin
+  Result:= False;
+  FailCount:= 0;
+  AxisCount:= 0;
+  Axes:= 0;
+  updateStatus;
+  Axes:= trajAxes;
+  while Axes = 0 do
+    begin
+      writeln('waiting for traj.axes');
+      sleep(200);
+      inc(FailCount);
+      if FailCount > 10 then Exit;
+      UpdateStatus;
+      Axes:= trajAxes;
+    end;
+  writeln('Traj Axes: ',Axes);
+  AxisMask:= Word(trajAxisMask);
+  if AxisMask = 0 then
+    begin
+      writeln('Traj. returned a Axis Mask of 0!');
+      Exit;
+    end;
+  for i:= 0 to Length(Mask) - 1 do
+    begin
+      Vars.Axis[i].AxisChar:= #0;
+      if (AxisMask and (1 shl i) > 0) then
+        begin
+          Vars.Axis[i].AxisChar:= Mask[i+1];
+          inc(AxisCount);
+        end;
+    end;
+  if AxisCount < 1 then
+    begin
+      writeln('Number of Axes is zero!');
+      Exit;
+    end;
+  Vars.NumAxes:= AxisCount;
+  SetupGeometry;
+  Result:= True;
+end;
+
 
 procedure TEmc.SetFeedOverride(Value: integer);
 var

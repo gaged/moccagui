@@ -2,9 +2,7 @@ unit glcanon;
 
 {$MODE objfpc}
 {$H+}
-
 {$link simcanon.o}
-
 {$I mocca.inc}
 
 interface
@@ -55,9 +53,8 @@ function GetActiveSpindle: Double;
 implementation
 
 uses
-  math, sysutils,
-  emc2pas,  // LINELEN
-  gllist;   // MyGlList
+  math, sysutils, emc2pas,
+  gllist; 
 
 var
   FirstMove: Boolean;
@@ -70,7 +67,9 @@ var
 var
   Plane: integer; external name 'plane';
   last_sequence_number: integer; external name 'last_sequence_number';
+  {$ifdef VER_23}
   maxerror: integer; external name 'maxerror';
+  {$endif}
   savedError: array[0..LINELEN] of char; external name 'savedError';
   CanonTool: TTool; external name 'canontool';
   ParameterFileName: array[0..LINELEN] of Char; external name '_parameter_file_name';
@@ -87,7 +86,6 @@ procedure initgcode; cdecl; external;
 function parsefile(filename,unitcode,initcode: PChar): integer; cdecl; external;
 function converterror(Err: integer): integer; cdecl; external;
 function goto_line(line_no: integer; filename,unitcode,initcode: PChar): integer; cdecl; external;
-
 
 function GCodeToStr(i: integer): string;
 var
@@ -144,7 +142,6 @@ begin
     Result:= Value;
 end;
 
-
 function ToCanonPos(Value: double; Axis: integer): double;
 var
   P: double;
@@ -170,7 +167,6 @@ function GetToolDiameter(i: integer): double;
 var
   d: double;
 begin
-  // writeln('gettooldiameter ' + IntToStr(i));
   if (i < 0) or (i > CANON_TOOL_MAX) then
     d:= DEFAULT_TOOL_DIA
   else
@@ -201,7 +197,7 @@ begin
   y:= ToCanonUnits(GetOrigin(1));
   z:= ToCanonUnits(GetOrigin(2));
   SetCoords(Offset,x,y,z,0,0,0,0,0,0);
-  writeln(Format('%s %f %f %f',['Canon Offsets: ',x,y,z]));
+  // writeln(Format('%s %f %f %f',['Canon Offsets: ',x,y,z]));
 end;
 
 procedure CanonInitOffsets;
@@ -242,15 +238,15 @@ begin
     end;
   Init;
   {$ifdef VER_23}
-  if maxerror < 0 then
+  if (maxerror < 0) then
     InitGCode;
   {$endif}
-  // Renderer.Clear(False);
+  Renderer.Clear;
   Result:= parsefile(PChar(FileName),PChar(UnitCode),PChar(InitCode));
-  if linearUnitConversion = LINEAR_UNITS_MM then
+  {if linearUnitConversion = LINEAR_UNITS_MM then
     writeln('Units are mm') else writeln('Units are Inches');
   if glMetric then
-    writeln('Canon is mm') else writeln('Canon is Inch');
+    writeln('Canon is mm') else writeln('Canon is Inch');}
 end;
 
 procedure AppendTraverse(l: tlo);

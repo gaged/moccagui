@@ -9,8 +9,6 @@ uses
   Classes, SysUtils,
   dynlibs;
 
-//{$link libemcini.so.0}
-//{$link librs274.so.0}
 
 const
   libemcini = 'libemcini.so';
