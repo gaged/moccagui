@@ -1,7 +1,7 @@
 object MsgForm: TMsgForm
-  Left = 463
+  Left = 465
   Height = 198
-  Top = 424
+  Top = 400
   Width = 648
   ActiveControl = LBox
   BorderIcons = [biSystemMenu]

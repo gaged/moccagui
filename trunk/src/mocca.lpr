@@ -15,7 +15,7 @@ uses
   moccapkg, emc2pas, SysUtils, mocmain, mocglb, mocini, jogclient, runclient,
   mdiclient, simclient, offsetdlg, tooleditdlg, touchoff, toolchange, hal,
   emcint, scripts, emcmsgbox, configreader,
-  touchoffwiz, coordrotate, simulator;
+  touchoffwiz, coordrotate, simulator, mocstat;
 
 const
   __LC_NUMERIC  = 1;

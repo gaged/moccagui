@@ -130,7 +130,7 @@ begin
 
   Ef:= EdgeFinderDia / 2;
 
-  if IsInch and Vars.Metric then
+  if IsInch and Vars.ShowMetric then
     begin
       OffsetPosX:= OffsetPosX / 25.4;
       OffsetPosY:= OffsetPosY / 25.4;
@@ -138,7 +138,7 @@ begin
       Ef:= Ef / 25.4;
     end;
 
-  if (not IsInch) and (not Vars.Metric) then
+  if (not IsInch) and (not Vars.ShowMetric) then
     begin
       OffsetPosX:= OffsetPosX * 25.4;
       OffsetPosY:= OffsetPosY * 25.4;

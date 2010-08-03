@@ -4,6 +4,8 @@ const
   MaxJogIncs = 10;               // numer of joc-increments
   NumButtons  = 10;              // Number of User-Defined Buttons
 
+const
+  Mask = 'XYZABCUVW';
 
 type
   TDROLayoutStyle = (dlsVertical,dlsHorizontal);
@@ -241,8 +243,7 @@ type
   TAxisDef = record
     AxisChar: Char;
     IsLinear: Boolean;
-    UseGeometry: Boolean;
-    Sign: integer;
+    Geometry: integer; // 0 = no geometry 1 = positive -1 = negative
   end;
 
   TAxisDefs = Array[0..MaxAxes - 1] of TAxisDef;
@@ -253,6 +254,7 @@ type
   end;
 
   TEmcVars = record
+    AxisMask: Word;
     IniFile: string;              // inifile set by paramstr(1)
     IniPath: string;
     NMLFile: string;              // the NML-file read from ini
@@ -277,7 +279,7 @@ type
     AngularJogSpeed: double;
     MaxLinearVel: double;
     MaxAngularVel: double;
-    Metric: Boolean;              // metric, default true **FIXME
+    ShowMetric: Boolean;
     UnitVelStr: string;           // linear velocitystr i.e. "inch/min"
     UnitStr: string;              // linear units i.e. inch "in","mm"
     UnitRotStr: string;           // rotation velocity untits i.e. rpm or u/min
@@ -295,6 +297,7 @@ type
     MLimits: TExtents;            // machine limits
     ScriptDir: string;
     Editor: string;
+    InitCode: string;             // RS274 startup code
   end;
 
   TEmcState = record
@@ -319,10 +322,12 @@ type
     CurrentLn: integer;
     MotionLn: integer;
     ProgUnits: integer;
-    DisplayUnits: integer;
-    ORideLimits: Boolean;
+    LinearUnits: double;
+    AngularUnits: double;	
+    ProgramUnits: integer;
+    ORideLimits: boolean;
     CurrentTool: integer;
-    ToolPrepared: Boolean;
+    ToolPrepared: boolean;
     ToolOffset: double;
     TloAlongW: Boolean;
     Dtg: double;
@@ -339,6 +344,8 @@ type
     UnitsChanged: Boolean;
     SpindleORideEnabled: Boolean;
     FeedORideEnabled: Boolean;
+    JointsMode: Boolean;
+    ExecState: integer;
   end;
 
   TGlColorItem = record

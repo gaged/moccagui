@@ -1,7 +1,7 @@
 object TouchOffWizDlg: TTouchOffWizDlg
-  Left = 544
+  Left = 546
   Height = 490
-  Top = 299
+  Top = 300
   Width = 397
   ActiveControl = EditY2
   Caption = 'Antasten Dialog'

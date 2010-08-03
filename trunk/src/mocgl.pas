@@ -7,18 +7,18 @@ unit mocgl;
 interface
 
 uses
-  Classes, ExtCtrls, mocbtn, StdCtrls, SysUtils, FileUtil, LResources, Forms,
+  Classes, ExtCtrls, mocbtn, SysUtils, FileUtil, LResources, Forms,
   Controls, Graphics, Dialogs,
   LCLProc, LCLType, LCLIntf,
   LMessages, WSLCLClasses, Gtk2WSControls,
-  gl, glu, InterfaceBase, GtkDef, gdk2x, glib2, gdk2, gtk2, Gtk2Int,
+  gl, glu, InterfaceBase, GtkDef, gdk2x, glib2, gtk2, Gtk2Int,
   GdkGLExt, GtkGLExt;
 
 type
   TMocGLControl = class(TWinControl)
   private
     FOnPaint: TNotifyEvent;
-    FWidget: PGtkWidget;
+    // FWidget: PGtkWidget;
   protected
     procedure WMPaint(var Message: TLMPaint); message LM_PAINT;
     procedure WMSize(var Message: TLMSize); message LM_SIZE;

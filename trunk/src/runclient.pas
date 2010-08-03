@@ -17,7 +17,7 @@ type
     OpenDialog: TOpenDialog;
     ScrollBar: TScrollBar;
     procedure FormCreate(Sender: TObject);
-    procedure Click(Sender: TObject);
+    procedure DoClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure ScrollBarChange(Sender: TObject);
@@ -28,6 +28,7 @@ type
     OldBlockDel: Boolean;
     OldOptStop: Boolean;
     OldIsOpen: Boolean;
+    OldExecState: integer;
     IsOpen: Boolean;
     function  HandleCommand(Cmd: integer): Boolean;
     procedure UpdateScrollBar;
@@ -57,7 +58,6 @@ uses
   simclient,
   glcanon,gllist;
 
-
 procedure TRunClientForm.ReloadFile;
 var
   Buffer: Array[0..128] of Char;
@@ -65,20 +65,16 @@ var
 begin
   IsOpen:= False;
   S:= '';
-
   MocLister.Items.Clear;
   ScrollBar.Enabled:= False;
-
   sendAuto;
   Emc.WaitDone;
   sendAbort;
   Emc.WaitDone;
   sendProgramOpen(PChar(Vars.ProgramFile));
   Emc.WaitDone;
-
   if TaskGetFile(Buffer) then
     S:= PChar(Buffer);
-
   if S <> Vars.ProgramFile then
     begin
       GlobalErrors.Add('Error loading file');
@@ -86,15 +82,12 @@ begin
       GlobalErrors.Add('Got ' + S);
       Exit;
     end;
-
   Writeln('Loading file: ' + Vars.ProgramFile);
-
   MocLister.Items.LoadFromFile(Vars.ProgramFile);
   MocLister.SelectedItem:= 0;
   ScrollBar.Enabled:= True;
   ScrollBar.SetParams(0,0,MocLister.Items.Count-1);
   MocLister.Invalidate;
-
   // LB.ClearSelection;
   if State.Machine then
     begin
@@ -191,7 +184,7 @@ end;
 
 procedure TRunClientForm.UpdatePreview(Reload: Boolean);
 var
-  UnitCode,InitCode: string;
+  UnitCode: string;
   Metric: Boolean;
 begin
   if Reload then
@@ -202,16 +195,16 @@ begin
       Exit;
     end;
   if (Length(Vars.ProgramFile) < 1) or (not IsOpen) then Exit;
-  // Metric:= Pos('G21',ActiveGCodes) > 0;
-  Metric:= Vars.Metric;
+  Metric:= State.LinearUnits = 1;
   if Metric then
-    UnitCode:= 'G21' else UnitCode:= 'G20';
-  InitCode:= '';
+    UnitCode:= 'G21'
+  else
+    UnitCode:= 'G20';
   if ShowGlPreview then
     if Assigned(clSim) then
       begin
         clSim.ClearFile;
-        clSim.LoadFile(Vars.ProgramFile,UnitCode,InitCode);
+        clSim.LoadFile(Vars.ProgramFile,UnitCode,Vars.InitCode);
       end;
 end;
 
@@ -375,7 +368,7 @@ end;
 
 procedure TRunClientForm.MapButtons;
 begin
-  SetButtonMap(@BtnDefRun,@Self.Click);
+  SetButtonMap(@BtnDefRun,@Self.DoClick);
 end;
 
 procedure TRunClientForm.InitControls;
@@ -417,18 +410,27 @@ begin
       ActiveLn:= taskMotionLine - 1;
       if ActiveLn < 0 then
         ActiveLn:= taskCurrentLine + 1;
-      if ActiveLn < 0 then
-        Exit;
-      if ActiveLn <> OldActiveLn then
+    end
+  else
+    begin
+      if OldExecState <> State.ExecState then
         begin
-          MocLister.SelectedItem:= ActiveLn;
-          OldActiveLn:= ActiveLn;
-          UpdateScrollBar;
+          OldExecState:= State.ExecState;
+          if OldExecState = EMC_TASK_EXEC_DONE then
+            ActiveLn:= MocLister.Items.Count - 1;
         end;
+    end;
+  if ActiveLn < 0 then
+    Exit;
+  if ActiveLn <> OldActiveLn then
+    begin
+      MocLister.SelectedItem:= ActiveLn;
+      OldActiveLn:= ActiveLn;
+      UpdateScrollBar;
     end;
 end;
 
-procedure TRunClientForm.Click(Sender: TObject);
+procedure TRunClientForm.DoClick(Sender: TObject);
 begin
   if Assigned(Sender) then
     with Sender as TMocButton do

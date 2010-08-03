@@ -18,11 +18,10 @@
       <OutDir Value="../po"/>
     </i18n>
     <VersionInfo>
-      <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <CurrentMajorRevNr Value="2"/>
       <CurrentMinorRevNr Value="1"/>
-      <CurrentBuildNr Value="3"/>
+      <CurrentBuildNr Value="483"/>
       <ProjectVersion Value="0.2.1.2"/>
       <Language Value="0407"/>
       <CharSet Value="04B0"/>
@@ -48,7 +47,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="30">
+    <Units Count="31">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -223,14 +222,19 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="simulator"/>
       </Unit29>
+      <Unit30>
+        <Filename Value="mocstat.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="mocstat"/>
+      </Unit30>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
-      <Libraries Value="/home/gtom/mocca/2.4.1/lib/"/>
+      <Libraries Value="../2.4.1/lib/"/>
       <OtherUnitFiles Value="../pkg/"/>
-      <UnitOutputDirectory Value="/home/gtom/mocca/lib"/>
+      <UnitOutputDirectory Value="../2.4.1/lib"/>
       <LCLWidgetType Value="gtk2"/>
     </SearchPaths>
     <Parsing>

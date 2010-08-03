@@ -24,7 +24,7 @@ const
   ACTIVE_SETTINGS_MAX = 3;
 
   DEFAULT_TOOL_DIA = 0.254;
-  DEFAULT_TOOL_LENGTH = 2.54;
+  DEFAULT_TOOL_LENGTH = 0.5;
 
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 
@@ -39,8 +39,8 @@ function GetGCodeError(code: integer): string;
 function ToCanonUnits(Value: Double): Double;
 function ToCanonPos(Value: double; Axis: integer): double;
 
-procedure GetCanonOffset(var Ofs: tlo);
-procedure CanonInitOffsets;
+function CanonOffset: tlo;
+procedure CanonInitOffset;
 
 function GetToolDiameter(i: integer): double;
 function GetToolLength(i: integer): double;
@@ -50,19 +50,27 @@ function MCodeToStr(i: integer): string;
 function GetActiveFeed: Double;
 function GetActiveSpindle: Double;
 
+
 implementation
 
 uses
-  math, sysutils, emc2pas,
-  gllist; 
+  fileutil,math, sysutils,
+  emc2pas, gllist;
 
 var
   FirstMove: Boolean;
   lo: tlo;
   offset: tlo;
-  xo,zo,wo: Double;
+  toffs: tlo;
   DwellTime: Double;
   lineno: integer;
+  {$ifdef VER_24}
+  xyrot: double;
+  {$endif}
+  toolno: integer;
+  spindlerate: double;
+  feedrate: double;
+  traverserate: double;
 
 var
   Plane: integer; external name 'plane';
@@ -71,14 +79,15 @@ var
   maxerror: integer; external name 'maxerror';
   {$endif}
   savedError: array[0..LINELEN] of char; external name 'savedError';
-  CanonTool: TTool; external name 'canontool';
   ParameterFileName: array[0..LINELEN] of Char; external name '_parameter_file_name';
   glMetric: boolean; external name 'metric';
   axisMask: integer; external name 'axis_mask';
-
   glSettings: array[0..ACTIVE_SETTINGS_MAX-1] of double; external name 'settings';
   glGCodes: array[0..ACTIVE_G_CODES_MAX-1] of integer; external name 'gcodes';
   glMCodes: array[0..ACTIVE_M_CODES_MAX-1] of integer; external name 'mcodes';
+  CanonTool: TTool; external name 'canontool';
+
+
 
 {$ifdef VER_23}
 procedure initgcode; cdecl; external;
@@ -136,7 +145,7 @@ end;
 
 function ToCanonUnits(Value: Double): Double;
 begin
-  if Vars.Metric then
+  if State.LinearUnits = 1 then
     Result:= Value / 25.4
   else
     Result:= Value;
@@ -146,11 +155,20 @@ function ToCanonPos(Value: double; Axis: integer): double;
 var
   P: double;
 begin
-  if Axis = 0 then P:= offset.x else
-    if Axis = 1 then P:= offset.y else
-      P:= offset.z;
- if Vars.Metric then
-    Result:= (Value / 25.4) + P
+  P:= 0;
+  case Axis of
+    0: P:= offset.x;
+    1: P:= offset.y;
+    2: P:= offset.z;
+    3: P:= offset.a;
+    4: P:= offset.b;
+    5: P:= offset.c;
+    6: P:= offset.u;
+    7: P:= offset.v;
+    8: P:= offset.w;
+  end;
+  if (Axis < 3) or (Axis > 5) then
+    Result:= ToCanonUnits(Value) + P
   else
     Result:= Value + P;
 end;
@@ -189,25 +207,20 @@ begin
   Result:= d;
 end;
 
-procedure InitOffsets;
-var
-  x,y,z: double;
+procedure InitOffset;
 begin
-  x:= ToCanonUnits(GetOrigin(0));
-  y:= ToCanonUnits(GetOrigin(1));
-  z:= ToCanonUnits(GetOrigin(2));
-  SetCoords(Offset,x,y,z,0,0,0,0,0,0);
+  SetCoords(Offset,0,0,0,0,0,0,0,0,0);
   // writeln(Format('%s %f %f %f',['Canon Offsets: ',x,y,z]));
 end;
 
-procedure CanonInitOffsets;
+procedure CanonInitOffset;
 begin
-  InitOffsets;
+  InitOffset;
 end;
 
-procedure GetCanonOffset(var Ofs: tlo);
+function CanonOffset: tlo;
 begin
-  ofs:= offset;
+  Result:= offset;
 end;
 
 procedure Init;
@@ -215,17 +228,17 @@ var
   s: string;
 begin
   FirstMove:= True;
-  xo:= 0;
-  zo:= 0;
-  wo:= 0;
+  SetCoords(toffs,0,0,0,0,0,0,0,0,0);
+  //xo:= 0; zo:= 0; wo:= 0;
   DwellTime:= 0;
   lineno:= 0;
   Plane:= 1;
   glMetric:= False;
   axisMask:= trajAxisMask;
   s:= Vars.IniPath + 'moc.var';
+  CopyFile(Vars.ParamFile,s);
   ParameterFileName:= PChar(s);
-  InitOffsets;
+  InitOffset;
 end;
 
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
@@ -243,10 +256,6 @@ begin
   {$endif}
   Renderer.Clear;
   Result:= parsefile(PChar(FileName),PChar(UnitCode),PChar(InitCode));
-  {if linearUnitConversion = LINEAR_UNITS_MM then
-    writeln('Units are mm') else writeln('Units are Inches');
-  if glMetric then
-    writeln('Canon is mm') else writeln('Canon is Inch');}
 end;
 
 procedure AppendTraverse(l: tlo);
@@ -288,11 +297,7 @@ end;
 {$ifdef VER_24}
 procedure set_xy_rotation(t: double); cdecl; export;
 begin
-end;
-
-procedure use_tool_length_offset(x,y,z,a,b,c,u,v,w: double); cdecl; export;
-begin
-  // writeln('use_tool_length_offset');
+  xyrot:= t;
 end;
 
 {$endif}
@@ -307,23 +312,43 @@ begin
   result:= false;
 end;
 
-procedure tooloffset(zt, xt, wt: double); cdecl; export;
+{$ifdef VER_23}
+procedure tooloffset(z,x,w: double); cdecl; export;
 begin
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Tooloffset: ',zt,xt,wt]));
   {$endif}
   FirstMove:= True;
-  lo.x:= lo.x - xt + xo;
-  lo.z:= lo.z - zt + zo;
-  lo.w:= lo.w - wt - wo;
-  xo:= xt;
-  zo:= zt;
-  wo:= wt;
+  lo.x:= lo.x - x + toffs.x; // xo;
+  lo.z:= lo.z - z + toffs.z; // zo;
+  lo.w:= lo.w - w - toffs.w; // wo;
+  toffs.x:= x;  // xo:= xt;
+  toffs.z:= z;  // zo:= zt;
+  toffs.w:= w;  // wo:= wt;
 end;
+{$endif}
+
+{$ifdef VER_24}
+procedure tooloffset(x, y, z, a, b, c, u, v, w: double); cdecl; export;
+begin
+  FirstMove:= True;
+  lo.x:= lo.x - x + toffs.x;
+  lo.y:= lo.y - y + toffs.y;
+  lo.z:= lo.z - z + toffs.z;
+  lo.a:= lo.a - a + toffs.a;
+  lo.b:= lo.b - b + toffs.b;
+  lo.c:= lo.c - c + toffs.c;
+  lo.u:= lo.u - u + toffs.u;
+  lo.v:= lo.v - v + toffs.v;
+  lo.w:= lo.w - w + toffs.w;
+  SetCoords(toffs,x,y,z,a,b,c,u,v,w);
+end;
+{$endif}
 
 procedure setoriginoffsets(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 begin
-  SetCoords(offset,offset.x-x,offset.y-y,offset.z-z,a,b,c,u,v,w);
+  // SetCoords(offset,offset.x-x,offset.y-y,offset.z-z,a,b,c,u,v,w);
+  SetCoords(offset,x,y,z,a,b,c,u,v,w);
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['set_origin_offsets: ',x,y,z]));
   {$endif}
@@ -366,22 +391,20 @@ end;
 procedure changetool(Tool: integer); cdecl; export;
 begin
   FirstMove:= True;
-  {$ifdef VER_24}
+  Tools[0]:= EmptyTool;
   if (Tool > 0) and (Tool < CANON_TOOL_MAX) then
-    begin
-      Tools[0]:= Tools[Tool];
-      if Assigned(Renderer) then
-        Renderer.SetTool(ToCanonUnits(Tools[0].diameter));
-    end;
-  {$endif}
+    Tools[0]:= Tools[Tool];
+  if Assigned(Renderer) then
+    Renderer.SetTool(Tools[0].diameter);
   {$ifdef PRINT_CANON}
   writeln(Format('%s %d',['change_tool: ',Tool]));
   {$endif}
 end;
 
-procedure changetoolnumber(Tool: integer); cdecl; export;
+procedure changetoolnumber(tool: integer); cdecl; export;
 begin
   FirstMove:= True;
+  toolno:= tool;
   {$ifdef PRINT_CANON}
   writeln(Format('%s %d',['change_tool_number: ',Tool]));
   {$endif}
@@ -389,6 +412,7 @@ end;
 
 procedure selecttool(tool: integer); cdecl; export;
 begin
+  toolno:= tool;
   {$ifdef PRINT_CANON} 
   writeln('Select tool: ' + IntToStr(tool));
   {$endif}
@@ -396,14 +420,17 @@ end;
 
 procedure setspindlerate(rate: double); cdecl; export;
 begin
+  spindlerate:= rate;
 end;
 
 procedure setfeedrate(rate: double); cdecl; export;
 begin
+  feedrate:= rate;
 end;
 
 procedure settraverserate(rate: double); cdecl; export;
 begin
+  traverserate:= rate;
 end;
 
 procedure straighttraverse(x,y,z,a,b,c,u,v,w: double); cdecl; export;
@@ -576,10 +603,12 @@ begin
   Result:= integer(State.BlockDel);
 end;
 
+{$ifdef VER_23}
 function toolalongw: integer; cdecl; export;
 begin
   result:= integer(State.TloAlongW);
 end;
+{$endif}
 
 procedure setcomment(const msg: PChar); cdecl; export;
 begin
@@ -591,6 +620,15 @@ begin
   // writeln(msg);
 end;
 
+function getLengthUnits: double; cdecl; export;
+begin
+  Result:= State.LinearUnits;
+end;
+
+function getAngularUnits: double; cdecl; export;
+begin
+  Result:= State.AngularUnits;
+end;
 
 end.
 
