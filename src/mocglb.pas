@@ -41,7 +41,6 @@ var
   GlobalErrors: TStringList;
 
   ConfigDir: string;
-  // BackGroundImage: string;
 
   CoordRef : record
     x,y,z: double;
@@ -76,14 +75,22 @@ procedure UnFullScreen(WinControl: TWinControl);
 procedure DoBringToFront(AForm: TForm);
 {$ENDIF}
 
-procedure CallEditor;
+procedure ExecEmctop;
+procedure ExecEditor;
+procedure ExecHalShow;
+procedure ExecHalMeter;
+procedure ExecHalScope;
+
 
 procedure ReadStyle(const Form: TForm; AFileName: string);
 
 function GetCmdNumber(const C: string): integer;
 
-implementation
+var
+  DroHomedBitmap: TBitmap;
+  DroUnHomedBitmap: TBitmap;
 
+implementation
 
 uses
  {$IFDEF LCLGTK2}
@@ -104,6 +111,8 @@ begin
   gtk_window_set_skip_taskbar_hint(w,true);
   gtk_window_set_skip_pager_hint(w,true);
   gtk_window_present(w);
+  //if Assigned(Application.MainForm) then
+  //  Application.MainForm.Show;
 end;
 {$ENDIF}
 
@@ -128,7 +137,7 @@ var
 begin
   Result:= '';
   if Value >= 0 then S:= '+';
-  if Vars.Metric then
+  if Vars.ShowMetric then
     S:= S + FloatToStrF(Value, ffFixed, 8, 3)
   else
     S:= S + FloatToStrF(Value, ffFixed, 8, 4);
@@ -178,20 +187,49 @@ begin
   end;
 end;
 
-procedure CallEditor;
+procedure ExecProcess(CommandLn: string);
 var
   Process: TProcess;
 begin
-  if Vars.Editor = '' then
-    raise Exception.Create('No Editor defined!');
   Process:= TProcess.Create(nil);
   try
-    Process.CommandLine:= Vars.Editor + #32 + Vars.ProgramFile;
+    Process.CommandLine:= CommandLn;
     Process.Execute;
   finally
     Process.Free;
   end;
 end;
+
+procedure ExecEmctop;
+begin
+  ExecProcess('emctop -ini ' + Vars.IniFile);
+end;
+
+procedure ExecEditor;
+begin
+  if Vars.Editor = '' then
+    raise Exception.Create('No Editor defined!');
+  ExecProcess(Vars.Editor + #32 + Vars.ProgramFile);
+end;
+
+procedure ExecHalShow;
+var
+  TclDir: string;
+begin
+  TclDir:= GetEnvironmentVariable('EMC2_TCL_DIR');
+  ExecProcess(TclDir + '/bin/halshow.tcl .. -ini ' + Vars.IniFile);
+end;
+
+procedure ExecHalMeter;
+begin
+  ExecProcess('halmeter');
+end;
+
+procedure ExecHalScope;
+begin
+  ExecProcess('halscope -- -ini ' + Vars.IniFile);
+end;
+
 
 {$IFDEF LCLGTK2}
 procedure FullScreen(WinControl: TWinControl);
@@ -347,16 +385,16 @@ end;
 
 initialization
 
-MainForm:= nil;
+  MainForm:= nil;
 
-GlobalBitmaps:= nil;
-LastError:= '';
+  GlobalBitmaps:= nil;
+  LastError:= '';
 
-GlSettings.UseDirect:= False;
-GlSettings.UseDoubleBuffered:= True;
-GlSettings.UseRGBA:= True;
+  GlSettings.UseDirect:= False;
+  GlSettings.UseDoubleBuffered:= True;
+  GlSettings.UseRGBA:= True;
 
-with GlColors do
+  with GlColors do
   begin
     feed.r:= 0; feed.g:= 0; feed.b:= 1;
     traverse.r:= 0.5; traverse.g:= 0.5; traverse.b:= 0.5;
@@ -368,11 +406,22 @@ with GlColors do
     dim2.r:= 1; dim2.g:= 0; dim2.b:= 0;
   end;
 
-with Vars.JogIncrements[0] do
+  with Vars.JogIncrements[0] do
   begin
     Value:= 0;
     Text:= 'Continous';
   end;
+
+  DroHomedBitmap:= nil;
+  DroUnHomedBitmap:= nil;
+
+finalization
+
+  if Assigned(DroHomedBitmap) then
+    FreeAndNil(DroHomedBitmap);
+
+  if Assigned(DroUnHomedBitmap) then
+    FreeAndNil(DroUnHomedBitmap);
 
 end.
 

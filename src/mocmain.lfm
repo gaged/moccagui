@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 191
+  Left = 143
   Height = 724
-  Top = 140
+  Top = 171
   Width = 961
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -22,6 +22,7 @@ object MainForm: TMainForm
   OnKeyUp = FormKeyUp
   OnResize = FormResize
   OnShow = FormShow
+  PopupMenu = PopupMenuMain
   Position = poScreenCenter
   ShowHint = True
   LCLVersion = '0.9.28.2'
@@ -367,7 +368,7 @@ object MainForm: TMainForm
     OnClick = ButtonClick
   end
   object ButtonEStop: TMocButton
-    Left = 880
+    Left = 881
     Height = 64
     Top = 8
     Width = 80
@@ -375,7 +376,7 @@ object MainForm: TMainForm
     ShowClicks = True
     Caption = 'Notaus'
     Color = clBtnFace
-    OnClick = ButtonClick
+    OnClick = ButtonEStopClick
   end
   object ButtonSpindle: TMocButton
     Left = 616
@@ -980,5 +981,25 @@ object MainForm: TMainForm
   object Timer: TTimer
     left = 688
     top = 24
+  end
+  object PopupMenuMain: TPopupMenu
+    left = 268
+    top = 480
+    object MenuItemStatus: TMenuItem
+      Caption = 'Emc- Status'
+      OnClick = MenuItemStatusClick
+    end
+    object MenuItemHal: TMenuItem
+      Caption = 'Hal anzeigen'
+      OnClick = MenuItemHalClick
+    end
+    object MenuItemScope: TMenuItem
+      Caption = 'Hal Scope'
+      OnClick = MenuItemScopeClick
+    end
+    object MenuItemHalmeter: TMenuItem
+      Caption = 'Hal Meter'
+      OnClick = MenuItemHalmeterClick
+    end
   end
 end

@@ -22,7 +22,7 @@ type
 type
   TGlRenderer = class
     constructor Create;
-    destructor Destroy;
+    destructor Destroy; override;
   private
     nTraverse: integer;
     nFeeds: Integer;
@@ -53,12 +53,8 @@ procedure SetGlColor4(const c: TGlColorItem);
 
 implementation
 
-uses
-  math;
-
 var
   OutOfMemory: Boolean;
-
 
 procedure SetGlColor3(const c: TGlColorItem);
 begin
@@ -139,6 +135,7 @@ end;
 
 constructor TGlRenderer.Create;
 begin
+  inherited Create;
   OutOfMemory:= False;
   ItemList:= TList.Create;
   Clear;
@@ -149,6 +146,7 @@ begin
   Clear;
   ItemList.Free;
   OutOfMemory:= False;
+  inherited;
 end;
 
 procedure TGlRenderer.First;
@@ -177,16 +175,24 @@ begin
     Exit;
   First;
   P:= Get;
-  if P <> nil then
+  while P <> nil do
   begin
-    E:= SetExtents(P^.l1.x,P^.l1.x,P^.l1.y,P^.l1.y,P^.l1.z,P^.l1.z);
-    Check(P^.l2);
+    if P^.ltype <> ltTool then
+      begin
+        E:= SetExtents(P^.l1.x,P^.l1.x,P^.l1.y,P^.l1.y,P^.l1.z,P^.l1.z);
+        Check(P^.l2);
+        P:= Get;
+        Break;
+      end;
     P:= Get;
   end;
   while P <> nil do
     begin
-      Check(P^.l1);
-      Check(P^.l2);
+      if P^.ltype <> ltTool then
+        begin
+          Check(P^.l1);
+          Check(P^.l2);
+        end;
       P:= Get;
     end;
   Result:= True;

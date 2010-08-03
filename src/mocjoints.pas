@@ -14,17 +14,13 @@ const
   ZERO_POS_STRING = '+00000.000';
   ZERO_DES_STRING = '0';
 
-  {$IFDEF LCLGTK2}
-  KeyDelayTime = 20;
-  KeySleepAfterUp = 10;
-  {$ELSE}
-  KeyDelayTime = 100;
-  {$ENDIF}
+const
+  KeyDebounceTime = 100;
 
 type
   TAxis = class
-    constructor Create(APanel: TWinControl; Id: integer; Des: Char);
-    destructor Destroy;
+    constructor Create(PosId: integer; APanel: TWinControl; AxisNo: integer; Des: Char);
+    destructor Destroy; override;
   private
     FAxisChar: Char;
     FAxisNumber: Integer;
@@ -36,7 +32,9 @@ type
     FPosLabel: TLabel;
     FValue: Double;
     FTopLeft: TPoint;
-    procedure SetHomed(const Value: Boolean);
+    FJointMode: Boolean;
+    procedure SetHomed(Value: Boolean);
+    procedure SetJointMode(Value: Boolean);
     procedure SizeLabels(x,y,w,h: integer);
     procedure Update(ShowActual,ShowRelative,ShowDtg: Boolean);
     function GetAxisType: integer;
@@ -51,6 +49,7 @@ type
     function GetEnabled: boolean;
     function GetFault: boolean;
     function GetOverrideLimits: boolean;
+    function ConvertUnits(Value: Double): Double;
    public
     property AxisChar: Char read FAxisChar;
     property AxisNumber: Integer read FAxisNumber;
@@ -70,6 +69,7 @@ type
     property Enabled: Boolean read GetEnabled;
     property Fault: Boolean read GetFault;
     property OverrideLimits: Boolean read GetOverrideLimits;
+    property JointMode: Boolean write SetJointMode;
   end;
   
 type
@@ -85,14 +85,17 @@ type
     FShowDtg: Boolean;
     FNumAxes: Integer;
     FShowBox: Boolean;
+    FJointMode: Boolean;
     FAxes: Array[0..MAX_JOINTS-1] of TAxis;
     procedure OnLabelClick(Sender: TObject);
     procedure SetShowBox(Value: Boolean);
+    procedure SetJointMode(Value: Boolean);
+    procedure OnIdle(Sender: TObject; var Handled: Boolean);
    public
     constructor Create(APanel: TPanel);
-    destructor Destroy;
-    function  AddAxis(Id: Integer; Des: Char): TAxis;
-    procedure CreateJoints(CoordNames: string; NumAxes: Integer);
+    destructor Destroy; override;
+    function  AddAxis(Des: Char): TAxis;
+    procedure CreateJoints;
     function  GetAxis(Index: integer): TAxis;
     function  GetAxisChar(Index: integer): Char;
     function  AxisByChar(Ch: Char): integer;
@@ -100,14 +103,15 @@ type
     procedure Update;
     procedure CheckJogExit;
     procedure DoResize(Sender: TObject);
-    function  JogCont(Ch: Char; Speed: Double): integer;
-    function  JogIncr(Ch: Char; Speed,Incr: Double): integer;
-    function  JogStop(Ch: Char): integer;
+    function  JogCont(Ax: Char; Speed: Double): integer;
+    function  JogIncr(Ax: Char; Speed, Incr: Double): integer;
+    function  JogStop(Ax: Char): integer;
     procedure JogStopAll;
     procedure HomeAll;
     procedure HomeActive;
     procedure UnHomeActive;
     procedure HomeAxis(Ax: Char);
+    property  JointMode: Boolean read FJointMode write SetJointMode;
     property  ShowActual: Boolean read FShowActual write FShowActual;
     property  ShowRelative: Boolean read FShowRelative write FShowRelative;
     property  ShowDtg: Boolean read FShowDtg write FShowDtg;
@@ -124,25 +128,30 @@ uses
   emc2pas,mocglb,mocemc,hal,LCLIntf;
 
 var
-  AxisTicks: Array[0..MAX_JOINTS - 1] of longint;
   Layout: TDROLayoutStyle;
 
-function GetTickDiff(var t: longint): longint;
+  AxisTicks: Array[0..MAX_JOINTS - 1] of DWord;
+  AxisJogging: Array[0..MAX_JOINTS - 1] of Boolean;
+  JgSpeed: double;
+
+function GetTickDiff(var t: DWord): longint;
 var
-  i: longint;
+  i: DWord;
 begin
   i:= GetTickCount;
   if t = 0 then  // First use..
-    Result:= KeyDelayTime
+    Result:= 0
   else
     Result:= i - t;
   t:= i;
 end;
 
-constructor TAxis.Create(APanel: TWinControl; Id: integer; Des: Char);
+constructor TAxis.Create(PosId: integer; APanel: TWinControl; AxisNo: integer; Des: Char);
 begin
+  FJointMode:= False;
+  FJogging:= False;
   FValue:= -1;
-  FAxisNumber:= Id;
+  FAxisNumber:= AxisNo;
   FAxisChar:= Des;
   FPanel:= APanel;
   FPosLabel:= TLabel.Create(FPanel);
@@ -156,7 +165,7 @@ begin
       ParentFont:= False;
       Font.Assign(FPanel.Font);
       Layout:= tlCenter;
-      Tag:= Id;
+      Tag:= PosId;
     end;
   with FDesLabel do
     begin
@@ -168,7 +177,7 @@ begin
       ParentFont:= False;
       Font.Assign(FPanel.Font);
       Font.Color:= clRed;
-      Tag:= Id;
+      Tag:= PosId;
     end;
 end;
 
@@ -177,6 +186,22 @@ begin
   FPosLabel.Free;
   FDesLabel.Free;
   inherited;
+end;
+
+function TAxis.ConvertUnits(Value: Double): Double;
+var
+  mm: double;
+begin
+  if FLinear then
+    begin
+      mm:= Value / State.LinearUnits;
+      if Vars.ShowMetric then
+        Result:= mm
+      else
+        Result:= mm / 25.4;
+    end
+  else
+    Result:= Value;
 end;
 
 procedure TAxis.SizeLabels(x,y,w,h: integer);
@@ -191,10 +216,22 @@ begin
   FTopLeft.X:= x;
 end;
 
-procedure TAxis.SetHomed(const Value: Boolean);
+procedure TAxis.SetHomed(Value: Boolean);
 begin
   if FHomed <> Value then
     sendHome(FAxisNumber);
+end;
+
+procedure TAxis.SetJointMode(Value: Boolean);
+begin
+  if FJointMode <> Value then
+    begin
+      FJointMode:= Value;
+      if FJointMode then
+        FDesLabel.Caption:= IntToStr(FAxisNumber)
+      else
+        FDesLabel.Caption:= FAxisChar;
+    end;
 end;
 
 procedure TAxis.Update(ShowActual,ShowRelative,ShowDtg: Boolean);
@@ -202,28 +239,34 @@ var
   NewPos: Double;
   IsHomed: Boolean;
 begin
-  if ShowDtg then
-    NewPos:= getDtgPos(FAxisNumber)
-  else
-  if ShowActual then
+  if FJointMode then
     begin
-      if ShowRelative then
-        NewPos:= getRelPos(FAxisNumber)
-      else
-        NewPos:= getAbsPos(FAxisNumber);
+      NewPos:= ConvertUnits(getJointPos(FAxisNumber));
     end
   else
     begin
-      if ShowRelative then
-        NewPos:= getRelCmdPos(FAxisNumber)
+      if ShowDtg then
+        NewPos:= ConvertUnits(getDtgPos(FAxisNumber))
       else
-        NewPos:= getAbsCmdPos(FAxisNumber);
+        if ShowActual then
+          begin
+            if ShowRelative then
+              NewPos:= ConvertUnits(getRelPos(FAxisNumber))
+            else
+              NewPos:= ConvertUnits(getAbsPos(FAxisNumber));
+          end
+        else
+          begin
+            if ShowRelative then
+              NewPos:= ConvertUnits(getRelCmdPos(FAxisNumber))
+            else
+              NewPos:= ConvertUnits(getAbsCmdPos(FAxisNumber));
+          end;
     end;
-
   if NewPos <> FValue then
     begin
       FValue:= NewPos;
-      FPosLabel.Caption:= PosToString(FValue);
+      FPosLabel.Caption:=  PosToString(FValue);
     end;
 
   isHomed:= AxisHomed(FAxisNumber);
@@ -322,6 +365,7 @@ destructor TJoints.Destroy;
 var
   i: integer;
 begin
+  Application.OnIdle:= nil;
   if FNumAxes > 0 then
     for i:= 0 to FNumAxes - 1 do
       if Assigned(FAxes[i]) then
@@ -329,6 +373,29 @@ begin
   FNumAxes:= 0;
   if Assigned(FBox) then
     FBox.Free;
+  inherited;
+end;
+
+procedure TJoints.OnIdle(Sender: TObject; var Handled: Boolean);
+var
+  i: integer;
+begin
+  if FNumAxes > 0 then
+    for i:= 0 to FNumAxes - 1 do
+      if AxisJogging[i] <> FAxes[i].Jogging then
+        begin
+          AxisJogging[i]:= FAxes[i].Jogging;
+          if AxisJogging[i] then
+            begin
+              sleep(10);
+              sendJogCont(FAxes[i].AxisNumber,JgSpeed);
+            end
+          else
+            begin
+              sleep(10);
+              SendJogStop(FAxes[i].AxisNumber);
+            end;
+        end;
 end;
 
 procedure TJoints.SetShowBox(Value: Boolean);
@@ -371,70 +438,60 @@ begin
     sendUnHome(Vars.ActiveAxis);
 end;
 
-
 procedure TJoints.HomeAxis(Ax: Char);
 var
   i: integer;
 begin
   i:= AxisByChar(Ax);
   if i < 0 then Exit;
-  sendHome(i);
+  sendHome(FAxes[i].AxisNumber);
 end;
 
-function TJoints.JogIncr(Ch: Char; Speed,Incr: Double): integer;
+function TJoints.JogIncr(Ax: Char; Speed,Incr: Double): integer;
 var
-  i: Integer;
+  d: Dword;
+  i: integer;
 begin
   Result:= -1;
-  i:= AxisByChar(Ch);
+  i:= AxisByChar(Ax);
   if i < 0 then Exit;
-  FAxes[i].Jogging:= True;
-  Result:= sendJogIncr(i,Speed,Incr);
-  FAxes[i].Jogging:= False;
-  if i <> Vars.ActiveAxis then
-    Vars.ActiveAxis:= i;
-end;
-
-function TJoints.JogCont(Ch: Char; Speed: Double): integer;
-var
-  i: Integer;
-  d: longint;
-begin
-  Result:= -1;
-  i:= AxisByChar(Ch);
-  if i < 0 then Exit;
-  FAxes[i].Jogging:= True;
-  {$IFDEF LCLGTK2}
   d:= GetTickDiff(AxisTicks[i]);
-  if d < KeyDelayTime then
-    begin
-      {$IFDEF DEBUG_EMC}
-       writeln('key skipped ',d);
-      {$ENDIF}
-      Exit;
-    end;
-  {$ELSE}
-  AxisTicks[i]:= GetTickCount;
-  Sleep(20);
-  {$ENDIF}
-  Result:= sendJogCont(i,Speed);
+  if d < KeyDebounceTime then
+    Exit;
+  Result:= sendJogIncr(FAxes[i].AxisNumber,Speed,Incr);
   if i <> Vars.ActiveAxis then
     Vars.ActiveAxis:= i;
 end;
 
-function TJoints.JogStop(Ch: Char): integer;
+function TJoints.JogCont(Ax: Char; Speed: Double): integer;
 var
   i: Integer;
 begin
   Result:= -1;
-  {$IFDEF LCLGTK2}
-  i:= AxisByChar(Ch);
-  if i < 0 then Exit;
-  Result:= sendJogStop(i);
+  i:= AxisByChar(Ax);
+  if (i < 0) then
+    Exit;
+  if FAxes[i].Jogging then
+    Exit;
+  JgSpeed:= Speed;
+  FAxes[i].Jogging:= True;
   if i <> Vars.ActiveAxis then
     Vars.ActiveAxis:= i;
+  Result:= i;
+end;
+
+function TJoints.JogStop(Ax: Char): integer;
+var
+  i: Integer;
+begin
+  Result:= -1;
+  i:= AxisByChar(Ax);
+  if i < 0 then Exit;
+  if not FAxes[i].Jogging then
+    Exit;
   FAxes[i].Jogging:= False;
-  {$ENDIF}
+  if i <> Vars.ActiveAxis then
+    Vars.ActiveAxis:= i;
 end;
 
 procedure TJoints.JogStopAll;
@@ -461,14 +518,22 @@ begin
     end;
 end;
 
-function TJoints.AddAxis(Id: Integer; Des: Char): TAxis;
+function TJoints.AddAxis(Des: Char): TAxis;
 var
   A: TAxis;
+  i: integer;
+// bugfix
 begin
   Result:= nil;
-  if FNumAxes < MAX_JOINTS then
+  i:= Pos(Des,Mask);
+  if i < 0 then
     begin
-      A:= TAxis.Create(FPanel,Id,Des);
+      writeln('illegal Axis char: ' + Des);
+      Exit;
+    end;
+  if FNumAxes < MAX_JOINTS - 1 then
+    begin
+      A:= TAxis.Create(FNumAxes,FPanel,i-1,Des);
       if Assigned(A) then
         begin
           A.FDesLabel.OnClick:= @OnLabelClick;
@@ -515,58 +580,54 @@ var
   i: integer;
 begin
   i:= AxisByChar(UpCase(Ch));
-  if i < 0 then
-    Exit;
+  if i < 0 then Exit;
   Vars.ActiveAxis:= i;
 end;
 
-procedure TJoints.CreateJoints(CoordNames: string; NumAxes: integer);
+procedure TJoints.CreateJoints;
 var
   i: integer;
   c: Char;
   Ax: TAxis;
 begin
-  if (Length(CoordNames) < 1) or (Length(CoordNames) > MAX_JOINTS) or
-   (Length(CoordNames) <> NumAxes) then
-     Exit;
-  FCoords:= CoordNames;
-  for i:= 1 to Length(CoordNames) do
+  FCoords:= '';
+  for i:= 0 to MaxAxes - 1 do
     begin
-      c:= CoordNames[i];
-      Ax:= AddAxis(i-1,c);
-      if Ax <> nil then
-        Ax.FLinear:= Vars.Axis[i-1].IsLinear;
+      if (Vars.Axis[i].AxisChar <> #0) then
+        FCoords:= Fcoords + Vars.Axis[i].AxisChar
+      else
+        FCoords:= FCoords + #32;
     end;
+  if Verbose > 0 then writeln('Create Joints: ' + FCoords);
+  for i:= 1 to Length(FCoords) do
+    if FCoords[i] <> #32 then
+      begin
+        c:= FCoords[i];
+        Ax:= AddAxis(c);
+        if Ax <> nil then
+          Ax.FLinear:= Vars.Axis[i-1].IsLinear;
+        if Verbose > 0 then writeln('Created joint: ' + c);
+      end;
+  Application.OnIdle:= @Self.OnIdle;
+end;
+
+procedure TJoints.SetJointMode(Value: Boolean);
+var
+  i: integer;
+begin
+  if FNumAxes < 1 then Exit;
+  for i:= 0 to FNumAxes - 1 do
+    FAxes[i].JointMode:= Value;
+  FJointMode:= Value;
 end;
 
 procedure TJoints.Update;
 var
   i: integer;
- {$IFNDEF LCLGTK2}
- d: dWord;
- {$ENDIF}
 begin
   if FNumAxes < 1 then Exit;
   for i:= 0 to FNumAxes - 1 do
-    begin
-      FAxes[i].Update(FShowActual,FShowRelative,FShowDtg);
-      {$IFNDEF LCLGTK2}
-      if (FAxes[i].Jogging) then
-        begin
-          d:= GetTickCount - AxisTicks[i];
-          if d > KeyDelayTime then
-          begin
-            AxisTicks[i]:= 0;
-            FAxes[i].Jogging:= False;
-            Writeln('Stopped');
-            Sleep(10);
-            sendJogStop(i);
-            if i <> Vars.ActiveAxis then
-            Vars.ActiveAxis:= i;
-          end;
-        end;
-      {$ENDIF}
-    end;
+    FAxes[i].Update(FShowActual,FShowRelative,FShowDtg);
   if FShowBox then
     if FOldActiveAxis <> Vars.ActiveAxis then
       if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then

@@ -45,8 +45,6 @@ begin
 end;
 
 procedure AssignFontProperty(PropName,PropVal: string);
-var
-  AColor: Longint;
 begin
   {$ifdef LCLGTK}
   Exit;
@@ -74,7 +72,6 @@ end;
 
 procedure AssignProperty(const PropName,PropVal: string);
 var
-  AColor: Longint;
   S: string;
   i: integer;
 

@@ -13,22 +13,18 @@ type
     constructor Create;
 
     function CreateAxisDef: boolean;
-    procedure SetupLimits;
+    procedure SetupAxes;
 
     procedure Execute(cmd: string);
     procedure ExecuteSilent(cmd: string);
     function  ForceTaskMode(ToMode: integer): Boolean;
     function  ForceMachineOff: Boolean;
     function  GetActiveCoordSys: integer;
-    function  GetActiveIsInch: Boolean;
-    function  GetMaxVelText: string;
     function  HandleCommand(Cmd: integer): Boolean;
-    function  ToLinearUnits(Value: double): double;
-    //function  ToAngularUnits(Value: double): double;
+    function  ToDisplayUnits(Value: double): double;
     function  UpdateState: Boolean;
     procedure SetCoordsZero;
     procedure SetDisplayUnits(UseMetric: Boolean);
-
     procedure SetORideLimits(ORide: Boolean);
     procedure TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
     procedure TaskStop;
@@ -37,6 +33,7 @@ type
     procedure TaskPause;
     procedure TaskStep;
     procedure TaskRun;
+    procedure ResetInterpreter;
     function  WaitDone: integer;
     procedure LoadTools;
     procedure ChangeTool;
@@ -82,24 +79,34 @@ begin
   inherited Create;
   if not CreateAxisDef then
     raise Exception.Create('Error creating Axes');
-  SetupLimits;
+  State.LinearUnits:= trajlinearUnits;
+  State.AngularUnits:= trajangularUnits;
+  SetupAxes;
   FFeedOverride:= 100;
   FSpindleOverride:= 100;
 end;
 
-procedure TEmc.SetupLimits;
+procedure TEmc.ResetInterpreter;
+begin
+  sendTaskPlanInit;
+end;
+
+procedure TEmc.SetupAxes;
 var
   AMin,AMax: Double;
   i: integer;
+  s: string;
 begin
   Vars.MLimits:= SetExtents(0,10,0,10,0,10);
+  writeln('Setup axes: ',Vars.NumAxes);
+
   for i:= 0 to Vars.NumAxes - 1 do
     begin
       AMin:= AxisMinPositionLimit(i);
       AMax:= AxisMaxPositionLimit(i);
       Vars.Axis[i].IsLinear:= (AxisAxisType(i) = 1);
 
-      if Vars.Metric and (Vars.Axis[i].IsLinear) then
+      if (State.LinearUnits = 1) and (Vars.Axis[i].IsLinear) then
         begin
           AMin:= AMin / 25.4;
           AMax:= AMax / 25.4;
@@ -118,7 +125,17 @@ begin
                Vars.MLimits.MinZ:= AMin;
                Vars.MLimits.MaxZ:= AMax;
              end;
-      end;
+        end;
+
+        if Verbose > 0 then
+          begin
+            if Vars.Axis[i].IsLinear then
+              s:= 'Linear axis: '
+            else
+              s:= 'Angular axis: ';
+            s:= s + Vars.Axis[i].AxisChar;
+            writeln(s);
+          end;
     end;
 end;
 
@@ -131,11 +148,12 @@ begin
   for i:= 0 to Vars.NumAxes - 1 do
     if Vars.Axis[i].AxisChar = C then
       begin
-        Vars.Axis[i].UseGeometry:= True;
-        Vars.Axis[i].Sign:= Sign;
+        Vars.Axis[i].Geometry:= Sign;
         Sign:= 1;
+        if Verbose > 0 then
+          Writeln('Added Geometry for Axis ' + inttostr(i) + ' :' + C);
         Exit;
-    end;
+      end;
 end;
 
 procedure SetupGeometry;
@@ -144,8 +162,15 @@ var
   s: string;
   c: char;
 begin
-  if Vars.Geometry = '' then Exit;
+  for i:= 0 to MaxAxes - 1 do
+    Vars.Axis[i].Geometry:= 0;
+  if Vars.Geometry = '' then
+    begin
+      writeln('no geometry used.');
+      Exit;
+    end;
   s:= UpperCase(Vars.Geometry);
+  writeln('using geometry: ',s);
   Sign:= 1;
   for i:= 1 to Length(s) do
     begin
@@ -159,51 +184,55 @@ begin
 end;
 
 function TEmc.CreateAxisDef: boolean;
-const
-  Mask = 'XYZABCUVW';
 var
   FailCount: integer;
-  i,Axes: integer;
-  AxisMask: Word;
-  AxisCount: integer;
+  i,Axes,AxCount: integer;
 begin
   Result:= False;
   FailCount:= 0;
-  AxisCount:= 0;
   Axes:= 0;
+  AxCount:= 0;
+  Vars.CoordNames:= '';
+  Vars.NumAxes:= 0;
   updateStatus;
   Axes:= trajAxes;
+  for i:= 0 to MaxAxes - 1 do
+    Vars.Axis[i].AxisChar:= #0;
   while Axes = 0 do
     begin
-      writeln('waiting for traj.axes');
+      writeln('waiting for traj.axes...');
       sleep(200);
       inc(FailCount);
       if FailCount > 10 then Exit;
       UpdateStatus;
       Axes:= trajAxes;
     end;
-  writeln('Traj Axes: ',Axes);
-  AxisMask:= Word(trajAxisMask);
-  if AxisMask = 0 then
+  if Verbose > 0 then
+    writeln('Traj Axes: ',Axes);
+  Vars.AxisMask:= Word(trajAxisMask);
+  if Vars.AxisMask = 0 then
     begin
       writeln('Traj. returned a Axis Mask of 0!');
       Exit;
     end;
+  if Verbose > 0 then
+    writeln('Traj Axismask: ',Vars.AxisMask);
   for i:= 0 to Length(Mask) - 1 do
     begin
-      Vars.Axis[i].AxisChar:= #0;
-      if (AxisMask and (1 shl i) > 0) then
+      if (Vars.AxisMask and (1 shl i) > 0) then
         begin
-          Vars.Axis[i].AxisChar:= Mask[i+1];
-          inc(AxisCount);
+          Vars.Axis[AxCount].AxisChar:= Mask[i+1];
+          Vars.CoordNames:= Vars.CoordNames + Mask[i+1];
+          inc(AxCount);
         end;
     end;
-  if AxisCount < 1 then
+  if AxCount < 1 then
     begin
       writeln('Number of Axes is zero!');
       Exit;
     end;
-  Vars.NumAxes:= AxisCount;
+  Vars.NumAxes:= AxCount;
+  //writeln('Axisdefs: ',Vars.NumAxes);
   SetupGeometry;
   Result:= True;
 end;
@@ -254,10 +283,9 @@ begin
     end;
 end;
 
-
 procedure TEmc.EditCurrent;
 begin
-  CallEditor;
+  ExecEditor;
 end;
 
 procedure TEmc.LoadTools;
@@ -337,9 +365,15 @@ begin
     end;
 end;
 
-function TEmc.ToLinearUnits(Value: double): double;
+function TEmc.ToDisplayUnits(Value: double): double;
+var
+  mm: double;
 begin
-  Result:= convertLinearUnits(Value);
+  mm:= Value / State.LinearUnits;
+  if Vars.ShowMetric then
+    Result:= mm
+  else
+    Result:= mm / 25.4;
 end;
 
 function TEmc.WaitDone: integer;
@@ -350,11 +384,6 @@ begin
   if i <> 0 then
     LastError:= 'wait command done failed';
   Result:= i;
-end;
-
-function TEmc.GetMaxVelText: string;
-begin
-  Result:= FloatToStr(ConvertLinearUnits(State.ActVel)) + Vars.UnitVelStr
 end;
 
 procedure TEmc.SetORideLimits(ORide: Boolean);
@@ -418,36 +447,39 @@ begin
       end;
 end;
 
-function TEmc.GetActiveIsInch: Boolean;
-begin
-  Result:= Pos('G20',ActiveGCodes) > 0;
-end;
-
 procedure TEmc.SetCoordsZero;
 var
   i,G: integer;
-  S: string;
+  s: string;
   d: double;
-  Scale: double;
-  IsInch: Boolean;
+  IsMetric: Boolean;
+  C:Char;
+  Axis: integer;
+  Count: integer;
 begin
+  Count:= 0;
   G:= GetActiveCoordSys + 1;
   if G < 1 then
     raise Exception.Create('Invalid Coord System Index:' + IntToStr(G));
-  IsInch:= GetActiveIsInch;
-  if IsInch then
-    Scale:= 25.4
-  else
-    Scale:= 1;
-  S:= 'G10L2P' + IntToStr(G);
+  IsMetric:= State.ProgramUnits = CANON_UNITS_MM;
+  s:= 'G10L2P' + IntToStr(G);
   for i:= 1 to Length(Vars.CoordNames) do
     begin
-      if Vars.Axis[i].IsLinear then
-        d:= GetAbsPos(i-1) / Scale
-      else
-        d:= GetAbsPos(i-1);
-      S:= S + Format('%s%.5f',[Vars.CoordNames[i],d]);
+      C:= Vars.CoordNames[i];
+      Axis:= Pos(C,Mask) - 1;
+      if Axis < 0 then
+        raise Exception.Create('set coords zero: invalid axis: ' + C);
+      // Get Position in mm
+      d:= GetAbsPos(Axis) / State.LinearUnits;
+      if not IsMetric then
+        d:= d / 25.4;
+      if Vars.Axis[i-1].IsLinear then
+        begin
+          S:= S + Format('%s%.5f',[c,d]);
+          inc(Count);
+        end;
     end;
+  if Count < 1 then Exit;
   ExecuteSilent(S);
   UpdateError;
   clRun.UpdatePreview(True);
@@ -456,18 +488,27 @@ end;
 procedure TEmc.TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
 var
   s: string;
-  IsInch: Boolean;
-  AbsPos,OffsetPos: Double;
+  IsMetric: Boolean;
+  AbsMM,OffsetPos,V: Double;
   i: integer;
 begin
-  IsInch:= GetActiveIsInch;
-  i:= Pos(Axis,Vars.CoordNames);
-  if i < 1 then
+  IsMetric:= State.ProgramUnits = CANON_UNITS_MM;
+  if IsMetric then Writeln('metric') else writeln('inch');
+  i:= Joints.AxisByChar(Axis);
+  if i < 0 then
     raise Exception.Create('Touchoff: invalid Axis: ' + Axis);
-  AbsPos:= GetAbsPos(Joints.AxisByChar(Axis));
-  OffsetPos:= AbsPos - Value;
-  if IsInch and Vars.Metric then OffsetPos:= OffsetPos / 25.4;
-  if (not IsInch) and (not Vars.Metric) then OffsetPos:= OffsetPos * 25.4;
+  // Get Position in mm
+  AbsMM:= GetAbsPos(i) / State.LinearUnits;
+  writeln('AbsMM: ' + FloatToStrF(AbsMM,ffFixed,8,2));
+  v:= Value;
+  if not Vars.ShowMetric then
+    v:= v * 25.4;
+  writeln('Value: ' + FloatToStrF(v,ffFixed,8,2));
+  OffsetPos:= AbsMM - v;
+
+  if not IsMetric then
+    OffsetPos:= OffsetPos / 25.4;
+  writeln('Offsetpos: ' + FloatToStrF(OffsetPos,ffFixed,8,2));
   S:= Format('%s%d%s%.5f',['G10L2P',iCoord,Axis,OffsetPos]);
   ExecuteSilent(s);
   clRun.UpdatePreview(True);
@@ -521,21 +562,21 @@ end;
 
 procedure TEmc.SetDisplayUnits(UseMetric: Boolean);
 begin
-  State.UnitsChanged:= UseMetric <> Vars.Metric;
+  State.UnitsChanged:= UseMetric <> Vars.ShowMetric;
   if State.UnitsChanged then
     begin
       if UseMetric then
         begin
           Vars.UnitStr:= 'mm';
-          LinearUnitConversion:= LINEAR_UNITS_MM;
+          //LinearUnitConversion:= LINEAR_UNITS_MM;
         end
       else
         begin
           Vars.UnitStr:= 'inch';
-          LinearUnitConversion:= LINEAR_UNITS_INCH;
+          //LinearUnitConversion:= LINEAR_UNITS_INCH;
         end;
       Vars.UnitVelStr:= Vars.UnitStr + '/min';
-      Vars.Metric:= UseMetric;
+      Vars.ShowMetric:= UseMetric;
     end;
 end;
 
@@ -580,6 +621,8 @@ begin
       {$endif}
       FeedORideEnabled:= trajFeedORideEnabled;
       SpindleORideEnabled:= trajSpindleORideEnabled;
+      ProgramUnits:= taskProgramUnits;
+      JointsMode:= trajMode <> 1;
       if TaskMode = TASKMODEAUTO then
         begin
           InterpState:= taskInterpState;
@@ -588,6 +631,7 @@ begin
           ProgUnits:= taskProgramUnits;
           OptStop:= taskOptStop;
           BlockDel:= taskBlockDelete;
+          ExecState:= taskExecState;
         end;
      end;
   taskActiveCodes;  // update active G,MCodes, FWords, SWords;
@@ -692,16 +736,23 @@ end;
 function TEMC.HandleCommand(Cmd: integer): boolean;
 begin
   case Cmd of
-    cmClose:
+    cmCLOSE:
       begin
         Application.MainForm.Close;
       end;
-    cmAbort: sendAbort;
+    cmABORT: sendAbort;
     cmESTOP:
-      if not State.EStop then
-        SendEStop
-      else
-        SendEStopReset;
+      begin
+        sendAbort;
+        WaitDone;
+        if not State.EStop then
+          begin
+            SendEStop;
+            WaitDone;
+          end
+        else
+          SendEStopReset;
+      end;
     cmMACHINE:
       if State.Machine then
         SendMachineOff
@@ -750,7 +801,6 @@ begin
     cmREFC: Joints.HomeAxis('C');
     cmREFALL: Joints.HomeAll;
     cmUNREF: Joints.UnHomeActive;
-
     cmZEROALL: SetCoordsZero;
     cmTOUCHX: TouchOff('X');
     cmTOUCHY: TouchOff('Y');
@@ -768,10 +818,11 @@ begin
     cmTOOLEDT: 
        begin
          EditTools;
+         LoadTools;
          clRun.UpdatePreview(True);
        end;
     cmTOOLCHG: ChangeTool;
-    cmUNITS: SetDisplayUnits(not Vars.Metric);
+    cmUNITS: SetDisplayUnits(not Vars.ShowMetric);
     cmEDITOR: EditCurrent;
     cmCOORDROT: DoCoordRotate;
   else

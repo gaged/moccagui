@@ -79,6 +79,7 @@ type
     CenterX,CenterY,CenterZ: double;
     EyeX,EyeY,EyeZ: Double;
     ConeX,ConeY,ConeZ: Double;
+    ConeRX,ConeRY,ConeRZ: Double;
     ExtX,ExtY,ExtZ: double;
     L: TExtents;
     DimDrawFlag: Boolean;
@@ -88,15 +89,18 @@ type
     ConeL,LimitsL,CoordsL,ListL: gluInt;
     MouseX,MouseY: integer;
     Moving: Boolean;
-    ToolRad,ToolLen: double;
     AreaInitialized: Boolean;
     ZoomMax: integer;
     View3D: Boolean;
 
     procedure MakeLimits;
-    procedure MakeCoords;
-    procedure MakeCone;
     procedure MakeList;
+    procedure MakeCoords;
+    procedure MakeMillCone;
+    procedure MakeLatheCone;
+    procedure MakeCone;
+    procedure MoveCone(X,Y,Z,A,B,C: Double);
+    procedure DrawCone;
     procedure Pan(DX,DY: integer);
     procedure UpdateView;
     procedure UpdateDim;
@@ -104,7 +108,6 @@ type
     procedure DrawDimX;
     procedure DrawDimY;
     procedure DrawDimZ;
-    procedure MoveCone(X,Y,Z: Double);
     procedure ResetView;
     procedure RotateZ(Angle: integer);
     procedure RotateX(Angle: integer);
@@ -114,7 +117,7 @@ type
     procedure LoadFile(FileName,UnitCode,InitCode: string);
     procedure ReloadFile;
     procedure ClearFile;
-    procedure SetTool(ToolNo: integer);
+    procedure UpdateTool(AToolNo: integer);
     procedure Zoom(ADir: Integer);
     procedure ClearPlot;
     procedure UpdateSelf;
@@ -130,19 +133,14 @@ var
 implementation
 
 uses
-  mocjoints,emc2pas,glcanon,
+  math,mocjoints,emc2pas, glcanon,
   logger, glfont, simulator;
-
-const
-  mat_ambient: Array[0..3] of glFLoat = (0.5, 0.5, 0.5,1);
-  light_amb: Array[0..3] of glFloat = (0.8,0.8,0.8,1);
-  light_dif: Array[0..3] of glFloat = (0.8,0.8,0.8,0);
 
 type
   TGlVector3 = array[0..2] of glDouble;
 
 var
-  LightPosition: Array[0..3] of glFloat;
+  Tool: TTool;
 
 function v3distsq(a,b: TGlVector3): glDouble;
 var
@@ -155,19 +153,25 @@ begin
 end;
 
 procedure TSimClientForm.Show3D;
-var
-  Res: integer;
-  ToolDia: single;
 begin
   if Assigned(Renderer) then
     if FFileName <> '' then
       if Assigned(ogl) and AreaInitialized then
         try
-          if Show3DPreviewDlg(ListL) then
-            View3D:= True;
+          if View3D then
+            begin
+              ResetView;
+              with GlColors.bg do
+                glClearColor(r,g,b,1);
+              Exit;
+            end;
+          View3D:= Show3DPreviewDlg(ListL);
+          if View3d then
+            glClearColor(0,0,0,1);
+          ogl.Invalidate;
         except
           on E:Exception do
-            writeln(E.Message);
+            writeln('Render : ' + E.Message);
         end;
 end;
 
@@ -212,24 +216,29 @@ begin
       if Error <> 0 then
         LastError:= GetGCodeError(Error);
     end;
-  CanonInitOffsets;
+  CanonInitOffset;
+  Offset:= CanonOffset;
   UpdateView;
 end;
 
 procedure TSimClientForm.UpdateSelf;
 var
-  ix,iy,iz: integer;
-  X,Y,Z: double;
+  x,y,z: double;
 begin
   if Visible and AreaInitialized and Assigned(Joints) then
     begin
-      ix:= Joints.AxisByChar('X');
-      iy:= Joints.AxisByChar('Y');
-      iz:= Joints.AxisByChar('Z');
-      if ix >= 0 then X:= GetRelPos(ix) else X:= 0;
-      if iy >= 0 then Y:= GetRelPos(iy) else Y:= 0;
-      if iz >= 0 then Z:= GetRelPos(iz) else Z:= 0;
-      MoveCone(x,y,z);
+      //X:= GetRelPos(0);
+      //Y:= GetRelPos(1);
+      //Z:= GetRelPos(2);
+      //A:= GetRelPos(3); // GetRelPos(3);
+      //B:= GetRelPos(4); // GetRelPos(4);
+      //C:= GetRelPos(5);
+
+      // Neu, Test
+      x:= GetLoggerPos(0);
+      y:= GetLoggerPos(1);
+      z:= GetLoggerPos(2);
+      MoveCone(x,y,z,0,0,0);
     end;
 end;
 
@@ -248,7 +257,11 @@ begin
 
   AreaInitialized:= False;
 
-  FViewMode:= vmPerspective;
+  if Vars.IsLathe then
+    FViewMode:= vmZDown
+  else
+    FViewMode:= vmPerspective;
+
   FShowLivePlot:= True;
   FShowDimensions:= True;
   FFileName:= '';
@@ -257,8 +270,7 @@ begin
   LimitsL:= 2;
   CoordsL:= 3;
   ListL:= 4;
-  ToolRad:= 0.2;
-  ToolLen:= 0.5;
+
   ZoomMax:= 10;
 
   DimScale:= 1;
@@ -292,8 +304,8 @@ begin
   ogl.OnMouseMove:= @self.OglMouseMove;
   ogl.OnMouseUp:= @self.OglMouseUp;
   ogl.PopupMenu:= Self.PopUp;
-  CanonInitOffsets;
-  GetCanonOffset(Offset);
+  CanonInitOffset;
+  Offset:= CanonOffset;
 end;
 
 procedure TSimClientForm.FormDestroy(Sender: TObject);
@@ -326,9 +338,7 @@ end;
 procedure TSimClientForm.MItem3DClick(Sender: TObject);
 begin
   if Assigned(Renderer) then
-    begin
-      Show3D;
-    end;
+    Show3D;
 end;
 
 procedure TSimClientForm.RotateZ(Angle: integer);
@@ -459,22 +469,26 @@ begin
     end;
 end;
 
-procedure TSimClientForm.MoveCone(x,y,z: Double);
+procedure TSimClientForm.MoveCone(x,y,z,a,b,c: Double);
 var
-  cx,cy,cz: Double;
-
+  cx,cy,cz,ra,rb,rc: Double;
 begin
   if not Assigned(ogl) then Exit; 
   if not AreaInitialized then Exit;
   cx:= ToCanonPos(x,0);
   cy:= ToCanonPos(y,1);
   cz:= ToCanonPos(z,2);
-  if (cx <> ConeX) or (cy <> ConeY) or (cz <> ConeZ) then
+  ra:= ToCanonPos(a,3);
+  rb:= ToCanonPos(b,4);
+  rc:= ToCanonPos(c,5);
+  if (cx <> ConeX) or (cy <> ConeY) or (cz <> ConeZ) or
+    (ra <> ConeRX) or (rb <> ConeRY) or (rc <> ConeRZ) then
     begin
       ConeX:= cx; ConeY:= cy; ConeZ:= cz;
+      ConeRX:= ra; ConeRY:= rb; ConeRZ:= rc;
       if FShowLivePlot then
         LoggerAddPoint(cx,cy,cz);
-      ogl.Invalidate;
+      Ogl.Invalidate;
     end;
 end;
 
@@ -510,7 +524,7 @@ var
 begin
   if DimScale = 0 then Exit;
   // draw the X-Dimension
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= ExtX * 25.4
   else
     w:= ExtX;
@@ -518,7 +532,6 @@ begin
   y:= L.MinY - DimDist;
   z:= L.MinZ;
   glPushMatrix;
-  // SetGlColor3(glColors.dim1);
   glBegin(GL_LINES);
   glVertex3f(L.MinX,y,z);
   glVertex3f(L.MaxX,y,z);
@@ -546,7 +559,7 @@ begin
     end;
   glPopMatrix;
   // Draw the Min-X Limit
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= L.MinX * 25.4
   else
     w:= L.MinX;
@@ -565,7 +578,7 @@ begin
     end;
   glPopMatrix;
   // Draw the Max-X Limit
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= L.MaxX * 25.4
   else
     w:= L.MaxX;
@@ -592,7 +605,7 @@ var
   s: string;
 begin
   if DimScale = 0 then Exit;
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= ExtY * 25.4
   else
     w:= ExtY;
@@ -601,7 +614,6 @@ begin
   x:= L.MinX - DimDist;
   z:= L.MinZ;
   glPushMatrix;
-  // SetGlColor3(glColors.dim1);
   glBegin(GL_LINES);
   glVertex3f(x,L.MinY,z);
   glVertex3f(x,L.MaxY,z);
@@ -630,7 +642,7 @@ begin
     end;
   glPopMatrix;
   // Draw the Min-Y Limit
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= L.MinY * 25.4
   else
     w:= L.MinY;
@@ -648,7 +660,7 @@ begin
     end;
   glPopMatrix;
   // Draw the Max-Y Limit
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= L.MaxY * 25.4
   else
     w:= L.MaxY;
@@ -674,7 +686,7 @@ var
   s: string;
 begin
   if DimScale = 0 then Exit;
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= ExtZ * 25.4
   else
     w:= ExtZ;
@@ -683,7 +695,6 @@ begin
   x:= L.MinX - DimDist;
   y:= L.MinY;
   glPushMatrix;
-  // SetGlColor3(glColors.dim1);
   glBegin(GL_LINES);
   glVertex3f(x,y,L.MinZ);
   glVertex3f(x,y,L.MaxZ);
@@ -713,7 +724,7 @@ begin
     end;
   glPopMatrix;
    // Draw the Min-Z Limit
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= L.MinZ * 25.4
   else
     w:= L.MinZ;
@@ -732,7 +743,7 @@ begin
     end;
   glPopMatrix;
   // Draw the Max-Z Limit
-  if Vars.Metric then
+  if Vars.ShowMetric then
     w:= L.MaxZ * 25.4
   else
     w:= L.MaxZ;
@@ -754,12 +765,11 @@ end;
 
 procedure TSimClientForm.DrawDim;
 begin
-  // if not DimDrawFlag then Exit;
   if Assigned(ogl) and AreaInitialized then
     begin
-      DrawDimX;
-      DrawDimY;
-      DrawDimZ;
+      if (Vars.AxisMask AND 1) <> 0 then DrawDimX;
+      if (Vars.AxisMask AND 2) <> 0 then DrawDimY;
+      if (Vars.AxisMask AND 4) <> 0 then DrawDimZ;
     end;
 end;
 
@@ -785,14 +795,14 @@ begin
       L:= Vars.MLimits;
       CalcExtents;
     end;
-  GetCanonOffset(Offset);
+  Offset:= CanonOffset;
   UpdateDim;
   ResetView;
 end;
 
 procedure TSimClientForm.ResetView;
 begin
-  Centerx:= L.maxX - (ExtX / 2); //  + offset.x;
+  Centerx:= L.maxX - (ExtX / 2); // + offset.x;
   Centery:= L.maxY - (ExtY / 2); // + offset.y;
   Centerz:= L.maxZ - (ExtZ / 2); // + offset.z;
   // writeln(Format('%s %f %f %f',['Center: ',CenterX,CenterY,CenterZ]));
@@ -861,7 +871,7 @@ end;
 
 procedure Lightning(x,y,z: double);
 begin
-   glClearColor(0,0,0,0);
+   glClearColor(0,0,0,1);
    glEnable(GL_NORMALIZE);
    glLightfv(GL_LIGHT0, GL_POSITION,Glf4(x,y,z,0));
    glLightfv(GL_LIGHT0, GL_AMBIENT, Glf4(0.2,0.2,0.3,0));
@@ -885,6 +895,7 @@ procedure TSimClientForm.OglPaint(sender: TObject);
 const GLInitialized: boolean = false;
 var
   k,n: double;
+  x,y,z: double;
 
 procedure InitGL;
 begin
@@ -930,19 +941,37 @@ begin
   glEnable(GL_LINE_SMOOTH);
   {$ENDIF}
 
+  if Vars.IsLathe then
+    begin
+      glRotatef(-90,0,0,1);
+      glRotatef(-90,1,0,0);
+      //glRotatef(90,1.0,0.0,0.0);
+    end
+  else
+    begin
+      glRotatef(RotationX,1.0,0.0,0.0);
+      glRotatef(RotationY,0.0,1.0,0.0);
+      glRotatef(RotationZ,0.0,0.0,1.0);
+    end;
 
-
-  glRotatef(RotationX,1.0,0.0,0.0);
-  glRotatef(RotationY,0.0,1.0,0.0);
-  glRotatef(RotationZ,0.0,0.0,1.0);
   glTranslatef(-centerx,-centery,-centerz);
 
   if not View3D then
     begin
       glDisable(GL_LIGHTING);
+      glDisable(GL_CULL_FACE);
+      with GlColors.bg do
+        glClearColor(r,g,b,1);
       glCallList(LimitsL);
       glPushMatrix;
-      glTranslatef(offset.x,offset.y,offset.z);
+      //Offset:= CanonOffset;
+      //glTranslatef(offset.x,offset.y,offset.z);
+      x:= ToCanonUnits(GetOrigin(0));
+      y:= ToCanonUnits(GetOrigin(1));
+      z:= ToCanonUnits(GetOrigin(2));
+      glTranslatef(x,y,z);
+      // end test
+
       glCallList(CoordsL);
       glPopMatrix;
     end
@@ -955,10 +984,7 @@ begin
 
   if not View3D then
     begin
-      glPushMatrix;
-      glTranslatef(ConeX,ConeY,ConeZ);
-      glCallList(ConeL);
-      glPopMatrix;
+      DrawCone;
       SetGlColor3(GlColors.toolpath);
       if FShowLivePlot then
         LoggerCall;
@@ -998,11 +1024,13 @@ begin
         glViewport(0,0,ogl.Width,ogl.Height);
 end;
 
-procedure TSimClientForm.SetTool(ToolNo: integer);
+procedure TSimClientForm.UpdateTool(AToolNo: integer);
 begin
+  if (AToolNo < 1) or (AToolNo > CANON_TOOL_MAX) then
+    Tool:= EmptyTool
+  else
+    Tool:= Tools[AToolNo];
   if not Assigned(ogl) then Exit;
-  ToolRad:= GetToolDiameter(ToolNo) / 2;
-  ToolLen:= GetToolLength(ToolNo);
   if AreaInitialized then
     begin 
       if Ogl.MakeCurrent then
@@ -1011,26 +1039,153 @@ begin
     end;
 end;
 
-procedure TSimClientForm.MakeCone;
+procedure TSimClientForm.MakeLatheCone;
+const
+  lathe_shapes : Array[1..9] of TPoint =
+    ((x:1;y:-1),(x:1;y:1),(x:-1;y:1),(x:-1;y:-1),(x:0;y:-1),
+     (x:1;y:0),(x:0;y:1),(x:-1;y:0),(x:0;y:0));
+var
+  t,r: double;
+  i,dx,dy: integer;
+  min_angle,max_angle: double;
+  sinmax,sinmin,cosmax,cosmin: double;
+  circleminangle,circlemaxangle: double;
+  sz: double;
+  Orient: integer;
+  fa,ba: double;
+begin
+  orient:= Tool.Orientation;
+  if orient < 0 then orient:= 0;
+  if orient > 9 then orient:= 9;
+  r:= ToCanonUnits(Tool.diameter) / 2;
+  //if r < DEFAULT_TOOL_DIA / 2 then
+  //  r:= DEFAULT_TOOL_DIA / 2;
+  fa:= Tool.frontangle;
+  ba:= Tool.backangle;
+
+  glEnable(GL_BLEND);
+  SetGlColor4(GlColors.Cone);
+  glDepthFunc(GL_ALWAYS);
+  glBegin(GL_LINES);
+  glVertex3f(-r/2,0,0);
+  glVertex3f( r/2,0,0);
+  glVertex3f(0,0,-r/2);
+  glVertex3f(0,0,r/2);
+  glEnd();
+
+  glNormal3f(0,1,0);
+  if Orient = 9 then
+    begin
+      glBegin(GL_TRIANGLE_FAN);
+      for i:= 0 to 37 do
+        begin
+          t:= i * pi / 18;
+          glVertex3f(r * cos(t),0, r * sin(t));
+        end;
+      glEnd();
+    end
+  else
+    begin
+      dx:= Lathe_Shapes[Orient].X;
+      dy:= Lathe_Shapes[Orient].Y;
+
+      min_angle:= min(ba,fa) * pi / 180;
+      max_angle:= max(ba,fa) * pi / 180;
+
+      sinmax:= sin(max_angle); cosmax:= cos(max_angle);
+      sinmin:= sin(min_angle); cosmin:= cos(min_angle);
+
+      circleminangle:= - pi/2 + min_angle;
+      circlemaxangle:= - 3*pi/2 + max_angle;
+
+      sz:= min(3/8,3*r);
+
+      glBegin(GL_TRIANGLE_FAN);
+      glVertex3f(r*dx + r*sin(circleminangle) + sz*sinmin,
+        0, r*dy + r*cos(circleminangle) + sz*cosmin);
+      for i:= 0 to 37 do
+        begin
+          t:= circleminangle + i * (circlemaxangle - circleminangle) / 36;
+          glVertex3f(r*dx + r*sin(t), 0.0, r*dy + r*cos(t));
+          glVertex3f(r*dx + r*sin(circlemaxangle) + sz*sinmax,
+            0, r*dy + r*cos(circlemaxangle) + sz*cosmax);
+        end;
+      glEnd();
+    end;
+  glDepthFunc(GL_LESS);
+  glDisable(GL_BLEND);
+end;
+
+procedure TSimClientForm.MakeMillCone;
 var
   q: PGLUquadric;
+  d,r,tl: double;
+  // DefaultCone: Boolean;
 begin
-  if not Assigned(ogl) then Exit;
-  q := gluNewQuadric();
-  glDeleteLists(ConeL,1);
-  glNewList(ConeL, GL_COMPILE);
+  //DefaultCone:= Tool.toolno < 1;
+  d:= ToCanonUnits(Tool.diameter);
+  if d < DEFAULT_TOOL_DIA then
+    d:= DEFAULT_TOOL_DIA;
+  r:= d / 2;
+  tl:= ToCanonUnits(Tool.zoffset);
+  if tl < DEFAULT_TOOL_LENGTH then
+    tl:= DEFAULT_TOOL_LENGTH;
+  q:= gluNewQuadric();
   glEnable(GL_BLEND);
-  //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  SetGlColor4(GlColors.cone);
-  // glColor4f(r,g,b,0.5);
-  gluCylinder(q,ToolRad/10,ToolRad,ToolLen,12,1);
+  SetGlColor4(GlColors.Cone);
+  //if DefaultCone then
+    gluCylinder(q,r/10,r,tl,12,1);
+  //else
+  //  gluCylinder(q,r,r,tl,12,1);
   glBegin(GL_LINES);
-    glVertex3f(0,0,0);
-    glVertex3f(0,0,ToolLen + 5);
+  glVertex3f(0,0,0);
+  glVertex3f(0,0,tl + 5);
   glEnd;
   glDisable(GL_BLEND);
-  glEndList;
   gluDeleteQuadric(q);
+end;
+
+procedure TSimClientForm.MakeCone;
+begin
+  if not Assigned(ogl) then Exit;
+  glDeleteLists(ConeL,1);
+  glNewList(ConeL, GL_COMPILE);
+  if Vars.IsLathe and (Tool.toolno > 0) then
+    MakeLatheCone
+  else
+    MakeMillCone;
+  glEndList;
+end;
+
+procedure TSimClientForm.DrawCone;
+var
+  r: double;
+begin
+  glPushMatrix;
+  glTranslatef(ConeX,ConeY,ConeZ);
+  if not Vars.IsLathe then
+    begin
+      if Vars.Axis[3].Geometry <> 0 then
+        begin
+          r:= ConeRX * Vars.Axis[3].Geometry;
+          glRotatef(r, 1, 0, 0);
+        end;
+      if Vars.Axis[4].Geometry <> 0 then
+        begin
+          r:= ConeRY * Vars.Axis[4].Geometry;
+          glRotatef(r, 0, 1, 0);
+        end;
+      if Vars.Axis[5].Geometry <> 0 then
+        begin
+          r:= ConeRZ * Vars.Axis[5].Geometry;
+          glRotatef(r, 1,0,0);
+          //writeln(FloatToStrF(r,ffFixed,6,4));
+        end;
+    end
+  else
+    glRotatef(90,0,1,0);
+  glCallList(ConeL);
+  glPopMatrix;
 end;
 
 procedure TSimClientForm.MakeCoords;

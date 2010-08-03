@@ -28,8 +28,6 @@ const
   ERR_NOUNITS = 'Linear units not defined in inifile, using mm as default units';
   MSG_INIMETRIC = 'Setup is metric';
   MSG_INIINCHES = 'Setup is inches';
-  ERR_INIAXESCOUNT = 'Error in inifile: Number of Axes not defined or zero.';
-  ERR_INITRAJNOAXES = 'Error in inifile: No Coordinates in [TRAJ] found.';
   ERR_ININOCONFIG1 = 'Error: There is no entry "CONFIG" in the Emc2 inifile.';
   ERR_ININOCONFIG2 = 'Mocca needs the file "config.xml" to start.';
   ERR_ININOCONFIG3 = 'Please check your installation of mocca.';
@@ -214,61 +212,35 @@ begin
       GetIniDouble('TRAJ','MAX_VELOCITY',d,1);
   Vars.MaxAngularVel:= d * 60;
 
-  LinearUnitConversion:= 0;
+  Vars.ShowMetric:= True;
 
   GetIniStr('TRAJ','LINEAR_UNITS',tmp,'');
-  if Tmp = '' then
-    linearUnitConversion:= LINEAR_UNITS_MM
-  else
+  if Tmp <> '' then
     begin
       StripBlank(tmp);
       tmp:= UpperCase(tmp);
-      if tmp = 'INCH' then LinearUnitConversion:= LINEAR_UNITS_INCH else
-      if tmp = 'MM' then LinearUnitConversion:= LINEAR_UNITS_MM;
-    end;
-  if linearUnitConversion = 0 then
-    begin
-      writeln(ERR_NOUNITS);
-      LinearUnitConversion:= LINEAR_UNITS_MM;
-    end;
-  case linearUnitConversion of
-    LINEAR_UNITS_MM: Vars.UnitStr:= 'mm';
-    LINEAR_UNITS_INCH: Vars.UnitStr:= 'in';
-  end;
-  Vars.Metric:= LinearUnitConversion = LINEAR_UNITS_MM;
+      if (tmp = 'INCH') or (tmp = 'IN') then
+        Vars.ShowMetric:= False;
+    end
+  else
+    writeln(ERR_NOUNITS);
+
+  if Vars.ShowMetric then
+    Vars.UnitStr:= 'mm'
+  else
+    Vars.UnitStr:= 'in';
+
   Vars.UnitVelStr:= Vars.UnitStr + '/min';
-  if Vars.Metric then
+
+  if Vars.ShowMetric then
     writeln(MSG_INIMETRIC)
   else
     writeln(MSG_INIINCHES);
 
-  if Vars.Metric then
+  if Vars.ShowMetric then
      EdgeFinderDia:= 5
   else
     EdgeFinderDia:= 0.1;
-
-  // *todo: angularUnitsConversion
-  GetIniInt('TRAJ','AXES',i,0);
-  if (i < 1) or (i > 9) then
-    begin
-      writeln(ERR_INIAXESCOUNT);
-      Exit;
-    end;
-  Vars.NumAxes:= i;
-
-  if GetIniStr('TRAJ','COORDINATES',tmp,'') then
-    begin
-      if not StripBlank(tmp) then tmp:= '';
-      if Length(tmp) < 1 then
-        begin
-           writeln(ERR_INITRAJNOAXES);
-           Exit;
-        end;
-    end;
-  Vars.CoordNames:= tmp;
-  {$ifdef DEBUG_INI}
-    writeln('Ini: Coordinates ' + Vars.CoordNames);
-  {$endif}
 
   GetIniDouble('DISPLAY','CYCLE_TIME',d,0.2);
   i:= Round(d/1000);
@@ -283,6 +255,10 @@ begin
   GetIniStr('RS274NGC','PARAMETER_FILE',tmp,'');
   if Length(tmp) > 0 then
     Vars.ParamFile:= Vars.IniPath + tmp;
+
+  GetIniStr('RS274NGC','RS274NGC_STARTUP_CODE',tmp,'');
+  if Length(tmp) > 0 then
+    Vars.InitCode:= tmp;
 
   {$ifdef DEBUG_INI}
   writeln('Ini: Toolfile: ',Vars.ToolFile);

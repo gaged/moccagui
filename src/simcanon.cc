@@ -60,6 +60,10 @@ extern char *_rs274ngc_errors[];
 EmcPose tool_offset;
 #endif
 
+#ifdef VER_23
+double tool_xoffset, tool_zoffset, tool_woffset;
+#endif
+
 CANON_TOOL_TABLE canontool;
 
 #include "toolparse.cc"
@@ -72,7 +76,9 @@ int last_sequence_number;
 int plane;
 bool metric;
 double _pos_x, _pos_y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w;
-double tool_xoffset, tool_zoffset, tool_woffset;
+
+
+
 int axis_mask;
 
 extern "C" void nextline();
@@ -91,7 +97,15 @@ extern "C" void settraverserate(double rate);
 extern "C" void dwell(double time);
 extern "C" void changetool(int tool);
 extern "C" void setfeedrate(double rate);
+
+#ifdef VER_23
 extern "C" void tooloffset(double zoffset, double xoffset, double woffset);
+#endif
+#ifdef VER_24
+extern "C" void tooloffset(double x, double y, double z, 
+  double a, double b, double c, double u, double v, double w);
+#endif
+
 extern "C" int getblockdelete;
 
 extern "C" void straightprobe(double x,double y,double z,double a,double b,double c,
@@ -100,10 +114,22 @@ extern "C" void straightprobe(double x,double y,double z,double a,double b,doubl
 extern "C" void rigidtap(double x,double y,double z);
 extern "C" int gettool(int tool);
 extern "C" void selecttool(int tool);
+
+#ifdef VER_23
 extern "C" int toolalongw();
+#endif
+
 extern "C" bool checkabort();
 
+extern "C" double getLengthUnits();
+extern "C" double getAngularUnits();
+
+#ifdef VER_24
+extern "C" void set_xy_rotation(double t);
+#endif
+
 extern "C" void userdefinedfunction(int num, double arg1, double arg2);
+
 extern "C" void setmessage(char *msg);
 extern "C" void setcomment(char *msg);
 
@@ -144,17 +170,15 @@ void maybe_new_line(void) {
 }
 
 #ifdef VER_24
-extern "C" void set_xy_rotation(double t);
-
 void SET_XY_ROTATION(double t) {
     maybe_new_line();
     if(interp_error) return;
     set_xy_rotation(t);
-};    
+};
+#endif
 
-extern "C" void use_tool_length_offset(double x, double y, double z, 
-  double a, double b, double c, double u, double v, double w);
 
+#ifdef VER_24
 void USE_TOOL_LENGTH_OFFSET(EmcPose offset) {
     tool_offset = offset;
     maybe_new_line();
@@ -162,10 +186,32 @@ void USE_TOOL_LENGTH_OFFSET(EmcPose offset) {
     if(metric) {
         offset.tran.x /= 25.4; offset.tran.y /= 25.4; offset.tran.z /= 25.4;
         offset.u /= 25.4; offset.v /= 25.4; offset.w /= 25.4; }
-    use_tool_length_offset(offset.tran.x, offset.tran.y, offset.tran.z, 
+    tooloffset(offset.tran.x, offset.tran.y, offset.tran.z, 
         offset.a, offset.b, offset.c, offset.u, offset.v, offset.w);
 }
+#endif
 
+#ifdef VER_23
+void USE_TOOL_LENGTH_OFFSET(double xoffset, double zoffset, double woffset) {
+    tool_zoffset = zoffset; tool_xoffset = xoffset; tool_woffset = woffset;
+    maybe_new_line();
+    if(interp_error) return;
+    if(metric) { xoffset /= 25.4; zoffset /= 25.4; woffset /= 25.4; }
+    tooloffset(zoffset, xoffset, woffset);
+}
+#endif
+
+#ifdef VER_23
+double GET_EXTERNAL_TOOL_LENGTH_XOFFSET() {
+    return tool_xoffset;
+}
+
+double GET_EXTERNAL_TOOL_LENGTH_ZOFFSET() {
+    return tool_zoffset;
+}
+#endif
+
+#ifdef VER_24
 double GET_EXTERNAL_TOOL_LENGTH_XOFFSET() {
     return tool_offset.tran.x;
 }
@@ -377,13 +423,6 @@ void SET_TOOL_TABLE_ENTRY(int pocket, int toolno, EmcPose offset, double diamete
 void SET_TOOL_TABLE_ENTRY(int id, double zoffset, double diameter) {
 }
 
-void USE_TOOL_LENGTH_OFFSET(double xoffset, double zoffset, double woffset) {
-    tool_zoffset = zoffset; tool_xoffset = xoffset; tool_woffset = woffset;
-    maybe_new_line();
-    if(interp_error) return;
-    if(metric) { xoffset /= 25.4; zoffset /= 25.4; woffset /= 25.4; }
-    tooloffset(zoffset, xoffset, woffset);
-}
 
 void SET_FEED_REFERENCE(double reference) { }
 void SET_CUTTER_RADIUS_COMPENSATION(double radius) {}
@@ -518,11 +557,13 @@ CANON_TOOL_TABLE GET_EXTERNAL_TOOL_TABLE(int pocket) {
 }
 #endif
 
+#ifdef VER_23
 int GET_EXTERNAL_TLO_IS_ALONG_W(void) { 
     int is_along_w = 0;
     if(interp_error) return 0;
     return toolalongw();
 }
+#endif
 
 int GET_EXTERNAL_DIGITAL_INPUT(int index, int def) { return def; }
 double GET_EXTERNAL_ANALOG_INPUT(int index, double def) { return def; }
@@ -570,22 +611,13 @@ int GET_EXTERNAL_AXIS_MASK() {
   return axis_mask;
 }
 
-#ifdef VER_23
-double GET_EXTERNAL_TOOL_LENGTH_XOFFSET() {
-    return tool_xoffset;
-}
-
-double GET_EXTERNAL_TOOL_LENGTH_ZOFFSET() {
-    return tool_zoffset;
-}
-#endif
-
-double GET_EXTERNAL_ANGLE_UNITS() {
-  return 1.0;
-}
 
 double GET_EXTERNAL_LENGTH_UNITS() {
-  return 0.03937007874016;
+  return getLengthUnits();
+}
+
+double GET_EXTERNAL_ANGLE_UNITS() {
+  return getAngularUnits();
 }
 
 bool check_abort() {

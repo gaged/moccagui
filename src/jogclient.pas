@@ -81,6 +81,7 @@ implementation
 { TJogClientForm }
 
 uses
+  lcltype,
   mocemc,
   mocglb,mocjoints,
   emc2pas,runclient,
@@ -271,7 +272,6 @@ end;
 procedure TJogClientForm.UpdateSelf;
 var
   i: integer;
-  // s: string;
 begin
 
   if State.Machine then
@@ -293,7 +293,7 @@ begin
 
   if (OldJogVel <> State.ActJogVel) or (State.UnitsChanged) then
     begin
-      i:= Round(Emc.ToLinearUnits(State.ActJogVel));
+      i:= Round(Emc.ToDisplayUnits(State.ActJogVel));
       SliderJog.Caption:= IntToStr(i) + Vars.UnitVelStr;
       OldJogVel:= State.ActJogVel;
     end;
@@ -350,7 +350,7 @@ begin
     begin
       Joints.JogStop(Ch);
       {$IFDEF LCLGKT2}
-      Sleep(KeySleepAfterUp);
+      //Sleep(KeySleepAfterUp);
       {$ENDIF}
     end;
   Key:= 0;
@@ -362,8 +362,8 @@ begin
       case Key of
         33: Jog('Z', 1);
         34: Jog('Z',-1);
-        37: Jog('X',-1);
-        39: Jog('X', 1);
+        37,VK_NUMPAD4: Jog('X',-1);
+        39,VK_NUMPAD6: Jog('X', 1);
         38: Jog('Y', 1);
         40: Jog('Y',-1);
       end;
@@ -372,7 +372,7 @@ begin
     begin
       case Key of
         33,34: JogStop('Z');
-        37,39: JogStop('X');
+        37,39,VK_NUMPAD4,VK_NUMPAD6: JogStop('X');
         38,40: JogStop('Y');
       end // case
     end;

@@ -20,6 +20,8 @@
 
 {$define HAS_SLEEP}
 
+// {$define LINESMOOTH}
+
 
 
 

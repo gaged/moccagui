@@ -1,14 +1,13 @@
 object SimulatorDlg: TSimulatorDlg
-  Left = 584
+  Left = 545
   Height = 260
-  Top = 242
+  Top = 218
   Width = 360
   ActiveControl = EditTool
   Caption = '3D Solid'
   ClientHeight = 260
   ClientWidth = 360
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
+  OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '0.9.28.2'
   object Bevel1: TBevel

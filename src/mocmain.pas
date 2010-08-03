@@ -5,9 +5,9 @@ unit mocmain;
 interface
 
 uses
-  Buttons, Classes, mocbtn, mocled, mocslider, SysUtils, LResources, Forms,
-  Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ExtDlgs, ComCtrls, mocglb,
-  mocjoints, jogclient, runclient, mdiclient, emcmsgbox, simclient;
+  Buttons, Classes, Menus, mocbtn, mocled, mocslider, SysUtils, LResources,
+  Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ExtDlgs, ComCtrls,
+  mocglb, mocjoints, jogclient, runclient, mdiclient, emcmsgbox, simclient;
 
 type
 
@@ -24,6 +24,10 @@ type
     ButtonView4: TMocButton;
     ButtonViewMinus: TMocButton;
     ButtonViewPlus: TMocButton;
+    MenuItemHal: TMenuItem;
+    MenuItemScope: TMenuItem;
+    MenuItemHalmeter: TMenuItem;
+    MenuItemStatus: TMenuItem;
     OEMLed1: TMocLed;
     OEMLabel11: TLabel;
     LedFOREnabled: TMocLed;
@@ -97,6 +101,7 @@ type
     PanelPreview: TPanel;
     PanelMaster: TPanel;
     PanelButtons: TPanel;
+    PopupMenuMain: TPopupMenu;
     SliderFeed: TSlider;
     SliderVel: TSlider;
     SliderSOR: TSlider;
@@ -108,6 +113,7 @@ type
     procedure BtnSpClick(Sender: TObject);
     procedure BtnSpReverseClick(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
+    procedure ButtonEStopClick(Sender: TObject);
     procedure ButtonShowDimClick(Sender: TObject);
     procedure ButtonToolPathClick(Sender: TObject);
     procedure ButtonUnitsMMClick(Sender: TObject);
@@ -125,6 +131,10 @@ type
 
     procedure LabelMsgClick(Sender: TObject);
     procedure ButtonShowDtgClick(Sender: TObject);
+    procedure MenuItemHalClick(Sender: TObject);
+    procedure MenuItemHalmeterClick(Sender: TObject);
+    procedure MenuItemScopeClick(Sender: TObject);
+    procedure MenuItemStatusClick(Sender: TObject);
 
     procedure OnTimer(Sender: TObject);
 
@@ -178,6 +188,7 @@ implementation
 { TMainForm }
 
 uses
+  lcltype,
   emc2pas,mocemc,hal;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
@@ -214,7 +225,7 @@ end;
 procedure TMainForm.UpdateState;
 var
   i: integer;
-  d,l,Scale: double;
+  d,l: double;
   s: string;
 begin
 
@@ -270,12 +281,14 @@ begin
   if OperatorTextStr[0] <> #0 then
     begin
       GlobalErrors.Add(PChar(OperatorTextStr));
+      LabelMsg.Caption:= PChar(OperatorTextStr);
       OperatorTextStr[0]:= #0;
     end;
 
   if OperatorDisplayStr[0] <> #0 then
     begin
       GlobalErrors.Add(PChar(OperatorDisplayStr));
+      LabelMsg.Caption:= PChar(OperatorDisplayStr);
       OperatorDisplayStr[0]:= #0;
     end;
 
@@ -289,7 +302,7 @@ begin
 
   if State.UnitsChanged then
     begin
-      LedShowMM.IsOn:= (LinearUnitConversion = linear_units_mm);
+      LedShowMM.IsOn:= Vars.ShowMetric;
       FCurrentVel:= -1; // trigger update fpr Label Currentvel
       State.UnitsChanged:= False;
     end;
@@ -305,7 +318,7 @@ begin
   if FMaxVel <> Emc.MaxVelocity then
     begin
       i:= Emc.MaxVelocity;
-      SliderVel.Caption:= IntToStr(Round(Emc.ToLinearUnits(i))) + Vars.UnitVelStr;
+      SliderVel.Caption:= IntToStr(Round(Emc.ToDisplayUnits(i))) + Vars.UnitVelStr;
       SliderVel.Position:= i;
       FMaxVel:= i;
     end;
@@ -313,7 +326,6 @@ begin
   if FTool <> State.CurrentTool then
     begin
       FTool:= State.CurrentTool;
-      if Vars.Metric then Scale:= 1 else Scale:= 25.4;
       if (FTool < 0) or (FTool > CANON_TOOL_MAX) then
         begin
           d:= 0;
@@ -322,12 +334,17 @@ begin
         end
       else
         begin
-          d:= Tools[FTool].diameter / Scale;
-          l:= Tools[FTool].zoffset / Scale;
-          s:= '';                
+          d:= Tools[FTool].diameter;
+          l:= Tools[FTool].zoffset;
+          s:= '';
           if FTool > 0 then
-            s:= PChar(ToolComments[FTool]);
-          if Length(s) < 1 then s:= 'WKZ' + IntToStr(FTool);
+            begin
+              s:= PChar(ToolComments[FTool]);
+              if Length(s) < 1 then
+                s:= 'WKZ' + IntToStr(FTool);
+            end
+          else
+            s:= 'Kein Wkz.';
         end;
       LabelTool.Caption:= s;
       LabelToolDia.Caption:= FloatToStr(d);
@@ -335,7 +352,10 @@ begin
       LabelToolNo.Caption:= IntToStr(FTool);
       if ShowGlPreview then
         if Assigned(clSim) then
-          clSim.SetTool(State.CurrentTool);
+          begin
+            clSim.UpdateTool(FTool);
+            writeln('Update tool: ',FTool);
+          end;
     end;
 
   if FFile <> Vars.ProgramFile then
@@ -347,7 +367,7 @@ begin
   if FCurrentVel <> State.CurrentVel then
     begin
       FCurrentVel:= State.CurrentVel;
-      if Vars.Metric then
+      if Vars.ShowMetric then
         d:= State.CurrentVel
       else
         d:= State.CurrentVel / 25.4;
@@ -443,6 +463,7 @@ end;
 procedure TMainForm.InitPanels;  // init the panels, clients, joints
 var
   i: integer;
+  B: TMocButton;
 begin
   if Assigned(MsgForm) then
     begin
@@ -456,7 +477,7 @@ begin
   Joints:= TJoints.Create(PanelDRO);  // create the joints here
   if not Assigned(Joints) then
     RaiseError('joints not initialized.');
-  Joints.CreateJoints(Vars.CoordNames,Vars.NumAxes);  // setup joints
+  Joints.CreateJoints;  // setup joints
   Joints.ShowActual:= Vars.ShowActual;
   Joints.ShowRelative:= Vars.ShowRelative;
 
@@ -486,11 +507,12 @@ begin
   for i:= 0 to Self.ComponentCount - 1 do
     begin
       if Self.Components[i] is TMocButton then
-        with Self.Components[i] as tMocButton do
-          begin
-            if Command <> '' then
-              Tag:= GetCmdNumber(Command);
-          end;
+        begin
+          B:= TMocButton(Self.Components[i]);
+          if Assigned(B) then
+            if B.Command <> '' then
+              B.Tag:= GetCmdNumber(B.Command);
+        end;
     end;
 
   FOn:= not State.Machine;
@@ -667,6 +689,11 @@ begin
   if Assigned(clSim) then clSim.ClearPlot;
 end;
 
+procedure TMainForm.ButtonEStopClick(Sender: TObject);
+begin
+  Emc.HandleCommand(cmESTOP);
+end;
+
 procedure TMainForm.ButtonShowDimClick(Sender: TObject);
 begin
   if Sender = nil then ;
@@ -689,7 +716,7 @@ end;
 procedure TMainForm.ButtonUnitsMMClick(Sender: TObject);
 begin
   if Sender = nil then ;
-  Vars.Metric:= not Vars.Metric;
+  Vars.ShowMetric:= not Vars.ShowMetric;
 end;
 
 procedure TMainForm.ButtonViewClick(Sender: TObject);
@@ -723,6 +750,26 @@ begin
   Joints.ShowDtg:= not Joints.ShowDtg;
 end;
 
+procedure TMainForm.MenuItemHalClick(Sender: TObject);
+begin
+  ExecHalShow;
+end;
+
+procedure TMainForm.MenuItemHalmeterClick(Sender: TObject);
+begin
+  ExecHalMeter;
+end;
+
+procedure TMainForm.MenuItemScopeClick(Sender: TObject);
+begin
+  ExecHalScope;
+end;
+
+procedure TMainForm.MenuItemStatusClick(Sender: TObject);
+begin
+  ExecEmcTop;
+end;
+
 procedure TMainForm.ButtonClick(Sender: TObject);
 var
   Cmd: integer;
@@ -752,7 +799,6 @@ begin
   if Assigned(GlobalBitmaps) then
     FreeBitmapList;
   if Assigned(GlobalErrors) then GlobalErrors.Free;
-  //EndGDKErrorTrap;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -767,6 +813,14 @@ end;
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
 begin
   if Sender = nil then ;
+  case Key of
+    '$': begin
+           if Assigned(Joints) then
+             Joints.JointMode:= not Joints.JointMode;
+           Key:= #0;
+           Exit;
+         end;
+  end;
   if State.TaskMode = TASKMODEMANUAL then
     clJog.FormKeyPress(nil,Key)
   else
@@ -785,34 +839,57 @@ end;
 
 begin
   if Sender = nil then ;
-  if Key = 27 then  // handle the escape key first
-    begin
-      DoAction(cmABORT);
-      ScriptRunning:= false;
-      Key:= 0;
-      Exit;
-    end
-  else
-  if  (ssCtrl in Shift) then
-    begin
-      if (Key = 32) then
+  case Key of
+    VK_ESCAPE:
+      begin
+        if (ssCtrl in Shift) then
+          begin
+            DoAction(cmESTOP);
+            Key:= 0;
+            Exit;
+          end
+        else
+          begin
+            DoAction(cmABORT);
+            ScriptRunning:= false;
+            Key:= 0;
+            Exit;
+          end;
+      end;
+    VK_SPACE:
+      if (ssCtrl in Shift) then
         begin
           GlobalErrors.Clear;
           LabelMsg.Caption:= '';
           if Assigned(MsgForm) then
           MsgForm.Hide;
-        end
-      {$IFDEF LCLGTK2}
-      else
-      if (Key = 123) then
+        end;
+    {$IFDEF LCLGTK2}
+    VK_F:
+      if (ssCtrl in Shift) then
         begin
           if IsFullScreen then
             UnFullScreen(Self)
           else
             FullScreen(Self);
-        end
-      {$ENDIF};
-    end;
+        end;
+    {$endif}
+    VK_R: if (ssCtrl in Shift) then
+      Emc.ResetInterpreter;
+    VK_S: if (ssCtrl in Shift) then
+      ExecEmcTop;
+    VK_F1:  DoAction(cmMACHINE);
+    VK_F2:  DoAction(cmJOG);
+    VK_F3:  DoAction(cmAUTO);
+    VK_F4:  DoAction(cmMDI);
+    VK_F5:  DoAction(cmMIST);
+    VK_F6:  DoAction(cmFLOOD);
+    VK_F8:  DoAction(cmSPBRAKE);
+    VK_F9:  DoAction(cmSPCCW);
+    VK_F10: DoAction(cmSPMINUS);
+    VK_F11: DoAction(cmSPPLUS);
+    VK_F12: DoAction(cmSPCW);
+  end;
   if (State.TaskMode = TaskModeManual) then
     clJog.FormKeyDown(nil,Key,Shift) else
   if (State.TaskMode = TaskModeAuto) then

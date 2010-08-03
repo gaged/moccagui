@@ -130,7 +130,8 @@ procedure TTouchOffDlg.InitControls;
 var
   i: integer;
 begin
-  FValue:= GetRelPos(FAxisNo);
+  FValue:= GetRelPos(FAxisNo) / State.LinearUnits;
+  if not Vars.ShowMetric then FValue:= FValue / 25.4;;
   EditV.Text:= '0.00';
   LabelPos.Caption:= PosToString(FValue);
   cbCoords.Items.Clear;

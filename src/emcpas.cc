@@ -44,21 +44,6 @@
 #define DEFAULT_PATH "../../nc_files/"
 #define MDI_LINELEN 80
 
-enum LINEAR_UNIT_CONVERSION {
-    LINEAR_UNITS_CUSTOM = 1,
-    LINEAR_UNITS_AUTO,
-    LINEAR_UNITS_MM,
-    LINEAR_UNITS_INCH,
-    LINEAR_UNITS_CM
-};
-
-enum ANGULAR_UNIT_CONVERSION {
-    ANGULAR_UNITS_CUSTOM = 1,
-    ANGULAR_UNITS_AUTO,
-    ANGULAR_UNITS_DEG,
-    ANGULAR_UNITS_RAD,
-    ANGULAR_UNITS_GRAD
-};
 
 enum EMC_WAIT_TYPE {
     EMC_WAIT_NONE = 1,
@@ -66,14 +51,7 @@ enum EMC_WAIT_TYPE {
     EMC_WAIT_DONE
 };
 
-extern EMC_WAIT_TYPE emcWaitType;
-extern LINEAR_UNIT_CONVERSION linearUnitConversion;
-extern ANGULAR_UNIT_CONVERSION angularUnitConversion;
-
-LINEAR_UNIT_CONVERSION linearUnitConversion ;
-ANGULAR_UNIT_CONVERSION angularUnitConversion ;
 EMC_STAT *emcStatus;
-EMC_WAIT_TYPE emcWaitType;
 
 int emcCommandSerialNumber;
 static int emcSavedCommandSerialNumber;
@@ -98,23 +76,7 @@ char activeSWords[MDI_LINELEN] = "";
 double emcTimeout;
 double emcSpindleDefaultSpeed = 500;
  
-// these are the axis status items, maybe well need them later...
-/*    
-    minFerror = 1.0;
-    maxFerror = 1.0;
-    ferrorCurrent = 0.0;
-    ferrorHighMark = 0.0;
-    output = 0.0;
-    input = 0.0;
-    inpos = 1;
-*/
-
-
 // this is a workaround for the __dso_handle problem
-// undefine this if neccessary
-
-// #define dsohandle
-
 #ifdef DSOHANDLE
 extern "C"
 {
@@ -122,18 +84,12 @@ void *__dso_handle = NULL;
 }
 #endif
 
-// some "special" stuff
-// we need the emctask interp state to execute scripts 
-
-extern "C" int GetTaskInterpState() { return emcStatus->task.interpState; }
-extern "C" int GetTaskExecState() { return emcStatus->task.execState; }
 
 extern "C" int AxisAxisType(int joint) { return emcStatus->motion.axis[joint].axisType; }
 extern "C" double AxisUnits(int joint) { return emcStatus->motion.axis[joint].units; }
 extern "C" double AxisBacklash(int joint) { return emcStatus->motion.axis[joint].backlash; }
 extern "C" double AxisMinPositionLimit(int joint) { return emcStatus->motion.axis[joint].minPositionLimit; }
 extern "C" double AxisMaxPositionLimit(int joint) { return emcStatus->motion.axis[joint].maxPositionLimit; }
-// extern "C" double AxisVelocity(int joint) { return emcStatus->motion.axis[joint].velocity; }
 extern "C" bool AxisHoming(int joint) { return emcStatus->motion.axis[joint].homing; }
 extern "C" bool AxisHomed(int joint) { return emcStatus->motion.axis[joint].homed; }
 extern "C" bool AxisEnabled(int joint) { return emcStatus->motion.axis[joint].enabled; }
@@ -143,35 +99,44 @@ extern "C" double AxisMaxSoftLimit(int joint) { return emcStatus->motion.axis[jo
 extern "C" double AxisMinHardLimit(int joint) { return emcStatus->motion.axis[joint].minHardLimit; }
 extern "C" double AxisMaxHardLimit(int joint) { return emcStatus->motion.axis[joint].maxHardLimit; }
 extern "C" bool AxisOverrideLimits(int joint) { return emcStatus->motion.axis[joint].overrideLimits; }
+extern "C" int AxisInPos(int joint) { return emcStatus->motion.axis[joint].inpos; }
+extern "C" double AxisOutput(int joint) { return emcStatus->motion.axis[joint].output; }
+extern "C" double AxisInput(int joint) { return emcStatus->motion.axis[joint].input; }
 
+// these are the axis status items, maybe well need them later...
+/*    
+    minFerror = 1.0;
+    maxFerror = 1.0;
+    ferrorCurrent = 0.0;
+    ferrorHighMark = 0.0;
+*/
 
 // these are the traj status items, maybe well need them later...
 /*
-    cycleTime = 0.0;
-    axes = 1;
-    axis_mask = 1;
-    enabled = OFF;
-    inpos = ON;
-    queue = 0;
-    activeQueue = 0;
-    queueFull = OFF;
-    id = 0;
-    paused = OFF;
     ZERO_EMC_POSE(position);
     ZERO_EMC_POSE(actualPosition);
-    maxAcceleration = 1.0;
     ZERO_EMC_POSE(probedPosition);
-    probeval = 0;
     ZERO_EMC_POSE(dtg);
-    kinematics_type = 0;
-    motion_type = 0;
  */
 // trajstate read functions
 
+extern "C" int trajQueue() { return emcStatus->motion.traj.queue; }
+extern "C" int trajActiveQueue() { return emcStatus->motion.traj.activeQueue; }
+extern "C" int trajId() { return emcStatus->motion.traj.id; }
+extern "C" int trajProbeval() { return emcStatus->motion.traj.probeval; }
+extern "C" int trajMotionType() { return emcStatus->motion.traj.motion_type; }
+extern "C" double trajCycleTime() { return emcStatus->motion.traj.cycleTime; }
+extern "C" double trajMaxAcceleration() { return emcStatus->motion.traj.maxAcceleration; }
+
+extern "C" bool trajInpos() { return emcStatus->motion.traj.inpos; }
+extern "C" bool trajQueueFull() { return emcStatus->motion.traj.queueFull; }
+extern "C" bool trajPaused() { return emcStatus->motion.traj.paused; }
+
+extern "C" bool trajEnabled() { return emcStatus->motion.traj.enabled; }
+extern "C" int trajKinematicsType() { return emcStatus->motion.traj.kinematics_type; } 
 extern "C" int trajAxes() { return emcStatus->motion.traj.axes; }
 extern "C" int trajAxisMask() { return emcStatus->motion.traj.axis_mask; }
-
-extern "C" int trajMode() { return emcStatus->motion.traj.scale; }
+extern "C" int trajMode() { return emcStatus->motion.traj.mode; }
 extern "C" double trajlinearUnits() { return emcStatus->motion.traj.linearUnits; }
 extern "C" double trajangularUnits() { return emcStatus->motion.traj.angularUnits; }
 extern "C" double trajScale() { return emcStatus->motion.traj.scale; }
@@ -190,12 +155,9 @@ extern "C" bool trajProbeTripped() { return emcStatus->motion.traj.probe_tripped
 
 // these are the TASK_STAT items, maybe well need them later...
 /*
-    execState = EMC_TASK_EXEC_DONE;
     input_timeout = OFF;
-    file[0] = 0;
     ZERO_EMC_POSE(toolOffset);
 */
-
 
 extern "C" bool taskGetFile(char *msg)
 {
@@ -218,6 +180,7 @@ extern "C" bool taskGetCommand(char *msg)
 // extern "C" int taskInterpSeqNum() { return emcStatus Interp.sequence_number(););
 
 // taskstate read functions
+extern "C" int taskExecState() { return emcStatus->task.execState; }
 extern "C" int taskMode() { return emcStatus->task.mode; }
 extern "C" int taskState() { return emcStatus->task.state; }
 extern "C" int taskInterpState() { return emcStatus->task.interpState; }
@@ -238,7 +201,6 @@ extern "C" double taskDelayLeft() { return emcStatus->task.delayLeft; }
 extern "C" bool taskBlockDelete() { return emcStatus->task.block_delete_state; }
 extern "C" bool taskOptStop() { return emcStatus->task.optional_stop_state; }
 
-
 // spindlestat read functions
 extern "C" double spindleSpeed() { return emcStatus->motion.spindle.speed; }
 extern "C" int spindleDirection() { return emcStatus->motion.spindle.direction; }
@@ -253,7 +215,6 @@ extern "C" bool coolantFlood() { return emcStatus->io.coolant.flood != 0; }
 #ifdef VER_23
 extern "C" int toolPrepped() { return emcStatus->io.tool.toolPrepped; }
 #endif
-
 extern "C" int toolInSpindle() { return emcStatus->io.tool.toolInSpindle; }
 extern "C" double toolLengthOffset() { return emcStatus->task.toolOffset.tran.z; }
 
@@ -261,7 +222,7 @@ extern "C" double toolLengthOffset() { return emcStatus->task.toolOffset.tran.z;
 extern "C" bool lubeOn() { return emcStatus->io.lube.on != 0; }
 extern "C" int lubeLevel() { return emcStatus->io.lube.level; }
 
-// this is a one call -do all function to get the m,g codes and settings
+// this is the function to get the m,g codes and settings
 extern "C" void taskActiveCodes()
 {
   int t;
@@ -374,42 +335,6 @@ extern "C" int emcPollStatus()
   return emcStatus->status;
 } 
   
-extern "C" double convertLinearUnits(double u)
-{
-    double in_mm;
-    /* convert u to mm */
-    in_mm = u / emcStatus->motion.traj.linearUnits;
-    /* convert u to display units */
-    switch (linearUnitConversion) {
-    case LINEAR_UNITS_MM:
-	return in_mm;
-	break;
-    case LINEAR_UNITS_INCH:
-	return in_mm * INCH_PER_MM;
-	break;
-    case LINEAR_UNITS_CM:
-	return in_mm * CM_PER_MM;
-	break;
-    case LINEAR_UNITS_AUTO:
-	switch (emcStatus->task.programUnits) {
-	case CANON_UNITS_MM:
-	    return in_mm;
-	    break;
-	case CANON_UNITS_INCHES:
-	    return in_mm * INCH_PER_MM;
-	    break;
-	case CANON_UNITS_CM:
-	    return in_mm * CM_PER_MM;
-	    break;
-	}
-	break;
-    case LINEAR_UNITS_CUSTOM:
-	return u;
-	break;
-    }
-    return u;
-}
-
 extern "C" int emcTaskNmlGet()
 {
     int retval = 0;
@@ -535,31 +460,31 @@ extern "C" void emcNmlQuit()
 extern "C" double getDtgPos(int axis)
 {
   if (axis == 0) {
-    return convertLinearUnits(emcStatus->motion.traj.dtg.tran.x);
+    return emcStatus->motion.traj.dtg.tran.x;
   } else 
   if (axis == 1) {
-    return convertLinearUnits(emcStatus->motion.traj.dtg.tran.y);
+    return emcStatus->motion.traj.dtg.tran.y;
   } else 
   if (axis == 2) {
-    return convertLinearUnits(emcStatus->motion.traj.dtg.tran.z);
+    return emcStatus->motion.traj.dtg.tran.z;
   } else {
   if (axis == 3) {
-    return convertLinearUnits(emcStatus->motion.traj.dtg.a);
+    return emcStatus->motion.traj.dtg.a;
   } else 
   if (axis == 4) {
-    return convertLinearUnits(emcStatus->motion.traj.dtg.b);
+    return emcStatus->motion.traj.dtg.b;
   } else 
   if (axis == 5) {
-    return convertLinearUnits(emcStatus->motion.traj.dtg.c);
+    return emcStatus->motion.traj.dtg.c;
   } else 
   if (axis == 6) {	
-    return convertLinearUnits(emcStatus->motion.traj.dtg.u);
+    return emcStatus->motion.traj.dtg.u;
   } else 
   if (axis == 7) {	
-    return convertLinearUnits(emcStatus->motion.traj.dtg.v);
+    return emcStatus->motion.traj.dtg.v;
   } else 
   if (axis == 8) {	
-    return convertLinearUnits(emcStatus->motion.traj.dtg.w);
+    return emcStatus->motion.traj.dtg.w;
   } else {
     return 0;
     }
@@ -569,31 +494,31 @@ extern "C" double getDtgPos(int axis)
 extern "C" double getAbsCmdPos(int axis)
 {
   if (axis == 0) {
-    return convertLinearUnits(emcStatus->motion.traj.position.tran.x);
+    return emcStatus->motion.traj.position.tran.x;
   } else 
   if (axis == 1) {
-    return convertLinearUnits(emcStatus->motion.traj.position.tran.y);
+    return emcStatus->motion.traj.position.tran.y;
   } else 
   if (axis == 2) {
-    return convertLinearUnits(emcStatus->motion.traj.position.tran.z);
+    return emcStatus->motion.traj.position.tran.z;
   } else {
   if (axis == 3) {
-    return convertLinearUnits(emcStatus->motion.traj.position.a);
+    return emcStatus->motion.traj.position.a;
   } else 
   if (axis == 4) {
-    return convertLinearUnits(emcStatus->motion.traj.position.b);
+    return emcStatus->motion.traj.position.b;
   } else 
   if (axis == 5) {
-    return convertLinearUnits(emcStatus->motion.traj.position.c);
+    return emcStatus->motion.traj.position.c;
   } else 
   if (axis == 6) {	
-    return convertLinearUnits(emcStatus->motion.traj.position.u);
+    return emcStatus->motion.traj.position.u;
   } else 
   if (axis == 7) {	
-    return convertLinearUnits(emcStatus->motion.traj.position.v);
+    return emcStatus->motion.traj.position.v;
   } else 
   if (axis == 8) {	
-    return convertLinearUnits(emcStatus->motion.traj.position.w);
+    return emcStatus->motion.traj.position.w;
   } else {
     return 0;
     }
@@ -603,31 +528,31 @@ extern "C" double getAbsCmdPos(int axis)
 extern "C" double getAbsPos(int axis)
 {
   if (axis == 0) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.tran.x);
+    return emcStatus->motion.traj.actualPosition.tran.x;
   } else 
   if (axis == 1) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.tran.y);
+    return emcStatus->motion.traj.actualPosition.tran.y;
   } else 
   if (axis == 2) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.tran.z);
+    return emcStatus->motion.traj.actualPosition.tran.z;
   } else 	    
   if (axis == 3) {	
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.a);
+    return emcStatus->motion.traj.actualPosition.a;
   } else 
   if (axis == 4) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.b);
+    return emcStatus->motion.traj.actualPosition.b;
   } else 
   if (axis == 5) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.c);
+    return emcStatus->motion.traj.actualPosition.c;
   } else 
   if (axis == 6) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.u);
+    return emcStatus->motion.traj.actualPosition.u;
   } else 
   if (axis == 7) {	
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.v);
+    return emcStatus->motion.traj.actualPosition.v;
   } else 
   if (axis == 8) {	
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.w);
+    return emcStatus->motion.traj.actualPosition.w;
   } else {
     return 0;	 
     }
@@ -636,40 +561,40 @@ extern "C" double getAbsPos(int axis)
 extern "C" double getRelCmdPos(int axis)
 {
   if (axis == 0) {
-    return convertLinearUnits(emcStatus->motion.traj.position.tran.x - 
-      emcStatus->task.origin.tran.x);
+    return emcStatus->motion.traj.position.tran.x - 
+      emcStatus->task.origin.tran.x - emcStatus->task.toolOffset.tran.x;
   } else 
   if (axis == 1) {
-    return convertLinearUnits(emcStatus->motion.traj.position.tran.y - 
-      emcStatus->task.origin.tran.y);
+    return emcStatus->motion.traj.position.tran.y - 
+      emcStatus->task.origin.tran.y -emcStatus->task.toolOffset.tran.y;
   } else 
   if (axis == 2) {
-    return convertLinearUnits(emcStatus->motion.traj.position.tran.z - 
-      emcStatus->task.origin.tran.z - emcStatus->task.toolOffset.tran.z);
+    return emcStatus->motion.traj.position.tran.z - 
+      emcStatus->task.origin.tran.z - emcStatus->task.toolOffset.tran.z;
   } else 
   if (axis == 3) {	
-    return convertLinearUnits(emcStatus->motion.traj.position.a - 
-      emcStatus->task.origin.a);
+    return emcStatus->motion.traj.position.a - 
+      emcStatus->task.origin.a - emcStatus->task.toolOffset.a;
   } else 
   if (axis == 4) {	
-    return convertLinearUnits(emcStatus->motion.traj.position.b - 
-      emcStatus->task.origin.b);
+    return emcStatus->motion.traj.position.b - 
+      emcStatus->task.origin.b - emcStatus->task.toolOffset.b;
   } else 
   if (axis == 5) {
-    return convertLinearUnits(emcStatus->motion.traj.position.c - 
-      emcStatus->task.origin.c);
+    return emcStatus->motion.traj.position.c - 
+      emcStatus->task.origin.c - emcStatus->task.toolOffset.c;
   } else 
   if (axis == 6) {
-    return convertLinearUnits(emcStatus->motion.traj.position.u - 
-      emcStatus->task.origin.u);
+    return emcStatus->motion.traj.position.u - 
+      emcStatus->task.origin.u - emcStatus->task.toolOffset.u;
   } else 
   if (axis == 7) {
-    return convertLinearUnits(emcStatus->motion.traj.position.v - 
-      emcStatus->task.origin.v);
+    return emcStatus->motion.traj.position.v - 
+      emcStatus->task.origin.v - emcStatus->task.toolOffset.v;
   } else 
   if (axis == 8) {	
-    return convertLinearUnits(emcStatus->motion.traj.position.w - 
-      emcStatus->task.origin.w);
+    return emcStatus->motion.traj.position.w - 
+      emcStatus->task.origin.w - emcStatus->task.toolOffset.w;
   } else {
     return 0;
   }
@@ -678,40 +603,40 @@ extern "C" double getRelCmdPos(int axis)
 extern "C" double getRelPos(int axis)
 {
   if (axis == 0) {
-    return convertLinearUnits(emcStatus->motion.traj. actualPosition.tran.x -
-      emcStatus->task.origin.tran.x);
+    return emcStatus->motion.traj.actualPosition.tran.x -
+      emcStatus->task.origin.tran.x - emcStatus->task.toolOffset.tran.x;
   } else 
   if (axis == 1) {
-    return convertLinearUnits(emcStatus->motion.traj. actualPosition.tran.y - 
-      emcStatus->task.origin.tran.y);
+    return emcStatus->motion.traj.actualPosition.tran.y - 
+      emcStatus->task.origin.tran.y - emcStatus->task.toolOffset.tran.y;
   } else 
   if (axis == 2) {
-    return convertLinearUnits(emcStatus->motion.traj. actualPosition.tran.z -
-      emcStatus->task.origin.tran.z -emcStatus->task.toolOffset.tran.z);
+    return emcStatus->motion.traj.actualPosition.tran.z -
+      emcStatus->task.origin.tran.z - emcStatus->task.toolOffset.tran.z;
   } else 
   if (axis == 3) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.a - 
-      emcStatus->task.origin.a);
+    return emcStatus->motion.traj.actualPosition.a - 
+      emcStatus->task.origin.a - emcStatus->task.toolOffset.a;
   } else 
   if (axis == 4) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.b - 
-      emcStatus->task.origin.b);
+    return emcStatus->motion.traj.actualPosition.b - 
+      emcStatus->task.origin.b - emcStatus->task.toolOffset.b;
   } else 
   if (axis == 5) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.c - 
-      emcStatus->task.origin.c);
+    return emcStatus->motion.traj.actualPosition.c - 
+      emcStatus->task.origin.c - emcStatus->task.toolOffset.c;
   } else 
   if (axis == 6) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.u - 
-      emcStatus->task.origin.u);
+    return emcStatus->motion.traj.actualPosition.u - 
+      emcStatus->task.origin.u - emcStatus->task.toolOffset.u;
   } else 
   if (axis == 7) {
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.v - 
-      emcStatus->task.origin.v);
+    return emcStatus->motion.traj.actualPosition.v - 
+      emcStatus->task.origin.v - emcStatus->task.toolOffset.v;
   } else 
   if (axis == 8) {	
-    return convertLinearUnits(emcStatus->motion.traj.actualPosition.w - 
-      emcStatus->task.origin.w);
+    return emcStatus->motion.traj.actualPosition.w - 
+      emcStatus->task.origin.w - emcStatus->task.toolOffset.w;
   } else {
     return 0;
   }
@@ -720,31 +645,64 @@ extern "C" double getRelPos(int axis)
 extern "C" double getOrigin(int axis)
 {
   if (axis == 0) {
-    return convertLinearUnits(emcStatus->task.origin.tran.x);
+    return emcStatus->task.origin.tran.x;
   } else
   if (axis == 1) {
-    return convertLinearUnits(emcStatus->task.origin.tran.y);
+    return emcStatus->task.origin.tran.y;
   } else
   if (axis == 2) {
-    return convertLinearUnits(emcStatus->task.origin.tran.z);
+    return emcStatus->task.origin.tran.z;
   } else
   if (axis == 3) {
-    return convertLinearUnits(emcStatus->task.origin.a);
+    return emcStatus->task.origin.a;
   } else
   if (axis == 4) {
-    return convertLinearUnits(emcStatus->task.origin.b);
+    return emcStatus->task.origin.b;
   } else
   if (axis == 5) {
-    return convertLinearUnits(emcStatus->task.origin.c);
+    return emcStatus->task.origin.c;
   } else
   if (axis == 6) {
-    return convertLinearUnits(emcStatus->task.origin.u);
+    return emcStatus->task.origin.u;
   } else
   if (axis == 7) {
-    return convertLinearUnits(emcStatus->task.origin.v);
+    return emcStatus->task.origin.v;
   } else
   if (axis == 8) {
-    return convertLinearUnits(emcStatus->task.origin.w);
+    return emcStatus->task.origin.w;
+  } else {
+    return 0;
+  }
+}
+
+extern "C" double getProbedPosition(int axis)
+{
+  if (axis == 0) {
+    return emcStatus->motion.traj.probedPosition.tran.x;
+  } else
+  if (axis == 1) {
+    return emcStatus->motion.traj.probedPosition.tran.y;
+  } else
+  if (axis == 2) {
+    return emcStatus->motion.traj.probedPosition.tran.z;
+  } else
+  if (axis == 3) {
+    return emcStatus->motion.traj.probedPosition.a;
+  } else
+  if (axis == 4) {
+    return emcStatus->motion.traj.probedPosition.b;
+  } else
+  if (axis == 5) {
+    return emcStatus->motion.traj.probedPosition.c;
+  } else
+  if (axis == 6) {
+    return emcStatus->motion.traj.probedPosition.u;
+  } else
+  if (axis == 7) {
+    return emcStatus->motion.traj.probedPosition.v;
+  } else
+  if (axis == 8) {
+    return emcStatus->motion.traj.probedPosition.w;
   } else {
     return 0;
   }
@@ -752,7 +710,35 @@ extern "C" double getOrigin(int axis)
 
 extern "C" double getJointPos(int axis)
 {
+  return emcStatus->motion.axis[axis].output;
+}
+
+extern "C" double getJointActualPos(int axis)
+{
   return emcStatus->motion.axis[axis].input;
+}
+
+extern "C" double getLoggerPos(int axis)
+{
+  if (axis == 0) {
+    return emcStatus->motion.traj.actualPosition.tran.x - emcStatus->task.toolOffset.tran.x;
+  } else
+  if (axis == 1) {  
+    return emcStatus->motion.traj.actualPosition.tran.y - emcStatus->task.toolOffset.tran.y;
+  } else
+  if (axis == 2) {
+    return emcStatus->motion.traj.actualPosition.tran.z - emcStatus->task.toolOffset.tran.z;
+  }
+}
+
+extern "C" bool getEStop()
+{
+  return (emcStatus->task.state == EMC_TASK_STATE_ESTOP);
+}
+
+extern "C" bool getMachineOn()
+{
+  return (emcStatus->task.state == EMC_TASK_STATE_ON);
 }
 
 extern "C" int updateError()
@@ -762,17 +748,12 @@ extern "C" int updateError()
     if (0 == emcErrorBuffer || !emcErrorBuffer->valid()) {
 	return -1;
     }
-
     switch (type = emcErrorBuffer->read()) {
     case -1:
-	// error reading channel
 	return -1;
 	break;
-
     case 0:
-	// nothing new
 	break;
-
     case EMC_OPERATOR_ERROR_TYPE:
 	strncpy(errorString,
 		((EMC_OPERATOR_ERROR *) (emcErrorBuffer->get_address()))->
@@ -817,15 +798,23 @@ extern "C" int updateError()
 	break;
 
     default:
-	// if not recognized, set the error string
 	sprintf(errorString, "unrecognized error %ld", type);
 	return -1;
 	break;
     }
-
     return 0;
 }
 
+#ifdef VER_24
+extern "C" int sendSetRotationXY(double angle)
+{
+    EMC_TRAJ_SET_ROTATION msg;
+    msg.serial_number = ++emcCommandSerialNumber;
+    msg.rotation = angle;
+    emcCommandBuffer->write(msg);
+    return emcCommandWaitReceived(emcCommandSerialNumber);
+}
+#endif
 
 extern "C" int sendDebug(int level)
 {
@@ -833,12 +822,6 @@ extern "C" int sendDebug(int level)
     debug_msg.debug = level;
     debug_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(debug_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
 }
 
 extern "C" int sendEstop()
@@ -847,12 +830,7 @@ extern "C" int sendEstop()
     state_msg.state = EMC_TASK_STATE_ESTOP;
     state_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(state_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendEstopReset()
@@ -861,17 +839,7 @@ extern "C" int sendEstopReset()
     state_msg.state = EMC_TASK_STATE_ESTOP_RESET;
     state_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(state_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
-}
-
-extern "C" bool getEStop()
-{
-  return (emcStatus->task.state == EMC_TASK_STATE_ESTOP);
+   return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 	
 extern "C" int sendMachineOn()
@@ -880,12 +848,7 @@ extern "C" int sendMachineOn()
     state_msg.state = EMC_TASK_STATE_ON;
     state_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(state_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendMachineOff()
@@ -894,17 +857,7 @@ extern "C" int sendMachineOff()
     state_msg.state = EMC_TASK_STATE_OFF;
     state_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(state_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
-}
-
-extern "C" bool getMachineOn()
-{
-  return (emcStatus->task.state == EMC_TASK_STATE_ON);
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendManual()
@@ -913,12 +866,7 @@ extern "C" int sendManual()
     mode_msg.mode = EMC_TASK_MODE_MANUAL;
     mode_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(mode_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendAuto()
@@ -927,12 +875,7 @@ extern "C" int sendAuto()
     mode_msg.mode = EMC_TASK_MODE_AUTO;
     mode_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(mode_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendMdi()
@@ -941,12 +884,7 @@ extern "C" int sendMdi()
     mode_msg.mode = EMC_TASK_MODE_MDI;
     mode_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(mode_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendOverrideLimits(int axis)
@@ -955,12 +893,7 @@ extern "C" int sendOverrideLimits(int axis)
     lim_msg.axis = axis;	// neg means off, else on for all
     lim_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(lim_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendJogStop(int axis)
@@ -972,12 +905,7 @@ extern "C" int sendJogStop(int axis)
    emc_axis_abort_msg.serial_number = ++emcCommandSerialNumber;
    emc_axis_abort_msg.axis = axis;
    emcCommandBuffer->write(emc_axis_abort_msg);
-   if (emcWaitType == EMC_WAIT_RECEIVED) {
-     return emcCommandWaitReceived(emcCommandSerialNumber);
-   } else if (emcWaitType == EMC_WAIT_DONE) {
-     return emcCommandWaitDone(emcCommandSerialNumber);
-   }
-  return 0;
+   return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendJogCont(int axis, double speed)
@@ -990,12 +918,7 @@ extern "C" int sendJogCont(int axis, double speed)
     emc_axis_jog_msg.axis = axis;
     emc_axis_jog_msg.vel = speed / 60.0;
     emcCommandBuffer->write(emc_axis_jog_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendJogIncr(int axis, double speed, double incr)
@@ -1009,12 +932,7 @@ extern "C" int sendJogIncr(int axis, double speed, double incr)
     emc_axis_incr_jog_msg.vel = speed / 60.0;
     emc_axis_incr_jog_msg.incr = incr;
     emcCommandBuffer->write(emc_axis_incr_jog_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendMistOn()
@@ -1022,12 +940,7 @@ extern "C" int sendMistOn()
     EMC_COOLANT_MIST_ON emc_coolant_mist_on_msg;
     emc_coolant_mist_on_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_coolant_mist_on_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendMistOff()
@@ -1035,12 +948,7 @@ extern "C" int sendMistOff()
     EMC_COOLANT_MIST_OFF emc_coolant_mist_off_msg;
     emc_coolant_mist_off_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_coolant_mist_off_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
  
 extern "C" int sendFloodOn()
@@ -1048,12 +956,7 @@ extern "C" int sendFloodOn()
     EMC_COOLANT_FLOOD_ON emc_coolant_flood_on_msg;
     emc_coolant_flood_on_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_coolant_flood_on_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendFloodOff()
@@ -1061,12 +964,7 @@ extern "C" int sendFloodOff()
     EMC_COOLANT_FLOOD_OFF emc_coolant_flood_off_msg;
     emc_coolant_flood_off_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_coolant_flood_off_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendLubeOn()
@@ -1074,12 +972,7 @@ extern "C" int sendLubeOn()
     EMC_LUBE_ON emc_lube_on_msg;
     emc_lube_on_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_lube_on_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendLubeOff()
@@ -1087,12 +980,7 @@ extern "C" int sendLubeOff()
     EMC_LUBE_OFF emc_lube_off_msg;
     emc_lube_off_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_lube_off_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendSpindleForward()
@@ -1105,12 +993,7 @@ extern "C" int sendSpindleForward()
     }
     emc_spindle_on_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_on_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendSpindleReverse()
@@ -1124,12 +1007,7 @@ extern "C" int sendSpindleReverse()
     }
     emc_spindle_on_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_on_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendSpindleOff()
@@ -1137,12 +1015,7 @@ extern "C" int sendSpindleOff()
     EMC_SPINDLE_OFF emc_spindle_off_msg;
     emc_spindle_off_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_off_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendSpindleIncrease()
@@ -1150,12 +1023,7 @@ extern "C" int sendSpindleIncrease()
     EMC_SPINDLE_INCREASE emc_spindle_increase_msg;
     emc_spindle_increase_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_increase_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendSpindleDecrease()
@@ -1163,12 +1031,7 @@ extern "C" int sendSpindleDecrease()
     EMC_SPINDLE_DECREASE emc_spindle_decrease_msg;
     emc_spindle_decrease_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_decrease_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendSpindleConstant()
@@ -1176,12 +1039,7 @@ extern "C" int sendSpindleConstant()
     EMC_SPINDLE_CONSTANT emc_spindle_constant_msg;
     emc_spindle_constant_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_constant_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
     
 extern "C" int sendBrakeEngage()
@@ -1189,12 +1047,7 @@ extern "C" int sendBrakeEngage()
     EMC_SPINDLE_BRAKE_ENGAGE emc_spindle_brake_engage_msg;
     emc_spindle_brake_engage_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_brake_engage_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendBrakeRelease()
@@ -1202,12 +1055,7 @@ extern "C" int sendBrakeRelease()
     EMC_SPINDLE_BRAKE_RELEASE emc_spindle_brake_release_msg;
     emc_spindle_brake_release_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_spindle_brake_release_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendAbort()
@@ -1215,12 +1063,7 @@ extern "C" int sendAbort()
     EMC_TASK_ABORT task_abort_msg;
     task_abort_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(task_abort_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendHome(int axis)
@@ -1229,12 +1072,7 @@ extern "C" int sendHome(int axis)
     emc_axis_home_msg.serial_number = ++emcCommandSerialNumber;
     emc_axis_home_msg.axis = axis;
     emcCommandBuffer->write(emc_axis_home_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendUnHome(int axis)
@@ -1243,12 +1081,7 @@ extern "C" int sendUnHome(int axis)
     emc_axis_home_msg.serial_number = ++emcCommandSerialNumber;
     emc_axis_home_msg.axis = axis;
     emcCommandBuffer->write(emc_axis_home_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendFeedOverride(double override)
@@ -1260,12 +1093,7 @@ extern "C" int sendFeedOverride(double override)
     emc_traj_set_scale_msg.serial_number = ++emcCommandSerialNumber;
     emc_traj_set_scale_msg.scale = override;
     emcCommandBuffer->write(emc_traj_set_scale_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendMaxVelocity(double velocity)
@@ -1280,7 +1108,6 @@ extern "C" int sendMaxVelocity(double velocity)
     return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
-
 extern "C" int sendSpindleOverride(double override)
 {
     EMC_TRAJ_SET_SPINDLE_SCALE emc_traj_set_spindle_scale_msg;
@@ -1290,12 +1117,7 @@ extern "C" int sendSpindleOverride(double override)
     emc_traj_set_spindle_scale_msg.serial_number = ++emcCommandSerialNumber;
     emc_traj_set_spindle_scale_msg.scale = override;
     emcCommandBuffer->write(emc_traj_set_spindle_scale_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendTaskPlanInit()
@@ -1303,12 +1125,7 @@ extern "C" int sendTaskPlanInit()
     EMC_TASK_PLAN_INIT task_plan_init_msg;
     task_plan_init_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(task_plan_init_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendProgramOpen(char *program)
@@ -1317,12 +1134,8 @@ extern "C" int sendProgramOpen(char *program)
     emc_task_plan_open_msg.serial_number = ++emcCommandSerialNumber;
     strcpy(emc_task_plan_open_msg.file, program);
     emcCommandBuffer->write(emc_task_plan_open_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
+
 }
 
 extern "C" int sendProgramRun(int line)
@@ -1331,12 +1144,7 @@ extern "C" int sendProgramRun(int line)
     emc_task_plan_run_msg.serial_number = ++emcCommandSerialNumber;
     emc_task_plan_run_msg.line = line;
     emcCommandBuffer->write(emc_task_plan_run_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendProgramPause()
@@ -1344,12 +1152,7 @@ extern "C" int sendProgramPause()
     EMC_TASK_PLAN_PAUSE emc_task_plan_pause_msg;
     emc_task_plan_pause_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_task_plan_pause_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendProgramResume()
@@ -1357,12 +1160,7 @@ extern "C" int sendProgramResume()
     EMC_TASK_PLAN_RESUME emc_task_plan_resume_msg;
     emc_task_plan_resume_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_task_plan_resume_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendSetOptionalStop(bool state)
@@ -1371,22 +1169,16 @@ extern "C" int sendSetOptionalStop(bool state)
     emc_task_plan_set_optional_stop_msg.state = state;
     emc_task_plan_set_optional_stop_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_task_plan_set_optional_stop_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
-
 
 extern "C" int sendSetBlockDelete(bool state)
 {
-  EMC_TASK_PLAN_SET_BLOCK_DELETE m;
-  m.state = state;
-  m.serial_number = ++emcCommandSerialNumber;
-  emcCommandBuffer->write(m);
-  return emcCommandWaitReceived(emcCommandSerialNumber);
+    EMC_TASK_PLAN_SET_BLOCK_DELETE m;
+    m.state = state;
+    m.serial_number = ++emcCommandSerialNumber;
+    emcCommandBuffer->write(m);
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendProgramStep()
@@ -1394,12 +1186,7 @@ extern "C" int sendProgramStep()
     EMC_TASK_PLAN_STEP emc_task_plan_step_msg;
     emc_task_plan_step_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_task_plan_step_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendMdiCmd(const char *mdi)
@@ -1408,12 +1195,7 @@ extern "C" int sendMdiCmd(const char *mdi)
     strcpy(emc_task_plan_execute_msg.command, mdi);
     emc_task_plan_execute_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_task_plan_execute_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendLoadToolTable(const char *file)
@@ -1422,12 +1204,7 @@ extern "C" int sendLoadToolTable(const char *file)
     strcpy(emc_tool_load_tool_table_msg.file, file);
     emc_tool_load_tool_table_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_tool_load_tool_table_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 #ifdef VER_24
@@ -1440,12 +1217,7 @@ extern "C" int sendToolSetOffset(int id, double zoffset, double diameter)
     emc_tool_set_offset_msg.orientation = 0; // mill style tool table
     emc_tool_set_offset_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_tool_set_offset_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 #endif
 
@@ -1459,12 +1231,7 @@ extern "C" int sendToolSetOffset(int id, double zoffset, double diameter)
     emc_tool_set_offset_msg.orientation = 0; // mill style tool table
     emc_tool_set_offset_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_tool_set_offset_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 #endif
 
@@ -1486,12 +1253,7 @@ extern "C" int sendToolSetOffset2(int id, double zoffset, double xoffset,
     emc_tool_set_offset_msg.orientation = orientation;
     emc_tool_set_offset_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_tool_set_offset_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 #endif
 
@@ -1510,12 +1272,7 @@ extern "C" int sendToolSetOffset2(int id, double zoffset, double xoffset,
     emc_tool_set_offset_msg.orientation = orientation;
     emc_tool_set_offset_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_tool_set_offset_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 #endif
 
@@ -1526,12 +1283,7 @@ extern "C" int sendAxisSetBacklash(int axis, double backlash)
     emc_axis_set_backlash_msg.backlash = backlash;
     emc_axis_set_backlash_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_axis_set_backlash_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendAxisEnable(int axis, int val)
@@ -1548,13 +1300,7 @@ extern "C" int sendAxisEnable(int axis, int val)
 	emc_axis_disable_msg.serial_number = ++emcCommandSerialNumber;
 	emcCommandBuffer->write(emc_axis_disable_msg);
     }
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendAxisLoadComp(int axis, const char *file, int type)
@@ -1564,12 +1310,7 @@ extern "C" int sendAxisLoadComp(int axis, const char *file, int type)
     emc_axis_load_comp_msg.type = type;
     emc_axis_load_comp_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_axis_load_comp_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+   return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendClearProbeTrippedFlag()
@@ -1579,12 +1320,7 @@ extern "C" int sendClearProbeTrippedFlag()
     emc_clear_probe_tripped_flag_msg.serial_number =
 	++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_clear_probe_tripped_flag_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" int sendProbe(double x, double y, double z)
@@ -1595,12 +1331,7 @@ extern "C" int sendProbe(double x, double y, double z)
     emc_probe_msg.pos.tran.z = z;
     emc_probe_msg.serial_number = ++emcCommandSerialNumber;
     emcCommandBuffer->write(emc_probe_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED) {
-	return emcCommandWaitReceived(emcCommandSerialNumber);
-    } else if (emcWaitType == EMC_WAIT_DONE) {
-	return emcCommandWaitDone(emcCommandSerialNumber);
-    }
-    return 0;
+    return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
 extern "C" bool iniGet(char *varstr, char *secstr, char *buffer)
@@ -1625,7 +1356,6 @@ extern "C" bool iniOpen(const char *filename)
     return false;
    }
   return true;
-  // return inifile.Open(filename);
 }
 
 

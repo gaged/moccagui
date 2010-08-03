@@ -2,6 +2,8 @@ unit emc2pas;
 
 {$I mocca.inc}
 
+{$mode objfpc}
+
 {$link emcpas.o}
 {$link libemc.a}
 {$linklib libemcini.so}
@@ -13,9 +15,6 @@ interface
 uses
   emcint;
 
-{$mode objfpc}
-{$H+}
-
 const
   LINELEN = 255;
   BUFFERLEN = 80;
@@ -25,6 +24,10 @@ const
 
   CANON_TOOL_MAX = 56;	// from canon.hh
   CANON_TOOL_ENTRY_LEN = 256; // from canon.hh
+
+  CANON_UNITS_INCH = 1;
+  CANON_UNITS_MM = 2;
+
 
 type
   TTool = packed record
@@ -48,6 +51,21 @@ type
     orientation: integer;
   end;
 
+const
+  EmptyTool : TTool =
+    (
+    toolno: -1; xoffset: 0;
+    {$ifdef VER_24} yoffset: 0; {$endif}
+    zoffset: 0;
+    {$ifdef VER_24}
+    aoffset: 0; boffset: 0; coffset: 0; uoffset: 0;voffset: 0; woffset: 0;
+    {$endif}
+    diameter: 0;
+    frontangle: 0; backangle: 0;
+    orientation: 0;
+    );
+
+
 type
   TTools = array[0..CANON_TOOL_MAX + 1] of TTool;
 
@@ -59,18 +77,6 @@ const
   EMC_WAIT_NONE     = 1;
   EMC_WAIT_RECEIVED = 2;
   EMC_WAIT_DONE     = 3;
-  
-  LINEAR_UNITS_CUSTOM = 1;
-  LINEAR_UNITS_AUTO   = 2;
-  LINEAR_UNITS_MM     = 3;
-  LINEAR_UNITS_INCH   = 4;
-  LINEAR_UNITS_CM     = 5;
-
-  ANGULAR_UNITS_CUSTOM = 1;
-  ANGULAR_UNITS_AUTO   = 2;
-  ANGULAR_UNITS_DEG    = 3;
-  ANGULAR_UNITS_RAD    = 4;
-  ANGULAR_UNITS_GRAD   = 5;
 
   RCS_DONE = 1;
   RCS_EXEC = 2;
@@ -99,7 +105,6 @@ var
   OperatorDisplayStr: Array[0..LINELEN-1] of Char; external name 'operatorDisplayStr';
 
   EmcUpdateType: Byte; external name 'emcUpdateType';  	// enum = byte ???
-  EmcWaitType: Byte; external name 'emcWaitType';	// enum = byte ???
   EmcTimeOut: Double; external name 'emcTimeout';
   EmcSpindleDefaultSpeed: Integer; external name 'emcSpindleDefaultSpeed';
   emcCommandSerialNumber: integer; external name 'emcCommandSerialNumber';
@@ -109,9 +114,6 @@ var
   ActiveFWords: Array[0..MDI_LINELEN-1] of Char; external name 'activeFWords';
   ActiveSWords: Array[0..MDI_LINELEN-1] of Char; external name 'activeSWords';
 
-  LinearUnitConversion: integer; external name 'linearUnitConversion';
-  AngularUnitConversion: integer; external name 'angularUnitConversion';
-
   {$ifdef VER_24}
   RandomToolchanger: integer; external name 'random_toolchanger';
   {$endif}
@@ -120,17 +122,22 @@ var
   ToolComments: Array[0..CANON_TOOL_MAX] of PChar; external name 'ttcomments';
 
 // Toolfile
+function  getnumtools: integer; cdecl; external;
 function  SetCanonTool(tool: integer): boolean; cdecl; external;
+
 procedure InitToolTable; cdecl; external;
 procedure DoneToolTable; cdecl; external;
 function  loadToolTable(const filename: PChar): integer; cdecl; external;
 function  saveToolTable(const filename: PChar): integer; cdecl; external;
 
-function taskGetFile(ProgFile: PChar): boolean; cdecl; external;
-
-// mocca script stuff
-function GetTaskInterpState: integer; cdecl; external;
-function GetTaskExecState: integer; cdecl; external;
+function  getDtgPos(axis: integer): double; cdecl; external;
+function  getAbsCmdPos(axis: integer): double; cdecl; external;
+function  getAbsPos(axis: integer): double; cdecl; external;
+function  getRelCmdPos(axis: integer): double; cdecl; external;
+function  getRelPos(axis: integer): double; cdecl; external;
+function  getJointPos(joint: integer): double; cdecl; external;
+function  getOrigin(axis: integer): double; cdecl; external;
+function  getLoggerPos(axis: integer): double; cdecl; external;
 
 // axis related functions
 function AxisAxisType(Joint: integer): integer cdecl; external; { motion.axis.*.axisType; }
@@ -153,10 +160,10 @@ function AxisOverrideLimits(Joint: integer): Boolean; cdecl; external; { motion.
 
 function trajAxes: integer; cdecl; external; { return emcStatus->motion.traj.axes; }
 function trajAxisMask: integer; cdecl; external; { return emcStatus->motion.traj.axis_mask; }
-function trajMode: integer;  cdecl; external; { motion.traj.scale}
+function trajScale: double;  cdecl; external; { motion.traj.scale}
 function trajlinearUnits: Double;  cdecl; external; { motion.traj.linearUnits}
 function trajangularUnits: Double; cdecl; external; { motion.traj.angularUnits}
-function trajScale: Double; cdecl; external;{ motion.traj.scale}
+function trajMode: integer; cdecl; external;{ motion.traj.mode}
 function trajSpindleScale: Double; cdecl; external; { motion.traj.spindle_scale}
 function trajVel: Double; cdecl; external; { motion.traj.velocity}
 function trajAcceleration: Double; cdecl; external; { motion.traj.acceleration}
@@ -173,6 +180,7 @@ function trajProbeTripped: Boolean;   cdecl; external; { motion.traj.probe_tripp
 // task related functions
 function taskMode: integer; cdecl; external; { task.mode; }
 function taskState: integer; cdecl; external; { task.state; }
+function taskExecState: integer; cdecl; external; { task.execstate; }
 function taskInterpState: integer; cdecl; external; { task.interpState; }
 function taskMotionline: integer; cdecl; external; { task.motionLine; }
 function taskCurrentLine: integer; cdecl; external; { task.currentLine; }
@@ -186,6 +194,9 @@ function taskInterpErrorCode: integer; cdecl; external; { task.interpreter_errco
 function taskDelayLeft: double; cdecl; external; { task.delayLeft; }
 function taskBlockDelete: boolean; cdecl; external; { task.block_delete_state; }
 function taskOptStop: boolean; cdecl; external; { task.optional_stop_state; }
+function taskGetFile(ProgFile: PChar): boolean; cdecl; external;
+// read and update aciveGCodes,MCodes,FWords,SWords
+procedure taskActiveCodes; cdecl; external;
 
 // spindlestat read functions
 function spindleSpeed: double; cdecl; external; { motion.spindle.speed; }
@@ -207,9 +218,6 @@ function coolantFlood: boolean; cdecl; external; { io.coolant.flood != 0; }
 function lubeOn: boolean; cdecl; external; { io.lube.on != 0; }
 function lubeLevel: integer; cdecl; external; { io.lube.level; }
 
-// read and update aciveGCodes,MCodes,FWords,SWords
-procedure taskActiveCodes; cdecl; external;
-
 function  geterror(const msg: PChar): Boolean; cdecl; external;
 
 // ini- related functions C++ wrapper
@@ -223,13 +231,15 @@ function  emcErrorNmlGet: Longint; cdecl; external;
 function  emcNmlInit: Longint; cdecl; external;
 procedure emcNmlQuit; cdecl; external;
 
-function  getDtgPos(axis: integer): double; cdecl; external;
-function  getAbsCmdPos(axis: integer): double; cdecl; external;
-function  getAbsPos(axis: integer): double; cdecl; external;
-function  getRelCmdPos(axis: integer): double; cdecl; external;
-function  getRelPos(axis: integer): double; cdecl; external;
-function  getJointPos(joint: integer): double; cdecl; external;
-function  getOrigin(axis: integer): double; cdecl; external;
+function  getFeedOverride: Longint; cdecl; external;
+function  getEStop: Boolean; cdecl; external;
+function  getMachineOn: Boolean; cdecl; external;
+function  getTaskMode: Longint; cdecl; external;
+function  getMistOn: Boolean; cdecl; external;
+function  getFloodOn: Boolean; cdecl; external;
+function  getLubeOn: Boolean; cdecl; external;
+function  getSpindle: Longint; cdecl; external;
+function  getBrakeOn: Boolean; cdecl; external;
 
 function  updateStatus: Longint; cdecl; external;
 function  updateError: Longint; cdecl; external;
@@ -238,7 +248,7 @@ function  emcCommandWaitReceived(Serialnumber: integer): Longint; cdecl; externa
 function  emcCommandWaitDone(Serialnumber: integer): Longint; cdecl; external;
 function  emcPollStatus: integer; cdecl; external;
 
-function  convertLinearUnits(u: Double): Double; cdecl; external;
+// function  convertLinearUnits(u: Double): Double; cdecl; external;
 
 function  sendDebug(level: integer): longint; cdecl; external;
 
@@ -313,16 +323,7 @@ function  sendAxisLoadComp(axis: integer; const filename: PChar; t: integer): Lo
 function  sendProbe(x,y,z: double): Longint; cdecl; external;
 function  sendClearProbeTrippedFlag: Longint; cdecl; external;
 
-function  getFeedOverride: Longint; cdecl; external;
-function  getEStop: Boolean; cdecl; external;
-function  getMachineOn: Boolean; cdecl; external;
-function  getTaskMode: Longint; cdecl; external;
-function  getMistOn: Boolean; cdecl; external;
-function  getFloodOn: Boolean; cdecl; external;
-function  getLubeOn: Boolean; cdecl; external;
-function  getSpindle: Longint; cdecl; external;
-function  getBrakeOn: Boolean; cdecl; external;
-
 implementation
+
 
 end.

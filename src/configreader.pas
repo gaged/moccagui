@@ -63,7 +63,22 @@ begin
       end
     else
     if nn = 'BUTTONWORDBREAK' then
-      MocButtonWordBreak:= (UpperCase(nv) = 'TRUE') or (nv = '1');
+      MocButtonWordBreak:= (UpperCase(nv) = 'TRUE') or (nv = '1')
+    else
+    if nn = 'DROHOMEDBITMAP' then
+      begin
+        DroHomedBitmap:= TBitmap.Create;
+        if Assigned(DroHomedBitmap) then
+          DroHomedBitmap.LoadFromFile(ConfigDir + nv);
+      end
+    else
+    if nn = 'DROUNHOMEDBITMAP' then
+      begin
+        DroUnHomedBitmap:= TBitmap.Create;
+        if Assigned(DroUnHomedBitmap) then
+          DroUnHomedBitmap.LoadFromFile(ConfigDir + nv);
+      end
+
   except
     on E: Exception do
       writeln('Error in config.xml: ' + E.Message);
