@@ -33,6 +33,7 @@ type
     FValue: Double;
     FTopLeft: TPoint;
     FJointMode: Boolean;
+    FImage: TImage;
     procedure SetHomed(Value: Boolean);
     procedure SetJointMode(Value: Boolean);
     procedure SizeLabels(x,y,w,h: integer);
@@ -154,8 +155,14 @@ begin
   FAxisNumber:= AxisNo;
   FAxisChar:= Des;
   FPanel:= APanel;
+  if Assigned(DroHomedBitmap) and Assigned(DroUnHomedBitmap) then
+    begin
+      FImage:= TImage.Create(FPanel);
+      FImage.Parent:= FPanel;
+    end
+  else
+    FImage:= nil;
   FPosLabel:= TLabel.Create(FPanel);
-  FDesLabel:= TLabel.Create(FPanel);
   with FPosLabel do
     begin
       Parent:= FPanel;
@@ -167,6 +174,7 @@ begin
       Layout:= tlCenter;
       Tag:= PosId;
     end;
+  FDesLabel:= TLabel.Create(FPanel);
   with FDesLabel do
     begin
       Parent:= FPanel;
@@ -206,11 +214,18 @@ end;
 
 procedure TAxis.SizeLabels(x,y,w,h: integer);
 var
-  LeftPart: integer;
+  LeftPart,iw,ih: integer;
 begin
   LeftPart:= Round(w * 0.1);
   if LeftPart < 10 then LeftPart:= 10;
   FDesLabel.SetBounds(x,y,LeftPart-1,h-1);
+  if FImage <> nil then
+    begin
+      iw:= DroHomedBitmap.Width;
+      ih:= DroHomedBitmap.Height;
+      FImage.SetBounds(x + LeftPart,(h - ih) div 2,iw,ih);
+      LeftPart:= LeftPart + iw;
+    end;
   FPosLabel.SetBounds(x+LeftPart,y,w-LeftPart-1,h-1);
   FTopLeft.Y:= y;
   FTopLeft.X:= x;
@@ -273,10 +288,20 @@ begin
   if isHomed <> FHomed then
     begin
       FHomed:= isHomed;
-      if FHomed then
-        FDesLabel.Font.Color:= clGreen
+      if FImage <> nil then
+        begin
+          if FHomed then
+            FImage.Picture.Assign(DroHomedBitmap)
+          else
+            FImage.Picture.Assign(DroUnHomedBitmap);
+        end
       else
-        FDesLabel.Font.Color:= clRed;
+        begin
+          if FHomed then
+            FDesLabel.Font.Color:= clGreen
+          else
+            FDesLabel.Font.Color:= clRed;
+        end;
     end;
 end;
 

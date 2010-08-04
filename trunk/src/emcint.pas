@@ -27,8 +27,8 @@ var
 function InitEmcEnvironment: boolean;
 procedure DoneEmcEnvironment;
 
-{$link libemcini.so.0}
-{$link librs274.so.0}
+{$linklib libemcini.so}
+{$linklib librs274.so}
 
 implementation
 

@@ -69,6 +69,8 @@ procedure RaiseError(const Msg: string);
 function AddBitmap(const AName: string): integer;
 procedure FreeBitmapList;
 
+// procedure AddRecent(const FileName: string);
+
 {$IFDEF LCLGTK2}
 procedure FullScreen(WinControl: TWinControl);
 procedure UnFullScreen(WinControl: TWinControl);
