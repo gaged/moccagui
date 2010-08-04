@@ -5,8 +5,7 @@ unit emc2pas;
 {$mode objfpc}
 
 {$link emcpas.o}
-{$link libemc.a}
-{$linklib libemcini.so}
+{$linklib libemc.a}
 {$linklib libnml.so}
 {$linklib c}
 
