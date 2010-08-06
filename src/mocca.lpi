@@ -21,7 +21,7 @@
       <AutoIncrementBuild Value="True"/>
       <CurrentMajorRevNr Value="2"/>
       <CurrentMinorRevNr Value="1"/>
-      <CurrentBuildNr Value="488"/>
+      <CurrentBuildNr Value="582"/>
       <ProjectVersion Value="0.2.1.2"/>
       <Language Value="0407"/>
       <CharSet Value="04B0"/>
@@ -35,6 +35,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <HostApplicationFilename Value="/home/gtom/emc2-2.4.1/scripts/emc"/>
+        <CommandLineParams Value="/home/gtom/emc2-2.4.1/configs/sim/axis_mm.ini"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
@@ -47,7 +49,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="31">
+    <Units Count="32">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -227,6 +229,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="mocstat"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="gltools.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="gltools"/>
+      </Unit31>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

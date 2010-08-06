@@ -352,10 +352,7 @@ begin
       LabelToolNo.Caption:= IntToStr(FTool);
       if ShowGlPreview then
         if Assigned(clSim) then
-          begin
-            clSim.UpdateTool(FTool);
-            writeln('Update tool: ',FTool);
-          end;
+          clSim.UpdateTool(FTool);
     end;
 
   if FFile <> Vars.ProgramFile then
