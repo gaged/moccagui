@@ -45,7 +45,7 @@ TSimulatorDlg = class(TForm)
 
 end;
 
-function Show3DPreviewDlg(var AList: gluInt): Boolean;
+function Show3DPreviewDlg(AList: pgluInt): Boolean;
 
 implementation
 
@@ -60,22 +60,23 @@ var
   Res: Double;                       // resolution of heightmap
   ToolDef: TToolDef;                 // Tool heightmap
   DefaultToolDia: double;
-  iList: gluInt;
+  plist: pgluInt;
   // Status: string;
   // DoAbort: Boolean;
 
-function Show3DPreviewDlg(var AList: gluInt): Boolean;
+function Show3DPreviewDlg(AList: pgluInt): Boolean;
 var
   Dlg: TSimulatorDlg;
 begin
   Result:= False;
+  plist:= nil;
   if not Assigned(Renderer) then
   begin
     writeln('Renderer = nil!');
     Exit;
   end;
   Application.CreateForm(TSimulatorDlg,Dlg);
-  iList:= AList;
+  plist:= AList;
   try
     Result:= Dlg.ShowModal <> mrCancel;
   finally
@@ -193,11 +194,14 @@ var
   z1,z2,z3: double;
   //tc: integer;
 begin
+  if plist = nil then Exit;
   writeln('building triangles...');
   //ProgressBar.Max:= CountX * CountY;
   //ProgressBar.Position:= 0;
-  glDeleteLists(iList,1);
-  glNewList(iList,GL_COMPILE);
+  if plist^ <> 0 then
+    glDeleteLists(plist^,1);
+  plist^:= glGenLists(1);
+  glNewList(plist^,GL_COMPILE);
   glEnable(GL_NORMALIZE);
   glbegin(gl_triangles);
   for i:=0 to CountX - 2 do

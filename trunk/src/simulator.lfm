@@ -1,7 +1,7 @@
 object SimulatorDlg: TSimulatorDlg
-  Left = 545
+  Left = 656
   Height = 260
-  Top = 218
+  Top = 281
   Width = 360
   ActiveControl = EditTool
   Caption = '3D Solid'

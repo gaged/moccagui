@@ -67,10 +67,11 @@ var
   {$ifdef VER_24}
   xyrot: double;
   {$endif}
-  toolno: integer;
-  spindlerate: double;
-  feedrate: double;
-  traverserate: double;
+  //xo,zo,wo: Double;
+  //toolno: integer;
+  //spindlerate: double;
+  //feedrate: double;
+  //traverserate: double;
 
 var
   Plane: integer; external name 'plane';
@@ -86,8 +87,6 @@ var
   glGCodes: array[0..ACTIVE_G_CODES_MAX-1] of integer; external name 'gcodes';
   glMCodes: array[0..ACTIVE_M_CODES_MAX-1] of integer; external name 'mcodes';
   CanonTool: TTool; external name 'canontool';
-
-
 
 {$ifdef VER_23}
 procedure initgcode; cdecl; external;
@@ -313,18 +312,24 @@ begin
 end;
 
 {$ifdef VER_23}
-procedure tooloffset(z,x,w: double); cdecl; export;
+procedure tooloffset(zt,xt,wt: double); cdecl; export;
 begin
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['Tooloffset: ',zt,xt,wt]));
   {$endif}
   FirstMove:= True;
-  lo.x:= lo.x - x + toffs.x; // xo;
+  {lo.x:= lo.x - x + toffs.x; // xo;
   lo.z:= lo.z - z + toffs.z; // zo;
   lo.w:= lo.w - w - toffs.w; // wo;
   toffs.x:= x;  // xo:= xt;
   toffs.z:= z;  // zo:= zt;
-  toffs.w:= w;  // wo:= wt;
+  toffs.w:= w;  // wo:= wt;}
+  lo.x:= lo.x - xt + xo;
+  lo.z:= lo.z - zt + zo;
+  lo.w:= lo.w - wt - wo;
+  xo:= xt;
+  zo:= zt;
+  wo:= wt;
 end;
 {$endif}
 
@@ -340,7 +345,7 @@ begin
   lo.c:= lo.c - c + toffs.c;
   lo.u:= lo.u - u + toffs.u;
   lo.v:= lo.v - v + toffs.v;
-  lo.w:= lo.w - w + toffs.w;
+  lo.w:= lo.w - w - toffs.w;
   SetCoords(toffs,x,y,z,a,b,c,u,v,w);
 end;
 {$endif}
@@ -364,6 +369,12 @@ begin
   if (i < 0) or (i >= CANON_TOOL_MAX) then
     result:= 0
   else
+    begin
+      CanonTool:= Tools[i];
+      Result:= 1;
+    end;
+  // obsolete, canon uses emc state units
+  {
     with CanonTool do
       begin
         toolno:= Tools[i].toolno;
@@ -380,12 +391,14 @@ begin
         voffset:= ToCanonUnits(Tools[i].voffset);
         woffset:= ToCanonUnits(Tools[i].woffset);
         {$endif}
-        diameter:= ToCanonUnits(Tools[i].diameter);
-        frontangle:= ToCanonUnits(Tools[i].frontangle);
-        backangle:= ToCanonUnits(Tools[i].backangle);
+        diameter:= Tools[i].diameter;// ToCanonUnits(Tools[i].diameter);
+        writeln('Dia: ',FLoatToStr(diameter));
+        frontangle:= Tools[i].frontangle;
+        backangle:= Tools[i].backangle;
         orientation:= Tools[i].orientation;
         Result:= 1;
       end;
+    }
 end;
 
 procedure changetool(Tool: integer); cdecl; export;
@@ -395,7 +408,9 @@ begin
   if (Tool > 0) and (Tool < CANON_TOOL_MAX) then
     Tools[0]:= Tools[Tool];
   if Assigned(Renderer) then
-    Renderer.SetTool(Tools[0].diameter);
+    Renderer.SetTool(Tools[0].diameter)
+  else
+    writeln('Render = nil!');
   {$ifdef PRINT_CANON}
   writeln(Format('%s %d',['change_tool: ',Tool]));
   {$endif}
@@ -404,7 +419,7 @@ end;
 procedure changetoolnumber(tool: integer); cdecl; export;
 begin
   FirstMove:= True;
-  toolno:= tool;
+  //toolno:= tool;
   {$ifdef PRINT_CANON}
   writeln(Format('%s %d',['change_tool_number: ',Tool]));
   {$endif}
@@ -412,7 +427,7 @@ end;
 
 procedure selecttool(tool: integer); cdecl; export;
 begin
-  toolno:= tool;
+  //toolno:= tool;
   {$ifdef PRINT_CANON} 
   writeln('Select tool: ' + IntToStr(tool));
   {$endif}
@@ -420,17 +435,17 @@ end;
 
 procedure setspindlerate(rate: double); cdecl; export;
 begin
-  spindlerate:= rate;
+  //spindlerate:= rate;
 end;
 
 procedure setfeedrate(rate: double); cdecl; export;
 begin
-  feedrate:= rate;
+  //feedrate:= rate;
 end;
 
 procedure settraverserate(rate: double); cdecl; export;
 begin
-  traverserate:= rate;
+  //traverserate:= rate;
 end;
 
 procedure straighttraverse(x,y,z,a,b,c,u,v,w: double); cdecl; export;

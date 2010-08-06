@@ -75,11 +75,13 @@ procedure TGlRenderer.MakeList(var ListL: gluInt);
 var
   P: PListItem;
 begin
-  glDeleteLists(ListL,1);
-  glNewList(ListL,GL_COMPILE);
+  if ListL <> 0 then
+    glDeleteLists(ListL,1);
+  ListL:= glGenLists(1);
+  glNewList(ListL, GL_COMPILE);
   First;
   P:= Get;
-  glLineWidth(3);
+  //glLineWidth(3);
   while (P <> nil) do
     begin
       if (P^.ltype = ltFeed) or (P^.ltype = ltArcFeed) then
@@ -90,11 +92,11 @@ begin
           glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
           glEnd();
         end;
-          P:= Get;
+      P:= Get;
     end;
   First;
   Get;
-  glLineWidth(1);
+  //glLineWidth(1);
   while (P <> nil) do
     begin
       if (P^.ltype = ltTraverse) or (P^.ltype = ltDwell) then
@@ -105,9 +107,9 @@ begin
           glVertex3f(P^.l2.x,P^.l2.y,P^.l2.z);
           glEnd();
         end;
-      P:= Renderer.Get;
+      P:= Get;
     end;
-  glLineWidth(1);
+  //glLineWidth(1);
   glEndList;
 end;
 
@@ -181,11 +183,11 @@ begin
       begin
         E:= SetExtents(P^.l1.x,P^.l1.x,P^.l1.y,P^.l1.y,P^.l1.z,P^.l1.z);
         Check(P^.l2);
-        P:= Get;
         Break;
       end;
     P:= Get;
   end;
+  P:= Get;
   while P <> nil do
     begin
       if P^.ltype <> ltTool then
@@ -237,7 +239,7 @@ begin
   P:= NewListItem(ltTool,0,n1,n2);
   if P <> nil then
     ItemList.Add(P);
-  inc(nDwells);
+  writeln('Settool', FloatToStr(Dia));
 end;
 
 procedure TGlRenderer.Traverse(line: integer; n1,n2: tlo);

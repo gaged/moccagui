@@ -106,6 +106,8 @@ function GetHalLedState(Led: integer): Boolean;
 
 procedure SetHalRotation(x,y,z: Double);
 
+function GetHalCommand(var Command: integer): Boolean;
+
 implementation
 
 uses

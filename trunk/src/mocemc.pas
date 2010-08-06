@@ -45,6 +45,7 @@ type
     FFeedOverride: integer;
     FSpindleOverride: integer;
     FMaxVelocity: integer;
+    FHalCmd: integer;
     procedure SetFeedOverride(Value: integer);
     procedure SetMaxVelocity(Value: integer);
     procedure SetSpindleOverride(Value: integer);
@@ -585,6 +586,14 @@ var
   i: integer;
 begin
   Result:= False;
+
+  if FHalCmd <> 0 then
+    begin
+      HandleCommand(FHalCmd);
+      FHalCmd:= 0;
+      Exit;
+    end;
+
   if UpdateLock then Exit;
 
   if UpdateStatus <> 0 then Exit;
@@ -593,6 +602,7 @@ begin
   i:= taskMode;
   Result:= (i <> State.TaskMode);
   State.TaskMode:= i;
+
   with State do
     begin
       EStop:= GetEStop;
@@ -671,7 +681,10 @@ begin
           State.ActVel:= FMaxVelocity;
           if State.ActVel < 1 then State.ActVel:= 1;
           sendMaxVelocity(State.ActVel / 60);
-        end
+        end;
+
+      GetHalCommand(FHalCmd);
+      // HalCommand will be executed on next update cycle
    end;
 end;
 

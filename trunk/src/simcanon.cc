@@ -76,9 +76,6 @@ int last_sequence_number;
 int plane;
 bool metric;
 double _pos_x, _pos_y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w;
-
-
-
 int axis_mask;
 
 extern "C" void nextline();
@@ -102,7 +99,7 @@ extern "C" void setfeedrate(double rate);
 extern "C" void tooloffset(double zoffset, double xoffset, double woffset);
 #endif
 #ifdef VER_24
-extern "C" void tooloffset(double x, double y, double z, 
+extern "C" void tooloffset(double x, double y, double z,
   double a, double b, double c, double u, double v, double w);
 #endif
 
@@ -177,17 +174,16 @@ void SET_XY_ROTATION(double t) {
 };
 #endif
 
-
 #ifdef VER_24
 void USE_TOOL_LENGTH_OFFSET(EmcPose offset) {
     tool_offset = offset;
     maybe_new_line();
     if(interp_error) return;
     if(metric) {
-        offset.tran.x /= 25.4; offset.tran.y /= 25.4; offset.tran.z /= 25.4;
-        offset.u /= 25.4; offset.v /= 25.4; offset.w /= 25.4; }
-    tooloffset(offset.tran.x, offset.tran.y, offset.tran.z, 
-        offset.a, offset.b, offset.c, offset.u, offset.v, offset.w);
+      offset.tran.x /= 25.4; offset.tran.y /= 25.4; offset.tran.z /= 25.4;
+      offset.u /= 25.4; offset.v /= 25.4; offset.w /= 25.4; }
+    tooloffset(offset.tran.x, offset.tran.y, offset.tran.z,
+      offset.a, offset.b, offset.c, offset.u, offset.v, offset.w);
 }
 #endif
 
@@ -423,7 +419,6 @@ void SET_TOOL_TABLE_ENTRY(int pocket, int toolno, EmcPose offset, double diamete
 void SET_TOOL_TABLE_ENTRY(int id, double zoffset, double diameter) {
 }
 
-
 void SET_FEED_REFERENCE(double reference) { }
 void SET_CUTTER_RADIUS_COMPENSATION(double radius) {}
 void START_CUTTER_RADIUS_COMPENSATION(int direction) {}
@@ -441,7 +436,6 @@ void PROGRAM_STOP() {}
 void PROGRAM_END() {}
 void FINISH() {}
 void PALLET_SHUTTLE() {}
-
 
 #ifdef VER_23
 void SELECT_TOOL(int tool) { selecttool(tool); }

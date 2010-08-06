@@ -359,21 +359,43 @@ end;
 begin
   if Down then
     begin
-      case Key of
-        33: Jog('Z', 1);
-        34: Jog('Z',-1);
-        37,VK_NUMPAD4: Jog('X',-1);
-        39,VK_NUMPAD6: Jog('X', 1);
-        38: Jog('Y', 1);
-        40: Jog('Y',-1);
-      end;
+      if Vars.IsLathe then
+        begin
+          case Key of
+            VK_LEFT,VK_NUMPAD4: Jog('Z',-1);
+            VK_RIGHT,VK_NUMPAD6: Jog('Z', 1);
+            VK_UP: Jog('X',-1);
+            VK_DOWN: Jog('X',1);
+          end;
+        end
+      else
+        begin
+          case Key of
+            VK_PRIOR: Jog('Z', 1);
+            VK_NEXT: Jog('Z',-1);
+            VK_LEFT,VK_NUMPAD4: Jog('X',-1);
+            VK_RIGHT,VK_NUMPAD6: Jog('X', 1);
+            VK_UP: Jog('Y', 1);
+            VK_DOWN: Jog('Y',-1);
+          end;
+        end;
     end
   else
     begin
-      case Key of
-        33,34: JogStop('Z');
-        37,39,VK_NUMPAD4,VK_NUMPAD6: JogStop('X');
-        38,40: JogStop('Y');
+      if Vars.IsLathe then
+        begin
+          case Key of
+            VK_LEFT,VK_RIGHT,VK_NUMPAD4,VK_NUMPAD6: JogStop('Z');
+            VK_UP,VK_DOWN: JogStop('X');
+          end;
+        end
+      else
+        begin
+          case Key of
+            VK_PRIOR,VK_NEXT: JogStop('Z');
+            VK_LEFT,VK_RIGHT,VK_NUMPAD4,VK_NUMPAD6: JogStop('X');
+            VK_UP,VK_DOWN: JogStop('Y');
+          end;
       end // case
     end;
   Result:= (Key = 0);

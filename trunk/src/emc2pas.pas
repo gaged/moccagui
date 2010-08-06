@@ -324,5 +324,10 @@ function  sendClearProbeTrippedFlag: Longint; cdecl; external;
 
 implementation
 
+initialization
+
+{$ifdef VER_24}
+RandomToolchanger:= 0;
+{$endif}
 
 end.
