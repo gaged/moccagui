@@ -27,6 +27,38 @@ const
   CANON_UNITS_INCH = 1;
   CANON_UNITS_MM = 2;
 
+  STATE_ESTOP = 1;
+  STATE_ESTOP_RESET = 2;
+  STATE_OFF = 3;
+  STATE_ON = 4;
+
+  TASKMODEMANUAL = 1;
+  TASKMODEAUTO   = 2;
+  TASKMODEMDI    = 3;
+
+  EMC_WAIT_NONE     = 1;
+  EMC_WAIT_RECEIVED = 2;
+  EMC_WAIT_DONE     = 3;
+
+  RCS_DONE = 1;
+  RCS_EXEC = 2;
+  RCS_ERROR = 3;
+
+  INTERP_IDLE    = 1;
+  INTERP_READING = 2;
+  INTERP_PAUSED  = 3;
+  INTERP_WAITING = 4;
+
+  EMC_TASK_EXEC_ERROR = 1;
+  EMC_TASK_EXEC_DONE = 2;
+  EMC_TASK_EXEC_WAITING_FOR_MOTION = 3;
+  EMC_TASK_EXEC_WAITING_FOR_MOTION_QUEUE = 4;
+  EMC_TASK_EXEC_WAITING_FOR_IO = 5;
+  EMC_TASK_EXEC_WAITING_FOR_PAUSE = 6;
+  EMC_TASK_EXEC_WAITING_FOR_MOTION_AND_IO = 7;
+  EMC_TASK_EXEC_WAITING_FOR_DELAY = 8;
+  EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD = 9;
+
 
 type
   TTool = packed record
@@ -64,49 +96,19 @@ const
     orientation: 0;
     );
 
-
 type
   TTools = array[0..CANON_TOOL_MAX + 1] of TTool;
 
-const
-  TaskModeManual = 1;
-  TaskModeAuto   = 2;
-  TaskModeMDI    = 3;
-  
-  EMC_WAIT_NONE     = 1;
-  EMC_WAIT_RECEIVED = 2;
-  EMC_WAIT_DONE     = 3;
-
-  RCS_DONE = 1;
-  RCS_EXEC = 2;
-  RCS_ERROR = 3;
-
-  INTERP_IDLE    = 1;
-  INTERP_READING = 2;
-  INTERP_PAUSED  = 3;
-  INTERP_WAITING = 4;
-
-  EMC_TASK_EXEC_ERROR = 1;
-  EMC_TASK_EXEC_DONE = 2;
-  EMC_TASK_EXEC_WAITING_FOR_MOTION = 3;
-  EMC_TASK_EXEC_WAITING_FOR_MOTION_QUEUE = 4;
-  EMC_TASK_EXEC_WAITING_FOR_IO = 5;
-  EMC_TASK_EXEC_WAITING_FOR_PAUSE = 6;
-  EMC_TASK_EXEC_WAITING_FOR_MOTION_AND_IO = 7;
-  EMC_TASK_EXEC_WAITING_FOR_DELAY = 8;
-  EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD = 9;
-  
 var
-  ErrorStr: Array[0..LINELEN-1] of Char; external name 'errorString';
   EMC_NMLFILE: Array[0..LINELEN-1] of Char; external name 'EMC_NMLFILE';
-  
+  ErrorStr: Array[0..LINELEN-1] of Char; external name 'errorString';
   OperatorTextStr: Array[0..LINELEN-1] of Char; external name 'operatorTextStr';
   OperatorDisplayStr: Array[0..LINELEN-1] of Char; external name 'operatorDisplayStr';
 
-  EmcUpdateType: Byte; external name 'emcUpdateType';  	// enum = byte ???
-  EmcTimeOut: Double; external name 'emcTimeout';
-  EmcSpindleDefaultSpeed: Integer; external name 'emcSpindleDefaultSpeed';
-  emcCommandSerialNumber: integer; external name 'emcCommandSerialNumber';
+  //EmcUpdateType: Byte; external name 'emcUpdateType';  	// enum = byte ???
+  //EmcTimeOut: Double; external name 'emcTimeout';
+  EmcSpindleDefaultSpeed: double; external name 'emcSpindleDefaultSpeed';
+  EmcCommandSerialNumber: integer; external name 'emcCommandSerialNumber';
 
   ActiveGCodes: Array[0..MDI_LINELEN-1] of Char; external name 'activeGCodes';
   ActiveMCodes: Array[0..MDI_LINELEN-1] of Char; external name 'activeMCodes';
@@ -121,7 +123,7 @@ var
   ToolComments: Array[0..CANON_TOOL_MAX] of PChar; external name 'ttcomments';
 
 // Toolfile
-function  getnumtools: integer; cdecl; external;
+// function  getnumtools: integer; cdecl; external;
 function  SetCanonTool(tool: integer): boolean; cdecl; external;
 
 procedure InitToolTable; cdecl; external;
@@ -154,6 +156,7 @@ function AxisMaxSoftLimit(Joint: integer): Double; cdecl; external; { motion.axi
 function AxisMinHardLimit(Joint: integer): Double; cdecl; external; { motion.axis.*.minHardLimit; }
 function AxisMaxHardLimit(Joint: integer): Double; cdecl; external; { motion.axis.*.maxHardLimit; }
 function AxisOverrideLimits(Joint: integer): Boolean; cdecl; external; { motion.axis.*.overrideLimits; }
+function AxisInPos(joint: integer): integer; cdecl; external; { return emcStatus->motion.axis[joint].inpos; }
 
 // traj related functions
 
@@ -230,24 +233,12 @@ function  emcErrorNmlGet: Longint; cdecl; external;
 function  emcNmlInit: Longint; cdecl; external;
 procedure emcNmlQuit; cdecl; external;
 
-function  getFeedOverride: Longint; cdecl; external;
-function  getEStop: Boolean; cdecl; external;
-function  getMachineOn: Boolean; cdecl; external;
-function  getTaskMode: Longint; cdecl; external;
-function  getMistOn: Boolean; cdecl; external;
-function  getFloodOn: Boolean; cdecl; external;
-function  getLubeOn: Boolean; cdecl; external;
-function  getSpindle: Longint; cdecl; external;
-function  getBrakeOn: Boolean; cdecl; external;
-
 function  updateStatus: Longint; cdecl; external;
 function  updateError: Longint; cdecl; external;
 
 function  emcCommandWaitReceived(Serialnumber: integer): Longint; cdecl; external;
 function  emcCommandWaitDone(Serialnumber: integer): Longint; cdecl; external;
 function  emcPollStatus: integer; cdecl; external;
-
-// function  convertLinearUnits(u: Double): Double; cdecl; external;
 
 function  sendDebug(level: integer): longint; cdecl; external;
 

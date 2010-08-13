@@ -18,6 +18,7 @@ type
     Button1: TButton;
     Button2: TButton;
     LbTools: TListBox;
+    procedure FormActivate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
@@ -97,12 +98,16 @@ begin
   end;
 end;
 
-procedure TToolChgDlg.FormShow(Sender: TObject);
+procedure TToolChgDlg.FormActivate(Sender: TObject);
 begin
   if Sender = nil then ;
-  {$IFDEF LCLGTK2}
+  {$ifdef LCLGTK2}
   DoBringToFront(Self);
-  {$ENDIF}
+  {$endif}
+end;
+
+procedure TToolChgDlg.FormShow(Sender: TObject);
+begin
   LbTools.SetFocus;
 end;
 

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils;
-  
+
+
 type
   TEMC = class
 
@@ -17,29 +18,42 @@ type
 
     procedure Execute(cmd: string);
     procedure ExecuteSilent(cmd: string);
-    function  ForceTaskMode(ToMode: integer): Boolean;
-    function  ForceMachineOff: Boolean;
+    procedure ExecuteHalCmd;
+
+    function  SetTaskMode(ToMode: integer): Boolean;
+    function  SetMachineOff: Boolean;
+
     function  GetActiveCoordSys: integer;
+
     function  HandleCommand(Cmd: integer): Boolean;
     function  ToDisplayUnits(Value: double): double;
     function  UpdateState: Boolean;
-    procedure SetCoordsZero;
     procedure SetDisplayUnits(UseMetric: Boolean);
     procedure SetORideLimits(ORide: Boolean);
+
     procedure TouchOffAxis(Axis: Char; iCoord: integer; Value: double);
-    procedure TaskStop;
-    procedure TaskPauseResume;
-    procedure TaskResume;
-    procedure TaskPause;
-    procedure TaskStep;
-    procedure TaskRun;
+    procedure TouchOff(Axis: Char);
+    procedure TouchOffWiz;
+    procedure SetCoordsZero;
+
+    procedure Stop;
+    procedure Resume;
+    procedure Pause;
+    procedure Step;
+    procedure Run(Line: integer);
+    procedure Reentry;
+
+    procedure SaveState;
+
     procedure ResetInterpreter;
     function  WaitDone: integer;
+
     procedure LoadTools;
     procedure ChangeTool;
-    procedure TouchOff(Axis: Char);
-    procedure TouchWiz;
-    procedure EditCurrent;
+
+    procedure EditFile;
+    procedure OpenFile(AFileName: string);
+    procedure ReloadFile;
 
   private
     FFeedOverride: integer;
@@ -58,9 +72,6 @@ type
 var
   Emc: TEMC;                    // the base class of the emc interface
 
-var
-  UpdateCounter: integer;
-
 implementation
 
 uses
@@ -70,10 +81,45 @@ uses
   offsetdlg,
   tooleditdlg,toolchange,
   touchoff, touchoffwiz,
-  coordrotate;
+  coordrotate,
+  glcanon,simclient;
+
+var
+  UpdateCounter: integer;
 
 const
   ToolsInitialized: Boolean = False;
+
+type
+  TReentryState = record
+    MotionLn: integer;
+    GCodes: string;
+    MCodes: string;
+    PosX,PosY,PosZ: double;
+    OriginX,OriginY,OriginZ: double;
+  end;
+
+var
+  LastState: TReentryState;
+
+procedure TEmc.OpenFile(AFileName: string);
+begin
+  Vars.ProgramFile:= AFileName;
+  sendProgramOpen(PChar(Vars.ProgramFile));
+  WaitDone;
+end;
+
+procedure TEmc.ReloadFile;
+begin
+  if Vars.ProgramFile <> '' then
+    begin
+      SetTaskMode(TASKMODEAUTO);
+      sendAbort;
+      WaitDone;
+      sendProgramOpen(PChar(Vars.ProgramFile));
+      WaitDone;
+    end;
+end;
 
 constructor TEmc.Create;
 begin
@@ -85,6 +131,8 @@ begin
   SetupAxes;
   FFeedOverride:= 100;
   FSpindleOverride:= 100;
+  if DefaultSpindleSpeed > 0 then
+    emcSpindleDefaultSpeed:= DefaultSpindleSpeed;
 end;
 
 procedure TEmc.ResetInterpreter;
@@ -284,7 +332,7 @@ begin
     end;
 end;
 
-procedure TEmc.EditCurrent;
+procedure TEmc.EditFile;
 begin
   ExecEditor;
 end;
@@ -414,7 +462,7 @@ begin
   UpdateLock:= True;
   Sleep(10);
   try
-    OldMode:= State.taskMode;
+    OldMode:= State.Mode;
     if OldMode <> TASKMODEMDI then
       begin
         sendMDI;
@@ -433,6 +481,135 @@ begin
   finally
     UpdateLock:= False;
   end;
+end;
+
+function CheckInMotion: Boolean;
+var
+  i,j: integer;
+begin
+  Result:= False;
+  UpdateStatus;
+  for i:= 0 to Vars.NumAxes - 1 do
+    begin
+      j:= Pos(Vars.Axis[i].AxisChar,Mask) - 1;
+      if j < 0 then Break;
+      if (AxisInPos(j) <> 1) or AxisHoming(j) then
+        begin
+          Result:= True;
+          Exit;
+        end;
+    end;
+end;
+
+procedure CheckModeManual;
+begin
+  if taskMode = TASKMODEMANUAL then Exit;
+  sendManual;
+  Emc.WaitDone;
+  Sleep(20);
+  UpdateStatus;
+  UpdateError;
+  if (taskMode <> TASKMODEMANUAL) then
+    raise Exception.Create('Error: Cannot change Taskmode to "Manual"');
+end;
+
+procedure CheckModeMDI;
+begin
+  if taskMode = TASKMODEMDI then Exit;
+  sendMDI;
+  Emc.WaitDone;
+  Sleep(20);
+  UpdateStatus;
+  UpdateError;
+  if (taskMode <> TASKMODEMDI) then
+    raise Exception.Create('Error: Cannot change Taskmode to "MDI"');
+end;
+
+procedure CheckModeAuto;
+begin
+  if taskMode = TASKMODEAUTO then Exit;
+  sendAuto;
+  Emc.WaitDone;
+  Sleep(20);
+  UpdateStatus;
+  UpdateError;
+  Sleep(20);
+  if ErrorStr[0] <> #0 then
+    raise Exception.Create(PChar(ErrorStr));
+  //if (taskMode <> TASKMODEAUTO) then
+  //  raise Exception.Create('Error: Cannot change Taskmode to "Auto"');
+end;
+
+// Stops execution and returns last line of code);
+function CheckAutoStop: integer;
+var
+  i: integer;
+  LastLn: integer;
+begin
+  Result:= -1;
+  writeln('Interp.-State: ',taskInterpstate);
+  LastLn:= taskMotionLine;
+  if LastLn < 1 then
+    LastLn:= taskCurrentLine + 1;
+  sendAbort;
+  Emc.WaitDone;
+  Sleep(20);
+  UpdateStatus;
+  UpdateError;
+  if ErrorStr[0] <> #0 then
+    raise Exception.Create(PChar(ErrorStr));
+  Result:= LastLn;
+end;
+
+procedure TEmc.ExecuteHalCmd;
+var
+  Err: integer;
+  LastLn: integer;
+begin
+  if FHalCmd < 1 then Exit;
+  writeln('Executing HalCmd: ',FHalCmd);
+  //if (State.TaskMode <> TASKMODEAUTO)  then
+  //  begin
+  //    Emc.HandleCommand(FHalCmd);
+  //    FHalCmd:= 0;
+  //    Exit;
+  //  end;
+  UpdateLock:= True;
+  writeln('Updatelock: True');
+  Sleep(10);
+  try
+    LastLn:= CheckAutoStop;
+    writeln('Stopped at line: ',LastLn);
+    CheckModeManual;
+    writeln('Switched to mode manual');
+    HandleCommand(FHalCmd);
+    FHalCmd:= 0;
+    while CheckInMotion do
+      begin
+        Application.ProcessMessages;
+      end;
+    // WaitDone;
+    Sleep(20);
+    UpdateStatus;
+    UpdateError;
+     if ErrorStr[0] <> #0 then
+        raise Exception.Create(PChar(ErrorStr));
+    writeln('executed hal cmd: ',FHalCmd);
+    Sleep(100);
+    CheckModeAuto;
+    writeln('switched back to mode auto.');
+    Vars.StartLine:= LastLn;
+    sendProgramRun(LastLn);
+    //WaitDone;
+    writeln('restarted program at line: ',LastLn);
+  except
+    on E:Exception do
+      begin
+        writeln(E.Message);
+      end;
+  end;
+  writeln('UpdateLock: False');
+  UpdateLock:= False;
 end;
 
 function TEmc.GetActiveCoordSys: integer;
@@ -515,7 +692,7 @@ begin
   clRun.UpdatePreview(True);
 end;
 
-procedure TEmc.TouchWiz;
+procedure TEmc.TouchOffWiz;
 var
   s: string;
 begin
@@ -528,23 +705,23 @@ begin
     end;
 end;
 
-function TEmc.ForceTaskMode(ToMode: integer): Boolean;
+function TEmc.SetTaskMode(ToMode: integer): Boolean;
 begin
   {$IFDEF DEBUG_EMC}
   writeln('ForceTaskMode',ToMode);
   {$ENDIF}
   Result:= False;
-  if ToMode = State.TaskMode then Exit;
-  if State.TaskMode = TaskModeManual then
+  if ToMode = State.Mode then Exit;
+  if State.Mode = TaskModeManual then
     if Assigned(Joints) then
       Joints.CheckJogExit;
-  if not State.EStop then
-    with State do
-      if SpindleDirection <> 0 then
+{  if ToMode <> TASKMODEAUTO then
+    if not State.EStop then
+      if State.SpindleDirection <> 0 then
         begin
           sendSpindleOff;
           WaitDone;
-        end;
+        end;  }
   case ToMode of
     TASKMODEMANUAL: sendManual;
     TASKMODEAUTO: sendAuto;
@@ -553,7 +730,7 @@ begin
   Result:= True;
 end;
 
-function TEmc.ForceMachineOff: Boolean;
+function TEmc.SetMachineOff: Boolean;
 begin
   Result:= False;
   sendMachineOff;
@@ -587,26 +764,27 @@ var
 begin
   Result:= False;
 
+  if UpdateLock then Exit;
+
   if FHalCmd <> 0 then
     begin
-      HandleCommand(FHalCmd);
+      ExecuteHalCmd;
       FHalCmd:= 0;
       Exit;
     end;
-
-  if UpdateLock then Exit;
 
   if UpdateStatus <> 0 then Exit;
   if UpdateError <> 0 then Exit;
 
   i:= taskMode;
-  Result:= (i <> State.TaskMode);
-  State.TaskMode:= i;
+  Result:= (i <> State.Mode);
+  State.Mode:= i;
 
   with State do
     begin
-      EStop:= GetEStop;
-      Machine:= GetMachineOn;
+      State:= taskState;
+      //EStop:= GetEStop;
+      //Machine:= GetMachineOn;
       SpDir:= SpindleDirection;
       SpInc:= SpindleIncreasing;
       SpSpeed:= SpindleSpeed;
@@ -688,51 +866,91 @@ begin
    end;
 end;
 
-procedure TEmc.TaskRun;
+procedure TEmc.Run(Line: integer);
 begin
-  if State.TaskMode = TASKMODEAUTO then
+  if Vars.StartLine <> Line then
+    Vars.StartLine:= Line;
+  if State.Mode = TASKMODEAUTO then
     sendProgramRun(Vars.StartLine);
 end;
 
-procedure TEmc.TaskStep;
+procedure TEmc.Step;
 begin
-  if (State.TaskMode = TASKMODEAUTO) then
+  if (State.Mode = TASKMODEAUTO) then
     sendProgramStep;
 end;
 
-procedure TEmc.TaskPause;
+procedure TEmc.SaveState;
 begin
-  if (State.TaskMode <> TASKMODEAUTO) or
-    not (State.InterpState in [INTERP_READING,INTERP_WAITING]) then
-      Exit;
-  sendProgramPause;
+  UpdateStatus;
+  taskActiveCodes;
+  with LastState do
+    begin
+      MotionLn := taskMotionline - 1;
+      PosX:= getRelPos(0);
+      PosY:= getRelPos(1);
+      PosZ:= getRelPos(2);
+      GCodes:= PChar(ActiveGCodes);
+      MCodes:= PChar(ActiveMCodes);
+    end;
+  if Verbose > 0 then
+    writeln('paused at: ',LastState.MotionLn);
 end;
 
-procedure TEmc.TaskResume;
+procedure TEmc.Reentry;
+var
+  i: integer;
+  Metric: Boolean;
+  Scale: Double;
+begin
+  if State.Mode <> TASKMODEAUTO then Exit;
+  if LastState.MotionLn < 1 then
+    begin
+      LastError:= 'Cannot do a re-entry if the program was not stopped.';
+      Exit;
+    end;
+  with LastState do
+    begin
+      writeln('Programline: ',MotionLn);
+      writeln('Gcodes: ',gcodes);
+      writeln('MCodes: ',mcodes);
+      Scale:= 1;
+      writeln('X: ' + PosToString(PosX * Scale));
+      writeln('Y: ' + PosToString(PosY * Scale));
+      writeln('Z: ' + PosToString(PosZ * Scale));
+    end;
+  Run(LastState.MotionLn);
+end;
+
+procedure TEmc.Pause;
+begin
+  if (State.Mode <> TASKMODEAUTO) then Exit;
+  if not (State.InterpState in [INTERP_READING,INTERP_WAITING]) then
+    Exit;
+  sendProgramPause;
+  Sleep(20);
+  // WaitDone;
+  // SaveState;
+end;
+
+procedure TEmc.Resume;
 begin
   UpdateState;
-  if (State.TaskMode <> TASKMODEAUTO) then
-    Exit;
+  if (State.Mode <> TASKMODEAUTO) then Exit;
   if State.InterpState = INTERP_PAUSED then
     sendProgramResume;
 end;
 
-procedure TEmc.TaskPauseResume;
+procedure TEmc.Stop;
 begin
-  UpdateState;
-  if State.TaskMode <> TASKMODEAUTO then
-    Exit;
-  if State.InterpState = INTERP_PAUSED then
-    sendProgramResume
-  else
-    if State.InterpState <> INTERP_IDLE then
-      sendProgramPause;
-end;
-
-procedure TEmc.TaskStop;
-begin
-  if State.TaskMode = TASKMODEAUTO then
+  if State.Mode = TASKMODEAUTO then
     begin
+      // this is a test for the reentry functionality of mocca
+      // we ll have a short delay on a Stop command but we need
+      // to pause the interpreter first to get the correct motion line
+      // Disabled in this release
+      // Pause;
+      // now execute the normal code for a stop command
       sendAbort;
       WaitDone;
     end;
@@ -740,7 +958,7 @@ end;
 
 procedure TEmc.TouchOff(Axis: Char);
 begin
-  if State.TaskMode <> TASKMODEMANUAL then
+  if State.Mode <> TASKMODEMANUAL then
     Exit;
   DoTouchOff(Axis);
   clRun.UpdatePreview(True);
@@ -758,7 +976,7 @@ begin
       begin
         sendAbort;
         WaitDone;
-        if not State.EStop then
+        if not State.State = STATE_ESTOP then
           begin
             SendEStop;
             WaitDone;
@@ -767,13 +985,13 @@ begin
           SendEStopReset;
       end;
     cmMACHINE:
-      if State.Machine then
+      if State.State = STATE_OFF then
         SendMachineOff
       else
         SendMachineOn;
-    cmJOG: ForceTaskMode(TASKMODEMANUAL);
-    cmAUTO: ForceTaskMode(TASKMODEAUTO);
-    cmMDI: ForceTaskMode(TASKMODEMDI);
+    cmJOG: SetTaskMode(TASKMODEMANUAL);
+    cmAUTO: SetTaskMode(TASKMODEAUTO);
+    cmMDI: SetTaskMode(TASKMODEMDI);
     cmFEEDRESET: FeedOverride:= 100;
     cmSPCW:
       if State.SpDir <> 0 then
@@ -821,7 +1039,7 @@ begin
     cmTOUCHA: TouchOff('A');
     cmTOUCHB: TouchOff('B');
     cmTOUCHC: TouchOff('C');
-    cmTOUCHWIZ: TouchWiz;
+    cmTOUCHWIZ: TouchOffWiz;
     cmLIMITS: SetORideLimits(not State.ORideLimits);
     cmOFFSDLG:
       begin
@@ -836,8 +1054,17 @@ begin
        end;
     cmTOOLCHG: ChangeTool;
     cmUNITS: SetDisplayUnits(not Vars.ShowMetric);
-    cmEDITOR: EditCurrent;
+    cmEDITOR: EditFile;
     cmCOORDROT: DoCoordRotate;
+    cmONANDREF:
+      if State.State = STATE_ESTOP then
+        begin
+          SendEStopReset;
+          Sleep(20);
+          SendMachineOn;
+          Sleep(20);
+          Joints.HomeAll;
+        end;
   else
     begin
       Result:= False;

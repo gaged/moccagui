@@ -1,7 +1,7 @@
 object SimClientForm: TSimClientForm
-  Left = 312
+  Left = 436
   Height = 377
-  Top = 246
+  Top = 223
   Width = 685
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
@@ -60,8 +60,9 @@ object SimClientForm: TSimClientForm
       Caption = '3-D Vorschau'
       OnClick = MItem3DClick
     end
-    object MItemReset: TMenuItem
+    object MItemReload: TMenuItem
       Caption = 'Reset'
+      OnClick = MItemReloadClick
     end
     object MItemInfo: TMenuItem
       Caption = 'Info...'

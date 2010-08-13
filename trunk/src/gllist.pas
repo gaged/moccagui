@@ -239,7 +239,6 @@ begin
   P:= NewListItem(ltTool,0,n1,n2);
   if P <> nil then
     ItemList.Add(P);
-  writeln('Settool', FloatToStr(Dia));
 end;
 
 procedure TGlRenderer.Traverse(line: integer; n1,n2: tlo);

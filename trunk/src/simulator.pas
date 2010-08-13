@@ -39,6 +39,8 @@ TSimulatorDlg = class(TForm)
   ProgressBar: TProgressBar;
   procedure BtnCancelClick(Sender: TObject);
   procedure BtnRenderClick(Sender: TObject);
+  procedure FormActivate(Sender: TObject);
+  procedure FormCreate(Sender: TObject);
   procedure FormShow(Sender: TObject);
   procedure UpdateEdit;
   public
@@ -391,12 +393,22 @@ begin
   ModalResult:= mrOk;
 end;
 
-procedure TSimulatorDlg.FormShow(Sender: TObject);
+procedure TSimulatorDlg.FormActivate(Sender: TObject);
 begin
   if Sender = nil then ;
-  {$IFDEF LCLGTK2}
+  {$ifdef LCLGTK2}
   DoBringToFront(Self);
-  {$ENDIF}
+  {$endif}
+end;
+
+procedure TSimulatorDlg.FormCreate(Sender: TObject);
+begin
+
+end;
+
+procedure TSimulatorDlg.FormShow(Sender: TObject);
+begin
+
 end;
 
 procedure TSimulatorDlg.BtnCancelClick(Sender: TObject);

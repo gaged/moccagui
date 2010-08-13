@@ -7,8 +7,8 @@ object CoordRotDlg: TCoordRotDlg
   Caption = 'Adjust coordinate system'
   ClientHeight = 238
   ClientWidth = 590
+  OnActivate = FormActivate
   OnCreate = FormCreate
-  OnShow = FormShow
   LCLVersion = '0.9.28.2'
   object Label1: TLabel
     Left = 4

@@ -79,6 +79,7 @@ double _pos_x, _pos_y, _pos_z, _pos_a, _pos_b, _pos_c, _pos_u, _pos_v, _pos_w;
 int axis_mask;
 
 extern "C" void nextline();
+extern "C" void sequence_number(int line);
 extern "C" void arcfeed(double first_end, double second_end, double first_axis, 
                         double second_axis, int rotation, double axis_end_point, 
                         double a_position, double b_position, double c_position, 
@@ -153,6 +154,7 @@ void maybe_new_line(int line_number) {
     active_settings(settings);
     active_g_codes(gcodes);
     active_m_codes(mcodes);
+    sequence_number(interp_new.sequence_number());
     int sequence_number = line_number == -1? interp_new.sequence_number(): line_number;
     gcodes[0] = sequence_number;
     if(sequence_number == last_sequence_number) {

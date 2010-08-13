@@ -87,7 +87,7 @@ end;
 
 procedure TMDIClientForm.ActivateSelf;
 begin
-  if State.TaskMode <> TASKMODEMDI then Exit;
+  if State.Mode <> TASKMODEMDI then Exit;
   if not Visible then
     Visible:= true;
   MapButtons;

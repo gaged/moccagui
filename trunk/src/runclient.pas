@@ -67,12 +67,8 @@ begin
   S:= '';
   MocLister.Items.Clear;
   ScrollBar.Enabled:= False;
-  sendAuto;
-  Emc.WaitDone;
-  sendAbort;
-  Emc.WaitDone;
-  sendProgramOpen(PChar(Vars.ProgramFile));
-  Emc.WaitDone;
+  Emc.ReloadFile;
+  Emc.UpdateState;
   if TaskGetFile(Buffer) then
     S:= PChar(Buffer);
   if S <> Vars.ProgramFile then
@@ -82,18 +78,15 @@ begin
       GlobalErrors.Add('Got ' + S);
       Exit;
     end;
-  Writeln('Loading file: ' + Vars.ProgramFile);
+  if Verbose > 0 then
+    writeln('Loading file: ' + Vars.ProgramFile);
   MocLister.Items.LoadFromFile(Vars.ProgramFile);
   MocLister.SelectedItem:= 0;
   ScrollBar.Enabled:= True;
   ScrollBar.SetParams(0,0,MocLister.Items.Count-1);
   MocLister.Invalidate;
-  // LB.ClearSelection;
-  if State.Machine then
-    begin
-      Vars.StartLine:= -1; // verify
-      Emc.TaskRun;
-    end;
+  //if State.Machine then
+  Emc.Run(-1);
   Vars.StartLine:= 1;
   IsOpen:= True;
   UpdatePreview(False);
@@ -216,35 +209,28 @@ begin
 
     cmPAUSE:
       if State.InterpState = INTERP_PAUSED then
-        Emc.TaskResume
+        Emc.Resume
       else
-        Emc.TaskPause;
+        Emc.Pause;
 
     cmRUN:
       if State.InterpState <> INTERP_WAITING then
-        Emc.TaskRun;
+        Emc.Run(Vars.StartLine);
 
     cmRUNLINE :
-      if MocLister.SelectedItem < 0 then
-        LastError:= 'Need a selected line'
-      else
-        begin
-          Vars.StartLine:= MocLister.SelectedItem + 2;
-          Emc.TaskRun;
-        end;
-
+      begin
+        if MocLister.SelectedItem < 0 then
+          LastError:= 'Need a selected line'
+        else
+          Emc.Run(MocLister.SelectedItem + 2);
+       end;
     cmRELOAD: ReloadFile;
-    cmSTOP: Emc.TaskStop;
+    cmSTOP: Emc.Stop;
 
     cmSTEP:
       begin
-        Emc.TaskStep;
+        Emc.Step;
         UpdateLine;
-        {$IFDEF DEBUG_EMC}
-        write('ML:',taskMotionline);
-        write('CL:',taskCurrentLine);
-        writeln('RL:',taskReadLine);
-        {$ENDIF}
       end;
 
     cmOPTSTOP:
@@ -260,7 +246,7 @@ end;
 
 procedure TRunClientForm.ActivateSelf;
 begin
-  if State.TaskMode <> TASKMODEAUTO then Exit;
+  if State.Mode <> TASKMODEAUTO then Exit;
   if not Visible then
     Visible:= True;
   MapButtons;
@@ -288,7 +274,7 @@ var
   Running: Boolean;
 begin
 
-  if State.TaskMode <> TASKMODEAUTO then
+  if State.Mode <> TASKMODEAUTO then
     begin
       writeln('Invalid call to runclient.updateself');
       Exit;
@@ -413,9 +399,9 @@ begin
     end
   else
     begin
-      if OldExecState <> State.ExecState then
+      if OldExecState <> ExecState then
         begin
-          OldExecState:= State.ExecState;
+          OldExecState:= ExecState;
           if OldExecState = EMC_TASK_EXEC_DONE then
             ActiveLn:= MocLister.Items.Count - 1;
         end;

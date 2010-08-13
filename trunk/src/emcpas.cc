@@ -329,6 +329,23 @@ extern "C" int emcCommandWaitDone(int serial_number)
     return -1;
 }
 
+extern "C" int emcWaitComplete()
+{
+    double start = etime();
+    while (etime() - start < emcTimeout) {
+      if(emcStatusBuffer->peek() == EMC_STAT_TYPE) {
+        EMC_STAT *stat = (EMC_STAT*)emcStatusBuffer->get_address();
+        if (stat->echo_serial_number == emcCommandSerialNumber &&
+           ( stat->status == RCS_DONE || stat->status == RCS_ERROR ))
+           {
+             return emcStatusBuffer->get_address()->status;
+           }
+        }
+      esleep(EMC_COMMAND_DELAY);
+    }
+    return -1;
+}
+
 extern "C" int emcPollStatus()
 {
   updateStatus();
@@ -729,16 +746,6 @@ extern "C" double getLoggerPos(int axis)
   if (axis == 2) {
     return emcStatus->motion.traj.actualPosition.tran.z - emcStatus->task.toolOffset.tran.z;
   }
-}
-
-extern "C" bool getEStop()
-{
-  return (emcStatus->task.state == EMC_TASK_STATE_ESTOP);
-}
-
-extern "C" bool getMachineOn()
-{
-  return (emcStatus->task.state == EMC_TASK_STATE_ON);
 }
 
 extern "C" int updateError()

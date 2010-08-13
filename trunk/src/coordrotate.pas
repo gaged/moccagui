@@ -41,8 +41,8 @@ type
     procedure BtnRefClick(Sender: TObject);
     procedure BtnResetClick(Sender: TObject);
     procedure BtnXRClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   protected
     procedure InitControls;
     procedure UpdateLabels;
@@ -178,6 +178,14 @@ begin
   UpdateLabels;
 end;
 
+procedure TCoordRotDlg.FormActivate(Sender: TObject);
+begin
+  if Sender = nil then ;
+  {$ifdef LCLGTK2}
+  DoBringToFront(Self);
+  {$endif}
+end;
+
 function PosToStringAxis(Axis: Char): string;
 var
   i: integer;
@@ -232,14 +240,6 @@ procedure TCoordRotDlg.FormCreate(Sender: TObject);
 begin
   if Sender = nil then ;
   ReadStyle(self,'coordrotate.xml');
-end;
-
-procedure TCoordRotDlg.FormShow(Sender: TObject);
-begin
-  if Sender = nil then ;
-  {$ifdef LCLGTK2}
-  DoBringToFront(Self);
-  {$endif}
 end;
 
 initialization

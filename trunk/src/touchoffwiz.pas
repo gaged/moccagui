@@ -38,9 +38,9 @@ type
     procedure EditY2Change(Sender: TObject);
     procedure EditY2Exit(Sender: TObject);
     procedure EditZExit(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     FAxisMask: string;
     FCoord: integer;
@@ -305,6 +305,14 @@ begin
   GetEditValue(EditZ,ZOffset);
 end;
 
+procedure TTouchOffWizDlg.FormActivate(Sender: TObject);
+begin
+  if Sender = nil then ;
+  {$ifdef LCLGTK2}
+  DoBringToFront(Self);
+  {$endif}
+end;
+
 procedure TTouchOffWizDlg.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   if Sender = nil then ;
@@ -350,15 +358,6 @@ begin
   ZDir:= 0;
   InitControls;
 end;
-
-procedure TTouchOffWizDlg.FormShow(Sender: TObject);
-begin
-  if Sender = nil then ;
-  {$IFDEF LCLGTK2}
-  DoBringToFront(Self);
-  {$ENDIF}
-end;
-
 
 initialization
   {$I touchoffwiz.lrs}

@@ -23,6 +23,7 @@ type
     Label4: TLabel;
     LabelUnit: TLabel;
     procedure EditVKeyPress(Sender: TObject; var Key: char);
+    procedure FormActivate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -79,6 +80,14 @@ begin
     end;
 end;
 
+procedure TTouchOffDlg.FormActivate(Sender: TObject);
+begin
+  if Sender = nil then ;
+  {$ifdef LCLGTK2}
+  DoBringToFront(Self);
+  {$endif}
+end;
+
 procedure TTouchOffDlg.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   if Sender = nil then ;
@@ -119,10 +128,6 @@ end;
 
 procedure TTouchOffDlg.FormShow(Sender: TObject);
 begin
-  if Sender = nil then ;
-  {$IFDEF LCLGTK2}
-  DoBringToFront(Self);
-  {$ENDIF}
   EditV.SetFocus;
 end;
 

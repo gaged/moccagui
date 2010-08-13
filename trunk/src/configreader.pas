@@ -78,10 +78,19 @@ begin
         if Assigned(DroUnHomedBitmap) then
           DroUnHomedBitmap.LoadFromFile(ConfigDir + nv);
       end
-
+    else
+      if nn = 'SAVE_Z_CMD' then
+        begin
+          SaveZCommand:= nv;
+        end
+    else
+      if nn = 'DEFAULT_SPINDLE_SPEED' then
+        begin
+          DefaultSpindleSpeed:= StrToFloat(nv);
+        end;
   except
     on E: Exception do
-      writeln('Error in config.xml: ' + E.Message);
+      writeln('Error in config.xml (' + nn + ')' + E.Message);
   end;
 end;
 
@@ -211,10 +220,7 @@ begin
   {$ifdef DEBUG_CONFIG}
   writeln('reading Tools configuration...');
   {$endif}
-  if Vars.IsLathe then
-    MaxIndex:= LatheColumns
-  else
-    MaxIndex:= MillColumns;
+  MaxIndex:= MaxToolColumns;
   if Node = nil then
     begin
       writeln('tool- section not found in config-file');
@@ -268,8 +274,8 @@ begin
         if (idx >= 0) and (idx <= MaxIndex) then
           begin
             if S <> '' then
-              TitleDef[idx]:= s;
-            if GridW > 0 then WidthsDef[idx]:= GridW;
+              ToolColTitles[idx]:= s;
+            if GridW > 0 then ToolColWidths[idx]:= GridW;
             {$ifdef DEBUG_CONFIG}
             writeln('read toolitem: ' + S);
             {$endif}
