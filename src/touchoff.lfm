@@ -9,6 +9,7 @@ object TouchOffDlg: TTouchOffDlg
   ClientHeight = 189
   ClientWidth = 330
   KeyPreview = True
+  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown

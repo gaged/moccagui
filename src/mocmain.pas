@@ -120,6 +120,7 @@ type
     procedure ButtonViewClick(Sender: TObject);
     procedure ButtonViewMinusClick(Sender: TObject);
     procedure ButtonViewPlusClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -189,7 +190,7 @@ implementation
 
 uses
   lcltype,
-  emc2pas,mocemc,hal;
+  emc2pas,mocemc,hal,startctrl;
 
 procedure TMainForm.HandleCommand(Cmd: integer);
 begin
@@ -198,18 +199,18 @@ end;
 
 procedure TMainForm.TaskModeChanged;  // called by MainForm.UpdateTaskMode
 begin
-  UpdateHalTaskMode(State.TaskMode);
+  UpdateHalTaskMode(State.Mode);
   if ScriptRunning then
     begin
       writeln('Scrip is running: ignore taskmode');
       Exit;
     end;
-  clJog.Visible:= (State.TaskMode = TaskModeManual);
-  clRun.Visible:= (State.TaskMode = TaskModeAuto);
-  clMdi.Visible:= (State.TaskMode = TaskModeMDI);
+  clJog.Visible:= (State.Mode = TaskModeManual);
+  clRun.Visible:= (State.Mode = TaskModeAuto);
+  clMdi.Visible:= (State.Mode = TaskModeMDI);
   if Assigned(Joints) then
-    Joints.ShowBox:= (State.TaskMode = TaskModeManual);
-  case State.TaskMode of
+    Joints.ShowBox:= (State.Mode = TaskModeManual);
+  case State.Mode of
     TaskModeManual:
       clJog.ActivateSelf;
     TaskModeAuto:
@@ -217,9 +218,9 @@ begin
     TaskModeMDI:
       clMDI.ActivateSelf;
   end;
-  LedModeManual.IsOn:= State.TaskMode = TaskModeManual;
-  LedModeAuto.IsOn:= State.TaskMode = TaskModeAuto;
-  LedModeMDI.IsOn:= State.TaskMode = TaskModeMDI;
+  LedModeManual.IsOn:= State.Mode = TaskModeManual;
+  LedModeAuto.IsOn:= State.Mode = TaskModeAuto;
+  LedModeMDI.IsOn:= State.Mode = TaskModeMDI;
 end;
 
 procedure TMainForm.UpdateState;
@@ -229,16 +230,19 @@ var
   s: string;
 begin
 
-  i:= GetHalTaskMode;
-  if i  <> State.TaskMode then
+  if not UpdateLock then
     begin
-      if i = TaskModeManual then Emc.HandleCommand(cmJOG) else
-      if i = TaskModeAuto then Emc.HandleCommand(cmAuto) else
-      if i = TaskModeMdi then Emc.HandleCommand(cmMDI);
-    end;
+      i:= GetHalTaskMode;
+      if i  <> State.Mode then
+        begin
+          if i = TaskModeManual then Emc.HandleCommand(cmJOG) else
+          if i = TaskModeAuto then Emc.HandleCommand(cmAuto) else
+          if i = TaskModeMdi then Emc.HandleCommand(cmMDI);
+        end;
 
-  if EMC.UpdateState then
-    TaskModeChanged;
+      if EMC.UpdateState then
+        TaskModeChanged;
+    end;
 
   if LastError <> '' then
     begin
@@ -255,26 +259,6 @@ begin
     end;
 
   Joints.Update;
-
-  for i:= HalButtonMin to HalButtonMax do
-    begin
-      if GetHalButtonDown(i) then
-        if Assigned(MocBtns[i]) then
-          if MocBtns[i].Tag > 0 then
-            begin
-              if TaskMode = TASKMODEMANUAL then
-                clJog.HandleCommand(MocBtns[i].Tag)
-              else
-                Emc.HandleCommand(MocBtns[i].Tag);
-              Exit;  // we exit here and wait for the next update cycle
-            end;
-    end;
-
-  LabelGCodes.Caption:= TrimLeft(PChar(ACTIVEGCODES));
-  LabelMCodes.Caption:= TrimLeft(PChar(ACTIVEMCODES));
-  LabelF.Caption:= TrimLeft(PChar(ACTIVEFWORDS));
-  LabelS.Caption:= TrimLeft(PChar(ACTIVESWORDS));
-
   if ShowGlPreview then
     clSim.UpdateSelf;
 
@@ -292,13 +276,10 @@ begin
       OperatorDisplayStr[0]:= #0;
     end;
 
-  if State.TaskMode = TASKMODEMANUAL then
-    clJog.UpdateSelf
-  else
-  if State.TaskMode = TASKMODEAUTO then
-    clRun.UpdateSelf
-  else
-    clMDI.UpdateSelf;
+  LabelGCodes.Caption:= TrimLeft(PChar(ACTIVEGCODES));
+  LabelMCodes.Caption:= TrimLeft(PChar(ACTIVEMCODES));
+  LabelF.Caption:= TrimLeft(PChar(ACTIVEFWORDS));
+  LabelS.Caption:= TrimLeft(PChar(ACTIVESWORDS));
 
   if State.UnitsChanged then
     begin
@@ -408,10 +389,10 @@ begin
       LedMist.IsOn:= FMist;
     end;
 
-  if (FSpVel <> State.SpSpeed) then
+   if (FSpVel <> State.SpSpeed) then
     begin
       d:= State.SpSpeed * (State.ActSpORide / 100);
-      LabelSpVel.Caption:= FloatToStr(d) + Vars.UnitRotStr;
+      LabelSpVel.Caption:= FloatToStrF(d,ffFixed,8,3) + Vars.UnitRotStr;
       FSpVel:= State.SpSpeed;
     end;
 
@@ -431,15 +412,15 @@ begin
       UpdateSpindle;
     end;
 
-  if FEStop <> State.EStop then
+  if FEStop <> (State.State = STATE_ESTOP) then
     begin
-      FEStop:= State.EStop;
+      FEStop:= (State.State = STATE_ESTOP);
       LedEStop.IsOn:= not FEStop;
     end;
 
-  if FOn <> State.Machine then
+  if FOn <> (State.State = STATE_ON) then
     begin
-      FOn:= State.Machine;
+      FOn:= (State.State = STATE_ON);
       LedMachineOn.IsOn:= FOn;
     end;
 
@@ -449,6 +430,28 @@ begin
   OemLed3.IsOn:= GetHalLedState(3);
   OemLed4.IsOn:= GetHalLedState(4);
 
+  if UpdateLock then Exit;
+
+  if State.Mode = TASKMODEMANUAL then
+    clJog.UpdateSelf
+  else
+  if State.Mode = TASKMODEAUTO then
+    clRun.UpdateSelf
+  else
+    clMDI.UpdateSelf;
+
+  for i:= HalButtonMin to HalButtonMax do
+    begin
+      if GetHalButtonDown(i) then
+        if Assigned(MocBtns[i]) then
+          if MocBtns[i].Tag > 0 then
+            begin
+              if TaskMode = TASKMODEMANUAL then
+                clJog.HandleCommand(MocBtns[i].Tag)
+              else
+                Emc.HandleCommand(MocBtns[i].Tag);
+            end;
+    end;
  end;
 
 procedure TMainForm.UpdateSpindle;
@@ -512,7 +515,7 @@ begin
         end;
     end;
 
-  FOn:= not State.Machine;
+  FOn:= not (State.State = STATE_ON);
   FMaxVel:= 0;
   FFeed:= 0;
   FTool:= -1;
@@ -597,7 +600,7 @@ begin
   GlobalErrors:= TStringList.Create;
   LabelMsg.Caption:= '';
 
-  State.TaskMode:= 0;  // trigger a taskmodechanged
+  State.Mode:= 0;  // trigger a taskmodechanged
 
   MsgForm:= TMsgForm.Create(Self);
   MsgForm.Parent:= Self;
@@ -735,6 +738,11 @@ begin
   if Assigned(clSim) then clSim.Zoom(1);
 end;
 
+procedure TMainForm.FormActivate(Sender: TObject);
+begin
+//ShowStartDlg;
+end;
+
 procedure TMainForm.BtnCoordsClick(Sender: TObject);
 begin
   if Sender = nil then ;
@@ -818,10 +826,10 @@ begin
            Exit;
          end;
   end;
-  if State.TaskMode = TASKMODEMANUAL then
+  if State.Mode = TASKMODEMANUAL then
     clJog.FormKeyPress(nil,Key)
   else
-  if (State.TaskMode = TASKMODEAUTO) then
+  if (State.Mode = TASKMODEAUTO) then
     clRun.FormKeyPress(nil,Key)
 end;
 
@@ -887,16 +895,16 @@ begin
     VK_F11: DoAction(cmSPPLUS);
     VK_F12: DoAction(cmSPCW);
   end;
-  if (State.TaskMode = TaskModeManual) then
+  if (State.Mode = TaskModeManual) then
     clJog.FormKeyDown(nil,Key,Shift) else
-  if (State.TaskMode = TaskModeAuto) then
+  if (State.Mode = TaskModeAuto) then
     clRun.FormKeyDown(nil,Key,Shift);
 end;
 
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Sender = nil then ;
-  if (State.TaskMode = TaskModeManual) then
+  if (State.Mode = TaskModeManual) then
     if Assigned(clJog) then
       clJog.FormKeyUp(nil,Key,Shift)
 end;

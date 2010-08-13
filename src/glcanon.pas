@@ -50,7 +50,6 @@ function MCodeToStr(i: integer): string;
 function GetActiveFeed: Double;
 function GetActiveSpindle: Double;
 
-
 implementation
 
 uses
@@ -58,20 +57,22 @@ uses
   emc2pas, gllist;
 
 var
-  FirstMove: Boolean;
+  FirstMove: boolean;
   lo: tlo;
   offset: tlo;
   toffs: tlo;
-  DwellTime: Double;
+  DwellTime: double;
   lineno: integer;
   {$ifdef VER_24}
   xyrot: double;
   {$endif}
-  //xo,zo,wo: Double;
-  //toolno: integer;
-  //spindlerate: double;
-  //feedrate: double;
-  //traverserate: double;
+  xo,zo,wo: double;
+  toolno: integer;
+  spindlerate: double;
+  feedrate: double;
+  traverserate: double;
+
+  StopLineNo: integer;
 
 var
   Plane: integer; external name 'plane';
@@ -243,6 +244,7 @@ end;
 function ParseGCode(FileName: string; UnitCode,InitCode: string): integer;
 begin
   Result:= -1;
+  StopLineNo:= -1;
   if not Assigned(Renderer) then
     begin
       writeln('glcanon: gl_renderer = nil!');
@@ -298,9 +300,13 @@ procedure set_xy_rotation(t: double); cdecl; export;
 begin
   xyrot:= t;
 end;
-
 {$endif}
-  
+
+procedure sequence_number(i: integer); cdecl; export;
+begin
+  // do nothing
+end;
+
 procedure nextline; cdecl; export;
 begin
   lineno:= last_sequence_number;
@@ -318,12 +324,6 @@ begin
   writeln(Format('%s %n %n %n',['Tooloffset: ',zt,xt,wt]));
   {$endif}
   FirstMove:= True;
-  {lo.x:= lo.x - x + toffs.x; // xo;
-  lo.z:= lo.z - z + toffs.z; // zo;
-  lo.w:= lo.w - w - toffs.w; // wo;
-  toffs.x:= x;  // xo:= xt;
-  toffs.z:= z;  // zo:= zt;
-  toffs.w:= w;  // wo:= wt;}
   lo.x:= lo.x - xt + xo;
   lo.z:= lo.z - zt + zo;
   lo.w:= lo.w - wt - wo;
@@ -373,32 +373,6 @@ begin
       CanonTool:= Tools[i];
       Result:= 1;
     end;
-  // obsolete, canon uses emc state units
-  {
-    with CanonTool do
-      begin
-        toolno:= Tools[i].toolno;
-        xoffset:= ToCanonUnits(Tools[i].xoffset);
-        {$ifdef VER_24}
-        yoffset:= ToCanonUnits(Tools[i].yoffset);
-        {$endif}
-        zoffset:= ToCanonUnits(Tools[i].zoffset);
-        {$ifdef VER_24}
-        aoffset:= ToCanonUnits(Tools[i].aoffset);
-        boffset:= ToCanonUnits(Tools[i].boffset);
-        coffset:= ToCanonUnits(Tools[i].coffset);
-        uoffset:= ToCanonUnits(Tools[i].uoffset);
-        voffset:= ToCanonUnits(Tools[i].voffset);
-        woffset:= ToCanonUnits(Tools[i].woffset);
-        {$endif}
-        diameter:= Tools[i].diameter;// ToCanonUnits(Tools[i].diameter);
-        writeln('Dia: ',FLoatToStr(diameter));
-        frontangle:= Tools[i].frontangle;
-        backangle:= Tools[i].backangle;
-        orientation:= Tools[i].orientation;
-        Result:= 1;
-      end;
-    }
 end;
 
 procedure changetool(Tool: integer); cdecl; export;
@@ -435,17 +409,17 @@ end;
 
 procedure setspindlerate(rate: double); cdecl; export;
 begin
-  //spindlerate:= rate;
+  spindlerate:= rate;
 end;
 
 procedure setfeedrate(rate: double); cdecl; export;
 begin
-  //feedrate:= rate;
+  feedrate:= rate;
 end;
 
 procedure settraverserate(rate: double); cdecl; export;
 begin
-  //traverserate:= rate;
+  traverserate:= rate;
 end;
 
 procedure straighttraverse(x,y,z,a,b,c,u,v,w: double); cdecl; export;

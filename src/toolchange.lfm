@@ -10,6 +10,7 @@ object ToolChgDlg: TToolChgDlg
   ClientHeight = 384
   ClientWidth = 428
   KeyPreview = True
+  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress

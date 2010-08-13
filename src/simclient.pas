@@ -39,7 +39,7 @@ type
   TSimClientForm = class(TForm)
     MItem3D: TMenuItem;
     MItemInfo: TMenuItem;
-    MItemReset: TMenuItem;
+    MItemReload: TMenuItem;
     Popup: TPopupMenu;
     sbH: TScrollBar;
     sbV: TScrollBar;
@@ -48,6 +48,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure MItem3DClick(Sender: TObject);
+    procedure MItemReloadClick(Sender: TObject);
     procedure sbHChange(Sender: TObject);
     procedure sbVChange(Sender: TObject);
     procedure OglPaint(Sender: TObject);
@@ -82,7 +83,6 @@ type
     ConeRX,ConeRY,ConeRZ: Double;
     ExtX,ExtY,ExtZ: double;
     L: TExtents;
-    // DimDrawFlag: Boolean;
     Offset: tlo;
     ConeL,LimitsL,CoordsL,ListL: gluInt;
     MouseX,MouseY: integer;
@@ -242,12 +242,19 @@ begin
 
   DimScale:= 1;
   DimDist:= 1;
-  // DimDrawFlag:= True;
 
   View3D:= False;
 
-  sbV.setParams(Round(ViewRotation[FViewMode].xrot),-180,180,1);
-  sbH.SetParams(Round(ViewRotation[FViewMode].yrot),-180,180,1);
+  if Vars.IsLathe then
+    begin
+      sbV.Visible:= False;
+      sbH.Visible:= False;
+    end
+  else
+    begin
+      sbV.setParams(Round(ViewRotation[FViewMode].xrot),-180,180,1);
+      sbH.SetParams(Round(ViewRotation[FViewMode].yrot),-180,180,1);
+    end;
 
   if not Assigned(Renderer) then
     Renderer:= TGlRenderer.Create;
@@ -290,8 +297,11 @@ end;
 
 procedure TSimClientForm.FormResize(Sender: TObject);
 begin
-  if (sbV.Height > 0) and (sbH.Width > 0) then
-    Ogl.SetBounds(sbH.Left,sbV.Top,sbH.Width,sbV.Height);
+  if Vars.IsLathe then
+    Ogl.SetBounds(0,0,Self.ClientWidth,Self.ClientHeight)
+  else
+    if (sbV.Height > 0) and (sbH.Width > 0) then
+      Ogl.SetBounds(sbH.Left,sbV.Top,sbH.Width,sbV.Height);
   if Assigned(ogl) then
     OglResize(nil);
 end;
@@ -306,6 +316,11 @@ procedure TSimClientForm.MItem3DClick(Sender: TObject);
 begin
   if Assigned(Renderer) then
     Show3D;
+end;
+
+procedure TSimClientForm.MItemReloadClick(Sender: TObject);
+begin
+  ReloadFile;
 end;
 
 procedure TSimClientForm.RotateZ(Angle: integer);
@@ -753,7 +768,6 @@ begin
         begin
           r:= ConeRZ * Vars.Axis[5].Geometry;
           glRotatef(r, 1,0,0);
-          //writeln(FloatToStrF(r,ffFixed,6,4));
         end;
     end
   else

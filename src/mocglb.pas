@@ -49,10 +49,13 @@ var
 
 const
   EdgeFinderDia: double = 5;
+  DefaultSpindleSpeed: double = 0; // 0 = use emc default
 
 const
   Verbose: integer = 1;
 
+const
+  SaveZCommand: string = '';
 
 function StripBlank(var S: string): Boolean;
 
@@ -96,7 +99,8 @@ implementation
 
 uses
  {$IFDEF LCLGTK2}
- GtkDef, gdk2x, gtk2,
+ //GtkDef,
+ gdk2x, gtk2,
  {$ENDIF}
  Process,
  stylereader;

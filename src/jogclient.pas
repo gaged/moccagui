@@ -246,7 +246,7 @@ end;
 
 procedure TJogClientForm.ActivateSelf;
 begin
-  if State.TaskMode <> TASKMODEMANUAL then
+  if State.Mode <> TASKMODEMANUAL then
     raise Exception.Create('Cannot activate jogwindow when not in mode manual.');
   if not Visible then
     Visible:= true;
@@ -274,14 +274,14 @@ var
   i: integer;
 begin
 
-  if State.Machine then
+  if State.State = STATE_ON then
     if Vars.JogContinous then
       if FBtnDown <> 0 then
         UpdateBtnState(True);
 
-  if OldMachineOn <> State.Machine then
+  if OldMachineOn <> (State.State = STATE_ON) then
     begin
-      OldMachineOn:= State.Machine;
+      OldMachineOn:= (State.State = STATE_ON);
       UpdateButtons;
     end;
 
@@ -323,7 +323,7 @@ begin
   SliderJog.SetParams(0,State.MaxJogVel,State.ActJogVel);
   OldJogVel:= -1;
   OldORideLimits:= not State.ORideLimits;
-  OldMachineOn:= not State.Machine
+  OldMachineOn:= not (State.State = STATE_ON)
 end;
 
 function TJogClientForm.HandleJogKeys(var Key: Word;

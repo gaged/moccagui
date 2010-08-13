@@ -7,6 +7,8 @@ object SimulatorDlg: TSimulatorDlg
   Caption = '3D Solid'
   ClientHeight = 260
   ClientWidth = 360
+  OnActivate = FormActivate
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '0.9.28.2'

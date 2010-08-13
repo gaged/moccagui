@@ -91,6 +91,7 @@ const
   cmSCRIPTS    = 1099;
   cmCLOSE      = 360;
   cmFEEDRESET  = 400;
+  cmONANDREF   = 410;
 
 type
   TCmdNames = record
@@ -99,7 +100,7 @@ type
   end;
 
 const
-  CmdNamesMax = 64;
+  CmdNamesMax = 65;
 
 const
   CmdNames: Array[0..CmdNamesMax] of TCmdNames = (
@@ -164,6 +165,7 @@ const
   (S:'cmCOORDROT'  ; i:340),
   (S:'cmUNITS'     ; i:350),
   (S:'cmCLOSE'     ; i:360),
+  (S:'cmONANDREF'  ; i:410),
   (S:'cmBACK'      ; i:999),
   (S:'cmSCRIPTBASE'; i:1000),
   (S:'cmSCRIPTS'   ; i:1099),
@@ -178,38 +180,24 @@ var
   BtnDefRun: TButtonArray;
 
 const
-   MaxColumns = 15;
    {$ifdef VER_24}
-   LatheColumns = MaxColumns;
-   MillColumns = 12;
+   MaxToolColumns = 15;
    {$endif}
    {$ifdef VER_23}
-   LatheColumns = 8;
-   MillColumns = 4;
+   MaxToolColumns = 8;
    {$endif}
 
 const
-  TitleDef : Array[0..MaxColumns] of string =
-    ('POC','TNR','X-Offset','Y-Offset','Z-Offset',
-     'A-Offset','B-Offset','C-Offset','U-Offset','V-Offset',
-     'W-Offset','Durchmesser','Frontangle','Backangle','OR',
-     'Bezeichnung');
-  WidthsDef : Array[0..MaxColumns] of integer =
-    (30,30,60,60,60,60,60,60,60,60,60,100,60,60,30,200);
+  ToolColTitles : Array[0..MaxToolColumns] of string =
+    ('POC','TNR','X-Offset',{$ifdef VER_24}'Y-Offset',{$endif}
+     'Z-Offset',{$ifdef VER_24}'A-Offset','B-Offset','C-Offset',
+     'U-Offset','V-Offset','W-Offset',{$endif}
+     'Durchmesser','Frontangle','Backangle','Ausrichtung','Bezeichnung');
 
-  {$ifdef VER_24}
-  MillIdcDef: Array[0..MaxColumns] of Integer =
-    (0,1,11,2,3,4,5,6,7,8,9,10,15,-1,-1,-1);
-  LatheIdcDef: Array[0..MaxColumns] of Integer =
-    (0,1,11,2,3,4,5,6,7,8,9,10,12,13,14,15);
-  {$endif}
-
-  {$ifdef VER_23}
-  MillIdcDef: Array[0..MaxColumns] of Integer =
-    (0,1,11,4,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-  LatheIdcDef: Array[0..MaxColumns] of Integer =
-    (0,1,11,3,4,12,13,14,15,-1,-1,-1,-1,-1,-1,-1);
-  {$endif}
+  ToolColWidths : Array[0..MaxToolColumns] of integer =
+    (30,30,60,{$ifdef VER_24}60,{$endif}
+     60,{$ifdef VER_24}60,60,60,60,60,60,{$endif}
+     100,60,60,30,200);
 
 const
   CoordSysMax = 8;
@@ -301,9 +289,8 @@ type
   end;
 
   TEmcState = record
-    TaskMode: Integer;         // current taskmode, used in (update)
-    EStop: Boolean;
-    Machine: Boolean;
+    Mode: Integer;
+    State: integer;
     SpDir: integer;
     SpInc: integer;
     SpBrake: Boolean;

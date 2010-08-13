@@ -8,9 +8,9 @@ object TouchOffWizDlg: TTouchOffWizDlg
   ClientHeight = 490
   ClientWidth = 397
   KeyPreview = True
+  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnShow = FormShow
   Position = poScreenCenter
   ShowInTaskBar = stNever
   LCLVersion = '0.9.28.2'

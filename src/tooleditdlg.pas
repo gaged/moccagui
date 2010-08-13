@@ -20,6 +20,7 @@ type
     procedure BtnAddToolClick(Sender: TObject);
     procedure BtnChangePocClick(Sender: TObject);
     procedure BtnDeleteToolClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure EditorKeyPress(Sender: TObject; var Key: char);
@@ -50,14 +51,11 @@ type
   TToolCol = record
     Title: string;
     Width: integer;
-    Index: integer;
   end;
 
 var
-  iCols: integer;
   iPockets: integer;
-  Lathe: Boolean;
-  ToolColumns: Array[0..MaxColumns] of TToolCol;
+  ToolColumns: Array[0..MaxToolColumns] of TToolCol;
 
 type
   TToolItem = record
@@ -87,9 +85,8 @@ end;
 procedure InitPockets;
 var
   i: integer;
-  Index: integer;
+  //Index: integer;
 begin
-  iCols:= 0;
   iPockets:= 0;
   for i:= 1 to CANON_TOOL_MAX - 1 do
     begin
@@ -104,19 +101,10 @@ begin
           T[iPockets].Comment:= PChar(ToolComments[i]);
         end;
     end;
-  Lathe:= Vars.IsLathe;
-  for i:= 0 to MaxColumns do
+  for i:= 0 to MaxToolColumns do
     begin
-      if Lathe then
-        Index:= LatheIdcDef[i]
-      else
-        Index:= MillIdcDef[i];
-      if Index < 0 then
-        Break;
-      inc(iCols);
-      ToolColumns[i].Title:=  TitleDef[Index];
-      ToolColumns[i].Width:=  WidthsDef[Index];
-      ToolColumns[i].Index:= Index;
+      ToolColumns[i].Title:=  ToolColTitles[i];
+      ToolColumns[i].Width:=  ToolColWidths[i];
     end;
 end;
 
@@ -145,16 +133,15 @@ begin
     end;
   if (ARow > iPockets) then
     Exit;
-  if (ACol < 0) or (ACol > MaxColumns) then
+  if (ACol < 0) or (ACol > MaxToolColumns) then
     begin
       writeln('Column out of range ' + IntToStr(aCol));
       Exit;
     end;
-  C:= ToolColumns[ACol];
   Item:= T[ARow];
   if Item.Pocket > 0 then
     begin
-      case C.Index of
+      case ACol of
         0: s:= IntToStr(Item.Pocket);
         1: s:= IntToStr(Item.Tool.toolno);
         2: s:= FloatToStr(Item.Tool.xoffset);
@@ -191,27 +178,20 @@ begin
       writeln('Tool-Update, Invalid row: ' + IntToStr(ARow));
       Exit;
     end;
-  if (ACol < 1) or (ACol > iCols) then
+  if (ACol < 1) or (ACol > MaxToolColumns) then
     begin
       writeln('Tool-Update, Invalid Column: ' + IntToStr(ACol));
       Exit;
     end;
   s:= Grid.Cells[ACol,ARow];
   if s = '' then Exit;
-  C:= ToolColumns[ACol];
-  if (C.Index < 1) or (C.Index > MaxColumns) then
-    begin
-      writeln('Invalid Tool-Column: ' + IntToStr(C.Index));
-      Exit;
-    end;
-  i:= 0;
-  if C.Index < 15 then
+  if ACol < MaxToolColumns then
     begin;
       i:= Pos(',',s);
       if i > 0 then s[i]:= '.';
     end;
   try
-     case C.Index of
+     case ACol of
         1: T[ARow].Tool.toolno:= StrToInt(s);
         2: T[ARow].Tool.xoffset:= StrToFloat(s);
         4: T[ARow].Tool.zoffset:= StrToFloat(s);
@@ -244,7 +224,7 @@ procedure TToolDlg.UpdateRow(ARow: integer);
 var
   i: integer;
 begin
-  for i:= 0 to iCols - 1 do
+  for i:= 0 to MaxToolColumns do
     begin
       UpdateCell(i,ARow);
     end;
@@ -356,12 +336,12 @@ procedure TToolDlg.InitGrid;
 var
   i: integer;
 begin
-  Grid.ColCount:= iCols;
+  Grid.ColCount:= MaxToolColumns + 1;
   if iPockets < 1 then
     Grid.RowCount:= 2
   else
     Grid.RowCount:= iPockets + 1;
-  for i:= 0 to iCols - 1 do
+  for i:= 0 to MaxToolColumns do
     begin
       Grid.Cells[i,0]:= ToolColumns[i].Title;
       Grid.ColWidths[i]:= ToolColumns[i].Width;
@@ -398,18 +378,15 @@ end;
 
 procedure TToolDlg.FormShow(Sender: TObject);
 begin
-  if Sender = nil then ;
-  {$ifdef LCLGTK2}
-  DoBringToFront(Self);
-  {$endif}
+
 end;
 
 procedure TToolDlg.EditorKeyPress(Sender: TObject; var Key: char);
 var
-  C: TToolCol;
+  i: integer;
 begin
-  C:= ToolColumns[Grid.Col];
-  if (C.Index = MaxColumns) or (Ord(Key) = 8) then Exit;  // BkSpace
+  i:= Grid.Col;
+  if (i = MaxToolColumns) or (Ord(Key) = 8) then Exit;  // BkSpace
   if Key = ',' then Key:= '.';
   if not (Key in ['0'..'9','.','-','+']) then
     begin
@@ -443,6 +420,14 @@ end;
 procedure TToolDlg.BtnDeleteToolClick(Sender: TObject);
 begin
   DeleteTool;
+end;
+
+procedure TToolDlg.FormActivate(Sender: TObject);
+begin
+  if Sender = nil then ;
+  {$ifdef LCLGTK2}
+  DoBringToFront(Self);
+  {$endif}
 end;
 
 

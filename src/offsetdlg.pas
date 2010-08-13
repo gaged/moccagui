@@ -18,6 +18,7 @@ type
     Grid: TStringGrid;
     PanelBottom: TPanel;
     procedure BtnOkClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -88,6 +89,14 @@ begin
   sendTaskPlanInit;
 end;
 
+procedure TOffsetsDlg.FormActivate(Sender: TObject);
+begin
+  if Sender = nil then ;
+  {$ifdef LCLGTK2}
+  DoBringToFront(Self);
+  {$endif}
+end;
+
 procedure TOffsetsDlg.FormDestroy(Sender: TObject);
 begin
   if Sender = nil then ;
@@ -96,10 +105,7 @@ end;
 
 procedure TOffsetsDlg.FormShow(Sender: TObject);
 begin
-  if Sender = nil then ;
-  {$ifdef LCLGTK2}
-  DoBringToFront(Self);
-  {$endif}
+
 end;
 
 procedure TOffsetsDlg.EditorKeyPress(Sender: TObject; var Key: char);

@@ -9,6 +9,7 @@ object OffsetsDlg: TOffsetsDlg
   Caption = 'Koordinaten bearbeiten'
   ClientHeight = 351
   ClientWidth = 589
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow

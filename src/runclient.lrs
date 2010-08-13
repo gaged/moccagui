@@ -1,5 +1,3 @@
-{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
-
 LazarusResources.Add('TRunClientForm','FORMDATA',[
   'TPF0'#14'TRunClientForm'#13'RunClientForm'#4'Left'#3#255#2#6'Height'#3#4#1#3
   +'Top'#3'%'#1#5'Width'#3#136#1#18'HorzScrollBar.Page'#3'g'#2#18'VertScrollBar'

@@ -49,8 +49,8 @@ begin
   while emcPollStatus = RCS_EXEC do
     begin
       Application.ProcessMessages;
-      if (ErrorStr[0] <> #0) or (State.EStop) or
-        (not State.Machine) then Break;
+      if (ErrorStr[0] <> #0) or (State.State <> STATE_ON) then
+        break;
     end;
 end;
 
@@ -67,8 +67,7 @@ begin
     for i:= 0 to StrListScript.Count - 1 do
       begin
         s:= StrListScript[i];
-        if (ErrorStr[0] <> #0) or (State.EStop) or
-        (not State.Machine) then
+        if (ErrorStr[0] <> #0) or (State.State <> STATE_ON) then
           begin
             writeln('Script aborted.');
             Break;
@@ -94,12 +93,10 @@ var
   s,e: string;
 begin
   e:= '';
-  if State.TaskMode <> TASKMODEMANUAL then
+  if State.Mode <> TASKMODEMANUAL then
     e:= 'Cannot run a script when not in mode manual';
-  if not State.Machine then
-    e:= 'Cannot execute a script when machine is turned off.';
-  if State.EStop then
-    e:= 'Cannot execute a script when EStop is activated.';
+  if State.State <> STATE_ON then
+    e:= 'Cannot execute a script when machine is turned off or EStop is activated';
   if e <> '' then
     begin
       writeln(e);

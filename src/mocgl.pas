@@ -11,7 +11,9 @@ uses
   Controls, Graphics, Dialogs,
   LCLProc, LCLType, LCLIntf,
   LMessages, WSLCLClasses, Gtk2WSControls,
-  gl, glu, InterfaceBase, GtkDef, gdk2x, glib2, gtk2, Gtk2Int,
+  gl, glu, InterfaceBase,
+  // GtkDef,
+  gdk2x, glib2, gtk2, Gtk2Int,
   GdkGLExt, GtkGLExt;
 
 type
