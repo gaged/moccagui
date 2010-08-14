@@ -81,6 +81,7 @@ type
     EyeX,EyeY,EyeZ: Double;
     ConeX,ConeY,ConeZ: Double;
     ConeRX,ConeRY,ConeRZ: Double;
+    DefaultCone: Boolean;
     ExtX,ExtY,ExtZ: double;
     L: TExtents;
     Offset: tlo;
@@ -470,7 +471,10 @@ procedure TSimClientForm.DrawDim;
 begin
   if Assigned(ogl) and AreaInitialized then
     begin
-      if (Vars.AxisMask AND 1) <> 0 then DrawDimX(ExtX,L);
+      if (Vars.AxisMask AND 1) <> 0 then
+        if Vars.IsLathe then DrawDimXLathe(ExtX,L)
+      else
+        DrawDimX(ExtX,L);
       if (Vars.AxisMask AND 2) <> 0 then DrawDimY(ExtY,L);
       if (Vars.AxisMask AND 4) <> 0 then DrawDimZ(ExtZ,L);
     end;
@@ -725,13 +729,13 @@ var
   d,r,tl: double;
 begin
   if not Assigned(ogl) then Exit;
-  if Vars.IsLathe and (Tool.toolno > 0) then
+  if Vars.IsLathe and (Tool.toolno > 0) and (Tool.Orientation > 0) then
     begin
       orient:= Tool.Orientation;
-      if orient < 0 then orient:= 0;
       if orient > 9 then orient:= 9;
       r:= ToCanonUnits(Tool.diameter) / 2;
       MakeLatheCone(ConeL,orient,r,Tool.frontangle,Tool.backangle);
+      DefaultCone:= False;
     end
   else
     begin
@@ -743,6 +747,7 @@ begin
       if tl < DEFAULT_TOOL_LENGTH then
         tl:= DEFAULT_TOOL_LENGTH;
       MakeMillCone(ConeL,r,tl);
+      DefaultCone:= True;
     end;
 end;
 
@@ -771,7 +776,8 @@ begin
         end;
     end
   else
-    glRotatef(90,0,1,0);
+    if DefaultCone then
+      glRotatef(90,0,1,0);
   if ConeL > 0 then
     glCallList(ConeL);
   glPopMatrix;

@@ -122,7 +122,6 @@ end;
 
 procedure TToolDlg.UpdateCell(ACol,ARow: integer);
 var
-  C: TToolCol;
   s: string;
   Item: TToolItem;
 begin
