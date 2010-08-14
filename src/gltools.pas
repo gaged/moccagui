@@ -14,6 +14,7 @@ var
 procedure Lightning(x,y,z: double);
 procedure PanView(dx,dy: integer; cx,cy,cz: double; wh: integer; var px,py: double);
 procedure DrawDimX(ExtX: double; L: TExtents);
+procedure DrawDimXLathe(ExtX: double; L: TExtents);
 procedure DrawDimY(ExtY: double; L: TExtents);
 procedure DrawDimZ(ExtZ: double; L: TExtents);
 
@@ -99,6 +100,93 @@ begin
   if f then
     SetGlColor3(glColors.dim2)
 end;
+
+procedure DrawDimXLathe(ExtX: double; L: TExtents);
+var
+  i: integer;
+  w,tw,x,z: double;
+  s: string;
+begin
+  if DimScale = 0 then Exit;
+  // draw the X-Dimension
+  if Vars.ShowMetric then
+    w:= ExtX * 25.4
+  else
+    w:= ExtX;
+  s:= PosToString(w);
+  z:= L.MinZ - DimDist;
+  glPushMatrix;
+  // glRotatef(90,1,0,0);
+  glBegin(GL_LINES);
+  glVertex3f(L.MinX,0,z);
+  glVertex3f(L.MaxX,0,z);
+  glEnd;
+  glBegin(GL_LINES);
+  glVertex3f(L.MinX,0,z - DimDist);
+  glVertex3f(L.MinX,0,z + DimDist);
+  glEnd;
+  glBegin(GL_LINES);
+  glVertex3f(L.MaxX,0,z - DimDist);
+  glVertex3f(L.MaxX,0,z + DimDist);
+  glEnd;
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  if tw < ExtX then
+    x:= L.MinX + (ExtX / 2) - (tw / 2)
+  else
+    x:= L.MinX - DimDist;
+  z:= L.MinZ - (3 * DimDist);
+  glTranslateF(x,0,z);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(s) do
+    begin
+      DrawGlDigit(s[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+  // Draw the Min-X Limit
+  if Vars.ShowMetric then
+    w:= L.MinX * 25.4
+  else
+    w:= L.MinX;
+  s:= PosToString(w);
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  x:= L.MinX - (DimDist / 2);
+  z:= L.MinZ - tw;
+  glPushMatrix;
+  glTranslateF(x,0,z);
+  //glRotatef(90,1,0,0);
+  //glRotatef(90,0,0,1);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(s) do
+    begin
+      DrawGlDigit(S[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+  // Draw the Max-X Limit
+  if Vars.ShowMetric then
+    w:= L.MaxX * 25.4
+  else
+    w:= L.MaxX;
+  s:= PosToString(w);
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  z:= L.MinZ - (2 * DimDist) - tw;
+  x:= L.MaxX + (DimDist / 2) + DimScale;
+  glPushMatrix;
+  if Vars.IsLathe then
+    glRotatef(90,1,0,0);
+  glTranslateF(x,0,z);
+  if not Vars.IsLathe then
+    glRotateF(90,0,0,1);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(s) do
+    begin
+      DrawGlDigit(S[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+end;
+
 
 procedure DrawDimX(ExtX: double; L: TExtents);
 var
@@ -523,7 +611,7 @@ begin
       circleminangle:= - pi/2 + min_angle;
       circlemaxangle:= - 3*pi/2 + max_angle;
 
-      sz:= min(3/8,3*r);
+      sz:= max(3/8,3*r);
 
       glBegin(GL_TRIANGLE_FAN);
       glVertex3f(r*dx + r*sin(circleminangle) + sz*sinmin,

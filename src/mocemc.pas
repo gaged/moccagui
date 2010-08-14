@@ -976,7 +976,7 @@ begin
       begin
         sendAbort;
         WaitDone;
-        if not State.State = STATE_ESTOP then
+        if State.State <> STATE_ESTOP then
           begin
             SendEStop;
             WaitDone;
@@ -985,10 +985,11 @@ begin
           SendEStopReset;
       end;
     cmMACHINE:
-      if State.State = STATE_OFF then
+      if State.State = STATE_ON then
         SendMachineOff
       else
-        SendMachineOn;
+        if State.State <> STATE_ESTOP then
+          SendMachineOn;
     cmJOG: SetTaskMode(TASKMODEMANUAL);
     cmAUTO: SetTaskMode(TASKMODEAUTO);
     cmMDI: SetTaskMode(TASKMODEMDI);
