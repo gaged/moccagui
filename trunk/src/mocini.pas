@@ -154,12 +154,12 @@ begin
   GetIniDouble('DISPLAY','MAX_FEED_OVERRIDE',d,1);
   Vars.MaxFeedOverride:= Round(d * 100);
 
-  // Max-Spindle
+  // Spindle
   GetIniDouble('DISPLAY','MAX_SPINDLE_OVERRIDE',d,1);
   Vars.MaxSpORide:= Round(d * 100);
-
   GetIniDouble('DISPLAY','MIN_SPINDLE_OVERRIDE',d,0);
   Vars.MinSpORide:= Round(d * 100);
+
   if (Vars.MaxSpORide <> 0) and (Vars.MinSpORide <> 0) then
     begin
       if Vars.MinSpORide >= Vars.MaxSpORide then

@@ -6,7 +6,7 @@ interface
 
 uses
   Buttons, Classes, Menus, mocbtn, mocled, mocslider, SysUtils, LResources,
-  Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ExtDlgs, ComCtrls,
+  Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls,
   mocglb, mocjoints, jogclient, runclient, mdiclient, emcmsgbox, simclient;
 
 type
@@ -107,7 +107,6 @@ type
     SliderSOR: TSlider;
     Timer: TTimer;
 
-    procedure BtnCoordsClick(Sender: TObject);
     procedure ButtonClick(Sender: TObject);
     procedure BtnSpCCWClick(Sender: TObject);
     procedure BtnSpClick(Sender: TObject);
@@ -131,7 +130,6 @@ type
     procedure FormShow(Sender: TObject);
 
     procedure LabelMsgClick(Sender: TObject);
-    procedure ButtonShowDtgClick(Sender: TObject);
     procedure MenuItemHalClick(Sender: TObject);
     procedure MenuItemHalmeterClick(Sender: TObject);
     procedure MenuItemScopeClick(Sender: TObject);
@@ -283,9 +281,10 @@ begin
 
   if State.UnitsChanged then
     begin
+      // State.UnitsChanged:= False;
       LedShowMM.IsOn:= Vars.ShowMetric;
       FCurrentVel:= -1; // trigger update fpr Label Currentvel
-      State.UnitsChanged:= False;
+      FMaxVel:= -1;
     end;
 
   if FFeed <> Emc.FeedOverride then
@@ -391,9 +390,12 @@ begin
 
    if (FSpVel <> State.SpSpeed) then
     begin
-      d:= State.SpSpeed * (State.ActSpORide / 100);
-      LabelSpVel.Caption:= FloatToStrF(d,ffFixed,8,3) + Vars.UnitRotStr;
+      if State.SpDir <> 0 then
+        d:= State.SpSpeed * (State.ActSpORide / 100)
+      else
+        d:= emcSpindleDefaultSpeed * (State.ActSpORide / 100);
       FSpVel:= State.SpSpeed;
+      LabelSpVel.Caption:= FloatToStrF(d,ffFixed,8,3) + Vars.UnitRotStr;
     end;
 
   if (FSpORide <> State.ActSpORide) then
@@ -401,7 +403,7 @@ begin
       SliderSOR.Caption:= IntToStr(State.ActSpORide) + '%';
       SliderSOR.Position:= State.ActSpORide;
       FSpORide:= State.ActSpORide;
-      FSpVel:= 0; // trigger a update for LabelSpVel...
+      FSpVel:= -1; // trigger a update for LabelSpVel...
     end;
 
   if FSpDir <> State.SpDir then
@@ -452,6 +454,10 @@ begin
                 Emc.HandleCommand(MocBtns[i].Tag);
             end;
     end;
+
+  if State.UnitsChanged then
+    State.UnitsChanged:= False;
+
  end;
 
 procedure TMainForm.UpdateSpindle;
@@ -478,7 +484,6 @@ begin
   if not Assigned(Joints) then
     RaiseError('joints not initialized.');
   Joints.CreateJoints;  // setup joints
-  Joints.ShowActual:= Vars.ShowActual;
   Joints.ShowRelative:= Vars.ShowRelative;
 
   with Vars,State do  // setup mainforms controls
@@ -486,11 +491,11 @@ begin
       ActFeed:= 100;
       SliderFeed.SetParams(1,MaxFeedOverride,ActFeed);
       SliderVel.SetParams(0,MaxVel,ActVel);
-      if Vars.MaxSpORide > 100 then
+      if Vars.MaxSpORide > 99 then
         SliderSOR.SetParams(MinSpORide,MaxSpORide,ActSpORide)
       else
         SliderSOR.Enabled:= False;
-     end;
+    end;
 
   if Assigned(clSim) then
     with clSim do
@@ -650,7 +655,7 @@ begin
   UpdateLock:= False;
 
   try
-  Emc.LoadTools;
+    Emc.LoadTools;
   except
     LastError:= 'Could not load Toolfile';
     raise;	
@@ -740,19 +745,7 @@ end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-//ShowStartDlg;
-end;
-
-procedure TMainForm.BtnCoordsClick(Sender: TObject);
-begin
-  if Sender = nil then ;
-  Joints.ShowRelative:= not Joints.ShowRelative;
-end;
-
-procedure TMainForm.ButtonShowDtgClick(Sender: TObject);
-begin
-  if Sender = nil then ;
-  Joints.ShowDtg:= not Joints.ShowDtg;
+  //ShowStartDlg;
 end;
 
 procedure TMainForm.MenuItemHalClick(Sender: TObject);

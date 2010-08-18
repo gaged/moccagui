@@ -6,7 +6,7 @@ object SimClientForm: TSimClientForm
   HorzScrollBar.Page = 452
   VertScrollBar.Page = 334
   Align = alClient
-  BorderIcons = [biSystemMenu, biMinimize]
+  BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'SimClientForm'
   ClientHeight = 377

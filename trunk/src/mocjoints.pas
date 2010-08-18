@@ -33,11 +33,13 @@ type
     FValue: Double;
     FTopLeft: TPoint;
     FJointMode: Boolean;
+    FDiaMode: Boolean;
     FImage: TImage;
     procedure SetHomed(Value: Boolean);
+    procedure SetDiaMode(Value: Boolean);
     procedure SetJointMode(Value: Boolean);
     procedure SizeLabels(x,y,w,h: integer);
-    procedure Update(ShowActual,ShowRelative,ShowDtg: Boolean);
+    procedure Update(Relative,Dtg: Boolean);
     function GetAxisType: integer;
     function GetUnits: double;
     function GetBacklash: double;
@@ -58,6 +60,7 @@ type
     property Linear: Boolean read FLinear;
     property Panel: TWinControl read FPanel write FPanel;
     property Homed: Boolean read FHomed write SetHomed;
+    property DiaMode: Boolean read FDiaMode write SetDiaMode;
     property AxisType: integer read GetAxisType;
     property Units: double read GetUnits;
     property Backlash: Double read GetBacklash;
@@ -72,7 +75,7 @@ type
     property OverrideLimits: Boolean read GetOverrideLimits;
     property JointMode: Boolean write SetJointMode;
   end;
-  
+
 type
   TJoints = class
    private
@@ -81,7 +84,7 @@ type
     FCoords: string;
     FBox: {$IFDEF LCLGTK2}TShape;{$ELSE}TBevel;{$ENDIF}
     FPanel: TPanel;
-    FShowActual: Boolean;
+    FShowDia: Boolean;
     FShowRelative: Boolean;
     FShowDtg: Boolean;
     FNumAxes: Integer;
@@ -90,6 +93,7 @@ type
     FAxes: Array[0..MAX_JOINTS-1] of TAxis;
     procedure OnLabelClick(Sender: TObject);
     procedure SetShowBox(Value: Boolean);
+    procedure SetShowDia(Value: Boolean);
     procedure SetJointMode(Value: Boolean);
     procedure OnIdle(Sender: TObject; var Handled: Boolean);
    public
@@ -113,13 +117,13 @@ type
     procedure UnHomeActive;
     procedure HomeAxis(Ax: Char);
     property  JointMode: Boolean read FJointMode write SetJointMode;
-    property  ShowActual: Boolean read FShowActual write FShowActual;
+    property  ShowDia: Boolean read FShowDia write SetShowDia;
     property  ShowRelative: Boolean read FShowRelative write FShowRelative;
     property  ShowDtg: Boolean read FShowDtg write FShowDtg;
     property  BorderWidth: integer read FBorderWidth write FBorderWidth;
     property  ShowBox: Boolean write SetShowBox;
   end;
-  
+
 var
   Joints: TJoints;
   
@@ -178,9 +182,12 @@ begin
   with FDesLabel do
     begin
       Parent:= FPanel;
-      Alignment:= taCenter;
-      AutoSize:= False;
-      Caption:= FAxisChar;
+      Alignment:= taLeftJustify;
+      AutoSize:= True;
+      if (Vars.IsLathe) and (FAxisChar = 'X') then
+        Caption:= 'RAD'
+      else
+        Caption:= FAxisChar;
       Layout:= tlCenter;
       ParentFont:= False;
       Font.Assign(FPanel.Font);
@@ -216,15 +223,15 @@ procedure TAxis.SizeLabels(x,y,w,h: integer);
 var
   LeftPart,iw,ih: integer;
 begin
-  LeftPart:= Round(w * 0.1);
-  if LeftPart < 10 then LeftPart:= 10;
-  FDesLabel.SetBounds(x,y,LeftPart-1,h-1);
+  FDesLabel.Left:= x + 2;
+  FDesLabel.Top:= y + ((h - FDesLabel.Height) div 2);
+  LeftPart:= FDesLabel.Width + FDesLabel.Left + 2;
   if FImage <> nil then
     begin
       iw:= DroHomedBitmap.Width;
       ih:= DroHomedBitmap.Height;
       FImage.SetBounds(x + LeftPart,(h - ih) div 2,iw,ih);
-      LeftPart:= LeftPart + iw;
+      LeftPart:= LeftPart + iw + 2;
     end;
   FPosLabel.SetBounds(x+LeftPart,y,w-LeftPart-1,h-1);
   FTopLeft.Y:= y;
@@ -235,6 +242,23 @@ procedure TAxis.SetHomed(Value: Boolean);
 begin
   if FHomed <> Value then
     sendHome(FAxisNumber);
+end;
+
+procedure TAxis.SetDiaMode(Value: Boolean);
+begin
+  if (not Vars.IsLathe) or (FAxisChar <> 'X') then
+    begin
+      FDiaMode:= False;
+      Exit;
+    end;
+  if Value <> FDiaMode then
+    begin
+      FDiaMode:= Value;
+      if FDiaMode then
+        FDesLabel.Caption:= 'DIA'
+      else
+        FDesLabel.Caption:= 'RAD'
+    end;
 end;
 
 procedure TAxis.SetJointMode(Value: Boolean);
@@ -249,35 +273,30 @@ begin
     end;
 end;
 
-procedure TAxis.Update(ShowActual,ShowRelative,ShowDtg: Boolean);
+procedure TAxis.Update(Relative,Dtg: Boolean);
 var
   NewPos: Double;
   IsHomed: Boolean;
 begin
   if FJointMode then
-    begin
-      NewPos:= ConvertUnits(getJointPos(FAxisNumber));
-    end
+    NewPos:= ConvertUnits(getJointPos(FAxisNumber))
   else
     begin
-      if ShowDtg then
+      if Dtg then
         NewPos:= ConvertUnits(getDtgPos(FAxisNumber))
       else
-        if ShowActual then
-          begin
-            if ShowRelative then
-              NewPos:= ConvertUnits(getRelPos(FAxisNumber))
-            else
-              NewPos:= ConvertUnits(getAbsPos(FAxisNumber));
-          end
-        else
-          begin
-            if ShowRelative then
-              NewPos:= ConvertUnits(getRelCmdPos(FAxisNumber))
-            else
-              NewPos:= ConvertUnits(getAbsCmdPos(FAxisNumber));
-          end;
+        begin
+          if Relative then
+            NewPos:= ConvertUnits(getRelPos(FAxisNumber))
+          else
+            NewPos:= ConvertUnits(getAbsPos(FAxisNumber));
+        end;
     end;
+
+  if Vars.IsLathe then
+    if FDiaMode then
+      NewPos:= NewPos * 2;
+
   if NewPos <> FValue then
     begin
       FValue:= NewPos;
@@ -381,7 +400,7 @@ begin
   FBox.Parent:= FPanel;
   FBox.Visible:= False;
   FOldActiveAxis:= -1;
-  FShowActual:= Vars.ShowActual;
+  //FShowActual:= Vars.ShowActual;
   FShowRelative:= Vars.ShowRelative;
   FShowDtg:= False;
 end;
@@ -430,6 +449,17 @@ begin
       FBox.Visible:= Value;
       FShowBox:= Value;
     end;
+end;
+
+procedure TJoints.SetShowDia(Value: Boolean);
+var
+  i: integer;
+begin
+  if FNumAxes < 2 then Exit;
+  if Vars.IsLathe then
+    for i:= 0 to FNumAxes - 1 do
+      FAxes[i].DiaMode:= Value;
+  FShowDia:= Value;
 end;
 
 procedure TJoints.CheckJogExit;
@@ -597,7 +627,7 @@ begin
   if (index < 0) or (index > FNumAxes - 1) then
     Exit;
   if Assigned(FAxes[index]) then
-    Result:= GetAxis(Index).AxisChar;
+    Result:= GetAxis(index).AxisChar;
 end;
 
 procedure TJoints.SetActiveChar(Ch: Char);
@@ -630,7 +660,11 @@ begin
         c:= FCoords[i];
         Ax:= AddAxis(c);
         if Ax <> nil then
-          Ax.FLinear:= Vars.Axis[i-1].IsLinear;
+          begin
+            Ax.FLinear:= Vars.Axis[i-1].IsLinear;
+            if Vars.IsLathe and (c = 'X') then
+              Ax.DiaMode:= True;
+          end;
         if Verbose > 0 then writeln('Created joint: ' + c);
       end;
   Application.OnIdle:= @Self.OnIdle;
@@ -652,7 +686,7 @@ var
 begin
   if FNumAxes < 1 then Exit;
   for i:= 0 to FNumAxes - 1 do
-    FAxes[i].Update(FShowActual,FShowRelative,FShowDtg);
+    FAxes[i].Update(FShowRelative,FShowDtg);
   if FShowBox then
     if FOldActiveAxis <> Vars.ActiveAxis then
       if (Vars.ActiveAxis >= 0) and (Vars.ActiveAxis < FNumAxes) then

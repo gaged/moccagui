@@ -443,24 +443,7 @@ begin
   FCurrentMap:= 0;
   FBtnDown:= 0;
   if Vars.JogIncMax < 1 then
-    begin
-      writeln(MSG1);
-      writeln(MSG2);	
-      with Vars do
-        begin
-          JogIncrements[0].Text:= 'Durchgehend';
-          JogIncrements[0].Value:= 0;
-          JogIncrements[1].Text:= '1.00 mm';
-          JogIncrements[1].Value:= 1;
-          JogIncrements[2].Text:= '0.1 mm';
-          JogIncrements[2].Value:= 0.1;
-          JogIncrements[3].Text:= '0.01 mm';
-          JogIncrements[3].Value:= 0.01;
-          JogIncrements[4].Text:= '0.001 mm';
-          JogIncrements[4].Value:= 0.001;
-        end;
-      Vars.JogIncMax:= 4;
-    end;
+    raise Exception.Create('Error: Jogincrement, maximum < 1');
   for i:= 0 to Vars.JogIncMax do
     SetButtonParams(i,Vars.JogIncrements[i].Text);
   Vars.JogContinous:= True;

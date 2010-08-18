@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 228
-  Height = 724
-  Top = 175
+  Left = 199
+  Height = 710
+  Top = 39
   Width = 961
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -11,7 +11,7 @@ object MainForm: TMainForm
   VertScrollBar.Visible = False
   ActiveControl = PanelMaster
   Caption = 'Mocca'
-  ClientHeight = 724
+  ClientHeight = 710
   ClientWidth = 961
   Color = clSilver
   KeyPreview = True
@@ -26,7 +26,7 @@ object MainForm: TMainForm
   PopupMenu = PopupMenuMain
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.29'
   object BgImage: TImage
     Left = 0
     Height = 90
@@ -538,20 +538,22 @@ object MainForm: TMainForm
     Height = 29
     Top = 286
     Width = 90
+    Command = 'cmVIEWREL'
     ShowClicks = True
     Caption = 'Masch.Koord'
     Color = clBtnFace
-    OnClick = BtnCoordsClick
+    OnClick = ButtonClick
   end
   object ButtonShowDtg: TMocButton
     Left = 440
     Height = 29
     Top = 352
     Width = 90
+    Command = 'cmVIEWDTG'
     ShowClicks = True
     Caption = 'DTG'
     Color = clBtnFace
-    OnClick = ButtonShowDtgClick
+    OnClick = ButtonClick
   end
   object ButtonSpindlebrake: TMocButton
     Left = 792
@@ -928,10 +930,10 @@ object MainForm: TMainForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = PanelMsg
       AnchorSideBottom.Side = asrBottom
-      Left = 6
-      Height = 14
-      Top = 6
-      Width = 820
+      Left = 7
+      Height = 12
+      Top = 7
+      Width = 818
       Anchors = [akTop, akLeft, akRight, akBottom]
       AutoSize = False
       BorderSpacing.Around = 6
