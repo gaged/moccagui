@@ -16,6 +16,8 @@ type
     function CreateAxisDef: boolean;
     procedure SetupAxes;
 
+    procedure InitSelf;
+
     procedure Execute(cmd: string);
     procedure ExecuteSilent(cmd: string);
     procedure ExecuteHalCmd;
@@ -129,6 +131,27 @@ begin
   State.LinearUnits:= trajlinearUnits;
   State.AngularUnits:= trajangularUnits;
   SetupAxes;
+  InitSelf;
+end;
+
+procedure TEmc.InitSelf;
+const
+  MSG1 = 'No Jog-Increments set in config-file';
+  MSG2 = 'Using default configuration';
+begin
+  if Vars.JogIncMax < 1 then
+    begin
+      writeln(MSG1);
+      writeln(MSG2);
+      with Vars do
+        begin
+          JogIncrements[0].Text:= 'Durchgehend';
+          JogIncrements[0].Value:= 0;
+          JogIncrements[1].Text:= '1.00 mm';
+          JogIncrements[1].Value:= 1;
+        end;
+      Vars.JogIncMax:= 1;
+    end;
   FFeedOverride:= 100;
   FSpindleOverride:= 100;
   if DefaultSpindleSpeed > 0 then
@@ -783,8 +806,6 @@ begin
   with State do
     begin
       State:= taskState;
-      //EStop:= GetEStop;
-      //Machine:= GetMachineOn;
       SpDir:= SpindleDirection;
       SpInc:= SpindleIncreasing;
       SpSpeed:= SpindleSpeed;
@@ -1054,7 +1075,6 @@ begin
          clRun.UpdatePreview(True);
        end;
     cmTOOLCHG: ChangeTool;
-    cmUNITS: SetDisplayUnits(not Vars.ShowMetric);
     cmEDITOR: EditFile;
     cmCOORDROT: DoCoordRotate;
     cmONANDREF:
@@ -1066,6 +1086,12 @@ begin
           Sleep(20);
           Joints.HomeAll;
         end;
+    cmUNITS: SetDisplayUnits(not Vars.ShowMetric);
+    cmVIEWREL: Joints.ShowRelative:= not Joints.ShowRelative;
+    cmVIEWDIA: Joints.ShowDia:= not Joints.ShowDia;
+    cmVIEWDTG: Joints.ShowDtg:= not Joints.ShowDtg;
+
+
   else
     begin
       Result:= False;

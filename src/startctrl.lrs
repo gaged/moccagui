@@ -1,0 +1,7 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
+LazarusResources.Add('TStartCtrlDlg','FORMDATA',[
+  'TPF0'#13'TStartCtrlDlg'#12'StartCtrlDlg'#4'Left'#3'!'#2#6'Height'#3#184#0#3
+  +'Top'#3'}'#1#5'Width'#3#144#1#7'Caption'#6#19'Mocca Start Control'#8'Positio'
+  +'n'#7#14'poScreenCenter'#10'LCLVersion'#6#8'0.9.28.2'#0#0
+]);

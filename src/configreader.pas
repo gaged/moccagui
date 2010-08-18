@@ -23,6 +23,7 @@ const
   ERR_CONFIGREAD = 'Error reading the config-file: ';
   ERR_CONFIGDOCNIL = 'Error in configfile. No data read from ';
   ERR_NOSCRIPTSINCONFIG = 'No Scripts found in config-file.';
+  ERR_NOJOGINCREMENTS = 'No definition for jog-increments found in config-file.';
   ERR_CONFIGSCRIPTS = 'Error in config file: ';
   ERR_NOGLOBALCONFIG = 'Error: no global config entrys found.';
 
@@ -67,16 +68,22 @@ begin
     else
     if nn = 'DROHOMEDBITMAP' then
       begin
-        DroHomedBitmap:= TBitmap.Create;
-        if Assigned(DroHomedBitmap) then
-          DroHomedBitmap.LoadFromFile(ConfigDir + nv);
+        if nv <> '' then
+          begin
+            DroHomedBitmap:= TBitmap.Create;
+            if Assigned(DroHomedBitmap) then
+              DroHomedBitmap.LoadFromFile(ConfigDir + nv);
+          end;
       end
     else
     if nn = 'DROUNHOMEDBITMAP' then
       begin
-        DroUnHomedBitmap:= TBitmap.Create;
-        if Assigned(DroUnHomedBitmap) then
-          DroUnHomedBitmap.LoadFromFile(ConfigDir + nv);
+        if nv <> '' then
+          begin
+            DroUnHomedBitmap:= TBitmap.Create;
+            if Assigned(DroUnHomedBitmap) then
+              DroUnHomedBitmap.LoadFromFile(ConfigDir + nv);
+          end;
       end
     else
       if nn = 'SAVE_Z_CMD' then
@@ -117,6 +124,75 @@ begin
            end;         
       N:= N.NextSibling;
     end;
+end;
+
+procedure ReadJogIncrements(Node: TDOMNode);
+var
+  AText,AltText,nn,nv: string;
+  value: double;
+  index: integer;
+  i: integer;
+  N: TDomNode;
+begin
+  if Node = nil then
+    begin
+      writeln(ERR_NOJOGINCREMENTS);
+      Exit;
+    end;
+  N:= Node.FirstChild;
+  if Verbose > 0 then
+    writeln('Reading jog-increments from config file.');
+  while N <> nil do
+  begin
+    Index:= -1;
+    Value:= 0;
+    AText:= '';
+    AltText:= '';
+    if N.HasAttributes then
+      if N.Attributes.Length > 0 then
+      for i:= 0 to N.Attributes.Length - 1 do
+        begin
+          if N.Attributes[i] = nil then Exit;
+          nn:= UpperCase(N.Attributes[i].NodeName);
+          nv:= N.Attributes[i].NodeValue;
+          {$ifdef DEBUG_CONFIG}
+          writeln('jog-increment: ' + nn + #32 + nv);
+          {$endif}
+          try
+            if nn = 'INDEX' then
+              begin
+                index:= StrToInt(nv);
+                if (index < 0) or (index > MaxJogIncs) then
+                  begin
+                    writeln('Error: Index for jog-increment out of range');
+                    Exit;
+                  end;
+              end;
+            if nn = 'TITLE' then
+              AText:= nv;
+            if nn = 'VALUE' then
+              begin
+                Value:= StrToFloat(nv);
+                AltText:= nv;
+              end;
+          except
+            on E:Exception do
+              writeln('Error in config: jogincrements: ', E.Message);
+          end;
+        end;
+      if index <> -1 then
+        begin
+          if Value < 0 then Value:= 0;
+          if AText = '' then AText:= AltText;
+          Vars.JogIncrements[Index].Text:= AText;
+          Vars.JogIncrements[Index].Value:= Value;
+          if Vars.JogIncMax < Index then
+            Vars.JogIncMax:= Index;
+          if Verbose > 0 then
+            writeln('jogincrement['+IntToStr(Index)+'] = '+AText);
+        end;
+    N:= N.NextSibling;
+  end;
 end;
 
 procedure ReadScripts(Node: TDomNode);
@@ -293,7 +369,7 @@ var
   i: integer;
 begin
   S:= '';
-  if N = nil then ;
+  if N = nil then Exit;
   if N.HasAttributes then
     if N.Attributes.Length > 0 then
       for i:= 0 to N.Attributes.Length - 1 do
@@ -334,7 +410,8 @@ var
   i,id,iCmd,iBmp: integer;
   nn,nv: string;
 begin
-  if (P = nil) or (N = Nil) then ;
+  if (P = nil) or (N = Nil) then
+    Exit;
   if N.HasAttributes then
     if N.Attributes.Length > 0 then
      begin
@@ -435,7 +512,7 @@ procedure ReadGlColors(Node: TDomNode);
 var
   N: TDomNode;
 begin
-  if Node = nil then ;
+  if Node = nil then Exit;
   {$ifdef DEBUG_CONFIG}
   writeln('reading GlColors: ' + Node.NodeName);
   {$endif}
@@ -492,6 +569,7 @@ begin
     ReadMenu(GetNode('menutouchoff'),@BtnDefJogTouch);
     ReadMenu(GetNode('menutool'),@BtnDefJogTool);
     ReadGlobals(GetNode('global'));
+    ReadJogIncrements(GetNode('jogincrements'));
   finally
     Doc.Free;
   end;

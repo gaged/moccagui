@@ -1,8 +1,8 @@
 const
 
-  MaxAxes = 9;                   // maimum number of axes, default 9 XYZABCUVW
-  MaxJogIncs = 10;               // numer of joc-increments
-  NumButtons  = 10;              // Number of User-Defined Buttons
+  MaxAxes = 9;                   // max number of axes, default 9 XYZABCUVW
+  MaxJogIncs = 8;                // max number of joc-increments
+  NumButtons = 10;               // Number of User-Defined Buttons
 
 const
   Mask = 'XYZABCUVW';
@@ -86,6 +86,9 @@ const
   cmSHIFTDN    = 331;
   cmCOORDROT   = 340;
   cmUNITS      = 350;
+  cmVIEWREL    = 351;
+  cmVIEWDIA    = 352;
+  cmVIEWDTG    = 353;
   cmBACK       = 999;
   cmSCRIPTBASE = 1000;
   cmSCRIPTS    = 1099;
@@ -100,7 +103,7 @@ type
   end;
 
 const
-  CmdNamesMax = 65;
+  CmdNamesMax = 68;
 
 const
   CmdNames: Array[0..CmdNamesMax] of TCmdNames = (
@@ -163,7 +166,10 @@ const
   (S:'cmSHIFTUP'   ; i:330),
   (S:'cmSHIFTDN'   ; i:331),
   (S:'cmCOORDROT'  ; i:340),
-  (S:'cmUNITS'     ; i:350),
+  (S:'cmUNITS'     ; i:cmUNITS),
+  (S:'cmVIEWREL'   ; i:cmVIEWREL),
+  (S:'cmVIEWDIA'   ; i:cmVIEWDIA),
+  (S:'cmVIEWDTG'   ; i:cmVIEWDTG),
   (S:'cmCLOSE'     ; i:360),
   (S:'cmONANDREF'  ; i:410),
   (S:'cmBACK'      ; i:999),
@@ -276,7 +282,7 @@ type
     HomingOrderDefined: Boolean;  // check if can do a "home all"
     NoForceHoming: Boolean;
     JogPolarity: Array[0..MaxAxes] of integer;
-    JogIncrements: Array[0..MAXJOGINCS] of TJogIncrement; // 0 = continous
+    JogIncrements: Array[0..MaxJogIncs-1] of TJogIncrement; // 0 = continous
     JogIncMax: integer;
     JogIncrement: Double;
     JogContinous: Boolean;
