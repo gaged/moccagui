@@ -61,7 +61,7 @@ Und diese Variable muss den Pfad zum gewünschten Design beinhalten.
 Beispiel:
 {{{
 [MOCCA]
-CONFIG = /usr/share/lucid-mocca/skins/default_de*
+CONFIG = /usr/share/lucid-mocca/skins/default_de
 }}}
 
 Jetzt müssen Sie die INI-Datei nur noch abspeichern.
