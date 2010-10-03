@@ -1,4 +1,5 @@
 #summary mocca installieren
+#labels Featured
 
 =Paketauswahl=
 
