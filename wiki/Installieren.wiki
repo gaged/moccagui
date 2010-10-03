@@ -66,3 +66,16 @@ CONFIG = /usr/share/lucid-mocca/skins/default_de*
 
 Jetzt müssen Sie die INI-Datei nur noch abspeichern.
 Danach können Sie EMC mit ihrem Profil starten, und die neue Benutzerumgebung genießen.
+
+=Probleme=
+==Fehlende Abhängigkeiten==
+Möglicherweise fehlen zu Installation der Mocca-Pakete noch andere Pakete auf Ihrem Rechner.
+Stellen Sie sicher, dass Sie diese Pakete installiert haben, und versuchen Sie dann die Installation erneut.
+
+===Mocca23 und Mocca24===
+ * libglib1.2dbg
+ * libgdkpixbuf2
+ * libgtkglext1
+
+===Lucid-Mocca===
+ * libgtkglext1
