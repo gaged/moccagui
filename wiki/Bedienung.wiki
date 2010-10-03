@@ -2,23 +2,6 @@
 
 Hier sollte alles stehen was für den Bediener der Maschine von Bedeutung ist.
 
-= mocca as EMC2 GUI =
-
-Using mocca as a GUI for EMC2:
-
- # Get mocca compiled (see wiki comiling mocca) and installed or download and install the binary
- # edit your EMC ini file: `DISPLAY = mocca`, see wiki for more details
- # start emc using the ini-file mentioned above 
-
-
-= mocca als EMC2 Oberfläche =
-
-mocca als Grafikfrontend für EMC2 einstellen:
-
- # Mocca gemäß Wiki kompilieren und installieren oder Binary herunterladen und installieren
- # Die ini Datei der Maschine bearbeiten: `DISPLAY = mocca`, weitere Einträge siehe wiki
- # EMC starten, mocca wird geladen 
-
 = Bedienung von mocca =
 
 == Umschalten zwischen mm/inch ==
