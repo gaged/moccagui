@@ -1,5 +1,5 @@
 #summary mocca installieren
-#labels Featured
+#labels Featured,Phase-Deploy
 
 =Paketauswahl=
 
