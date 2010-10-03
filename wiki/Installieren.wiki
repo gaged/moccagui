@@ -1,15 +1,67 @@
-#summary mocca binary installieren
+#summary mocca installieren
 
-Unter dem Register "Downloads" befndet sich ein fertiges binary, kompiliert für Ubuntu 8.04 mit GTK2. 
+=Paketauswahl=
 
-  * Das komprimierte binary vom Register "Downloads" herunterladen
-  * in einem beliebigen ordner entpacken
-  * dort Terminal öffnen und folgendes eingeben
+Unter dem Register "Downloads" befinden sich drei Pakete:
+
+ # mocca23: Für Ubuntu Hardy Heron 8.04 mit einem alten EMC (Version max. 2.3.5)
+ # mocca24: Ebenfalls für Hardy Heron, aber für neuere EMC-Versionen (ab 2.4.0)
+ # lucid-mocca: Für EMC unter Ubuntu Lucid Lynx 10.04
+
+Wenn Sie also EMC von der aktuellen (Stand Okt. 2010) LiveCD verwenden, ist lucid-mocca ihre Wahl.
+Bei älteren Installationen mocca23 oder -24.
+
+Für EMC unter Ubuntu 6.06 gibt es leider kein Mocca.
+Hier müssen Sie auf ein neues Ubuntu updaten.
+
+=Installation=
+
+Laden Sie also das, für Sie, richtige Paket herunter.
+Öffnen Sie es z.B. mit einem Doppelklick, oder übers Terminal mit gdebi.
+
+Danach einfach ein Klick auf Installieren, und kurz warten.
+
+=Konfiguration=
+
+Jetzt muss EMC nur noch mitgeteilt werden, das Sie ab jetzt auf Axis verzichten wollen ;)
+
+Dazu müssen Sie die INI-Datei ihres Profils öffnen. Diese finden Sie normalerweise unter:
+/home/*ihr_name*/emc2/configs/*ihre_config*/*ihre_config*.ini
+
+Suchen Sie in der INI-Datei die Zeile "DISPLAY = " und ersetzen Sie das dort genannte Displayprogramm (standard: axis) durch mocca.
+
+So sollte die Zeile dann aussehen:
 {{{
-chmod a+x mocca
-sudo cp mocca /usr/bin/
+DISPLAY = mocca
 }}}
 
-Fertig !!!
+----
 
-Weiter mit Einrichten.
+Bei der Installation wurden verschiedene Designs in folgenden Ordner kopiert:
+/usr/share/*PAKETNAME*/skins
+
+wenn Sie Lucid-Mocca installiert haben, dann lautet der Pfad z.B. so:
+/usr/share/lucid-mocca/skins
+
+Suchen Sie sich nun ein Design aus, mit der passenden Auflösung und Sprache.
+
+Den Pfad zu diesem Design müssen Sie nun kurz im Kopf behalten.
+
+----
+
+Gehen Sie an das Ende ihrer INI-Datei.
+Beginnen Sie dort eine neue Sektion:
+[MOCCA]
+
+In diese Sektion kommt die Variable:
+CONFIG = 
+
+Und diese Variable muss den Pfad zum gewünschten Design beinhalten.
+Beispiel:
+{{{
+[MOCCA]
+CONFIG = /usr/share/lucid-mocca/skins/default_de*
+}}}
+
+Jetzt müssen Sie die INI-Datei nur noch abspeichern.
+Danach können Sie EMC mit ihrem Profil starten, und die neue Benutzerumgebung genießen.
