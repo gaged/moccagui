@@ -1,0 +1,82 @@
+#summary How to install mocca on your PC.
+#labels Featured,Phase-Deploy
+
+=Choosing the right package=
+
+In the download-section, there are three different mocca packages:
+
+ # mocca23: This is designed for Ubuntu 8.04 with EMC, version <= 2.3.5
+ # mocca24: Also for Ubuntu 8.04 Hardy Heron, but with newer EMC (>=2.4.0)
+ # lucid-mocca: This is for Ubuntu 10.04 Lucid Lynx.
+
+If you installed EMC via the recent LiveCD (oct. 2010), then you will choose lucid-mocca.
+If your installation is older, then you go with mocca23 or -24.
+
+Unfortunately Mocca is not available for EMC with Ubuntu 6.06.
+You will have to update Ubuntu first, before using mocca.
+
+=Installation=
+
+The installation itself is very easy.
+Just download the correct package, and open it by doubleclicking on its icon.
+Then click on install, and wait a few seconds.
+You could also install it via terminal.
+
+=Configuration=
+
+Now you need to tell EMC, that you don't like axis any more ;)
+
+To do so, find the INI-file of your EMC-Configuration.
+Normally it should be found here:
+/home/*your_username*/emc2/configs/*your_config*/*your_config*.ini
+
+Now look out for a line, beginning with "DISPLAY = "
+Replace the name of your former display-program with "mocca"
+
+It should look like this, now:
+{{{
+DISPLAY = mocca
+}}}
+
+----
+
+During installation, different designs have been copied to this directory:
+/usr/share/*package_name*/skins
+
+if you installed lucid-mocca for example, the the path would look like this:
+/usr/share/lucid-mocca/skins
+
+Now, choose a design, with a suiting resolution and language.
+Keep the path to this design in mind.
+
+----
+
+Back to your INI-file:
+Scroll to the bottom, and add a new section:
+[MOCCA]
+
+In this new section, add the variable:
+CONFIG = 
+
+This variable has to contain the path to your design.
+The section should then look like this:
+{{{
+[MOCCA]
+CONFIG = /usr/share/lucid-mocca/skins/default_en
+}}}
+
+Then save your INI-file. Now you're done.
+Start EMC with your profile and enjoy the new GUI.
+
+=possible problems=
+==missing dependicies==
+Maybe, there are some packages missing for the installation of mocca.
+Please ensure these packages are installed, and then try to install mocca again:
+
+===mocca23 und mocca24===
+ * libglib1.2dbg
+ * libgdkpixbuf2
+ * libgtkglext1
+
+===lucid-mocca===
+ * libgtkglext1
