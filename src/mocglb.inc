@@ -5,7 +5,7 @@ const
   NumButtons = 10;               // Number of User-Defined Buttons
 
 const
-  Mask = 'XYZABCUVW';
+  CoordMask = 'XYZABCUVW';
 
 type
   TDROLayoutStyle = (dlsVertical,dlsHorizontal);
@@ -198,12 +198,19 @@ const
     ('POC','TNR','X-Offset',{$ifdef VER_24}'Y-Offset',{$endif}
      'Z-Offset',{$ifdef VER_24}'A-Offset','B-Offset','C-Offset',
      'U-Offset','V-Offset','W-Offset',{$endif}
-     'Durchmesser','Frontangle','Backangle','Ausrichtung','Bezeichnung');
+     'Dia.','Frontang.','Backang.','Orient.','Name');
 
   ToolColWidths : Array[0..MaxToolColumns] of integer =
     (30,30,60,{$ifdef VER_24}60,{$endif}
      60,{$ifdef VER_24}60,60,60,60,60,60,{$endif}
      100,60,60,30,200);
+
+  const
+  {$ifdef VER_24}
+  ToolColMap = 'PTXZYABCUVWDFKOQ';
+  {$else}
+  ToolColMap = 'PTXZDFKOQ';
+  {$endif}
 
 const
   CoordSysMax = 8;
@@ -260,10 +267,11 @@ type
     ToolFile: string;
     ParamFile: string;
     Extensions: string;
-    Geometry: string;
     NumAxes: Integer;             // number of axes in ini
     Axis: TAxisDefs;
     CoordNames: string;           // the given coordinates (XYZ...)
+    CoordMap: string;             // coordinates mapped to a string
+    Geometry: string;             // Geometry of coordinates
     CycleTime: Double;            // as defined in [DISPLAY], in seconds
     CycleDelay: Longint;          // cycletime / 1000 in msec
     MaxFeedOverride: integer;     // maximum feed override

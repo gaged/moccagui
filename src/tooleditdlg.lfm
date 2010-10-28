@@ -1,7 +1,7 @@
 object ToolDlg: TToolDlg
   Left = 250
   Height = 487
-  Top = 303
+  Top = 262
   Width = 884
   ActiveControl = Grid
   BorderIcons = [biSystemMenu]
@@ -12,10 +12,9 @@ object ToolDlg: TToolDlg
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
-  OnShow = FormShow
   Position = poDesktopCenter
   ShowInTaskBar = stNever
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.29'
   object Grid: TStringGrid
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner

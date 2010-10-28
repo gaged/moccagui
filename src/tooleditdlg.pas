@@ -25,7 +25,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure EditorKeyPress(Sender: TObject; var Key: char);
     procedure EditorEditingDone(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     procedure InitGrid;
     procedure UpdateCell(ACol,ARow: integer);
@@ -47,15 +46,6 @@ implementation
 uses
   mocglb,emc2pas;
 
-type
-  TToolCol = record
-    Title: string;
-    Width: integer;
-  end;
-
-var
-  iPockets: integer;
-  ToolColumns: Array[0..MaxToolColumns] of TToolCol;
 
 type
   TToolItem = record
@@ -66,12 +56,15 @@ type
 
 var
   T: Array[1..CANON_TOOL_MAX] of TToolItem;
+  iPockets: integer;   // number of pockets
+  Map: string;         // map of visible columns
 
-procedure ClearTool(var I: TToolItem);
+
+procedure ClearTool(var Item: TToolItem);
 begin
-  I.Pocket:= 0;
-  I.Comment:= '';
-  with I.Tool do
+  Item.Pocket:= 0;
+  Item.Comment:= '';
+  with Item.Tool do
     begin
       toolno:= 0; zoffset:= 0; xoffset:= 0;
       {$ifdef VER_24}
@@ -85,7 +78,6 @@ end;
 procedure InitPockets;
 var
   i: integer;
-  //Index: integer;
 begin
   iPockets:= 0;
   for i:= 1 to CANON_TOOL_MAX - 1 do
@@ -100,11 +92,6 @@ begin
           T[iPockets].Tool:= Tools[i];
           T[iPockets].Comment:= PChar(ToolComments[i]);
         end;
-    end;
-  for i:= 0 to MaxToolColumns do
-    begin
-      ToolColumns[i].Title:=  ToolColTitles[i];
-      ToolColumns[i].Width:=  ToolColWidths[i];
     end;
 end;
 
@@ -124,51 +111,53 @@ procedure TToolDlg.UpdateCell(ACol,ARow: integer);
 var
   s: string;
   Item: TToolItem;
+  c: Char;
 begin
   if (ARow < 1) or (ARow > CANON_TOOL_MAX) then
     begin
       writeln('Pocket out of range ' + IntToStr(ARow));
       Exit;
     end;
-  if (ARow > iPockets) then
-    Exit;
-  if (ACol < 0) or (ACol > MaxToolColumns) then
+  if (ARow > iPockets) then Exit;
+  if (ACol < 0) or (ACol >= Length(Map)) then
     begin
-      writeln('Column out of range ' + IntToStr(aCol));
+      writeln('Column out of range ' + IntToStr(ACol));
       Exit;
     end;
   Item:= T[ARow];
+  s:= '';
   if Item.Pocket > 0 then
     begin
-      case ACol of
-        0: s:= IntToStr(Item.Pocket);
-        1: s:= IntToStr(Item.Tool.toolno);
-        2: s:= FloatToStr(Item.Tool.xoffset);
-        4: s:= FloatToStr(Item.Tool.zoffset);
+      c:= Map[ACol+1];
+      case c of
+        'P': s:= IntToStr(Item.Pocket);
+        'T': s:= IntToStr(Item.Tool.toolno);
+        'X': s:= FloatToStr(Item.Tool.xoffset);
+        'Z': s:= FloatToStr(Item.Tool.zoffset);
         {$ifdef VER_24}
-        3: s:= FloatToStr(Item.Tool.yoffset);
-        5: s:= FloatToStr(Item.Tool.aoffset);
-        6: s:= FloatToStr(Item.Tool.boffset);
-        7: s:= FloatToStr(Item.Tool.coffset);
-        8: s:= FloatToStr(Item.Tool.uoffset);
-        9: s:= FloatToStr(Item.Tool.voffset);
-        10: s:= FloatToStr(Item.Tool.woffset);
+        'Y': s:= FloatToStr(Item.Tool.yoffset);
+        'A': s:= FloatToStr(Item.Tool.aoffset);
+        'B': s:= FloatToStr(Item.Tool.boffset);
+        'C': s:= FloatToStr(Item.Tool.coffset);
+        'U': s:= FloatToStr(Item.Tool.uoffset);
+        'V': s:= FloatToStr(Item.Tool.voffset);
+        'W': s:= FloatToStr(Item.Tool.woffset);
         {$endif}
-        11: s:= FloatToStr(Item.Tool.diameter);
-        12: s:= FloatToStr(Item.Tool.frontangle);
-        13: s:= FloatToStr(Item.Tool.backangle);
-        14: s:= IntToStr(Item.Tool.orientation);
-        15: s:= Item.Comment;
+        'D': s:= FloatToStr(Item.Tool.diameter);
+        'F': s:= FloatToStr(Item.Tool.frontangle);
+        'K': s:= FloatToStr(Item.Tool.backangle);
+        'O': s:= IntToStr(Item.Tool.orientation);
+        'Q': s:= Item.Comment;
       end;
     end;
   Grid.Cells[ACol,ARow]:= s;
 end;
 
+
 procedure TToolDlg.UpdateTool(ACol,ARow: integer);
 var
-  C: TToolCol;
+  c: Char;
   s: string;
-  // Item: TToolItem;
   i: integer;
 begin
   if iPockets < 1 then Exit;
@@ -177,42 +166,42 @@ begin
       writeln('Tool-Update, Invalid row: ' + IntToStr(ARow));
       Exit;
     end;
-  if (ACol < 1) or (ACol > MaxToolColumns) then
+  if (ACol < 1) or (ACol >= Length(Map)) then
     begin
       writeln('Tool-Update, Invalid Column: ' + IntToStr(ACol));
       Exit;
     end;
   s:= Grid.Cells[ACol,ARow];
   if s = '' then Exit;
-  if ACol < MaxToolColumns then
+  c:= Map[ACol+1];
+  if c <> 'Q' then
     begin;
       i:= Pos(',',s);
       if i > 0 then s[i]:= '.';
     end;
   try
-     case ACol of
-        1: T[ARow].Tool.toolno:= StrToInt(s);
-        2: T[ARow].Tool.xoffset:= StrToFloat(s);
-        4: T[ARow].Tool.zoffset:= StrToFloat(s);
+     case C of
+        'T': T[ARow].Tool.toolno:= StrToInt(s);
+        'X': T[ARow].Tool.xoffset:= StrToFloat(s);
+        'Z': T[ARow].Tool.zoffset:= StrToFloat(s);
         {$ifdef VER_24}
-        3: T[ARow].Tool.yoffset:= StrToFloat(s);
-        5: T[ARow].Tool.aoffset:= StrToFloat(s);
-        6: T[ARow].Tool.boffset:= StrToFloat(s);
-        7: T[ARow].Tool.coffset:= StrToFloat(s);
-        8: T[ARow].Tool.uoffset:= StrToFloat(s);
-        9: T[ARow].Tool.voffset:= StrToFloat(s);
-        10: T[ARow].Tool.woffset:= StrToFloat(s);
+        'Y': T[ARow].Tool.yoffset:= StrToFloat(s);
+        'A': T[ARow].Tool.aoffset:= StrToFloat(s);
+        'B': T[ARow].Tool.boffset:= StrToFloat(s);
+        'C': T[ARow].Tool.coffset:= StrToFloat(s);
+        'U': T[ARow].Tool.uoffset:= StrToFloat(s);
+        'V': T[ARow].Tool.voffset:= StrToFloat(s);
+        'W': T[ARow].Tool.woffset:= StrToFloat(s);
         {$endif}
-        11: T[ARow].Tool.diameter:= StrToFloat(s);
-        12: T[ARow].Tool.frontangle:= StrToFloat(s);
-        13: T[ARow].Tool.backangle:= StrToFloat(s);
-        14: T[ARow].Tool.orientation:= StrToInt(s);
-        15: T[ARow].Comment:= s;
+        'D': T[ARow].Tool.diameter:= StrToFloat(s);
+        'F': T[ARow].Tool.frontangle:= StrToFloat(s);
+        'K': T[ARow].Tool.backangle:= StrToFloat(s);
+        'O': T[ARow].Tool.orientation:= StrToInt(s);
+        'Q': T[ARow].Comment:= s;
       end;
-      if i > 0 then
-        UpdateCell(ACol,ARow);
+    UpdateCell(ACol,ARow);
   except
-    ShowMessage('"' + s + '" is not a valid entry for ' + C.Title);
+    ShowMessage('"' + s + '" is not a valid entry for ' + C);
     Grid.Cells[ACol,ARow]:= '';
     Grid.Col:= ACol;
     Grid.Row:= ARow;
@@ -223,10 +212,8 @@ procedure TToolDlg.UpdateRow(ARow: integer);
 var
   i: integer;
 begin
-  for i:= 0 to MaxToolColumns do
-    begin
-      UpdateCell(i,ARow);
-    end;
+  for i:= 1 to Length(Map) do
+    UpdateCell(i-1,ARow);
 end;
 
 function TToolDlg.CheckToolNo: Boolean;
@@ -333,17 +320,44 @@ end;
 
 procedure TToolDlg.InitGrid;
 var
-  i: integer;
+ i,n: integer;
+ s: string;
+ c: Char;
 begin
-  Grid.ColCount:= MaxToolColumns + 1;
+  Map:= 'PTQD';
+  if Vars.IsLathe then
+    Map:= Map + 'FKO';
+  if Pos('X',Vars.CoordNames) > 0 then Map:= Map + 'X';
+  if Pos('Z',Vars.CoordNames) > 0 then Map:= Map + 'Z';
+  {$ifdef VER_24}
+  if Pos('Y',Vars.CoordNames) > 0 then Map:= Map + 'Y';
+  if Pos('A',Vars.CoordNames) > 0 then Map:= Map + 'A';
+  if Pos('B',Vars.CoordNames) > 0 then Map:= Map + 'B';
+  if Pos('C',Vars.CoordNames) > 0 then Map:= Map + 'C';
+  if Pos('U',Vars.CoordNames) > 0 then Map:= Map + 'U';
+  if Pos('V',Vars.CoordNames) > 0 then Map:= Map + 'V';
+  if Pos('W',Vars.CoordNames) > 0 then Map:= Map + 'W';
+  {$endif}
+
+  Writeln('columnmap: ', Map);
+  Grid.ColCount:= Length(Map);
+
+  writeln('colcount: ', grid.ColCount);
   if iPockets < 1 then
     Grid.RowCount:= 2
   else
     Grid.RowCount:= iPockets + 1;
-  for i:= 0 to MaxToolColumns do
+  for i:= 0 to Grid.ColCount - 1 do
     begin
-      Grid.Cells[i,0]:= ToolColumns[i].Title;
-      Grid.ColWidths[i]:= ToolColumns[i].Width;
+      c:= Map[i+1];
+      n:= Pos(c,ToolColMap) - 1;
+      if (n < 0) or (n > MaxToolColumns) then
+        begin
+          writeln('Error in Toolmap, illegal Column: ' + c);
+          Exit;
+        end;
+      Grid.Cells[i,0]:= ToolColTitles[n];
+      Grid.ColWidths[i]:= ToolColWidths[n];
     end;
   for i:= 1 to iPockets do
     UpdateRow(i);
@@ -373,11 +387,6 @@ begin
     begin
       UpdateTool(Grid.Col,Grid.Row);
     end;
-end;
-
-procedure TToolDlg.FormShow(Sender: TObject);
-begin
-
 end;
 
 procedure TToolDlg.EditorKeyPress(Sender: TObject; var Key: char);

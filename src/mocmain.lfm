@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 199
+  Left = 198
   Height = 710
-  Top = 39
+  Top = 113
   Width = 961
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -9,7 +9,7 @@ object MainForm: TMainForm
   VertScrollBar.Page = 948
   VertScrollBar.Range = 932
   VertScrollBar.Visible = False
-  ActiveControl = PanelMaster
+  ActiveControl = PanelDlg
   Caption = 'Mocca'
   ClientHeight = 710
   ClientWidth = 961
@@ -26,7 +26,7 @@ object MainForm: TMainForm
   PopupMenu = PopupMenuMain
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.28.2'
   object BgImage: TImage
     Left = 0
     Height = 90
@@ -930,10 +930,10 @@ object MainForm: TMainForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = PanelMsg
       AnchorSideBottom.Side = asrBottom
-      Left = 7
-      Height = 12
-      Top = 7
-      Width = 818
+      Left = 6
+      Height = 14
+      Top = 6
+      Width = 820
       Anchors = [akTop, akLeft, akRight, akBottom]
       AutoSize = False
       BorderSpacing.Around = 6
@@ -980,6 +980,14 @@ object MainForm: TMainForm
     Smooth = True
     PositionChanged = SliderFeedPositionChanged
     Caption = '100 %'
+  end
+  object PanelDlg: TPanel
+    Left = 96
+    Height = 42
+    Top = 8
+    Width = 122
+    TabOrder = 8
+    Visible = False
   end
   object Timer: TTimer
     left = 688

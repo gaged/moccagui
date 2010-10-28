@@ -94,6 +94,13 @@ begin
       if nn = 'DEFAULT_SPINDLE_SPEED' then
         begin
           DefaultSpindleSpeed:= StrToFloat(nv);
+        end
+    else
+      if nn = 'DRO_LABEL_SCALE' then
+        begin
+          DroLabelScale:= StrToFloat(nv);
+          if DroLabelScale < 0.1 then DroLabelScale:= 0.1;
+          if DroLabelScale > 0.9 then DroLabelScale:= 0.9;
         end;
   except
     on E: Exception do

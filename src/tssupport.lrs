@@ -1,0 +1,9 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
+LazarusResources.Add('TKeyboardForm','FORMDATA',[
+  'TPF0'#13'TKeyboardForm'#12'KeyboardForm'#4'Left'#3'$'#1#6'Height'#3#203#0#3
+  +'Top'#3#239#1#5'Width'#3#144#3#7'Caption'#6#8'KeybForm'#11'Font.Height'#2#243
+  +#9'Font.Name'#6#4'Sans'#9'FormStyle'#7#11'fsStayOnTop'#10'KeyPreview'#9#8'On'
+  +'Create'#7#10'FormCreate'#9'OnDestroy'#7#11'FormDestroy'#13'ShowInTaskBar'#7
+  +#7'stNever'#10'LCLVersion'#6#8'0.9.28.2'#0#0
+]);

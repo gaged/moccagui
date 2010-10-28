@@ -21,6 +21,8 @@ type
 
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure MDIEditChange(Sender: TObject);
+    procedure MDIEditClick(Sender: TObject);
     procedure MDIEditKeyPress(Sender: TObject; var Key: char);
     procedure MDIHistListBoxClick(Sender: TObject);
   private
@@ -44,7 +46,7 @@ const
 implementation
 
 uses
-  mocglb,mocemc,
+  lcltype, mocglb,mocemc,
   emc2pas,
   mocbtn;
 
@@ -143,11 +145,20 @@ procedure TMDIClientForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Sender = nil then ;
-  if Key = 13 then
+  if Key = VK_RETURN then
     begin
       HandleCommand(cmMDIExec);
       Key:= 0;
     end;
+end;
+
+procedure TMDIClientForm.MDIEditChange(Sender: TObject);
+begin
+
+end;
+
+procedure TMDIClientForm.MDIEditClick(Sender: TObject);
+begin
 end;
 
 procedure TMDIClientForm.MDIEditKeyPress(Sender: TObject; var Key: char);
@@ -157,6 +168,8 @@ begin
     Key:= UpCase(Key)
   else
     if (Key = ',') then Key:= '.';
+  if Key = #13 then
+    HandleCommand(cmMDIExec);
 end;
 
 procedure TMDIClientForm.MDIHistListBoxClick(Sender: TObject);

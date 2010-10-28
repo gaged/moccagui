@@ -1,0 +1,15 @@
+object KeyboardForm: TKeyboardForm
+  Left = 292
+  Height = 203
+  Top = 495
+  Width = 912
+  Caption = 'KeybForm'
+  Font.Height = -13
+  Font.Name = 'Sans'
+  FormStyle = fsStayOnTop
+  KeyPreview = True
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  ShowInTaskBar = stNever
+  LCLVersion = '0.9.28.2'
+end

@@ -13,8 +13,9 @@ var
 
 procedure Lightning(x,y,z: double);
 procedure PanView(dx,dy: integer; cx,cy,cz: double; wh: integer; var px,py: double);
-procedure DrawDimX(ExtX: double; L: TExtents);
 procedure DrawDimXLathe(ExtX: double; L: TExtents);
+procedure DrawDimZLathe(ExtZ: double; L: TExtents);
+procedure DrawDimX(ExtX: double; L: TExtents);
 procedure DrawDimY(ExtY: double; L: TExtents);
 procedure DrawDimZ(ExtZ: double; L: TExtents);
 
@@ -114,52 +115,32 @@ begin
   else
     w:= ExtX;
   s:= PosToString(w);
-  z:= L.MinZ - DimDist;
+  z:= L.MinZ;
   glPushMatrix;
-  // glRotatef(90,1,0,0);
   glBegin(GL_LINES);
   glVertex3f(L.MinX,0,z);
   glVertex3f(L.MaxX,0,z);
   glEnd;
   glBegin(GL_LINES);
-  glVertex3f(L.MinX,0,z - DimDist);
-  glVertex3f(L.MinX,0,z + DimDist);
+  glVertex3f(L.MinX,0,z);
+  glVertex3f(L.MinX,0,z-DimDist);
   glEnd;
   glBegin(GL_LINES);
-  glVertex3f(L.MaxX,0,z - DimDist);
-  glVertex3f(L.MaxX,0,z + DimDist);
+  glVertex3f(L.MaxX,0,z);
+  glVertex3f(L.MaxX,0,z-DimDist);
   glEnd;
   tw:= (Length(s) * GlFontDist) * DimScale;
   if tw < ExtX then
     x:= L.MinX + (ExtX / 2) - (tw / 2)
   else
-    x:= L.MinX - DimDist;
-  z:= L.MinZ - (3 * DimDist);
+    x:= L.MaxX + DimDist;
+  z:= L.MinZ - (2 * DimDist);
   glTranslateF(x,0,z);
+  glRotateF(90,1,0,0);
   glScaleF(DimScale,DimScale,DimScale);
   for i:= 1 to Length(s) do
     begin
       DrawGlDigit(s[i]);
-      glTranslateF(GlFontDist,0,0);
-    end;
-  glPopMatrix;
-  // Draw the Min-X Limit
-  if Vars.ShowMetric then
-    w:= L.MinX * 25.4
-  else
-    w:= L.MinX;
-  s:= PosToString(w);
-  tw:= (Length(s) * GlFontDist) * DimScale;
-  x:= L.MinX - (DimDist / 2);
-  z:= L.MinZ - tw;
-  glPushMatrix;
-  glTranslateF(x,0,z);
-  //glRotatef(90,1,0,0);
-  //glRotatef(90,0,0,1);
-  glScaleF(DimScale,DimScale,DimScale);
-  for i:= 1 to Length(s) do
-    begin
-      DrawGlDigit(S[i]);
       glTranslateF(GlFontDist,0,0);
     end;
   glPopMatrix;
@@ -171,13 +152,114 @@ begin
   s:= PosToString(w);
   tw:= (Length(s) * GlFontDist) * DimScale;
   z:= L.MinZ - (2 * DimDist) - tw;
+  x:= L.MinX - (DimDist / 2);
+  glPushMatrix;
+  glTranslateF(x,0,z);
+  glRotateF(90,0,0,1);
+  glRotateF(-90,0,1,0);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(s) do
+    begin
+      DrawGlDigit(S[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+  // Draw the Min-X Limit
+  if Vars.ShowMetric then
+    w:= L.MinX * 25.4
+  else
+    w:= L.MinX;
+  s:= PosToString(w);
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  z:= L.MinZ - (2 * DimDist) - tw;
   x:= L.MaxX + (DimDist / 2) + DimScale;
   glPushMatrix;
-  if Vars.IsLathe then
-    glRotatef(90,1,0,0);
   glTranslateF(x,0,z);
-  if not Vars.IsLathe then
-    glRotateF(90,0,0,1);
+  glRotateF(90,0,0,1);
+  glRotateF(-90,0,1,0);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(s) do
+    begin
+      DrawGlDigit(S[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+end;
+
+procedure DrawDimZLathe(ExtZ: double; L: TExtents);
+var
+  i: integer;
+  w,tw,x,z: double;
+  s: string;
+begin
+  if DimScale = 0 then Exit;
+  // draw the Z-Dimension
+  if Vars.ShowMetric then
+    w:= ExtZ * 25.4
+  else
+    w:= ExtZ;
+  s:= PosToString(w);
+  x:= L.MinX;
+  glPushMatrix;
+  glBegin(GL_LINES);
+  glVertex3f(x,0,L.MinZ);
+  glVertex3f(x,0,L.MaxZ);
+  glEnd;
+  glBegin(GL_LINES);
+  glVertex3f(x,0,L.MinZ);
+  glVertex3f(x-DimDist,0,L.MinZ);
+  glEnd;
+  glBegin(GL_LINES);
+  glVertex3f(x,0,L.MaxZ);
+  glVertex3f(x-DimDist,0,L.MaxZ);
+  glEnd;
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  if tw < ExtZ then
+    z:= L.MinZ + (ExtZ / 2) - (tw / 2)
+  else
+    z:= L.MaxZ + DimDist;
+  x:= L.MinX - (2 * DimDist);
+  glTranslateF(x,0,z);
+  glRotateF(90,0,0,1);
+  glRotateF(-90,0,1,0);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(s) do
+    begin
+      DrawGlDigit(s[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+  // Draw the Min-Z Limit
+  if Vars.ShowMetric then
+    w:= L.MinZ * 25.4
+  else
+    w:= L.MinZ;
+  s:= PosToString(w);
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  x:= L.MinX - (2 * DimDist) - tw;
+  z:= L.MinZ - (DimDist / 2);
+  glPushMatrix;
+  glTranslateF(x,0,z);
+  glRotateF(90,1,0,0);
+  glScaleF(DimScale,DimScale,DimScale);
+  for i:= 1 to Length(s) do
+    begin
+      DrawGlDigit(S[i]);
+      glTranslateF(GlFontDist,0,0);
+    end;
+  glPopMatrix;
+  // Draw the Max-Z Limit
+  if Vars.ShowMetric then
+    w:= L.MaxZ * 25.4
+  else
+    w:= L.MaxZ;
+  s:= PosToString(w);
+  tw:= (Length(s) * GlFontDist) * DimScale;
+  x:= L.MinX - (2 * DimDist) - tw;
+  z:= L.MaxZ + (DimDist / 2);
+  glPushMatrix;
+  glTranslateF(x,0,z);
+  glRotateF(90,1,0,0);
   glScaleF(DimScale,DimScale,DimScale);
   for i:= 1 to Length(s) do
     begin
@@ -222,6 +304,10 @@ begin
   else
     x:= L.MaxX + DimDist;
   y:= L.MinY - (3 * DimDist);
+  if Vars.IsLathe then
+    begin
+      glRotateF(90,1,0,0);
+    end;
   glTranslateF(x,y,z);
   glScaleF(DimScale,DimScale,DimScale);
   for i:= 1 to Length(s) do
@@ -240,6 +326,10 @@ begin
   y:= L.MinY - (2 * DimDist) - tw;
   x:= L.MinX - (DimDist / 2);
   glPushMatrix;
+  if Vars.IsLathe then
+    begin
+      glRotateF(90,1,0,0);
+    end;
   glTranslateF(x,y,z);
   glRotateF(90,0,0,1);
   glScaleF(DimScale,DimScale,DimScale);
@@ -259,6 +349,10 @@ begin
   y:= L.MinY - (2 * DimDist) - tw;
   x:= L.MaxX + (DimDist / 2) + DimScale;
   glPushMatrix;
+  if Vars.IsLathe then
+    begin
+      glRotateF(90,1,0,0);
+    end;
   glTranslateF(x,y,z);
   glRotateF(90,0,0,1);
   glScaleF(DimScale,DimScale,DimScale);
@@ -513,17 +607,20 @@ begin
     glVertex3f(2,0,0);
     glVertex3f(1.5,0.25,0);
   glEnd;
-  glBegin(GL_LINES);
-    glColor3f(0,10,0);
-    glVertex3f(0,0,0);
-    glVertex3f(0,2,0);
-  glEnd;
-  glBegin(GL_LINES);
-    glVertex3f(-0.25,1.5,0);
-    glVertex3f(0,2,0);
-    glVertex3f(0,2,0);
-    glVertex3f(0.25,1.5,0);
-  glEnd;
+  if not Vars.IsLathe then
+    begin
+      glBegin(GL_LINES);
+      glColor3f(0,10,0);
+      glVertex3f(0,0,0);
+      glVertex3f(0,2,0);
+    glEnd;
+    glBegin(GL_LINES);
+      glVertex3f(-0.25,1.5,0);
+      glVertex3f(0,2,0);
+      glVertex3f(0,2,0);
+      glVertex3f(0.25,1.5,0);
+    glEnd;
+  end;
   glBegin(GL_LINES);
     glColor3f(0,0,10);
     glVertex3f(0,0,0);

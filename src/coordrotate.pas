@@ -191,13 +191,9 @@ var
   i: integer;
 begin
   Result:= '';
-  if not Assigned(Joints) then Exit;
-  if Pos(Axis,Vars.CoordNames) > 0 then
-    begin
-      i:= Joints.AxisByChar(Axis);
-      if i < 0 then Exit;
-      Result:= PosToString(GetRelPos(i));
-    end;
+  i:= Pos(Axis,Vars.CoordMap) - 1;
+  if i < 0 then Exit;
+  Result:= PosToString(GetRelPos(i));
 end;
 
 procedure TCoordRotDlg.UpdateLabels;

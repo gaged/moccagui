@@ -6,8 +6,8 @@ interface
 
 uses
   Buttons, Classes, Menus, mocbtn, mocled, mocslider, SysUtils, LResources,
-  Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls,
-  mocglb, mocjoints, jogclient, runclient, mdiclient, emcmsgbox, simclient;
+  Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, mocglb,
+  mocjoints, jogclient, runclient, mdiclient, emcmsgbox, simclient;
 
 type
 
@@ -96,6 +96,7 @@ type
     OEMLed3: TMocLed;
     OEMLed4: TMocLed;
     OEMLed0: TMocLed;
+    PanelDlg: TPanel;
     PanelDRO: TPanel;
     PanelMsg: TPanel;
     PanelPreview: TPanel;
@@ -206,8 +207,8 @@ begin
   clJog.Visible:= (State.Mode = TaskModeManual);
   clRun.Visible:= (State.Mode = TaskModeAuto);
   clMdi.Visible:= (State.Mode = TaskModeMDI);
-  if Assigned(Joints) then
-    Joints.ShowBox:= (State.Mode = TaskModeManual);
+  if Assigned(Dro) then
+    Dro.ShowBox:= (State.Mode = TaskModeManual);
   case State.Mode of
     TaskModeManual:
       clJog.ActivateSelf;
@@ -281,7 +282,6 @@ begin
 
   if State.UnitsChanged then
     begin
-      // State.UnitsChanged:= False;
       LedShowMM.IsOn:= Vars.ShowMetric;
       FCurrentVel:= -1; // trigger update fpr Label Currentvel
       FMaxVel:= -1;
@@ -364,15 +364,15 @@ begin
       LedSOREnabled.IsOn:= FSOREnabled;
     end;
 
-  if FShowRelative <> Joints.ShowRelative then
+  if FShowRelative <> Dro.Relative then
     begin
-      FShowRelative:= Joints.ShowRelative;
+      FShowRelative:= Dro.Relative;
       LedShowRelative.IsOn:= not FShowRelative;
     end;
 
-  if FShowDtg <> Joints.ShowDtg then
+  if FShowDtg <> Dro.Dtg then
     begin
-      FShowDtg:= Joints.ShowDtg;
+      FShowDtg:= Dro.Dtg;
       LedShowDtg.IsOn:= FShowDtg;
     end;
 
@@ -484,7 +484,7 @@ begin
   if not Assigned(Joints) then
     RaiseError('joints not initialized.');
   Joints.CreateJoints;  // setup joints
-  Joints.ShowRelative:= Vars.ShowRelative;
+  Dro.Relative:= Vars.ShowRelative;
 
   with Vars,State do  // setup mainforms controls
     begin
@@ -529,7 +529,7 @@ begin
   FSpDir:= State.SpDir - 1;
   FSpVel:= -1;
   FSpORide:= -1;
-  FShowRelative:= not Joints.ShowRelative;
+  FShowRelative:= not Dro.Relative;
   State.UnitsChanged:= True;
 
   InitHalPins;
@@ -802,10 +802,13 @@ end;
 procedure TMainForm.FormResize(Sender: TObject);
 begin
   if Sender = nil then ;
-  if Assigned(Joints) then
-    Joints.DoResize(nil);
+  if Assigned(Dro) then
+    Dro.Size;
   PanelPreviewResize(nil);
   PanelMasterResize(nil);
+  PanelDlg.Left:= 0; PanelDlg.Top:= 0;
+  PanelDlg.Width:= Self.ClientWidth;
+  PanelDlg.Height:= Self.ClientHeight - PanelButtons.Height;
 end;
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
@@ -813,8 +816,8 @@ begin
   if Sender = nil then ;
   case Key of
     '$': begin
-           if Assigned(Joints) then
-             Joints.JointMode:= not Joints.JointMode;
+           if Assigned(Dro) then
+             Dro.JointMode:= not Dro.JointMode;
            Key:= #0;
            Exit;
          end;
@@ -891,7 +894,9 @@ begin
   if (State.Mode = TaskModeManual) then
     clJog.FormKeyDown(nil,Key,Shift) else
   if (State.Mode = TaskModeAuto) then
-    clRun.FormKeyDown(nil,Key,Shift);
+    clRun.FormKeyDown(nil,Key,Shift) else
+  if (State.Mode = TaskModeMDI) then
+    clMDI.FormKeyDown(nil,Key,Shift);
 end;
 
 procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -914,6 +919,7 @@ begin
       FullScreen(Self);
     end;
   {$endif}
+  Self.Resize;
 end;
 
 procedure TMainForm.LabelMsgClick(Sender: TObject);

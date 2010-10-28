@@ -14,8 +14,8 @@ uses
   {$ENDIF}
   moccapkg, emc2pas, SysUtils, mocmain, mocglb, mocini, jogclient, runclient,
   mdiclient, simclient, offsetdlg, tooleditdlg, touchoff, toolchange, hal,
-  emcint, scripts, emcmsgbox, configreader,
-  touchoffwiz, coordrotate, simulator, mocstat, gltools, startctrl;
+  emcint, scripts, emcmsgbox, configreader, touchoffwiz, coordrotate, simulator,
+  mocstat, gltools, startctrl, tssupport;
 
 const
   __LC_NUMERIC  = 1;
@@ -71,6 +71,7 @@ begin
   if not InitEmc then Halt(1);
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TKeyboardForm, KeyboardForm);
   Application.Run;
   QuitEMC;
 end.
