@@ -57,7 +57,6 @@ procedure MakeDigit(Id: integer; a,b,c,d,e,f,g: Boolean);
 var
   ListId: integer;
 begin
-  if (Id < 0) or (Id > 9) then Exit;
   ListId:= DigitBase + Id;
   glDeleteLists(ListId,1);
   glNewList(ListId,GL_COMPILE);

@@ -166,48 +166,60 @@ end;
 procedure TEmc.SetupAxes;
 var
   AMin,AMax: Double;
-  i: integer;
+  i,Axis: integer;
   s: string;
+  c: char;
 begin
-  Vars.MLimits:= SetExtents(0,10,0,10,0,10);
-  writeln('Setup axes: ',Vars.NumAxes);
-
-  for i:= 0 to Vars.NumAxes - 1 do
+  Vars.MLimits:= SetExtents(0,1,0,1,0,1);
+  Writeln('Mask: ',CoordMask);
+  writeln('Map : ',Vars.CoordMap);
+  for i:= 0 to Length(CoordMask) - 1 do
     begin
-      AMin:= AxisMinPositionLimit(i);
-      AMax:= AxisMaxPositionLimit(i);
-      Vars.Axis[i].IsLinear:= (AxisAxisType(i) = 1);
-
-      if (State.LinearUnits = 1) and (Vars.Axis[i].IsLinear) then
+      c:= CoordMask[i+1];
+      Axis:= Pos(c,Vars.CoordNames) - 1;
+      if (Axis >= 0) and (Pos(c,Vars.CoordMap) > 0) then
         begin
-          AMin:= AMin / 25.4;
-          AMax:= AMax / 25.4;
+          writeln('Achse: ',c);
+          AMin:= AxisMinPositionLimit(i);
+          AMax:= AxisMaxPositionLimit(i);
+          if (State.LinearUnits = 1) and (Vars.Axis[Axis].IsLinear) then
+            begin
+              AMin:= AMin / 25.4;
+              AMax:= AMax / 25.4;
+            end;
+        case c of
+          'X':
+            begin
+              Vars.MLimits.MinX:= AMin;
+              Vars.MLimits.MaxX:= AMax;
+            end;
+          'Y':
+            if Vars.IsLathe then
+              begin
+                Vars.MLimits.MinY:= 0;
+                Vars.MLimits.MaxY:= 0;
+              end
+            else
+              begin
+                Vars.MLimits.MinY:= AMin;
+                Vars.MLimits.MaxY:= AMax;
+              end;
+          'Z':
+            begin
+              Vars.MLimits.MinZ:= AMin;
+              Vars.MLimits.MaxZ:= AMax;
+            end;
         end;
-
-      case Vars.Axis[i].AxisChar of
-        'X': begin
-               Vars.MLimits.MinX:= AMin;
-               Vars.MLimits.MaxX:= AMax;
-             end;
-        'Y': begin
-               Vars.MLimits.MinY:= AMin;
-               Vars.MLimits.MaxY:= AMax;
-             end;
-        'Z': begin
-               Vars.MLimits.MinZ:= AMin;
-               Vars.MLimits.MaxZ:= AMax;
-             end;
-        end;
-
         if Verbose > 0 then
           begin
-            if Vars.Axis[i].IsLinear then
+            if Vars.Axis[Axis].IsLinear then
               s:= 'Linear axis: '
             else
               s:= 'Angular axis: ';
-            s:= s + Vars.Axis[i].AxisChar;
+            s:= s + Vars.Axis[Axis].AxisChar;
             writeln(s);
           end;
+      end;
     end;
 end;
 
@@ -265,6 +277,7 @@ begin
   Axes:= 0;
   AxCount:= 0;
   Vars.CoordNames:= '';
+  Vars.CoordMap:= '';
   Vars.NumAxes:= 0;
   updateStatus;
   Axes:= trajAxes;
@@ -289,14 +302,18 @@ begin
     end;
   if Verbose > 0 then
     writeln('Traj Axismask: ',Vars.AxisMask);
-  for i:= 0 to Length(Mask) - 1 do
+  for i:= 0 to Length(CoordMask) - 1 do
     begin
       if (Vars.AxisMask and (1 shl i) > 0) then
         begin
-          Vars.Axis[AxCount].AxisChar:= Mask[i+1];
-          Vars.CoordNames:= Vars.CoordNames + Mask[i+1];
+          Vars.Axis[AxCount].AxisChar:= CoordMask[i+1];
+          Vars.Axis[AxCount].IsLinear:= AxisAxisType(i) = 1;
+          Vars.CoordNames:= Vars.CoordNames + CoordMask[i+1];
+          Vars.CoordMap:= Vars.CoordMap + CoordMask[i+1];
           inc(AxCount);
-        end;
+        end
+      else
+        Vars.CoordMap:= Vars.CoordMap + #32;
     end;
   if AxCount < 1 then
     begin
@@ -514,7 +531,7 @@ begin
   UpdateStatus;
   for i:= 0 to Vars.NumAxes - 1 do
     begin
-      j:= Pos(Vars.Axis[i].AxisChar,Mask) - 1;
+      j:= Pos(Vars.Axis[i].AxisChar,CoordMask) - 1;
       if j < 0 then Break;
       if (AxisInPos(j) <> 1) or AxisHoming(j) then
         begin
@@ -667,7 +684,7 @@ begin
   for i:= 1 to Length(Vars.CoordNames) do
     begin
       C:= Vars.CoordNames[i];
-      Axis:= Pos(C,Mask) - 1;
+      Axis:= Pos(C,CoordMask) - 1;
       if Axis < 0 then
         raise Exception.Create('set coords zero: invalid axis: ' + C);
       // Get Position in mm
@@ -695,7 +712,7 @@ var
 begin
   IsMetric:= State.ProgramUnits = CANON_UNITS_MM;
   if IsMetric then Writeln('metric') else writeln('inch');
-  i:= Joints.AxisByChar(Axis);
+  i:= Pos(Axis,Vars.CoordMap) - 1;
   if i < 0 then
     raise Exception.Create('Touchoff: invalid Axis: ' + Axis);
   // Get Position in mm
@@ -1087,9 +1104,8 @@ begin
           Joints.HomeAll;
         end;
     cmUNITS: SetDisplayUnits(not Vars.ShowMetric);
-    cmVIEWREL: Joints.ShowRelative:= not Joints.ShowRelative;
-    cmVIEWDIA: Joints.ShowDia:= not Joints.ShowDia;
-    cmVIEWDTG: Joints.ShowDtg:= not Joints.ShowDtg;
+    cmVIEWREL: Dro.Relative:= not Dro.Relative;
+    cmVIEWDTG: Dro.Dtg:= not Dro.Dtg;
 
 
   else

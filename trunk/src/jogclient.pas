@@ -529,7 +529,7 @@ begin
   if Sender = nil then ;
   if not Assigned(Joints) then Exit;
   case Key of
-    'u'..'z': Joints.SetActiveChar(Key);
+    'u'..'z': Joints.SetActiveAxis(Key);
     '+': ChangeIncrement(1);
     '-': ChangeIncrement(-1);
   end;

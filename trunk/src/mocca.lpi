@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <SaveClosedFiles Value="False"/>
@@ -10,6 +10,8 @@
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InIDEConfig"/>
+      <MainUnit Value="0"/>
+      <TargetFileExt Value=""/>
       <UseAppBundle Value="False"/>
     </General>
     <i18n>
@@ -17,12 +19,9 @@
     </i18n>
     <VersionInfo>
       <AutoIncrementBuild Value="True"/>
-      <MinorVersionNr Value="2"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="754"/>
+      <CurrentBuildNr Value="23"/>
       <Language Value="0407"/>
       <CharSet Value="04B0"/>
-      <StringTable ProductVersion="0.2.1.2"/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -36,6 +35,7 @@
         <HostApplicationFilename Value="/home/gtom/emc2-2.4.1/scripts/emc"/>
         <CommandLineParams Value="/home/gtom/emc2-2.4.1/configs/sim/lathe.ini"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+        <WorkingDirectory Value="/home/gtom/emc2-2.4.1/scripts"/>
       </local>
     </RunParams>
     <RequiredPackages Count="2">
@@ -47,7 +47,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="33">
+    <Units Count="35">
       <Unit0>
         <Filename Value="mocca.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -239,10 +239,24 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="startctrl"/>
       </Unit32>
+      <Unit33>
+        <Filename Value="tssupport.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="KeyboardForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="tssupport"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="tssupport.inc"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="KeyboardForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit34>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="8"/>
     <SearchPaths>
       <Libraries Value="../2.4.1/lib/"/>
       <OtherUnitFiles Value="../pkg/"/>

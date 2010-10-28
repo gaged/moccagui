@@ -49,14 +49,8 @@ var
   Dlg: TTouchOffDlg;
   i: integer;
 begin
-  if not Assigned(Joints) then
-    begin
-      writeln('touchoffdlg: joints = nil!');
-      Exit;
-    end;
-  i:= Joints.AxisByChar(Axis);
-  if i < 0 then
-    Exit;
+  i:= Pos(Axis,Vars.CoordMap) - 1;
+  if i < 0 then Exit;
   Application.CreateForm(TTouchOffDlg,Dlg);
   if Assigned(Dlg) then
     begin

@@ -91,7 +91,7 @@ var
   i: integer;
   d: double;
 begin
-  i:= Joints.AxisByChar(Axis);
+  i:= Pos(Axis,Vars.CoordMap) - 1;
   if i < 0 then
     raise Exception.Create('Touchoff wizard: invalid Axis: ' + Axis);
   d:= GetAbsPos(i);

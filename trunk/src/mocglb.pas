@@ -50,6 +50,7 @@ var
 const
   EdgeFinderDia: double = 5;
   DefaultSpindleSpeed: double = 0; // 0 = use emc default
+  DroLabelScale: single = 0.2;  // size of the left part of a DRO item
 
 const
   Verbose: integer = 1;
@@ -117,8 +118,6 @@ begin
   gtk_window_set_skip_taskbar_hint(w,true);
   gtk_window_set_skip_pager_hint(w,true);
   gtk_window_present(w);
-  //if Assigned(Application.MainForm) then
-  //  Application.MainForm.Show;
 end;
 {$ENDIF}
 

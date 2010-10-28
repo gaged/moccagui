@@ -202,14 +202,26 @@ end;
 
 procedure TSimClientForm.UpdateSelf;
 var
-  x,y,z: double;
+  x,y,z,a,b,c: double;
 begin
   if Visible and AreaInitialized and Assigned(Joints) then
     begin
-      x:= GetLoggerPos(0);
-      y:= GetLoggerPos(1);
-      z:= GetLoggerPos(2);
-      MoveCone(x,y,z,0,0,0);
+      a:= GetJointPos(3);
+      b:= GetJointPos(4);
+      c:= GetJointPos(5);
+      if Dro.JointMode then
+        begin
+          x:= GetJointPos(0);
+          y:= GetJointPos(1);
+          z:= GetJointPos(2);
+        end
+      else
+        begin
+          x:= GetLoggerPos(0);
+          y:= GetLoggerPos(1);
+          z:= GetLoggerPos(2);
+        end;
+      MoveCone(x,y,z,a,b,c);
     end;
 end;
 
@@ -464,6 +476,7 @@ begin
   if ExtY > ExtMax then ExtMax:= ExtY;
   if ExtZ > ExtMax then ExtMax:= ExtZ;
   DimScale:= ExtMax / 25;
+  // Writeln(floattostrf(dimscale,fffixed,8,4));
   DimDist:= 1.3 * DimScale;
 end;
 
@@ -472,11 +485,16 @@ begin
   if Assigned(ogl) and AreaInitialized then
     begin
       if (Vars.AxisMask AND 1) <> 0 then
-        if Vars.IsLathe then DrawDimXLathe(ExtX,L)
-      else
-        DrawDimX(ExtX,L);
+        if Vars.IsLathe then
+          DrawDimXLathe(ExtX,L)
+        else
+          DrawDimX(ExtX,L);
       if (Vars.AxisMask AND 2) <> 0 then DrawDimY(ExtY,L);
-      if (Vars.AxisMask AND 4) <> 0 then DrawDimZ(ExtZ,L);
+      if (Vars.AxisMask AND 4) <> 0 then
+        if Vars.IsLathe then
+          DrawDimZLathe(ExtZ,L)
+        else
+          DrawDimZ(ExtZ,L)
     end;
 end;
 
@@ -487,6 +505,7 @@ procedure TSimClientForm.UpdateView;
     ExtX:= (L.maxX - L.minX);
     ExtY:= (L.maxY - L.minY);
     ExtZ:= (L.maxZ - L.minZ);
+    // writeln(Format('%s %f %f %f',['Extents: ',ExtX,ExtY,ExtZ]));
   end;
 
 begin
@@ -498,7 +517,7 @@ begin
   CalcExtents;
   if (ExtX < 0.0001) and (ExtY < 0.0001) and (ExtZ < 0.0001) then
     begin
-      Writeln('Preview is too small. Using Machine Limits...');
+      // writeln('Preview is too small. Using Machine Limits...');
       L:= Vars.MLimits;
       CalcExtents;
     end;
@@ -547,7 +566,7 @@ begin
       ZoomMax:= Round(EyeZ*20);
     end;
   if ZoomMax > 10000 then ZoomMax:= 10000 else
-    if ZoomMax < 10 then ZoomMax:= 10;
+    if ZoomMax < 1 then ZoomMax:= 1;
   if Round(EyeZ) < 1 then EyeZ:= 1;
 
   if not Assigned(ogl) then Exit;
@@ -614,7 +633,7 @@ begin
   else
     begin
       k:= sqrt(abs(EyeZ));
-      n:= k * ogl.height / ogl.width;
+      n:= k * (ogl.height / ogl.width);
       glOrtho(-k,k,-n,n, -1000, 1000);
     end;
   glTranslatef(-eyex -panx,-eyey -pany, -eyez);
@@ -647,12 +666,17 @@ begin
       with GlColors.bg do
         glClearColor(r,g,b,1);
       if LimitsL > 0 then
-        glCallList(LimitsL);
-
+        begin
+          if not Vars.IsLathe then
+            glCallList(LimitsL);
+        end;
       glPushMatrix;
       x:= ToCanonUnits(GetOrigin(0));
-      y:= ToCanonUnits(GetOrigin(1));
       z:= ToCanonUnits(GetOrigin(2));
+      if Vars.IsLathe then
+        y:= 0
+      else
+        y:= ToCanonUnits(GetOrigin(1));
       glTranslatef(x,y,z);
       if CoordsL > 0 then
         glCallList(CoordsL);

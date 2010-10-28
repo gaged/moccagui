@@ -70,6 +70,8 @@ object MDIClientForm: TMDIClientForm
     BorderSpacing.Left = 2
     Font.Height = -16
     Font.Style = [fsBold]
+    OnChange = MDIEditChange
+    OnClick = MDIEditClick
     OnKeyPress = MDIEditKeyPress
     ParentFont = False
     TabOrder = 1
