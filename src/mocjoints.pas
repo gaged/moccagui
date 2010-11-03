@@ -471,16 +471,25 @@ procedure TDro.Update;
 var
   i: integer;
   Axis: TAxis;
+  OldHomed: Boolean;
 begin
   for i:= 0 to FCount - 1 do
     with FItems[i] do
       begin
         if Axis = nil then Exit;
+        OldHomed:= Axis.Homed;
         Axis.Update(FRelative,FDtg,FJointMode);
         if Position <> Axis.Position then
           begin
             Position:= Axis.Position;
             PosLabel.Caption:= PosToString(Position*Scale);
+          end;
+        if OldHomed <> Axis.Homed then
+          begin
+            if Axis.Homed then
+              DesLabel.Font.Color:= clGreen
+            else
+              DesLabel.Font.Color:= clRed;
           end;
     end;
 
@@ -689,8 +698,8 @@ begin
             Ax.FLinear:= Vars.Axis[i-1].IsLinear;
             if (Vars.IsLathe) and (c = 'X') then
               begin
-                Dro.Add(Ax,2,'DIA');
-                Dro.Add(Ax,1,'RAD');
+                Dro.Add(Ax,2,'D');
+                Dro.Add(Ax,1,'R');
               end
             else
               Dro.Add(Ax,1,'');
