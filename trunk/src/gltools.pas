@@ -20,6 +20,7 @@ procedure DrawDimY(ExtY: double; L: TExtents);
 procedure DrawDimZ(ExtZ: double; L: TExtents);
 
 procedure MakeLimits(View3D: Boolean; var LimitsL: gluInt);
+procedure MakeLatheLimits(var LimitsL: gluInt);
 procedure MakeCoords(var CoordsL: gluInt);
 procedure MakeMillCone(var ConeL: gluInt; r,tl: double);
 procedure MakeLatheCone(var ConeL: gluInt; orient: integer; r,fa,ba: double);
@@ -144,11 +145,11 @@ begin
       glTranslateF(GlFontDist,0,0);
     end;
   glPopMatrix;
-  // Draw the Max-X Limit
+  // Draw the Min-X Limit
   if Vars.ShowMetric then
-    w:= L.MaxX * 25.4
+    w:= L.MinX * 25.4
   else
-    w:= L.MaxX;
+    w:= L.MinX;
   s:= PosToString(w);
   tw:= (Length(s) * GlFontDist) * DimScale;
   z:= L.MinZ - (2 * DimDist) - tw;
@@ -164,11 +165,11 @@ begin
       glTranslateF(GlFontDist,0,0);
     end;
   glPopMatrix;
-  // Draw the Min-X Limit
+  // Draw the Max-X Limit
   if Vars.ShowMetric then
-    w:= L.MinX * 25.4
+    w:= L.MaxX * 25.4
   else
-    w:= L.MinX;
+    w:= L.MaxX;
   s:= PosToString(w);
   tw:= (Length(s) * GlFontDist) * DimScale;
   z:= L.MinZ - (2 * DimDist) - tw;
@@ -584,6 +585,40 @@ begin
       glBegin(GL_LINES);
         glVertex3f(ML.maxX,ML.maxY,ML.maxZ);
         glVertex3f(ML.maxX,ML.maxY,ML.minZ);
+      glEnd;
+      if GlSettings.UseStipple then
+        glDisable(GL_LINE_STIPPLE);
+    end;
+  glEndList;
+end;
+
+procedure MakeLatheLimits(var LimitsL: gluInt);
+const
+  pattern = $5555;
+var
+  w,d: double;
+  ML: TExtents;
+begin
+  ML:= Vars.MLimits;
+  w:= ML.MaxX - ML.MinX;
+  d:= ML.MaxZ - ML.MinZ;
+  if LimitsL <> 0 then glDeleteLists(LimitsL, 1);
+  LimitsL:= glGenLists(1);
+  glNewList(LimitsL, GL_COMPILE);
+  if (w <> 0) and (d <> 0) then
+    begin
+      if GlSettings.UseStipple then
+        begin
+          glEnable(GL_LINE_STIPPLE);
+          glLineStipple(10, pattern);
+        end;
+      glBegin(GL_LINE_STRIP);
+        SetGlColor3(GlColors.limits);
+        glVertex3f(ML.minX,0,ML.minZ);
+        glVertex3f(ML.maxX,0,ML.minZ);
+        glVertex3f(ML.maxX,0,ML.maxZ);
+        glVertex3f(ML.minX,0,ML.maxZ);
+        glVertex3f(ML.minX,0,ML.minZ);
       glEnd;
       if GlSettings.UseStipple then
         glDisable(GL_LINE_STIPPLE);

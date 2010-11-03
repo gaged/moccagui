@@ -577,7 +577,10 @@ begin
         begin
           MakeCone;
           MakeCoords(CoordsL);
-          MakeLimits(View3D,LimitsL);
+          if not Vars.IsLathe then
+            MakeLimits(View3D,LimitsL)
+          else
+            MakeLatheLimits(LimitsL);
           MakeList;
         end;
       Ogl.Invalidate;
@@ -614,7 +617,10 @@ begin
         glViewPort(0,0,ogl.Width,ogl.Height);
       MakeCone;
       MakeCoords(CoordsL);
-      MakeLimits(View3D,LimitsL);
+      if not Vars.IsLathe then
+        MakeLimits(View3D,LimitsL)
+      else
+        MakeLatheLimits(LimitsL);
       BuildGlFont;
     end;
 end;
@@ -666,10 +672,7 @@ begin
       with GlColors.bg do
         glClearColor(r,g,b,1);
       if LimitsL > 0 then
-        begin
-          if not Vars.IsLathe then
-            glCallList(LimitsL);
-        end;
+        glCallList(LimitsL);
       glPushMatrix;
       x:= ToCanonUnits(GetOrigin(0));
       z:= ToCanonUnits(GetOrigin(2));
