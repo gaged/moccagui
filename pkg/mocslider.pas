@@ -14,6 +14,8 @@ type
   TOnPosChangedEvent = procedure(Sender: TObject;
     NewPos: integer) of object;
 
+{$define USE_SLIDERBM}
+
 type
   TSlider = class(TCustomControl)
   private
@@ -26,6 +28,9 @@ type
     FSmooth: Boolean;
     FTextStyle: TTextStyle;
     FCaption: string;
+    {$ifdef USE_SLIDERBM}
+    FBitmap: TBitmap;
+    {$endif}
     FOnPosChanged: TOnPosChangedEvent;
     procedure CMEnabledChanged(var Message: TLMessage); message CM_ENABLEDCHANGED;
   protected
@@ -39,6 +44,9 @@ type
     procedure UpdatePosition(X,Y: integer);
   public
     constructor Create(AOwner: TComponent); override;
+    {$ifdef USE_SLIDERBM}
+    destructor Destroy; override;
+    {$endif}
     procedure SetParams(AMin,AMax,APos: integer);
   published
     property Position: integer read FPos write SetPosition;
@@ -63,8 +71,20 @@ begin
   FTextStyle.Alignment:= taCenter;
   FTextStyle.Layout:= tlCenter;
   FTextStyle.Opaque:= True;
+  {$ifdef USE_SLIDERBM}
+  FBitmap:= TBitmap.Create;
+  {$endif}
   SetParams(-100,1000,0);
 end;
+
+{$ifdef USE_SLIDERBM}
+destructor TSlider.Destroy;
+begin
+  if Assigned(FBitmap) then
+    FBitmap.Free;
+  inherited;
+end;
+{$endif}
 
 procedure TSlider.SetPosition(Value: integer);
 var
@@ -166,37 +186,64 @@ var
   v: integer;
 begin
   R := GetClientRect;
+  {$ifdef USE_SLIDERBM}
+  FBitmap.Width:= Width;
+  FBitmap.Height:= Height;
+  FBitmap.Canvas.Frame3d(R,2,bvLowered);
+  FBitmap.Canvas.Brush.Color:= Color;
+  {$else}
   Canvas.Frame3d(R,2,bvLowered);
   Canvas.Brush.Color:= Color;
+  {$endif}
   if Enabled then
     begin
       if FVertical then
         begin
           v:= R.Bottom - R.Top;
           i:= v - Round(v * ((FPos - FMin) / (FMax - FMin)));
+          {$ifdef USE_SLIDERBM}
+          FBitmap.Canvas.FillRect(R.Left,R.Top,R.Right,i);
+          FBitmap.Canvas.Brush.Color:= BarColor;
+          FBitmap.Canvas.FillRect(R.Left,i,R.Right,R.Bottom);
+          {$else}
           Canvas.FillRect(R.Left,R.Top,R.Right,i);
           Canvas.Brush.Color:= BarColor;
           Canvas.FillRect(R.Left,i,R.Right,R.Bottom);
+          {$endif}
         end
       else
         begin
           v:= R.Right - R.Left;
           i:= Round(v * ((FPos - FMin) / (FMax - FMin)));
           if i < 3 then i:= 3;
+          {$ifdef USE_SLIDERBM}
+          FBitmap.Canvas.FillRect(i,R.Top,R.Right,R.Bottom);
+          FBitmap.Canvas.Brush.Color:= BarColor;
+          FBitmap.Canvas.FillRect(R.Left,R.Top,i,R.Bottom);
+          {$else}
           Canvas.FillRect(i,R.Top,R.Right,R.Bottom);
           Canvas.Brush.Color:= BarColor;
           Canvas.FillRect(R.Left,R.Top,i,R.Bottom);
+          {$endif}
         end;
       if FCaption <> '' then
         begin
           //SetBkMode(Canvas.Handle,TRANSPARENT);
-          Canvas.Brush.Color:= Color;
+          //Canvas.Brush.Color:= Color;
           Canvas.TextStyle:= FTextStyle;
           Canvas.TextRect(R,0,0,FCaption);
         end;
     end
   else
+    {$ifdef USE_SLIDERBM}
+    FBitmap.Canvas.FillRect(R);
+    {$else}
     Canvas.FillRect(R);
+    {$endif}
+  {$ifdef USE_SLIDERBM}
+  Canvas.CopyMode := cmNotSrcCopy; //cmSrcCopy;
+  Canvas.Draw(0, 0,FBitmap);
+  {$endif}
   inherited Paint;
 end;
 

@@ -2,8 +2,8 @@
 <CONFIG>
   <global>
     <float name="Edgefinderdia" value="8"/>
-    <boolean name="InitialFullscreen" value="True"/>
-    <boolean name="Verbose" value="True"/>
+    <boolean name="InitialFullscreen" value="False"/>
+    <integer name="Verbose" value="1"/>
     <ident name="DroLayoutStyle" value="Vertical"/>
   </global>
   <tools>

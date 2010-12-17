@@ -57,11 +57,15 @@ type
     procedure OpenFile(AFileName: string);
     procedure ReloadFile;
 
+    procedure ShowUserErrorMsg(i: integer);
+
   private
     FFeedOverride: integer;
     FSpindleOverride: integer;
     FMaxVelocity: integer;
     FHalCmd: integer;
+    FHalError: integer;
+
     procedure SetFeedOverride(Value: integer);
     procedure SetMaxVelocity(Value: integer);
     procedure SetSpindleOverride(Value: integer);
@@ -161,6 +165,30 @@ end;
 procedure TEmc.ResetInterpreter;
 begin
   sendTaskPlanInit;
+end;
+
+procedure TEmc.ShowUserErrorMsg(i: integer);
+var
+  Ln: integer;
+  s: string;
+begin
+  FHalError:= i;
+  if not Assigned(UserErrors) then Exit;
+  if i > 1000 then
+    begin
+      Ln:= i - 1000;
+      HandleCommand(cmESTOP);
+    end
+  else
+    Ln:= i;
+  s:= '';
+  if Ln < UserErrors.Count then
+    s:= UserErrors[Ln]
+  else
+    s:= 'Unknow error: ' + IntToStr(Ln);
+  LastError:= s;
+  // if Assigned(GlobalErrors) then
+  //  GlobalErrors.Add(S);
 end;
 
 procedure TEmc.SetupAxes;
@@ -336,9 +364,12 @@ begin
   if (Value <> FFeedOverride) then
     begin
       FFeedOverride:= Value;
-      HalFeed:= GetHalFeed;
-      if HalFeed <> FFeedOverride then
-        SetHalFeed(FFeedOverride);
+      if UseHalFeed then
+        begin
+          HalFeed:= GetHalFeed;
+          if HalFeed <> FFeedOverride then
+            SetHalFeed(FFeedOverride);
+        end;
     end;
 end;
 
@@ -607,13 +638,16 @@ var
   LastLn: integer;
 begin
   if FHalCmd < 1 then Exit;
-  writeln('Executing HalCmd: ',FHalCmd);
-  //if (State.TaskMode <> TASKMODEAUTO)  then
-  //  begin
-  //    Emc.HandleCommand(FHalCmd);
-  //    FHalCmd:= 0;
-  //    Exit;
-  //  end;
+  if Verbose > 0 then
+    writeln('Executing HalCmd: ',FHalCmd);
+  if (State.Mode <> TASKMODEAUTO)  then
+    begin
+      Emc.HandleCommand(FHalCmd);
+      FHalCmd:= 0;
+      Exit;
+    end;
+  { disabled, future release }
+  {
   UpdateLock:= True;
   writeln('Updatelock: True');
   Sleep(10);
@@ -650,6 +684,7 @@ begin
   end;
   writeln('UpdateLock: False');
   UpdateLock:= False;
+  }
 end;
 
 function TEmc.GetActiveCoordSys: integer;
@@ -869,12 +904,22 @@ begin
       UpdateCounter:= 1;
       // Update Feed, Velocity etc
 
-      i:= GetHalFeed;  // Check if Hal-Feed changed
-      if (i <> FFeedOverride) then FeedOverride:= i;
-      if FFeedOverride <> State.ActFeed then
+      i:= GetHalError;
+      if i > 0 then
+        if i <> FHalError then
+          begin
+            ShowUserErrorMsg(i);
+          end;
+
+      if UseHalFeed then
         begin
-          SendFeedOverride(FFeedOverride / 100);
-          State.ActFeed:= FFeedOVerride;
+          i:= GetHalFeed;  // Check if Hal-Feed changed
+          if (i <> FFeedOverride) then FeedOverride:= i;
+          if FFeedOverride <> State.ActFeed then
+          begin
+            SendFeedOverride(FFeedOverride / 100);
+            State.ActFeed:= FFeedOVerride;
+          end;
         end;
 
       i:= GetHalSpindle;

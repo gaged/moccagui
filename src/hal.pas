@@ -38,6 +38,7 @@ type
     increment: ^THalFLoat;
     x,y,z,b,c: ^THalBit;
     command: ^THalU32;
+    user_error: ^THalU32;
     rotation_x: ^THalFloat;
     rotation_y: ^THalFloat;
     rotation_z: ^THalFloat;
@@ -91,6 +92,8 @@ procedure InitHalPins;
 procedure SetHalJogAxis(Axis: Char);
 
 function GetHalButtonDown(Id: integer): Boolean;
+
+function GetHalError: integer;
 
 function GetHalFeed: integer;
 procedure SetHalFeed(Value: integer);
@@ -160,6 +163,11 @@ begin
       HalData^.command^ := 0;
       Result:= True;
     end;
+end;
+
+function GetHalError: integer;
+begin
+  Result:= HalData^.user_error^;
 end;
 
 function GetHalFeed: integer;
@@ -322,6 +330,7 @@ begin
   if not ExportPinBit(@HalData^.b,HAL_OUT,'moc.jog.b') then Exit;
   if not ExportPinBit(@HalData^.c,HAL_OUT,'moc.jog.c') then Exit;
   if not ExportPinU32(@HalData^.command,HAL_IN,'moc.command') then Exit;
+  if not ExportPinU32(@HalData^.user_error,HAL_IN,'moc.errorcode') then Exit;
   if not ExportPinFloat(@HalData^.rotation_x,HAL_OUT,'moc.rot.x') then Exit;
   if not ExportPinFloat(@HalData^.rotation_y,HAL_OUT,'moc.rot.y') then Exit;
   if not ExportPinFloat(@HalData^.rotation_z,HAL_OUT,'moc.rot.z') then Exit;
