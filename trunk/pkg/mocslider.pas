@@ -14,7 +14,7 @@ type
   TOnPosChangedEvent = procedure(Sender: TObject;
     NewPos: integer) of object;
 
-{$define USE_SLIDERBM}
+// {$define USE_SLIDERBM}
 
 type
   TSlider = class(TCustomControl)
@@ -229,7 +229,7 @@ begin
       if FCaption <> '' then
         begin
           //SetBkMode(Canvas.Handle,TRANSPARENT);
-          //Canvas.Brush.Color:= Color;
+          Canvas.Brush.Color:= Color;
           Canvas.TextStyle:= FTextStyle;
           Canvas.TextRect(R,0,0,FCaption);
         end;
