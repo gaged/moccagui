@@ -39,6 +39,7 @@ var
   StrListScript: TStringList;
   GlobalBitmaps: TStringList;
   GlobalErrors: TStringList;
+  UserErrors: TStringList;
 
   ConfigDir: string;
 
@@ -54,6 +55,7 @@ const
 
 const
   Verbose: integer = 1;
+  UseHalFeed: boolean = True;
 
 const
   SaveZCommand: string = '';

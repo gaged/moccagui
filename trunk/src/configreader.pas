@@ -101,6 +101,11 @@ begin
           DroLabelScale:= StrToFloat(nv);
           if DroLabelScale < 0.1 then DroLabelScale:= 0.1;
           if DroLabelScale > 0.9 then DroLabelScale:= 0.9;
+        end
+    else
+      if nn = 'USE_HAL_FEED' then
+        begin
+          UseHalFeed:= (UpperCase(nv) = 'TRUE') or (nv = '1')
         end;
   except
     on E: Exception do

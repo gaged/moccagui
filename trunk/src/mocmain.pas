@@ -605,6 +605,17 @@ begin
   GlobalErrors:= TStringList.Create;
   LabelMsg.Caption:= '';
 
+  // Load the User_Error messages (if available)
+  UserErrors:= TStringList.Create;
+  if Assigned(UserErrors) then
+    try
+      UserErrors.LoadFromFile(ConfigDir + 'usererror.txt' );
+      if Verbose > 0 then
+        writeln('User Errors loaded from ',ConfigDir + 'usererror.txt');
+    except
+      writeln('Error loading user error file');
+    end;
+
   State.Mode:= 0;  // trigger a taskmodechanged
 
   MsgForm:= TMsgForm.Create(Self);
@@ -797,6 +808,7 @@ begin
   if Assigned(GlobalBitmaps) then
     FreeBitmapList;
   if Assigned(GlobalErrors) then GlobalErrors.Free;
+  if Assigned(UserErrors) then UserErrors.Free;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);

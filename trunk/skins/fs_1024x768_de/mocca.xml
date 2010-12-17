@@ -15,7 +15,7 @@
         <boolean name="VertScrollBar.Visible" value="false"/>
         <ident name="ActiveControl" value="PanelMaster"/>
         <set name="BorderIcons" value=""/>
-        <ident name="BorderStyle" value="bsNone"/>
+        <ident name="BorderStyle" value="Single"/>
         <string name="Caption" value="Mocca"/>
         <ident name="ChildSizing.EnlargeHorizontal" value="crsScaleChilds"/>
         <ident name="ChildSizing.EnlargeVertical" value="crsScaleChilds"/>
