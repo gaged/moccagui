@@ -236,8 +236,8 @@ begin
   w:= trunc(Abs(Grid.Font.Height) * 0.6);
   if w > 1 then
     begin
-      for i:= 2 to 4 do
-        Grid.ColWidths[i]:= w * 14;
+      for i:= 0 to Vars.NumAxes - 1 do
+        Grid.ColWidths[i+2]:= w * 14;
     end;
   with Grid do
     begin
@@ -262,7 +262,7 @@ begin
     Grid.Cells[0,i+1]:= CoordSys[i];
   for i:= 0 to Vars.NumAxes - 1 do
     Grid.Cells[i+2,0]:= Vars.CoordNames[i+1];
-  LoadVars;
+  // LoadVars;
 end;
 
 
