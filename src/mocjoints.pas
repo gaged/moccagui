@@ -74,6 +74,7 @@ type
     Scale: double;
     px,py: integer;
     Axis: TAxis;
+    OldHomed: Boolean;
   end;
 
 type
@@ -471,13 +472,13 @@ procedure TDro.Update;
 var
   i: integer;
   Axis: TAxis;
-  OldHomed: Boolean;
+  //OldHomed: Boolean;
 begin
   for i:= 0 to FCount - 1 do
     with FItems[i] do
       begin
         if Axis = nil then Exit;
-        OldHomed:= Axis.Homed;
+        // OldHomed:= Axis.Homed;
         Axis.Update(FRelative,FDtg,FJointMode);
         if Position <> Axis.Position then
           begin
@@ -490,6 +491,7 @@ begin
               DesLabel.Font.Color:= clGreen
             else
               DesLabel.Font.Color:= clRed;
+            OldHomed:= Axis.Homed;
           end;
     end;
 
