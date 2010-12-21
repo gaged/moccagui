@@ -212,8 +212,9 @@ begin
       LastError:= 'error reading var "' + CoordSysVar + '"';
       Exit;
     end;
+  ShowMessage(Vars.CoordNames);
   for c:= 0 to CoordSysMax do
-    for a:= 0 to Vars.NumAxes - 1 do
+    for a:= 0 to Length(Vars.CoordNames) - 1 do // Vars.NumAxes - 1 do
       if GetValue(c,a) then
         Grid.Cells[a+2,c+1]:= FloatToStrF(Offsets[c][a],ffFixed,6,4);
 end;

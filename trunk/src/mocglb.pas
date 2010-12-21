@@ -89,6 +89,7 @@ procedure ExecHalShow;
 procedure ExecHalMeter;
 procedure ExecHalScope;
 
+procedure LoadPostGuiHal;
 
 procedure ReadStyle(const Form: TForm; AFileName: string);
 
@@ -237,6 +238,19 @@ begin
   ExecProcess('halscope -- -ini ' + Vars.IniFile);
 end;
 
+procedure LoadPostGuiHal;
+var
+  s: string;
+begin
+  if Vars.PostGuiHalfile <> '' then
+    begin
+      s:= 'halcmd -i ' + Vars.IniFile;
+      s:= s + #32 + '-f ' + Vars.IniPath+Vars.PostGuiHalfile;
+      if Verbose > 0 then
+        writeln('loading Postgui-Halfile: ', s);
+      ExecProcess(s);
+    end;
+end;
 
 {$IFDEF LCLGTK2}
 procedure FullScreen(WinControl: TWinControl);

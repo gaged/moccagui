@@ -646,8 +646,7 @@ begin
       FHalCmd:= 0;
       Exit;
     end;
-  { disabled, future release }
-  {
+  { disabled, future release 
   UpdateLock:= True;
   writeln('Updatelock: True');
   Sleep(10);
@@ -683,8 +682,7 @@ begin
       end;
   end;
   writeln('UpdateLock: False');
-  UpdateLock:= False;
-  }
+  UpdateLock:= False; }
 end;
 
 function TEmc.GetActiveCoordSys: integer;
