@@ -297,7 +297,7 @@ type
     ActiveAxis: integer;
     StartLine: integer;
     MLimits: TExtents;            // machine limits
-    ScriptDir: string;
+    // ScriptDir: string;
     Editor: string;
     InitCode: string;             // RS274 startup code
   end;

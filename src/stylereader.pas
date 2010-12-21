@@ -161,7 +161,7 @@ begin
       begin
         if PropName = 'PICTURE' then
           try
-            Picture.LoadFromFile(configdir + PropVal);
+            Picture.LoadFromFile(ConfigDir + PropVal);
           except
             on E: Exception do
               writeln(E.Message);

@@ -665,12 +665,16 @@ begin
   Timer.Enabled:= True;
   UpdateLock:= False;
 
+  // Load Toolfile
   try
     Emc.LoadTools;
   except
     LastError:= 'Could not load Toolfile';
     raise;	
   end;
+
+  // Load Postgui halfile
+  LoadPostGuiHal;
 
 end;
 

@@ -15,7 +15,7 @@ object OffsetsDlg: TOffsetsDlg
   OnShow = FormShow
   Position = poScreenCenter
   ShowInTaskBar = stNever
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.29'
   object Grid: TStringGrid
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
