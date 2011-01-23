@@ -113,7 +113,7 @@ durch einfügen von
 </jogincrements>
 }}}
 
-im Stamm der Datei (Unterhalb <CONFIG>), werde die Knöpfe zur Auswahl der Schrittweite festgelegt.  
+im Stamm der Datei (Unterhalb <CONFIG>), werden die Knöpfe zur Auswahl der Schrittweite festgelegt.  
 
 jog.xml
 Definiert die Lager der Jog Button, wie X+ / X- / Y+ / Y- usw.
@@ -146,4 +146,3 @@ Das ist das Fenster, wo immer nur eine Kante angetastet wird und kein Kantentast
 
 touchoffwiz.xml
 Diese Datei definiert das Aussehen des PopUp Fensters des Antastdialoges, bei dem der Durchmesser eines Kantentasters berücksichtigt werden kann.
-
