@@ -139,7 +139,12 @@ Der Startmodus und die Rahmenart kann wie folgt festgelegt werden
 
 Gültige Werte sind "NONE", "SINGLE", "SIZEABLE"
 
-
+Knöpfe können auch unsichtbar gemacht werden, indem im properties Bereich
+{{{
+<properties>
+            <boolean name="Visible" value="false"/>
+}}}
+eingefügt wird.
 
 == mocmain.xml ==
 *** Achtung ***
