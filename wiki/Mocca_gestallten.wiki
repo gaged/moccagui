@@ -102,4 +102,48 @@ folgende "Commands" stehen zur verfügung. Manche machen allerdings noch nichts 
  cmFEEDRESET = 400
 }}}
 
-In der Datei Mainform.xml wird die Lage der Steuerelemente und deren Aussehen festgelegt.
+durch einfügen von 
+{{{
+<jogincrements>
+    <item index="0" title="Durchgehend" value=""/>
+    <item index="1" title="1,000" value="1.0"/>
+    <item index="2" title="0,100" value="0.1"/>
+    <item index="3" title="0,010" value="0.01"/>
+    <item index="4" title="0,001" value="0.001"/>
+</jogincrements>
+}}}
+
+im Stamm der Datei (Unterhalb <CONFIG>), werde die Knöpfe zur Auswahl der Schrittweite festgelegt.  
+
+jog.xml
+Definiert die Lager der Jog Button, wie X+ / X- / Y+ / Y- usw.
+
+mdi.xml
+Beschreibung des Fensters, welches im MDI Modus sichtbar ist.
+
+mocca.xml
+In dieser Datei werden z.B. die Button der rechten Seitenleiste und der unten angeordneten Knöpfe, die nicht in der Knopfleiste sind definiert.
+
+*** Achtung ***
+*** Hier bin ich mir nicht sicher!!  ***
+mocmain.xml
+Hauptbildschirm, legt die Größe und Lager der unterschiedlichen Client Forms fest, mocca.xml überschreibt die Einstellungen der mocmain.xml
+
+*** Achtung Ende ***
+
+offsetdialog.xml
+Beschreibung des Dialogfensters zum Bearbieten der Koordinatensysteme
+
+run.xml
+Definiert das Aussehen der Clientform, die angezeigt wird, wenn Modus Programm gewählt wurde.
+
+tooledit.xml
+Definiert das Aussehen, des Dialoges zum Verwalten der Werkzeugdatenbank.
+
+touchoffdialog.xml
+Diese Datei definiert das Aussehen des PopUp Fensters des Antastdialoges.
+Das ist das Fenster, wo immer nur eine Kante angetastet wird und kein Kantentaster verrechnet wird.
+
+touchoffwiz.xml
+Diese Datei definiert das Aussehen des PopUp Fensters des Antastdialoges, bei dem der Durchmesser eines Kantentasters berücksichtigt werden kann.
+
