@@ -127,6 +127,20 @@ Beschreibung des Fensters, welches im MDI Modus sichtbar ist.
 == mocca.xml ==
 In dieser Datei werden z.B. die Button der rechten Seitenleiste und der unten angeordneten Knöpfe, die nicht in der Knopfleiste sind definiert.
 
+Der Startmodus und die Rahmenart kann wie folgt festgelegt werden
+
+{{{
+<CONFIG>
+  <Component>
+    <component name="MainForm" class="TMainForm">
+      <properties>
+        <ident name="BorderStyle" value="None"/>
+}}}
+
+Gültige Werte sind "NONE", "SINGLE", "SIZEABLE"
+
+
+
 == mocmain.xml ==
 *** Achtung ***
 *** Hier bin ich mir nicht sicher!!  ***
