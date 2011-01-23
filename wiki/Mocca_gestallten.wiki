@@ -139,10 +139,25 @@ Der Startmodus und die Rahmenart kann wie folgt festgelegt werden
 
 Gültige Werte sind "NONE", "SINGLE", "SIZEABLE"
 
-Knöpfe können auch unsichtbar gemacht werden, indem im properties Bereich
+Knöpfe können auch unsichtbar gemacht werden, indem im properties Bereich Vissible = False setzt.
+Die Größe definiert Height und With
+die Lage wird durch Top und Left bestimmt.
 {{{
-<properties>
+<component name="ButtonSpindlebrake" class="TMocButton">
+     <properties>
             <boolean name="Visible" value="false"/>
+            <integer name="Left" value="1164"/>
+            <integer name="Height" value="80"/>
+            <integer name="Top" value="720"/>
+            <integer name="Width" value="100"/>
+            <string name="Command" value="cmSPBRAKE"/>
+            <boolean name="ShowClicks" value="true"/>
+            <string name="Caption" value=""/>
+            <ident name="Color" value="clBtnFace"/>
+            <string name="Bitmap" value="spindlebrake.png"/>
+            <string name="Hint" value="Spindelbremse Ein- oder Ausschalten."/>         
+     </properties>
+</component>
 }}}
 eingefügt wird.
 
