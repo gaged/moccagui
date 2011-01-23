@@ -7,7 +7,10 @@ Mocca braucht in der (Emc) Ini-Datei nur noch den Pfad zu einem Verzeichniss in 
 config=/home/dein_name/fraese
 }}}
 
-in der config.xml können die Buttons FREI gestaltet werden und werden dann zur Laufzeit von Mocca geladen:
+in der 
+
+== config.xml ==
+können die Buttons FREI gestaltet werden und werden dann zur Laufzeit von Mocca geladen:
 
 Beispiel:
 
