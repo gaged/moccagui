@@ -10,7 +10,7 @@ config=/home/dein_name/fraese
 in der 
 
 == config.xml ==
-können die Buttons FREI gestaltet werden und werden dann zur Laufzeit von Mocca geladen:
+können die Buttons der unteren Buttonleiste FREI gestaltet werden, diese werden dann zur Laufzeit von Mocca geladen: Auch die Jog Increments Button werden hier definiert.
 
 Beispiel:
 
