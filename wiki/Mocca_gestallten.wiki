@@ -118,34 +118,32 @@ durch einfügen von
 
 im Stamm der Datei (Unterhalb <CONFIG>), werden die Knöpfe zur Auswahl der Schrittweite festgelegt.  
 
-jog.xml
+== jog.xml ==
 Definiert die Lager der Jog Button, wie X+ / X- / Y+ / Y- usw.
 
-mdi.xml
+== mdi.xml ==
 Beschreibung des Fensters, welches im MDI Modus sichtbar ist.
 
-mocca.xml
+== mocca.xml ==
 In dieser Datei werden z.B. die Button der rechten Seitenleiste und der unten angeordneten Knöpfe, die nicht in der Knopfleiste sind definiert.
 
+== mocmain.xml ==
 *** Achtung ***
 *** Hier bin ich mir nicht sicher!!  ***
-mocmain.xml
 Hauptbildschirm, legt die Größe und Lager der unterschiedlichen Client Forms fest, mocca.xml überschreibt die Einstellungen der mocmain.xml
 
-*** Achtung Ende ***
-
-offsetdialog.xml
+== offsetdialog.xml ==
 Beschreibung des Dialogfensters zum Bearbieten der Koordinatensysteme
 
-run.xml
+== run.xml ==
 Definiert das Aussehen der Clientform, die angezeigt wird, wenn Modus Programm gewählt wurde.
 
-tooledit.xml
+== tooledit.xml ==
 Definiert das Aussehen, des Dialoges zum Verwalten der Werkzeugdatenbank.
 
-touchoffdialog.xml
+== touchoffdialog.xml ==
 Diese Datei definiert das Aussehen des PopUp Fensters des Antastdialoges.
 Das ist das Fenster, wo immer nur eine Kante angetastet wird und kein Kantentaster verrechnet wird.
 
-touchoffwiz.xml
+== touchoffwiz.xml ==
 Diese Datei definiert das Aussehen des PopUp Fensters des Antastdialoges, bei dem der Durchmesser eines Kantentasters berücksichtigt werden kann.
