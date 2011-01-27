@@ -121,15 +121,15 @@ im Stamm der Datei (Unterhalb <CONFIG>), werden die Knöpfe zur Auswahl der Schr
 == jog.xml ==
 Definiert die Lager der Jog Button, wie X+ / X- / Y+ / Y- usw.
 Der Hintergrund der eiunzelnen Fenster kann mit der Color Eigenschaft verändert werden.
-
+{{{
 <component name="JogClientForm"....
 <ident name = "Color" value="clBlue"/>
-
+}}}
 Ändert den Hintergrund in Blau.
 Die Farbwerte können auch als HEX Werte mit vorangestellten $-Zeichen eingegeben werden:
-
+{{{
 <ident name="Color" value="$00FA9A"/>
-
+}}}
 ergibt strahlendes Grün.
 
 Eine Farbauswahl findet man z.B. unter:
