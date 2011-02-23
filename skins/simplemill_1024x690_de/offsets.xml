@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Component>
+    <component name="OffsetsDlg" class="TOffsetsDlg">
+      <properties>
+        <integer name="Left" value="401"/>
+        <integer name="Height" value="351"/>
+        <integer name="Top" value="328"/>
+        <integer name="Width" value="589"/>
+        <ident name="BorderStyle" value="bsDialog"/>
+        <string name="Caption" value="Koordinaten bearbeiten"/>
+      </properties>
+      <children>
+        <component name="Grid" class="TStringGrid">
+          <properties>
+            <integer name="Font.Height" value="-16"/>
+            <string name="Font.Name" value="Courier 10 Pitch"/>
+          </properties>
+        </component>
+        <component name="PanelBottom" class="TPanel">
+          <properties>
+            <integer name="Left" value="8"/>
+            <integer name="Height" value="50"/>
+            <integer name="Top" value="272"/>
+            <integer name="Width" value="552"/>
+          </properties>
+          <children>
+            <component name="BtnOk" class="TButton">
+              <properties>
+                <integer name="Left" value="8"/>
+                <integer name="Height" value="25"/>
+                <integer name="Top" value="16"/>
+                <integer name="Width" value="110"/>
+                <string name="Caption" value="&amp;Ok"/>
+              </properties>
+            </component>
+            <component name="BtnCancel" class="TButton">
+              <properties>
+                <integer name="Left" value="128"/>
+                <integer name="Height" value="25"/>
+                <integer name="Top" value="16"/>
+                <integer name="Width" value="110"/>
+                <string name="Caption" value="&amp;Abbruch"/>
+              </properties>
+            </component>
+          </children>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>
