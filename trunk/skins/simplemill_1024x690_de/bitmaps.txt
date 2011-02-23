@@ -1,0 +1,51 @@
+config.xml:  <background bitmap=""/>
+config.xml:    <item index="0" cmd="cmREF" bitmap="refall.png" text=""/>
+config.xml:    <item index="1" cmd="cmTOUCHOFF" bitmap="touchoff.png" text=""/>    
+config.xml:    <item index="2" cmd="cmTOUCHWIZ" bitmap="touchoffwz.png" text=""/>    
+config.xml:    <item index="3" cmd="cmTOOLS" bitmap="tools.png" text=""/>
+config.xml:    <item index="4" cmd="cmSCRIPTS" bitmap="scripts.png" text=""/>
+config.xml:    <item index="5" cmd="cmCOORDROT" bitmap="rotate.png" text=""/>
+config.xml:    <item index="9" cmd="cmCLOSE" bitmap="exit.png" text=""/>
+config.xml:    <item index="0" cmd="cmBACK" bitmap="return.png" text=""/>
+config.xml:    <item index="1" cmd="cmREFALL" bitmap="refall.png" text=""/>    
+config.xml:    <item index="2" cmd="cmREFX" bitmap="refx.png" text=""/>
+config.xml:    <item index="3" cmd="cmREFY" bitmap="refy.png" text=""/>
+config.xml:    <item index="4" cmd="cmREFZ" bitmap="refz.png" text=""/>    
+config.xml:    <item index="5" cmd="cmREFA" bitmap="refa.png" text=""/>
+config.xml:    <item index="6" cmd="cmREFB" bitmap="refb.png" text=""/>
+config.xml:    <item index="7" cmd="cmREFC" bitmap="refc.png" text=""/>
+config.xml:    <item index="8" cmd="cmUNREF" bitmap="unhome.png" text=""/>
+config.xml:    <item index="0" cmd="cmBACK" bitmap="return.png" text=""/>
+config.xml:    <item index="1" cmd="cmTOUCHX" bitmap="touchoffx.png" text=""/>
+config.xml:    <item index="2" cmd="cmTOUCHY" bitmap="touchoffy.png" text=""/>    
+config.xml:    <item index="3" cmd="cmTOUCHZ" bitmap="touchoffz.png" text=""/>
+config.xml:    <item index="4" cmd="cmTOUCHA" bitmap="touchoffa.png" text=""/>
+config.xml:    <item index="5" cmd="cmTOUCHB" bitmap="touchoffb.png" text=""/>    
+config.xml:    <item index="6" cmd="cmTOUCHC" bitmap="touchoffc.png" text=""/>
+config.xml:    <item index="7" cmd="cmZEROALL" bitmap="touchoffall.png" text="0.00"/>
+config.xml:    <item index="9" cmd="cmOFFSDLG" bitmap="touchedit.png" text=""/> 
+config.xml:    <item index="0" cmd="cmBACK" bitmap="return.png" text=""/>
+config.xml:    <item index="1" cmd="cmTOOLCHG" bitmap="toolchange.png" text=""/>
+config.xml:    <item index="2" cmd="cmTOOLEDT" bitmap="tooledit.png" text=""/>    
+config.xml:    <item index="0" cmd="cmMDIEXEC" bitmap="mdido.png" text=""/>
+config.xml:    <item index="2" cmd="cmMDIHIST" bitmap="mdidel.png" text=""/>    
+config.xml:    <item index="0" cmd="cmRUN" bitmap="start.png" text=""/>    
+config.xml:    <item index="1" cmd="cmSTOP" bitmap="stop.png" text=""/>
+config.xml:    <item index="2" cmd="cmSTEP" bitmap="step.png" text=""/>
+config.xml:    <item index="3" cmd="cmPAUSE" bitmap="pause.png" text=""/>    
+config.xml:    <item index="4" cmd="cmRUNLINE" bitmap="startfrom.png" text=""/>
+config.xml:    <item index="5" cmd="cmOPTSTOP" bitmap="optstops.png" text="Opt.-Stops"/>
+config.xml:    <item index="6" cmd="cmBLOCKDEL" bitmap="blocks.png" text="/ Blöcke"/>
+config.xml:    <item index="7" cmd="cmRELOAD" bitmap="reload.png" text=""/>
+config.xml:    <item index="8" cmd="cmOPEN" bitmap="open.png" text=""/>
+config.xml:    <item index="9" cmd="cmEDITOR" bitmap="editor.png" text=""/>
+mocca.xml:            <string name="Bitmap" value="estop.png"/>
+mocca.xml:            <string name="Bitmap" value="onoff.png"/>
+mocca.xml:            <string name="Bitmap" value="jog.png"/>
+mocca.xml:            <string name="Bitmap" value="mdi.png"/>
+mocca.xml:            <string name="Bitmap" value="run.png"/>
+mocca.xml:            <string name="Bitmap" value="spindleonoff.png"/>
+mocca.xml:            <string name="Bitmap" value="coolantonoff.png"/>
+mocca.xml:            <string name="Bitmap" value="mistonoff.png"/>
+mocca.xml:            <string name="Bitmap" value="spindlebrake.png"/>
+mocca.xml:            <string name="Bitmap" value="spindlerev.png"/>
