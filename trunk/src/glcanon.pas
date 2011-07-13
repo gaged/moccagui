@@ -63,7 +63,7 @@ var
   toffs: tlo;
   DwellTime: double;
   lineno: integer;
-  {$ifdef VER_24}
+  {$ifndef VER_23}
   xyrot: double;
   {$endif}
   xo,zo,wo: double;
@@ -92,6 +92,7 @@ var
 {$ifdef VER_23}
 procedure initgcode; cdecl; external;
 {$endif}
+
 function parsefile(filename,unitcode,initcode: PChar): integer; cdecl; external;
 function converterror(Err: integer): integer; cdecl; external;
 function goto_line(line_no: integer; filename,unitcode,initcode: PChar): integer; cdecl; external;
@@ -295,7 +296,7 @@ begin
     Renderer.Dwell(lineno,x,y,z);
 end;
 
-{$ifdef VER_24}
+{$ifndef VER_23}
 procedure set_xy_rotation(t: double); cdecl; export;
 begin
   xyrot:= t;
@@ -333,7 +334,7 @@ begin
 end;
 {$endif}
 
-{$ifdef VER_24}
+{$ifndef VER_23}
 procedure tooloffset(x, y, z, a, b, c, u, v, w: double); cdecl; export;
 begin
   FirstMove:= True;
@@ -358,6 +359,16 @@ begin
   writeln(Format('%s %n %n %n',['set_origin_offsets: ',x,y,z]));
   {$endif}
 end;
+
+{$ifdef VER_25}
+procedure setg5xoffset(index: integer; x, y, z, a, b, c, u, v, w: double); cdecl; export;
+begin
+end;
+
+procedure setg92offset(x, y, z, a, b, c, u, v, w: double); cdecl; export;
+begin
+end;
+{$endif}
 
 procedure setplane(pl: integer); cdecl; export;
 begin

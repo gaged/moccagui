@@ -23,11 +23,11 @@ LCL += -Fu$(LAZDIR)/components/custom
 LCL += -Fu$(LAZDIR)/components/opengl
 LCL += -Fu$(LAZDIR)/packager/units/i386-linux
 
-emcpas.o: ../src/emcpas.cc
-	$(COMPILE) $(INCLUDES) -o./lib/emcpas.o -DVER_24 -DDSOHANDLE ../src/emcpas.cc
+emcpas.o: emcpas.cc
+	$(COMPILE) $(INCLUDES) -o./lib/emcpas.o -DDSOHANDLE emcpas.cc
 
-simcanon.o: ../src/simcanon.cc
-	$(COMPILE) $(INCLUDES) -o./lib/simcanon.o -DVER_24 ../src/simcanon.cc
+simcanon.o: simcanon.cc
+	$(COMPILE) $(INCLUDES) -o./lib/simcanon.o -DVER_24 simcanon.cc
 
 mocca.o: ../src/mocca.lpr
 	$(COMPILEMOC) -k-L$(EMCDIR)/lib $(LCL) -dVER_24 -Fl./lib -FU./lib -o./mocca2.4 ../src/mocca.lpr

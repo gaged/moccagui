@@ -712,12 +712,9 @@ begin
 end;
 
 procedure TJoints.Update;
-var
-  i: integer;
 begin
   if FNumAxes < 1 then Exit;
   Dro.Update;
 end;
 
-end.
 end.

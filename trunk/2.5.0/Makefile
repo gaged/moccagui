@@ -5,7 +5,7 @@ COMPILEPAS = fpc
 COMPILEMOC = fpc -S2cghi -CX -O1 -TLinux -XX -vewnhi -l -k-L-dLCL -dLCL$(WM)
 LINK = gcc -v
 
-EMCDIR = /home/gtom/emc2-2.3.4
+EMCDIR = /home/gtom/emc2-2.4.4
 LAZDIR = /usr/lib/lazarus/0.9.28.2
 
 INCLUDES = -I$(EMCDIR)/include
@@ -27,11 +27,11 @@ emcpas.o: emcpas.cc
 	$(COMPILE) $(INCLUDES) -o./lib/emcpas.o -DDSOHANDLE emcpas.cc
 
 simcanon.o: simcanon.cc
-	$(COMPILE) $(INCLUDES) -o./lib/simcanon.o -DVER_23 simcanon.cc
+	$(COMPILE) $(INCLUDES) -o./lib/simcanon.o -DVER_25 simcanon.cc
 
 mocca.o: ../src/mocca.lpr
-	$(COMPILEMOC) -k-L$(EMCDIR)/lib $(LCL) -dVER_23 -Fl./lib -FU./lib -o./mocca2.3 ../src/mocca.lpr
-	cp ./mocca2.3 $(EMCDIR)/bin/mocca
+	$(COMPILEMOC) -k-L$(EMCDIR)/lib $(LCL) -dVER_25 -Fl./lib -FU./lib -o./mocca2.4 ../src/mocca.lpr
+	cp ./mocca2.4 $(EMCDIR)/bin/mocca
 	
 clean:
 	rm ./lib/*

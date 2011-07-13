@@ -33,11 +33,10 @@
 
 #include "canon.hh"
 
-#ifdef VER_24
+
 #include "initool.hh"
 #include "interp_internal.hh"
 #include "tool_parse.h"
-#endif
 
 #define EMC_COMMAND_DELAY   0.1	// how long to sleep between checks
 #define CM_PER_MM 0.1
@@ -187,17 +186,14 @@ extern "C" int taskInterpState() { return emcStatus->task.interpState; }
 extern "C" int taskMotionline() { return emcStatus->task.motionLine; }
 extern "C" int taskCurrentLine() { return emcStatus->task.currentLine; }
 extern "C" int taskReadLine() { return emcStatus->task.readLine; }
-#ifdef VER_24
+
 extern "C" double taskRotationXY() { return emcStatus->task.rotation_xy; }
-#endif
-#ifdef VER_23
-extern "C" bool taskTloIsAlongW() { return emcStatus->task.tloIsAlongW; }
-#endif
+
 extern "C" int taskProgramUnits() { return emcStatus->task.programUnits; }
 extern "C" int taskInterpErrorCode() { return emcStatus->task.interpreter_errcode; }
-#ifdef VER_24
+
 extern "C" double taskDelayLeft() { return emcStatus->task.delayLeft; }
-#endif
+
 extern "C" bool taskBlockDelete() { return emcStatus->task.block_delete_state; }
 extern "C" bool taskOptStop() { return emcStatus->task.optional_stop_state; }
 
@@ -212,9 +208,6 @@ extern "C" int spindleEnabled() { return emcStatus->motion.spindle.enabled; }
 extern "C" bool coolantMist() { return emcStatus->io.coolant.mist != 0; }
 extern "C" bool coolantFlood() { return emcStatus->io.coolant.flood != 0; }
 
-#ifdef VER_23
-extern "C" int toolPrepped() { return emcStatus->io.tool.toolPrepped; }
-#endif
 extern "C" int toolInSpindle() { return emcStatus->io.tool.toolInSpindle; }
 extern "C" double toolLengthOffset() { return emcStatus->task.toolOffset.tran.z; }
 
@@ -812,7 +805,7 @@ extern "C" int updateError()
     return 0;
 }
 
-#ifdef VER_24
+
 extern "C" int sendSetRotationXY(double angle)
 {
     EMC_TRAJ_SET_ROTATION msg;
@@ -821,7 +814,7 @@ extern "C" int sendSetRotationXY(double angle)
     emcCommandBuffer->write(msg);
     return emcCommandWaitReceived(emcCommandSerialNumber);
 }
-#endif
+
 
 extern "C" int sendDebug(int level)
 {
@@ -1214,7 +1207,7 @@ extern "C" int sendLoadToolTable(const char *file)
     return emcCommandWaitReceived(emcCommandSerialNumber);
 }
 
-#ifdef VER_24
+
 extern "C" int sendToolSetOffset(int id, double zoffset, double diameter)
 {
     EMC_TOOL_SET_OFFSET emc_tool_set_offset_msg;
@@ -1226,26 +1219,12 @@ extern "C" int sendToolSetOffset(int id, double zoffset, double diameter)
     emcCommandBuffer->write(emc_tool_set_offset_msg);
     return emcCommandWaitReceived(emcCommandSerialNumber);
 }
-#endif
 
-#ifdef VER_23
-extern "C" int sendToolSetOffset(int id, double zoffset, double diameter)
-{
-    EMC_TOOL_SET_OFFSET emc_tool_set_offset_msg;
-    emc_tool_set_offset_msg.id = id;
-    emc_tool_set_offset_msg.zoffset = zoffset;
-    emc_tool_set_offset_msg.diameter = diameter;
-    emc_tool_set_offset_msg.orientation = 0; // mill style tool table
-    emc_tool_set_offset_msg.serial_number = ++emcCommandSerialNumber;
-    emcCommandBuffer->write(emc_tool_set_offset_msg);
-    return emcCommandWaitReceived(emcCommandSerialNumber);
-}
-#endif
 
 // .toolno, .offset.tran.z, .offset.tran.x, .diameter 
 // .frontangle, .backangle, .orientation
 
-#ifdef VER_24
+
 extern "C" int sendToolSetOffset2(int id, double zoffset, double xoffset, 
                       double diameter, double frontangle, double backangle,
                       int orientation)
@@ -1262,26 +1241,7 @@ extern "C" int sendToolSetOffset2(int id, double zoffset, double xoffset,
     emcCommandBuffer->write(emc_tool_set_offset_msg);
     return emcCommandWaitReceived(emcCommandSerialNumber);
 }
-#endif
 
-#ifdef VER_23
-extern "C" int sendToolSetOffset2(int id, double zoffset, double xoffset, 
-                      double diameter, double frontangle, double backangle,
-                      int orientation)
-{
-    EMC_TOOL_SET_OFFSET emc_tool_set_offset_msg;
-    emc_tool_set_offset_msg.id = id;                  
-    emc_tool_set_offset_msg.zoffset = zoffset;        
-    emc_tool_set_offset_msg.xoffset = xoffset;        
-    emc_tool_set_offset_msg.diameter = diameter;      
-    emc_tool_set_offset_msg.frontangle = frontangle;  
-    emc_tool_set_offset_msg.backangle = backangle;    
-    emc_tool_set_offset_msg.orientation = orientation;
-    emc_tool_set_offset_msg.serial_number = ++emcCommandSerialNumber;
-    emcCommandBuffer->write(emc_tool_set_offset_msg);
-    return emcCommandWaitReceived(emcCommandSerialNumber);
-}
-#endif
 
 extern "C" int sendAxisSetBacklash(int axis, double backlash)
 {

@@ -121,8 +121,10 @@ type
     procedure ButtonViewMinusClick(Sender: TObject);
     procedure ButtonViewPlusClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 
     procedure FormCreate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormResize(Sender: TObject);
@@ -198,7 +200,7 @@ end;
 
 procedure TMainForm.TaskModeChanged;  // called by MainForm.UpdateTaskMode
 begin
-  UpdateHalTaskMode(State.Mode);
+  // UpdateHalTaskMode(State.Mode);
   if ScriptRunning then
     begin
       writeln('Scrip is running: ignore taskmode');
@@ -231,14 +233,14 @@ begin
 
   if not UpdateLock then
     begin
-      i:= GetHalTaskMode;
+      {i:= GetHalTaskMode;
       if i  <> State.Mode then
         begin
           if i = TaskModeManual then Emc.HandleCommand(cmJOG) else
           if i = TaskModeAuto then Emc.HandleCommand(cmAuto) else
           if i = TaskModeMdi then Emc.HandleCommand(cmMDI);
         end;
-
+      }
       if EMC.UpdateState then
         TaskModeChanged;
     end;
@@ -286,7 +288,7 @@ begin
       FCurrentVel:= -1; // trigger update fpr Label Currentvel
       FMaxVel:= -1;
     end;
-
+  {
   if FFeed <> Emc.FeedOverride then
     begin
       i:= Emc.FeedOverride;
@@ -302,7 +304,7 @@ begin
       SliderVel.Position:= i;
       FMaxVel:= i;
     end;
-
+  }
   if FTool <> State.CurrentTool then
     begin
       FTool:= State.CurrentTool;
@@ -441,7 +443,7 @@ begin
     clRun.UpdateSelf
   else
     clMDI.UpdateSelf;
-
+  {
   for i:= HalButtonMin to HalButtonMax do
     begin
       if GetHalButtonDown(i) then
@@ -454,7 +456,7 @@ begin
                 Emc.HandleCommand(MocBtns[i].Tag);
             end;
     end;
-
+  }
   if State.UnitsChanged then
     State.UnitsChanged:= False;
 
@@ -462,8 +464,8 @@ begin
 
 procedure TMainForm.UpdateSpindle;
 begin
-  LedSpindleCCW.IsOn:= FSpReverse;
-  LedSpindleOn.IsOn:= FSpDir <> 0;
+  //LedSpindleCCW.IsOn:= FSpReverse;
+  //LedSpindleOn.IsOn:= FSpDir <> 0;
 end;
 
 procedure TMainForm.InitPanels;  // init the panels, clients, joints
@@ -678,6 +680,13 @@ begin
 
 end;
 
+procedure TMainForm.FormDeactivate(Sender: TObject);
+begin
+  if Verbose > 0 then writeln('deactivating mainform');
+  if State.Mode = TaskModeManual then
+    if Assigned(Joints) then Joints.CheckJogExit;
+end;
+
 procedure TMainForm.BtnSpCCWClick(Sender: TObject);
 begin
   if Sender = nil then ;
@@ -763,6 +772,16 @@ begin
   //ShowStartDlg;
 end;
 
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  writeln('mainform close');
+  CloseAction:= caFree;
+  UpdateLock:= True;  // prevent from updates during close
+  Timer.OnTimer:= nil;
+  Timer.Enabled:= False;  //turn off Timer
+
+end;
+
 procedure TMainForm.MenuItemHalClick(Sender: TObject);
 begin
   ExecHalShow;
@@ -799,8 +818,11 @@ var
   i: integer;
 begin
   if Sender = nil then ;
+  if Verbose > 0 then writeln('destroying mainform');
   UpdateLock:= True;  // prevent from updates during destroy
   Timer.Enabled:= False;  //turn off Timer
+  // weit message queue
+  //sleep(20);
   if Assigned(clJog) then FreeAndNil(clJog);
   if Assigned(clMDI) then FreeAndNil(clMDI);
   if Assigned(clRun) then FreeAndNil(clRun);
@@ -1005,6 +1027,7 @@ end;
 
 procedure TMainForm.SliderFeedPositionChanged(Sender: TObject; NewPos: integer);
 begin
+  Exit;
   if Sender = nil then ;
   if UpdateLock then Exit;
   Emc.FeedOverride:= NewPos;

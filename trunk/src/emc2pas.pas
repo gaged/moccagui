@@ -59,16 +59,15 @@ const
   EMC_TASK_EXEC_WAITING_FOR_DELAY = 8;
   EMC_TASK_EXEC_WAITING_FOR_SYSTEM_CMD = 9;
 
-
 type
   TTool = packed record
     toolno: integer;
     xoffset: double;
-    {$ifdef VER_24}
+    {$ifndef VER_23}
     yoffset: double;
     {$endif} 
     zoffset: double;
-    {$ifdef VER_24}
+    {$ifndef VER_23}
     aoffset: double;
     boffset: double;
     coffset: double;
@@ -86,9 +85,9 @@ const
   EmptyTool : TTool =
     (
     toolno: -1; xoffset: 0;
-    {$ifdef VER_24} yoffset: 0; {$endif}
+    {$ifndef VER_23} yoffset: 0; {$endif}
     zoffset: 0;
-    {$ifdef VER_24}
+    {$ifndef VER_23}
     aoffset: 0; boffset: 0; coffset: 0; uoffset: 0;voffset: 0; woffset: 0;
     {$endif}
     diameter: 0;
@@ -115,7 +114,7 @@ var
   ActiveFWords: Array[0..MDI_LINELEN-1] of Char; external name 'activeFWords';
   ActiveSWords: Array[0..MDI_LINELEN-1] of Char; external name 'activeSWords';
 
-  {$ifdef VER_24}
+  {$ifndef VER_23}
   RandomToolchanger: integer; external name 'random_toolchanger';
   {$endif}
 
@@ -132,13 +131,15 @@ function  loadToolTable(const filename: PChar): integer; cdecl; external;
 function  saveToolTable(const filename: PChar): integer; cdecl; external;
 
 function  getDtgPos(axis: integer): double; cdecl; external;
-function  getAbsCmdPos(axis: integer): double; cdecl; external;
 function  getAbsPos(axis: integer): double; cdecl; external;
-function  getRelCmdPos(axis: integer): double; cdecl; external;
 function  getRelPos(axis: integer): double; cdecl; external;
 function  getJointPos(joint: integer): double; cdecl; external;
 function  getOrigin(axis: integer): double; cdecl; external;
 function  getLoggerPos(axis: integer): double; cdecl; external;
+
+// obsolete
+//function  getAbsCmdPos(axis: integer): double; cdecl; external;
+//function  getRelCmdPos(axis: integer): double; cdecl; external;
 
 // axis related functions
 function AxisAxisType(Joint: integer): integer cdecl; external; { motion.axis.*.axisType; }
@@ -317,7 +318,7 @@ implementation
 
 initialization
 
-{$ifdef VER_24}
+{$ifndef VER_23}
 RandomToolchanger:= 0;
 {$endif}
 

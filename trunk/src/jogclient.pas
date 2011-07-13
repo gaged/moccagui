@@ -43,7 +43,9 @@ type
     procedure BJogMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure BJogMouseLeave(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -106,6 +108,7 @@ begin
   else
     begin
       Emc.HandleCommand(Cmd);
+      writeln('jog command:',Cmd);
       if not (Cmd in [cmREFX..cmREFC,cmTOUCHX..cmTOUCHC]) then
         ChangeButtons(0);  // Back to default
     end;
@@ -192,7 +195,7 @@ begin
     5: begin
          MocButtonInc5.Caption:= s;
          MocButtonInc5.Tag:= 5;
-         MocButtonInc5.Enabled:= true;
+         MocButtonInc6.Enabled:= true;
        end;
     6: begin
          MocButtonInc6.Caption:= s;
@@ -257,16 +260,6 @@ end;
 
 procedure TJogClientForm.UpdateButtons;
 begin
-  {for i:= 0 to NumButtons - 1 do
-    begin
-      if Assigned(MocBtns[i]) then
-        MocBtns[i].Enabled:= State.Machine;
-    end;
-  SetButtonEnabled(cmSPMINUS,State.Machine);
-  SetButtonEnabled(cmSPCW,State.Machine);
-  SetButtonEnabled(cmSPCCW,State.Machine);
-  SetButtonEnabled(cmSPPLUS,State.Machine);
-  SetButtonEnabled(cmFLOOD,State.Machine);}
 end;
 
 procedure TJogClientForm.UpdateSelf;
@@ -419,6 +412,7 @@ procedure TJogClientForm.SliderJogPositionChanged(Sender: TObject; NewPos: integ
 var
   Vel: integer;
 begin
+  writeln('Slider changed');
   if Sender = nil then ;
   if UpdateLock then Exit;
   Vel:= SliderJog.Position;
@@ -492,6 +486,11 @@ begin
   BtnORideLimits.Tag:= cmLIMITS;
 end;
 
+procedure TJogClientForm.FormDestroy(Sender: TObject);
+begin
+  writeln('jog destroy');
+end;
+
 procedure TJogClientForm.BJogMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
@@ -515,6 +514,13 @@ procedure TJogClientForm.BJogMouseLeave(Sender: TObject);
 begin
   UpdateBtnState(False);
   FBtnDown:= 0;
+end;
+
+procedure TJogClientForm.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
+begin
+  if Verbose > 0 then
+    writeln('close jog-form');
 end;
 
 procedure TJogClientForm.FormKeyDown(Sender: TObject; var Key: Word;

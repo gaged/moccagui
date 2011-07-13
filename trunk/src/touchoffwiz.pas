@@ -61,7 +61,7 @@ function DoTouchOffWiz: string;
 implementation
 
 uses
-  emc2pas,mocemc,MocGlb,MocJoints;
+  emc2pas,mocemc,mocglb;
 
 { TTouchOffWizDlg }
 
