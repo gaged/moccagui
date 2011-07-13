@@ -59,7 +59,7 @@ implementation
 { TCoordRotDlg }
 
 uses
-  math,emc2pas,mocglb,mocjoints,hal;
+  math,emc2pas,mocglb,hal;
 
 var
   rx,ry,rz: double;

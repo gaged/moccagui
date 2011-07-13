@@ -17,7 +17,7 @@ uses
 const
   ERR_INI_OPEN = 'Cannot open inifile:';
   MSG_INI_READ_FROM = 'mocca reads from :';
-  {$ifdef VER_24}
+  {$ifndef VER_23}
   MSG_NMLFILE = 'Default NMLFile = ';
   {$endif}
   {$ifdef VER_23}
@@ -122,7 +122,7 @@ begin
   // first we try to find the nml-file
   // emc2-2.4 uses the default NML_FILE;
   // emc2-2.3 needs the NML_FILE set up in the ini-file
-  {$ifdef VER_24}
+  {$ifndef VER_23}
   writeln(MSG_NMLFILE, Emc2NmlFile);
   EMC_NMLFILE:= PChar(Emc2NmlFile);
   {$endif}

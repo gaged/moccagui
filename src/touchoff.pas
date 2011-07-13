@@ -42,7 +42,7 @@ procedure DoTouchOff(Axis: Char);
 implementation
 
 uses
-  emc2pas,mocglb,mocjoints,mocemc;
+  emc2pas,mocglb,mocemc;
 
 procedure DoTouchOff(Axis: Char);
 var

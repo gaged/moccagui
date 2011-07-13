@@ -69,6 +69,7 @@ procedure TMDIClientForm.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   if Sender = nil then ;
+  writeln('mdiform close');
 end;
 
 procedure TMDIClientForm.FormActivate(Sender: TObject);
@@ -133,6 +134,7 @@ end;
 procedure TMDIClientForm.FormDestroy(Sender: TObject);
 begin
   if Sender = nil then ;
+  writeln('mdiform destroy');
   try
     MDIHistListBox.Items.SaveToFile(Vars.IniPath + MDI_HIST_FILENAME);
   except

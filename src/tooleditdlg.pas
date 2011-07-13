@@ -67,7 +67,7 @@ begin
   with Item.Tool do
     begin
       toolno:= 0; zoffset:= 0; xoffset:= 0;
-      {$ifdef VER_24}
+      {$ifndef VER_23}
       yoffset:= 0; aoffset:= 0; boffset:= 0; coffset:= 0;
       uoffset:= 0; voffset:= 0; woffset:= 0;
       {$endif}
@@ -134,7 +134,7 @@ begin
         'T': s:= IntToStr(Item.Tool.toolno);
         'X': s:= FloatToStr(Item.Tool.xoffset);
         'Z': s:= FloatToStr(Item.Tool.zoffset);
-        {$ifdef VER_24}
+        {$ifndef VER_23}
         'Y': s:= FloatToStr(Item.Tool.yoffset);
         'A': s:= FloatToStr(Item.Tool.aoffset);
         'B': s:= FloatToStr(Item.Tool.boffset);
@@ -184,7 +184,7 @@ begin
         'T': T[ARow].Tool.toolno:= StrToInt(s);
         'X': T[ARow].Tool.xoffset:= StrToFloat(s);
         'Z': T[ARow].Tool.zoffset:= StrToFloat(s);
-        {$ifdef VER_24}
+        {$ifndef VER_23}
         'Y': T[ARow].Tool.yoffset:= StrToFloat(s);
         'A': T[ARow].Tool.aoffset:= StrToFloat(s);
         'B': T[ARow].Tool.boffset:= StrToFloat(s);
@@ -321,7 +321,6 @@ end;
 procedure TToolDlg.InitGrid;
 var
  i,n: integer;
- s: string;
  c: Char;
 begin
   Map:= 'PTQD';
@@ -329,7 +328,7 @@ begin
     Map:= Map + 'FKO';
   if Pos('X',Vars.CoordNames) > 0 then Map:= Map + 'X';
   if Pos('Z',Vars.CoordNames) > 0 then Map:= Map + 'Z';
-  {$ifdef VER_24}
+  {$ifndef VER_23}
   if Pos('Y',Vars.CoordNames) > 0 then Map:= Map + 'Y';
   if Pos('A',Vars.CoordNames) > 0 then Map:= Map + 'A';
   if Pos('B',Vars.CoordNames) > 0 then Map:= Map + 'B';

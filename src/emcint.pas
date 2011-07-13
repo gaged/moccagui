@@ -20,7 +20,7 @@ var
   Emc2LibPath: string;
   Emc2Version: string;
 
-{$ifdef VER_24}
+{$ifndef VER_23}
   Emc2NmlFile: string;
 {$endif}
 
@@ -48,8 +48,7 @@ begin
       writeln('Did not find the EMC2_HOME var');
       Exit;
     end;
-
-  {$ifdef VER_24}
+  {$ifndef VER_23}
   Emc2NmlFile:= '';
   Emc2NmlFile:=  GetEnvironmentVariable('NMLFILE');
   if Length(Emc2NmlFile) < 1 then
@@ -65,13 +64,20 @@ begin
   if Pos('2.3.',Emc2Version) < 1 
   {$endif}
   {$ifdef VER_24}
+  {$info compiliert version 2.4ff}
   if Pos('2.4.',Emc2Version) < 1
+  {$endif}
+  {$ifdef VER_25}
+  {$info compiliert version 2.5ff}
+  if Pos('2.5.',Emc2Version) < 1
   {$endif}
   then
     begin
       writeln('Wrong EMC2-Version Number, got Version ' + Emc2Version + ',' +#13);
       writeln('This Version of Mocca was build for EMC2-' +
-        {$ifdef VER_23}'2.3.*'{$endif}{$ifdef VER_24}'2.4.1'{$endif});
+        {$ifdef VER_23}'2.3'{$endif}
+        {$ifdef VER_24}'2.4'{$endif}
+        {$ifdef VER_25}'2.5'{$endif});
       writeln('Please install the correct version of mocca.');
       Exit;
     end

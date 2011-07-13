@@ -88,7 +88,7 @@ uses
   tooleditdlg,toolchange,
   touchoff, touchoffwiz,
   coordrotate,
-  glcanon,simclient;
+  simclient;
 
 var
   UpdateCounter: integer;
@@ -356,50 +356,51 @@ end;
 
 
 procedure TEmc.SetFeedOverride(Value: integer);
-var
-  HalFeed: integer;
+// var
+//  HalFeed: integer;
 begin
   if (Value < 1) or (Value > Vars.MaxFeedOverride) then
     Exit;
   if (Value <> FFeedOverride) then
     begin
       FFeedOverride:= Value;
-      if UseHalFeed then
-        begin
-          HalFeed:= GetHalFeed;
-          if HalFeed <> FFeedOverride then
-            SetHalFeed(FFeedOverride);
-        end;
+     // if UseHalFeed then
+     //   begin
+     //     HalFeed:= GetHalFeed;
+     //     if HalFeed <> FFeedOverride then
+     //       SetHalFeed(FFeedOverride);
+     //   end;
     end;
 end;
 
 procedure TEmc.SetSpindleOverride(Value: integer);
-var
-  HalSpindle: integer;
+//var
+//  HalSpindle: integer;
 begin
   if (Value < 1) or (Value > Vars.MaxSpORide) then
     Exit;
   if (Value <> FSpindleOverride) then
     begin
       FSpindleOverride:= Value;
-      HalSpindle:= GetHalSpindle;
-      if HalSpindle <> FSpindleOverride then
-        SetHalSpindle(FSpindleOverride);
+  //  Disabled, use halui instead
+  //    HalSpindle:= GetHalSpindle;
+  //    if HalSpindle <> FSpindleOverride then
+  //      SetHalSpindle(FSpindleOverride);
     end;
 end;
 
 procedure TEmc.SetMaxVelocity(Value: integer);
-var
-  HalVel: integer;
+//var
+//  HalVel: integer;
 begin
   if (Value < 1) or (Value > State.MaxVel) then
     Exit;
   if (Value <> FMaxVelocity) then
     begin
       FMaxVelocity:= Value;
-      HalVel:= GetHalVelocity;
-      if HalVel <> FMaxVelocity then
-        SetHalVelocity(FMaxVelocity);
+      // HalVel:= GetHalVelocity;
+      // if HalVel <> FMaxVelocity then
+      //  SetHalVelocity(FMaxVelocity);
     end;
 end;
 
@@ -423,7 +424,7 @@ begin
     begin
       if not ToolsInitialized then
         begin
-          {$ifdef VER_24}
+          {$ifndef VER_23}
           RandomToolChanger:= 0;
           {$endif}
           InitToolTable;
@@ -837,7 +838,11 @@ var
 begin
   Result:= False;
 
-  if UpdateLock then Exit;
+  if UpdateLock then
+  begin
+    writeln('updatelock');
+    Exit;
+  end;
 
   if FHalCmd <> 0 then
     begin
@@ -909,7 +914,7 @@ begin
             ShowUserErrorMsg(i);
           end;
 
-      if UseHalFeed then
+      { if UseHalFeed then
         begin
           i:= GetHalFeed;  // Check if Hal-Feed changed
           if (i <> FFeedOverride) then FeedOverride:= i;
@@ -931,17 +936,18 @@ begin
           State.ActSpORide:= FSpindleOverride;
         end;
 
-      i:= GetHalVelocity;
-      if (i <> FMaxVelocity) then
-        MaxVelocity:= i;
+      // Disabled for test
+      //i:= GetHalVelocity;
+      //if (i <> FMaxVelocity) then
+      //  MaxVelocity:= i;
 
-      if FMaxVelocity <> State.ActVel then
-        begin
-          State.ActVel:= FMaxVelocity;
-          if State.ActVel < 1 then State.ActVel:= 1;
-          sendMaxVelocity(State.ActVel / 60);
-        end;
-
+      //if FMaxVelocity <> State.ActVel then
+      //  begin
+      //    State.ActVel:= FMaxVelocity;
+      //    if State.ActVel < 1 then State.ActVel:= 1;
+      //    sendMaxVelocity(State.ActVel / 60);
+      //  end;
+      }
       GetHalCommand(FHalCmd);
       // HalCommand will be executed on next update cycle
    end;
@@ -980,8 +986,6 @@ end;
 
 procedure TEmc.Reentry;
 var
-  i: integer;
-  Metric: Boolean;
   Scale: Double;
 begin
   if State.Mode <> TASKMODEAUTO then Exit;
@@ -1050,7 +1054,11 @@ begin
   case Cmd of
     cmCLOSE:
       begin
-        Application.MainForm.Close;
+        if Verbose > 0 then writeln('Command: Close');
+        // Application.MainForm.Close;
+        Application.Terminate;
+        writeln('mocemc: closed');
+        Exit;
       end;
     cmABORT: sendAbort;
     cmESTOP:
