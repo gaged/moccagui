@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 198
+  Left = 229
   Height = 710
-  Top = 39
+  Top = 226
   Width = 961
   HorzScrollBar.Page = 1278
   HorzScrollBar.Range = 1272
@@ -16,7 +16,9 @@ object MainForm: TMainForm
   Color = clSilver
   KeyPreview = True
   OnActivate = FormActivate
+  OnClose = FormClose
   OnCreate = FormCreate
+  OnDeactivate = FormDeactivate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
@@ -26,7 +28,7 @@ object MainForm: TMainForm
   PopupMenu = PopupMenuMain
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.28.2'
   object BgImage: TImage
     Left = 0
     Height = 90
@@ -930,10 +932,10 @@ object MainForm: TMainForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = PanelMsg
       AnchorSideBottom.Side = asrBottom
-      Left = 7
-      Height = 12
-      Top = 7
-      Width = 818
+      Left = 6
+      Height = 14
+      Top = 6
+      Width = 820
       Anchors = [akTop, akLeft, akRight, akBottom]
       AutoSize = False
       BorderSpacing.Around = 6

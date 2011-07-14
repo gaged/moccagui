@@ -1,3 +1,5 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
 LazarusResources.Add('TCoordRotDlg','FORMDATA',[
   'TPF0'#12'TCoordRotDlg'#11'CoordRotDlg'#4'Left'#3#17#2#6'Height'#3#238#0#3'To'
   +'p'#3'Y'#1#5'Width'#3'N'#2#13'ActiveControl'#7#6'EditRX'#7'Caption'#6#24'Adj'

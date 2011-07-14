@@ -186,7 +186,7 @@ var
   BtnDefRun: TButtonArray;
 
 const
-   {$ifdef VER_24}
+   {$ifndef VER_23}
    MaxToolColumns = 15;
    {$endif}
    {$ifdef VER_23}
@@ -195,18 +195,18 @@ const
 
 const
   ToolColTitles : Array[0..MaxToolColumns] of string =
-    ('POC','TNR','X-Offset',{$ifdef VER_24}'Y-Offset',{$endif}
-     'Z-Offset',{$ifdef VER_24}'A-Offset','B-Offset','C-Offset',
+    ('POC','TNR','X-Offset',{$ifndef VER_23}'Y-Offset',{$endif}
+     'Z-Offset',{$ifndef VER_23}'A-Offset','B-Offset','C-Offset',
      'U-Offset','V-Offset','W-Offset',{$endif}
      'Dia.','Frontang.','Backang.','Orient.','Name');
 
   ToolColWidths : Array[0..MaxToolColumns] of integer =
-    (30,30,60,{$ifdef VER_24}60,{$endif}
-     60,{$ifdef VER_24}60,60,60,60,60,60,{$endif}
+    (30,30,60,{$ifndef VER_23}60,{$endif}
+     60,{$ifndef VER_23}60,60,60,60,60,60,{$endif}
      100,60,60,30,200);
 
   const
-  {$ifdef VER_24}
+  {$ifndef VER_23}
   ToolColMap = 'PTXZYABCUVWDFKOQ';
   {$else}
   ToolColMap = 'PTXZDFKOQ';
