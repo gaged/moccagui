@@ -10,10 +10,6 @@
   {$define DEBUG_GL}
 {$endif}
 
-{$ifndef VER_23}
-  {$define VER_24}
-{$endif}
-
 {$ifdef LCLGTK2}
   {$define OWNGL}
 {$endif}

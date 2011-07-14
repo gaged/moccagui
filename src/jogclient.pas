@@ -195,7 +195,7 @@ begin
     5: begin
          MocButtonInc5.Caption:= s;
          MocButtonInc5.Tag:= 5;
-         MocButtonInc6.Enabled:= true;
+         MocButtonInc5.Enabled:= true;
        end;
     6: begin
          MocButtonInc6.Caption:= s;

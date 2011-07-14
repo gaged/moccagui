@@ -13,7 +13,9 @@ object JogClientForm: TJogClientForm
   ClientWidth = 432
   Color = clSilver
   KeyPreview = True
+  OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp

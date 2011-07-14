@@ -647,9 +647,9 @@ begin
       FHalCmd:= 0;
       Exit;
     end;
-  { disabled, future release 
+  // disabled, future release
   UpdateLock:= True;
-  writeln('Updatelock: True');
+  //writeln('Updatelock: True');
   Sleep(10);
   try
     LastLn:= CheckAutoStop;
@@ -683,7 +683,7 @@ begin
       end;
   end;
   writeln('UpdateLock: False');
-  UpdateLock:= False; }
+  UpdateLock:= False;
 end;
 
 function TEmc.GetActiveCoordSys: integer;
@@ -789,13 +789,13 @@ begin
   if State.Mode = TaskModeManual then
     if Assigned(Joints) then
       Joints.CheckJogExit;
-{  if ToMode <> TASKMODEAUTO then
-    if not State.EStop then
+  {if ToMode <> TASKMODEAUTO then
+    if not State.State =  then
       if State.SpindleDirection <> 0 then
         begin
           sendSpindleOff;
           WaitDone;
-        end;  }
+        end; }
   case ToMode of
     TASKMODEMANUAL: sendManual;
     TASKMODEAUTO: sendAuto;
@@ -918,12 +918,14 @@ begin
         begin
           i:= GetHalFeed;  // Check if Hal-Feed changed
           if (i <> FFeedOverride) then FeedOverride:= i;
-          if FFeedOverride <> State.ActFeed then
-          begin
-            SendFeedOverride(FFeedOverride / 100);
-            State.ActFeed:= FFeedOVerride;
-          end;
+      }
+
+      if FFeedOverride <> State.ActFeed then
+        begin
+          SendFeedOverride(FFeedOverride / 100);
+          State.ActFeed:= FFeedOVerride;
         end;
+      // end;
 
       i:= GetHalSpindle;
       if (i <> FSpindleOverride) then
@@ -941,13 +943,13 @@ begin
       //if (i <> FMaxVelocity) then
       //  MaxVelocity:= i;
 
-      //if FMaxVelocity <> State.ActVel then
-      //  begin
-      //    State.ActVel:= FMaxVelocity;
-      //    if State.ActVel < 1 then State.ActVel:= 1;
-      //    sendMaxVelocity(State.ActVel / 60);
-      //  end;
-      }
+      if FMaxVelocity <> State.ActVel then
+        begin
+         State.ActVel:= FMaxVelocity;
+          if State.ActVel < 1 then State.ActVel:= 1;
+         sendMaxVelocity(State.ActVel / 60);
+        end;
+
       GetHalCommand(FHalCmd);
       // HalCommand will be executed on next update cycle
    end;
