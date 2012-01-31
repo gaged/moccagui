@@ -26,6 +26,11 @@ Danach einfach ein Klick auf Installieren, und kurz warten.
 
 Jetzt muss EMC nur noch mitgeteilt werden, das Sie ab jetzt auf Axis verzichten wollen ;)
 
+----
+*Update* Es gibt jetzt einen Einrichteassistenten, der das unten beschriebene für Sie erledigt. Dazu muss nur das mocca-setup-de Paket geladen und installiert werden. (->Paketquelle oder Downloadseite)
+Danach nur noch noch mocca-setup in einem Terminal aufrufen, der Rest dürfte selbsterklärend sein.
+----
+
 Dazu müssen Sie die INI-Datei ihres Profils öffnen. Diese finden Sie normalerweise unter:
 /home/*ihr_name*/emc2/configs/*ihre_config*/*ihre_config*.ini
 
