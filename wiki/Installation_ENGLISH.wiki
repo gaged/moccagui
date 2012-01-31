@@ -26,6 +26,12 @@ You could also install it via terminal.
 
 Now you need to tell EMC, that you don't like axis any more ;)
 
+----
+*Update*
+Instead of using the way described below, you can now use the mocca-setup wizard.
+To do so, download and install the mocca-setup package, and afterwards type mocca-setup in a terminal.
+----
+
 To do so, find the INI-file of your EMC-Configuration.
 Normally it should be found here:
 /home/*your_username*/emc2/configs/*your_config*/*your_config*.ini
