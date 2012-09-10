@@ -60,6 +60,8 @@ begin
 
   Emc2Version:= '';
   Emc2Version:= GetEnvironmentVariable('EMC2VERSION');
+  
+  {$ifndef IGNORE_VERSION}
   {$ifdef VER_23}
   if Pos('2.3.',Emc2Version) < 1 
   {$endif}
@@ -83,7 +85,10 @@ begin
     end
   else
     writeln('mocca starts with correct emc version: emc2-' + Emc2Version);
-	
+  {$else}
+    writeln('mocca starts with emc version: emc2-' + Emc2Version);
+  {$endif}
+  	
   Emc2LibPath:= Emc2Home + '/lib/';
   writeln('Library loaded from: ' + Emc2LibPath);
   EmcIniHandle:= Pointer(LoadLibrary(Emc2LibPath + libemcini));

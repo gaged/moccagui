@@ -59,7 +59,12 @@ uses
 var
   FirstMove: boolean;
   lo: tlo;
+  {$ifndef VER_25}  
   offset: tlo;
+  {$else}
+  g5ofs: tlo;
+  g9ofs: tlo;
+  {$endif}
   toffs: tlo;
   DwellTime: double;
   lineno: integer;
@@ -74,7 +79,6 @@ var
 
   StopLineNo: integer;
 
-var
   Plane: integer; external name 'plane';
   last_sequence_number: integer; external name 'last_sequence_number';
   {$ifdef VER_23}
@@ -144,6 +148,22 @@ begin
   Result:= glSettings[2];
 end;
 
+function GetOffset: tlo;
+begin
+  {$ifndef VER_25}
+  Result:= offset;
+  {$else}
+  SetCoords(Result,g5ofs.x+g9ofs.x,g5ofs.y+g9ofs.y,g5ofs.z+g9ofs.z,
+    g5ofs.a+g9ofs.a,g5ofs.b+g9ofs.b,g5ofs.c+g9ofs.c,
+    g5ofs.u+g9ofs.u,g5ofs.v+g9ofs.v,g5ofs.w+g9ofs.w);
+  {$endif} 
+end;
+
+function CanonOffset: tlo;
+begin
+  Result:= GetOffset;
+end;
+
 function ToCanonUnits(Value: Double): Double;
 begin
   if State.LinearUnits = 1 then
@@ -155,18 +175,20 @@ end;
 function ToCanonPos(Value: double; Axis: integer): double;
 var
   P: double;
+  ofs: tlo;
 begin
   P:= 0;
+  ofs:= GetOffset;
   case Axis of
-    0: P:= offset.x;
-    1: P:= offset.y;
-    2: P:= offset.z;
-    3: P:= offset.a;
-    4: P:= offset.b;
-    5: P:= offset.c;
-    6: P:= offset.u;
-    7: P:= offset.v;
-    8: P:= offset.w;
+    0: P:= ofs.x;
+    1: P:= ofs.y;
+    2: P:= ofs.z;
+    3: P:= ofs.a;
+    4: P:= ofs.b;
+    5: P:= ofs.c;
+    6: P:= ofs.u;
+    7: P:= ofs.v;
+    8: P:= ofs.w;
   end;
   if (Axis < 3) or (Axis > 5) then
     Result:= ToCanonUnits(Value) + P
@@ -210,8 +232,12 @@ end;
 
 procedure InitOffset;
 begin
+  {$ifndef VER_25}
   SetCoords(Offset,0,0,0,0,0,0,0,0,0);
-  // writeln(Format('%s %f %f %f',['Canon Offsets: ',x,y,z]));
+  {$else}
+  SetCoords(g5ofs,0,0,0,0,0,0,0,0,0);
+  SetCoords(g9ofs,0,0,0,0,0,0,0,0,0);
+  {$endif}
 end;
 
 procedure CanonInitOffset;
@@ -219,10 +245,6 @@ begin
   InitOffset;
 end;
 
-function CanonOffset: tlo;
-begin
-  Result:= offset;
-end;
 
 procedure Init;
 var
@@ -351,22 +373,23 @@ begin
 end;
 {$endif}
 
+{$ifndef VER_25}
 procedure setoriginoffsets(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 begin
-  // SetCoords(offset,offset.x-x,offset.y-y,offset.z-z,a,b,c,u,v,w);
   SetCoords(offset,x,y,z,a,b,c,u,v,w);
   {$ifdef PRINT_CANON}
   writeln(Format('%s %n %n %n',['set_origin_offsets: ',x,y,z]));
   {$endif}
 end;
-
-{$ifdef VER_25}
+{$else}
 procedure setg5xoffset(index: integer; x, y, z, a, b, c, u, v, w: double); cdecl; export;
 begin
+  SetCoords(g5ofs,x,y,z,a,b,c,u,v,w);
 end;
 
 procedure setg92offset(x, y, z, a, b, c, u, v, w: double); cdecl; export;
 begin
+  SetCoords(g9ofs,x,y,z,a,b,c,u,v,w);
 end;
 {$endif}
 
@@ -435,9 +458,10 @@ end;
 
 procedure straighttraverse(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 var
-  l: Tlo;
-begin        
-  SetCoords(l,x + offset.x,y + offset.y,z + offset.z,a,b,c,u,v,w);
+  l,ofs: tlo;
+begin       
+  ofs:= GetOffset;
+  SetCoords(l,x+ofs.x,y+ofs.y,z+ofs.z,a+ofs.a,b+ofs.b,c+ofs.c,u+ofs.u,v+ofs.v,w+ofs.w);
   if not FirstMove then
     AppendTraverse(l);
   lo:= l;
@@ -448,13 +472,14 @@ var
   n: tlo;
   o: tlo;
   p: tlo;
+  ofs: tlo;
   Steps: integer;
   i: integer;
   theta1: Double;
   theta2: Double;
   theta: Double;
   rad: Double;
-  
+
   function interp(L,H: Double): Double;
   begin
     Result:= L + (H-L) * i / Steps;
@@ -462,11 +487,12 @@ var
 
 begin
   o:= lo;
+  ofs:= GetOffset;
   if Plane = 1 then // XY Plane
     begin
-      SetCoords(n,x1+offset.x,y1+offset.y,z1+offset.z, a, b, c, u, v, w);
-      cx:= cx + offset.x;
-      cy:= cy + offset.y;
+      SetCoords(n,x1+ofs.x,y1+ofs.y,z1+ofs.z, a, b, c, u, v, w);
+      cx:= cx + ofs.x;
+      cy:= cy + ofs.y;
       theta1:= arctan2(o.y - cy, o.x - cx);
       theta2:= arctan2(n.y - cy, n.x - cx);
       rad:= hypot(o.x - cx, o.y - cy);
@@ -474,18 +500,18 @@ begin
   else
   if Plane = 3 then
     begin
-      SetCoords(n,y1+offset.x,z1+offset.y,x1+offset.z, a, b, c, u, v, w);
-      cx:= cx + offset.z;
-      cy:= cy + offset.x;
+      SetCoords(n,y1+ofs.x,z1+ofs.y,x1+ofs.z, a, b, c, u, v, w);
+      cx:= cx + ofs.z;
+      cy:= cy + ofs.x;
       theta1:= arctan2(o.x - cy, o.z - cx);
       theta2:= arctan2(n.x - cy, n.z - cx);
       rad:= hypot(o.z - cx, o.x - cy);
     end
   else
     begin
-      SetCoords(n,z1+offset.x,x1+offset.y,y1+offset.z, a, b, c, u, v, w);
-      cx:= cx + offset.y;
-      cy:= cy + offset.z;
+      SetCoords(n,z1+ofs.x,x1+ofs.y,y1+ofs.z, a, b, c, u, v, w);
+      cx:= cx + ofs.y;
+      cy:= cy + ofs.z;
       theta1:= arctan2(o.z - cy, o.y - cx);
       theta2:= arctan2(n.z - cy, n.y - cx);
       rad:= hypot(o.y - cx, o.z - cy);
@@ -561,23 +587,23 @@ end;
 
 procedure rigidtap(x,y,z: double); cdecl; export;
 var
-  l: tlo;
+  l,ofs: tlo;
 begin
+  ofs:= GetOffset;
   FirstMove:= False;
-  SetCoords(l,x + offset.x,y + offset.y,z + offset.z, lo.a,lo.b,lo.c,lo.u,lo.v,lo.w);
+  SetCoords(l,x+ofs.x,y+ofs.y,z+ofs.z, lo.a,lo.b,lo.c,lo.u,lo.v,lo.w);
   AppendFeed(l);
-  AppendDwell(x + offset.x, y + offset.y, z + offset.z);
+  AppendDwell(x+ofs.x,y+ofs.y,z+ofs.z);
   AppendFeed(l);
 end;
 
 procedure straightfeed(x,y,z,a,b,c,u,v,w: double); cdecl; export;
 var
-  l: tlo;
+  l,ofs: tlo;
 begin       
   FirstMove:= False;
-  SetCoords(l,x + offset.x,y + offset.y,z + offset.z,
-    a + offset.a, b + offset.b, c + offset.c,
-    u + offset.u, v + offset.v, w + offset.w);
+  ofs:= GetOffset;
+  SetCoords(l,x+ofs.x,y+ofs.y,z+ofs.z,a+ofs.a,b+ofs.b,c+ofs.c,u+ofs.u,v+ ofs.v,w+ofs.w);
   AppendFeed(l);
   lo:= l
 end;

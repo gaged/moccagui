@@ -662,6 +662,13 @@ begin
 
   FormResize(nil);
 
+ // Load GladeVCP
+  // LoadGladevcp;
+
+  Sleep(100);
+  // Load Postgui halfile
+  LoadPostGuiHal;
+
   Timer.Interval:= Vars.CycleDelay;
   Timer.OnTimer:= @Self.OnTimer;
 
@@ -676,9 +683,7 @@ begin
     raise;	
   end;
 
-  // Load Postgui halfile
-  LoadPostGuiHal;
-
+ 
 end;
 
 procedure TMainForm.FormDeactivate(Sender: TObject);
@@ -958,6 +963,8 @@ begin
     end;
   {$endif}
   Self.Resize;
+  // test
+  LoadGladeVCP
 end;
 
 procedure TMainForm.LabelMsgClick(Sender: TObject);

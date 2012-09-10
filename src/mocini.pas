@@ -150,6 +150,8 @@ begin
   GetIniStr('EMC','MACHINE',Vars.Machine,'');
   GetIniStr('FILTER','PROGRAM_EXTENSION', Vars.Extensions,'');
   GetIniStr('HAL','POSTGUI_HALFILE',Vars.PostGuiHalfile,'');
+  GetIniStr('DISPLAY','GLADEVCP',Vars.GladeVCP,'');
+
 
   GetIniDouble('DISPLAY','MAX_FEED_OVERRIDE',d,1);
   Vars.MaxFeedOverride:= Round(d * 100);

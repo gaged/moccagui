@@ -412,7 +412,7 @@ procedure TJogClientForm.SliderJogPositionChanged(Sender: TObject; NewPos: integ
 var
   Vel: integer;
 begin
-  writeln('Slider changed');
+  // writeln('Slider changed');
   if Sender = nil then ;
   if UpdateLock then Exit;
   Vel:= SliderJog.Position;

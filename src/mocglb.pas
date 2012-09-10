@@ -90,6 +90,7 @@ procedure ExecHalMeter;
 procedure ExecHalScope;
 
 procedure LoadPostGuiHal;
+procedure LoadGladevcp;
 
 procedure ReadStyle(const Form: TForm; AFileName: string);
 
@@ -202,6 +203,7 @@ begin
   Process:= TProcess.Create(nil);
   try
     Process.CommandLine:= CommandLn;
+    Process.Options := Process.Options + [poWaitOnExit];
     Process.Execute;
   finally
     Process.Free;
@@ -251,6 +253,46 @@ begin
       ExecProcess(s);
     end;
 end;
+
+{$IFDEF LCLGTK2}
+function getxid(AForm: TForm): longint;
+var
+  Widget: PGtkWidget;
+begin
+  writeln('xid...');
+  Result:=0;
+  if (AForm=nil) or (not AForm.HandleAllocated) then 
+  begin
+    writeln('Form=nil');
+    exit;
+  end;
+  Widget:= PGtkWidget(AForm.Handle);
+  if Widget^.window = nil then 
+  begin
+    writeln('Widget-Window=nil');
+    exit;
+  end;
+  Result:= Longint(gdk_window_xwindow(Widget^.window));
+  writeln('xid: ' + inttostr(Result));
+end;
+{$ENDIF}
+
+procedure LoadGladevcp;
+var
+  s: string;
+  id: longint;
+begin
+  if Vars.Gladevcp <> '' then
+    begin
+      id:= getxid(Mainform);
+      s:= 'halcmd loadusr -Wn gladevcp gladevcp -c gladevcp ' + vars.Gladevcp;
+      s:= s + ' -x' + IntToStr(id); 
+      if Verbose > 0 then
+        writeln('loading gladevcp: ', s);
+      ExecProcess(s);
+    end;
+
+end;  
 
 {$IFDEF LCLGTK2}
 procedure FullScreen(WinControl: TWinControl);
