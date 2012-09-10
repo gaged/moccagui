@@ -74,8 +74,8 @@ extern "C" void straightfeed(double x,double y,double z,double a,double b,
                              double c,double u,double v,double w);
 extern "C" void straighttraverse(double x,double y,double z,double a,double b,double c,
                                  double u,double v,double w);
-extern "C" void setoriginoffsets(double x,double y,double z,double a,double b,
-                                 double c,double u,double v,double w);
+//extern "C" void setoriginoffsets(double x,double y,double z,double a,double b,
+//                                 double c,double u,double v,double w);
 
 extern "C" void setg5xoffset(int index, double x,double y,double z,double a,double b,
                                  double c,double u,double v,double w);
@@ -328,14 +328,15 @@ void SPLINE_FEED(int line_number, double x1, double y1, double x2, double y2, do
     }
 }
 
-void SET_ORIGIN_OFFSETS(double x, double y, double z,
-                        double a, double b, double c,
-                        double u, double v, double w) {
-    if(metric) { x /= 25.4; y /= 25.4; z /= 25.4; u /= 25.4; v /= 25.4; w /= 25.4; }
-    maybe_new_line();
-    if(interp_error) return;
-    setoriginoffsets(x, y, z, a, b, c, u, v, w);
-}
+
+//void SET_ORIGIN_OFFSETS(double x, double y, double z,
+//                        double a, double b, double c,
+//                        double u, double v, double w) {
+//    if(metric) { x /= 25.4; y /= 25.4; z /= 25.4; u /= 25.4; v /= 25.4; w /= 25.4; }
+//    maybe_new_line();
+//    if(interp_error) return;
+//    setoriginoffsets(x, y, z, a, b, c, u, v, w);
+//}
 
 void USE_LENGTH_UNITS(CANON_UNITS u) { metric = u == CANON_UNITS_MM; }
 void SET_LENGTH_UNITS(CANON_UNITS u) { metric = u == CANON_UNITS_MM; }
@@ -533,6 +534,11 @@ int GET_EXTERNAL_MIST() { return 0; }
 CANON_PLANE GET_EXTERNAL_PLANE() { return 1; }
 double GET_EXTERNAL_SPEED() { return 0; }
 
+// new iov2
+void START_CHANGE() {}
+int  GET_EXTERNAL_TC_FAULT() {return 0;}
+int  GET_EXTERNAL_TC_REASON() {return 0;}
+// end iov2
 
 int GET_EXTERNAL_POCKETS_MAX() { return CANON_POCKETS_MAX; }
 
