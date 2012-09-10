@@ -6,7 +6,7 @@ COMPILEMOC = fpc -S2cghi -CX -O1 -TLinux -XX -vewnhi -l -k-L-dLCL -dLCL$(WM)
 LINK = gcc -v
 
 EMCDIR = /home/gtom/emc2-2.4.1
-LAZDIR = /usr/lib/lazarus/0.9.28.2
+LAZDIR = /usr/lib/lazarus/0.9.30.4
 
 INCLUDES = -I$(EMCDIR)/include
 INCLUDES += -I$(EMCDIR)/src/emc/nml_intf
@@ -24,7 +24,7 @@ LCL += -Fu$(LAZDIR)/components/opengl
 LCL += -Fu$(LAZDIR)/packager/units/i386-linux
 
 emcpas.o: emcpas.cc
-	$(COMPILE) $(INCLUDES) -o./lib/emcpas.o -DDSOHANDLE emcpas.cc
+	$(COMPILE) $(INCLUDES) -o./lib/emcpas.o -UDSOHANDLE emcpas.cc
 
 simcanon.o: simcanon.cc
 	$(COMPILE) $(INCLUDES) -o./lib/simcanon.o -DVER_24 simcanon.cc

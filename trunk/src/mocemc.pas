@@ -945,9 +945,10 @@ begin
 
       if FMaxVelocity <> State.ActVel then
         begin
-         State.ActVel:= FMaxVelocity;
-          if State.ActVel < 1 then State.ActVel:= 1;
-         sendMaxVelocity(State.ActVel / 60);
+           State.ActVel:= FMaxVelocity;
+           if State.ActVel < 1 then State.ActVel:= 1;
+           sendMaxVelocity(State.ActVel / 60);
+           FMaxVelocity:= State.ActVel;
         end;
 
       GetHalCommand(FHalCmd);
