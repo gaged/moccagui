@@ -74,11 +74,10 @@ Sollte dieser Fall eintreten, schreibt mir bitte umgehend eine email mit dem Pak
 Wenn ihr Mocca noch nicht installiert habt, könnt ihr das nach den obigen Schritten besonders einfach tun.
 
 == Schritt 1 ==
-Ihr müsst euch für ein Paket entscheiden.
- * Wenn ihr Ubuntu Hardy Heron (8.04) benutzt, gibt es folgende Möglichkeiten:
+Ihr müsst euch für ein Paket entscheiden:
   # Ihr benutzt EMC2 mit einer Version <= 2.3.5 dann ist euer Paket *mocca23*
-  # Ihr benutzt EMC2 Version 2.4.0 oder neuer. Euer Paket heisst dann *mocca24*
- * Wenn ihr Ubuntu Lucid Lynx (10.04) benutzt, dann ist euer Paket *lucid-mocca*
+  # Ihr benutzt EMC2 Version 2.4.x. Euer Paket heisst dann *mocca24*
+  # Für die kommenden *LinuxCNC* 2.5.x Versionen ist das Paket dann *mocca25*
 
 == Schritt 2 ==
 
@@ -87,8 +86,8 @@ Dort gebt ihr folgende Zeile ein:
 
 {{{ sudo apt-get install ____Paketname____ }}}
 Statt ___Paketname___ setzt ihr den Namen aus Schritt 1 ein.
-Also so, wenn ihr Lucid-Lynx benutzt:
-{{{ sudo apt-get install lucid-mocca }}}
+Also so, wenn ihr EMC 2.4 benutzt:
+{{{ sudo apt-get install mocca24 }}}
 
 == Schritt 3 ==
 
