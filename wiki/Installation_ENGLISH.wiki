@@ -3,17 +3,25 @@
 
 =Choosing the right package=
 
-In the download-section, there are three different mocca packages:
+In the download-section, there are different mocca packages:
 
  # mocca23: This is designed for Ubuntu 8.04 with EMC, version <= 2.3.5
- # mocca24: Also for Ubuntu 8.04 Hardy Heron, but with newer EMC (>=2.4.0)
- # lucid-mocca: This is for Ubuntu 10.04 Lucid Lynx.
+ # mocca24: For the newer EMC (2.4.x)
+ # mocca25: Will be for the new LinuxCNC (2.5.x)
 
-If you installed EMC via the recent LiveCD (oct. 2010), then you will choose lucid-mocca.
+If you installed EMC via the recent LiveCD (oct. 2012), then you will choose mocca25.
 If your installation is older, then you go with mocca23 or -24.
 
 Unfortunately Mocca is not available for EMC with Ubuntu 6.06.
 You will have to update Ubuntu first, before using mocca.
+
+*Make sure* you download the package designed for your Ubuntu version.
+
+ * Ubuntu 8.04 is Hardy Heron
+ * Ubuntu 10.04 is Lucid Lynx
+
+You can find the operatin system in the description of each download-element
+
 
 =Installation=
 
@@ -49,8 +57,8 @@ DISPLAY = mocca
 During installation, different designs have been copied to this directory:
 /usr/share/*package_name*/skins
 
-if you installed lucid-mocca for example, the the path would look like this:
-/usr/share/lucid-mocca/skins
+if you installed EMC 2.4.x for example, the the path would look like this:
+/usr/share/mocca24/skins
 
 Now, choose a design, with a suiting resolution and language.
 Keep the path to this design in mind.
@@ -68,7 +76,7 @@ This variable has to contain the path to your design.
 The section should then look like this:
 {{{
 [MOCCA]
-CONFIG = /usr/share/lucid-mocca/skins/default_en
+CONFIG = /usr/share/mocca24/skins/default_en
 }}}
 
 Then save your INI-file. Now you're done.
@@ -79,10 +87,10 @@ Start EMC with your profile and enjoy the new GUI.
 Maybe, there are some packages missing for the installation of mocca.
 Please ensure these packages are installed, and then try to install mocca again:
 
-===mocca23 und mocca24===
+===Ubuntu 8.04 Hardy Heron===
  * libglib1.2dbg
  * libgdkpixbuf2
  * libgtkglext1
 
-===lucid-mocca===
+===Ubuntu 10.04 Lucid Lynx===
  * libgtkglext1
