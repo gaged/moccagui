@@ -123,18 +123,20 @@ begin
   // emc2-2.4 uses the default NML_FILE;
   // emc2-2.3 needs the NML_FILE set up in the ini-file
   {$ifndef VER_23}
-  writeln(MSG_NMLFILE, Emc2NmlFile);
-  EMC_NMLFILE:= PChar(Emc2NmlFile);
+    {$ifndef VER_26}
+      writeln(MSG_NMLFILE, Emc2NmlFile);
+      EMC_NMLFILE:= PChar(Emc2NmlFile);
+    {$endif} 
   {$endif}
+  {$ifdef VER_23}
   if GetIniStr('EMC','NML_FILE',tmp,'') then
     EMC_NMLFILE:= PChar(tmp)
   else
     begin
-      {$ifdef VER_23}
       writeln(ERR_NO_NMLFILE);
       Exit;
-      {$endif}
     end;
+  {$endif}
   {$ifdef DEBUG_INI}
   writeln('Ini: NMLFile: ' + PChar(EMC_NMLFILE));
   {$endif}
@@ -208,6 +210,8 @@ begin
   State.ActJogVel:= Round(Vars.LinearJogSpeed);
   State.MaxVel:= Round(Vars.MaxLinearVel);
   State.ActVel:= State.MaxVel;
+
+  writeln('ActVel' + FloatToStr(State.ActVel));
 
   if not GetIniDouble('DISPLAY','MAX_ANGULAR_VELOCITY',d,1) then
     if not GetIniDouble('TRAJ','MAX_ANGULAR_VELOCITY',d,1) then

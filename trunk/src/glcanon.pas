@@ -59,12 +59,16 @@ uses
 var
   FirstMove: boolean;
   lo: tlo;
-  {$ifndef VER_25}  
+  {$ifdef VER_26}
+  {$define VER_25}
+  {$endif}
+
+  {$IFNDEF VER_25}  
   offset: tlo;
-  {$else}
+  {$ELSE}
   g5ofs: tlo;
   g9ofs: tlo;
-  {$endif}
+  {$ENDIF}
   toffs: tlo;
   DwellTime: double;
   lineno: integer;
@@ -391,6 +395,9 @@ procedure setg92offset(x, y, z, a, b, c, u, v, w: double); cdecl; export;
 begin
   SetCoords(g9ofs,x,y,z,a,b,c,u,v,w);
 end;
+{$endif}
+{$ifdef VER_26}
+{$undefine VER_25}
 {$endif}
 
 procedure setplane(pl: integer); cdecl; export;

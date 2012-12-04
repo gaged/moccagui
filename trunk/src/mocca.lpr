@@ -48,11 +48,13 @@ begin
   Vars.IniFile:= s;
   if not ReadConfig(ConfigDir + 'config.xml') then
     Exit;
+  //{$IFNDEF VER_26}
   if (emcNmlInit <> 0) then
     begin
       writeln(ERR_EMCCONNECT);
       Exit;
     end;
+  //{$ENDIF}
   if not InitHal then
     Exit;
   Result:= True;

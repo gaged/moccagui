@@ -43,9 +43,6 @@ type
     procedure Pause;
     procedure Step;
     procedure Run(Line: integer);
-    procedure Reentry;
-
-    procedure SaveState;
 
     procedure ResetInterpreter;
     function  WaitDone: integer;
@@ -95,18 +92,6 @@ var
 
 const
   ToolsInitialized: Boolean = False;
-
-type
-  TReentryState = record
-    MotionLn: integer;
-    GCodes: string;
-    MCodes: string;
-    PosX,PosY,PosZ: double;
-    OriginX,OriginY,OriginZ: double;
-  end;
-
-var
-  LastState: TReentryState;
 
 procedure TEmc.OpenFile(AFileName: string);
 begin
@@ -158,6 +143,7 @@ begin
     end;
   FFeedOverride:= 100;
   FSpindleOverride:= 100;
+  FMaxVelocity:= State.ActVel;
   if DefaultSpindleSpeed > 0 then
     emcSpindleDefaultSpeed:= DefaultSpindleSpeed;
 end;
@@ -968,46 +954,6 @@ procedure TEmc.Step;
 begin
   if (State.Mode = TASKMODEAUTO) then
     sendProgramStep;
-end;
-
-procedure TEmc.SaveState;
-begin
-  UpdateStatus;
-  taskActiveCodes;
-  with LastState do
-    begin
-      MotionLn := taskMotionline - 1;
-      PosX:= getRelPos(0);
-      PosY:= getRelPos(1);
-      PosZ:= getRelPos(2);
-      GCodes:= PChar(ActiveGCodes);
-      MCodes:= PChar(ActiveMCodes);
-    end;
-  if Verbose > 0 then
-    writeln('paused at: ',LastState.MotionLn);
-end;
-
-procedure TEmc.Reentry;
-var
-  Scale: Double;
-begin
-  if State.Mode <> TASKMODEAUTO then Exit;
-  if LastState.MotionLn < 1 then
-    begin
-      LastError:= 'Cannot do a re-entry if the program was not stopped.';
-      Exit;
-    end;
-  with LastState do
-    begin
-      writeln('Programline: ',MotionLn);
-      writeln('Gcodes: ',gcodes);
-      writeln('MCodes: ',mcodes);
-      Scale:= 1;
-      writeln('X: ' + PosToString(PosX * Scale));
-      writeln('Y: ' + PosToString(PosY * Scale));
-      writeln('Z: ' + PosToString(PosZ * Scale));
-    end;
-  Run(LastState.MotionLn);
 end;
 
 procedure TEmc.Pause;
