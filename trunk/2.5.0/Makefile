@@ -10,7 +10,9 @@ LAZDIR = /usr/lib/lazarus/0.9.30.4
 
 INCLUDES = -I$(EMCDIR)/include
 INCLUDES += -I$(EMCDIR)/src/emc/nml_intf
+INCLUDES += -I$(EMCDIR)/src/emc/pythonplugin
 INCLUDES += -I$(EMCDIR)/src/emc/rs274ngc
+INCLUDES += -I/usr/include/python2.6
 
 LCL = -Fu.
 LCL += -Fu../src
@@ -24,14 +26,14 @@ LCL += -Fu$(LAZDIR)/components/opengl
 LCL += -Fu$(LAZDIR)/packager/units/i386-linux
 
 emcpas.o: emcpas.cc
-	$(COMPILE) $(INCLUDES) -o./lib/emcpas.o -UDSOHANDLE emcpas.cc
+	$(COMPILE) $(INCLUDES) -o./lib/emcpas.o -DVER_26 -UDSOHANDLE emcpas.cc
 
 simcanon.o: simcanon.cc
-	$(COMPILE) $(INCLUDES) -o./lib/simcanon.o -DVER_25 simcanon.cc
+	$(COMPILE) $(INCLUDES) -o./lib/simcanon.o -DVER_26 simcanon.cc
 
 mocca.o: ../src/mocca.lpr
-	$(COMPILEMOC) -k-L$(EMCDIR)/lib $(LCL) -dVER_25 -dIGNORE_VERSION -Fl./lib -FU./lib -o./mocca2.5 ../src/mocca.lpr
-	cp ./mocca2.5 $(EMCDIR)/bin/mocca
+	$(COMPILEMOC) -k-L$(EMCDIR)/lib $(LCL) -dVER_26 -dLINUX_CNC -Fl./lib -FU./lib -o./mocca2.6 ../src/mocca.lpr
+	cp ./mocca2.6 $(EMCDIR)/bin/mocca
 	
 clean:
 	rm ./lib/*

@@ -21,6 +21,9 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+#include <Python.h>
+#include <structmember.h>
+
 #include "rs274ngc.hh"
 #include "interp_return.hh"
 #include "canon.hh"
@@ -31,6 +34,18 @@
 #include <stdlib.h>
 #include "rs274ngc_interp.hh"
 
+int _task = 0; // control preview behaviour when remapping
+
+extern "C" struct _inittab builtin_modules[];
+extern "C" void initinterpreter();
+extern "C" void initemccanon();
+
+struct _inittab builtin_modules[] = {
+    { (char *) "interpreter", initinterpreter },
+    { (char *) "emccanon", initemccanon },
+    // any others...
+    { NULL, NULL }
+};
 
 Interp interp_new;
 
@@ -74,6 +89,7 @@ extern "C" void straightfeed(double x,double y,double z,double a,double b,
                              double c,double u,double v,double w);
 extern "C" void straighttraverse(double x,double y,double z,double a,double b,double c,
                                  double u,double v,double w);
+
 //extern "C" void setoriginoffsets(double x,double y,double z,double a,double b,
 //                                 double c,double u,double v,double w);
 
@@ -422,6 +438,22 @@ extern bool GET_BLOCK_DELETE(void) {
     if(interp_error) return 0;
     return getblockdelete;
 }
+
+void CANON_ERROR(const char *fmt, ...) {};
+void CLAMP_AXIS(CANON_AXIS axis) {}
+bool GET_OPTIONAL_PROGRAM_STOP() { return false;}
+void SET_OPTIONAL_PROGRAM_STOP(bool state) {}
+void SPINDLE_RETRACT_TRAVERSE() {}
+void SPINDLE_RETRACT() {}
+void STOP_CUTTER_RADIUS_COMPENSATION() {}
+void USE_NO_SPINDLE_FORCE() {}
+void SET_BLOCK_DELETE(bool enabled) {}
+
+void SELECT_POCKET(int pocket, int tool) {}
+void WAIT_SPINDLE_ORIENT_COMPLETE(double timeout) {}
+void PLUGIN_CALL(int len, const char *call) {}
+void IO_PLUGIN_CALL(int len, const char *call) {}
+
 
 void DISABLE_FEED_OVERRIDE() {}
 void DISABLE_FEED_HOLD() {}
