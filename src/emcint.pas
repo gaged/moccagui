@@ -9,11 +9,17 @@ uses
   Classes, SysUtils,
   dynlibs;
 
-
+{$IFDEF LINUX_CNC}
+const
+  libemcini = 'libemcini.so'; // still emcini?
+  libemc274 = 'librs274.so';
+  libemchal = 'liblinuxcnchal.so';
+{$ELSE}
 const
   libemcini = 'libemcini.so';
   libemc274 = 'librs274.so';
   libemchal = 'libemchal.so';
+{$ENDIF}
 
 var
   Emc2Home: string;
@@ -27,8 +33,14 @@ var
 function InitEmcEnvironment: boolean;
 procedure DoneEmcEnvironment;
 
+{$IFDEF LINUX_CNC}
 {$linklib libemcini.so}
+{$ELSE}
+{$linklib libemcini.so}
+{$ENDIF}
+
 {$linklib librs274.so}
+
 
 implementation
 
@@ -42,7 +54,7 @@ begin
   Result:= False;
 
   Emc2Home:= '';
-  Emc2Home:= GetEnvironmentVariable('EMC2_HOME');
+  Emc2Home:= GetEnvironmentVariable({$IFDEF LINUX_CNC}'LINUXCNC_HOME'{$ELSE}'EMC2_HOME'{$ENDIF});
   if Length(Emc2Home) < 1 then
     begin
       writeln('Did not find the EMC2_HOME var');
@@ -59,7 +71,7 @@ begin
   {$endif}
 
   Emc2Version:= '';
-  Emc2Version:= GetEnvironmentVariable('EMC2VERSION');
+  Emc2Version:= GetEnvironmentVariable({$IFNDEF LINUX_CNC}'EMC2VERSION'{$ELSE}'LINUXCNCVERSION'{$ENDIF});
   
   {$ifndef IGNORE_VERSION}
   {$ifdef VER_23}
@@ -73,20 +85,25 @@ begin
   {$info compiliert version 2.5ff}
   if Pos('2.5.',Emc2Version) < 1
   {$endif}
+  {$ifdef VER_26}
+  {$info compiliert version 2.6ff}
+  if Pos('2.6.',Emc2Version) < 1
+  {$endif}
   then
     begin
       writeln('Wrong EMC2-Version Number, got Version ' + Emc2Version + ',' +#13);
       writeln('This Version of Mocca was build for EMC2-' +
         {$ifdef VER_23}'2.3'{$endif}
         {$ifdef VER_24}'2.4'{$endif}
-        {$ifdef VER_25}'2.5'{$endif});
+        {$ifdef VER_25}'2.5'{$endif}
+        {$ifdef VER_26}'2.6'{$endif});
       writeln('Please install the correct version of mocca.');
       Exit;
     end
   else
-    writeln('mocca starts with correct emc version: emc2-' + Emc2Version);
+    writeln('mocca starts with correct LinuxCNC version: emc2-' + Emc2Version);
   {$else}
-    writeln('mocca starts with emc version: emc2-' + Emc2Version);
+    writeln('mocca starts with LinuxCNC version: emc2-' + Emc2Version);
   {$endif}
   	
   Emc2LibPath:= Emc2Home + '/lib/';

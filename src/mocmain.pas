@@ -662,9 +662,6 @@ begin
 
   FormResize(nil);
 
- // Load GladeVCP
-  // LoadGladevcp;
-
   Sleep(100);
   // Load Postgui halfile
   LoadPostGuiHal;
@@ -682,8 +679,6 @@ begin
     LastError:= 'Could not load Toolfile';
     raise;	
   end;
-
- 
 end;
 
 procedure TMainForm.FormDeactivate(Sender: TObject);
@@ -775,12 +770,11 @@ end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-  //ShowStartDlg;
+  // ShowStartDlg;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  writeln('mainform close');
   CloseAction:= caFree;
   UpdateLock:= True;  // prevent from updates during close
   Timer.OnTimer:= nil;
@@ -826,8 +820,8 @@ begin
   if Verbose > 0 then writeln('destroying mainform');
   UpdateLock:= True;  // prevent from updates during destroy
   Timer.Enabled:= False;  //turn off Timer
-  // weit message queue
-  //sleep(20);
+  // wait message queue
+  // sleep(20);
   if Assigned(clJog) then FreeAndNil(clJog);
   if Assigned(clMDI) then FreeAndNil(clMDI);
   if Assigned(clRun) then FreeAndNil(clRun);
@@ -845,8 +839,7 @@ end;
 procedure TMainForm.FormResize(Sender: TObject);
 begin
   if Sender = nil then ;
-  if Assigned(Dro) then
-    Dro.Size;
+  if Assigned(Dro) then Dro.Size;
   PanelPreviewResize(nil);
   PanelMasterResize(nil);
   PanelDlg.Left:= 0; PanelDlg.Top:= 0;
@@ -963,7 +956,7 @@ begin
     end;
   {$endif}
   Self.Resize;
-  // test
+  // test GladeVCP
   LoadGladeVCP
 end;
 
@@ -1004,13 +997,11 @@ var
   w,h,x,i: integer;
 begin
   if Sender = nil then ;
-  //if PanelButtons.Width > PanalButtons.Height then
-  //  begin
-      w:= PanelButtons.ClientWidth div NumButtons;
-      h:= PanelButtons.ClientHeight;
-      if w < 20 then w:= 20;
-      if h < 20 then h:= 20;
-      x:= (PanelButtons.ClientWidth - (w * NumButtons)) div 2;
+  w:= PanelButtons.ClientWidth div NumButtons;
+  h:= PanelButtons.ClientHeight;
+  if w < 20 then w:= 20;
+  if h < 20 then h:= 20;
+  x:= (PanelButtons.ClientWidth - (w * NumButtons)) div 2;
   for i:= 0 to NumButtons - 1 do
     if Assigned(MocBtns[i]) then
       begin

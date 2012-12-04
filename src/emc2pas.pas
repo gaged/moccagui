@@ -5,7 +5,13 @@ unit emc2pas;
 {$mode objfpc}
 
 {$link emcpas.o}
-{$linklib libemc.a}
+
+{$IFDEF LINUX_CNC}
+  {$linklib liblinuxcnc.a}
+{$ELSE}
+  {$linklib libemc.a}
+{$ENDIF}
+
 {$linklib libnml.so}
 {$linklib c}
 
@@ -99,7 +105,9 @@ type
   TTools = array[0..CANON_TOOL_MAX + 1] of TTool;
 
 var
+  {$ifndef VER_26}
   EMC_NMLFILE: Array[0..LINELEN-1] of Char; external name 'EMC_NMLFILE';
+  {$endif}
   ErrorStr: Array[0..LINELEN-1] of Char; external name 'errorString';
   OperatorTextStr: Array[0..LINELEN-1] of Char; external name 'operatorTextStr';
   OperatorDisplayStr: Array[0..LINELEN-1] of Char; external name 'operatorDisplayStr';

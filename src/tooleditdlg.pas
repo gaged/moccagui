@@ -104,7 +104,9 @@ begin
       Tools[i]:= T[i].Tool;
       ToolComments[i]:= PChar(T[i].Comment);
     end;
+  {$IFNDEF VER_26}
   SaveToolTable(PChar(Vars.ToolFile));
+  {$ENDIF}
 end;
 
 procedure TToolDlg.UpdateCell(ACol,ARow: integer);
