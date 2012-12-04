@@ -23,6 +23,11 @@
 #include "emctool.h"
 #endif
 
+#ifdef VER_26
+#include "emcglb.h"
+#include "tool_parse.h"
+#endif
+
 char *ttcomments[CANON_POCKETS_MAX+1];
 CANON_TOOL_TABLE toolTable[CANON_POCKETS_MAX+1];
 int fms[CANON_POCKETS_MAX + 1];
@@ -296,6 +301,7 @@ extern "C" int loadToolTable(const char *filename)
     return 0;
 }
 
+#ifndef VER_26
 extern "C" int saveToolTable(const char *filename)
 {
     int pocket;
@@ -345,5 +351,5 @@ extern "C" int saveToolTable(const char *filename)
     fclose(fp);
     return 0;
 }
-
+#endif
 
