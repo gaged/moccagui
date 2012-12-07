@@ -3,6 +3,7 @@
   <global>
     <float name="Edgefinderdia" value="8"/>
     <boolean name="InitialFullscreen" value="True"/>
+    <integer name="BorderStyle" value="0"/>
     <boolean name="Verbose" value="False"/>
   </global>
   <tools>

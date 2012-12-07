@@ -51,6 +51,9 @@ begin
     if nn = 'INITIALFULLSCREEN' then
       InitialFullscreen:= (UpperCase(nv) = 'TRUE') or (nv = '1')
     else
+    if nn = 'BORDERSTYLE' then
+      InitialBorderStyle:= StrToInt(nv)
+    else
     if nn = 'DROLAYOUTSTYLE' then
       begin
         s:= UpperCase(nv);

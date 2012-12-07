@@ -14,6 +14,7 @@ uses
 const
   ShowGlPreview: Boolean = True;
   InitialFullscreen: Boolean = False;
+  InitialBorderStyle: Integer = 1;
   UseDefaultLayout: Boolean = False;
   DROLayoutStyle: TDROLayoutStyle = dlsVertical;
 
