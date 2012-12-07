@@ -603,6 +603,13 @@ begin
     FullScreen(Self);
   {$ENDIF};
 
+  case InitialBorderStyle of
+    0: begin
+         BorderIcons:= [];
+         BorderStyle:= bsNone;
+       end;
+  end;
+
   Caption:='Mocca ' + Vars.Machine;
 
   GlobalErrors:= TStringList.Create;
