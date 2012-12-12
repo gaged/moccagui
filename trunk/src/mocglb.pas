@@ -260,12 +260,11 @@ function getxid(AForm: TForm): longint;
 var
   Widget: PGtkWidget;
 begin
-  writeln('xid...');
   Result:=0;
   if (AForm=nil) or (not AForm.HandleAllocated) then 
   begin
     writeln('Form=nil');
-    exit;
+    Exit;
   end;
   Widget:= PGtkWidget(AForm.Handle);
   if Widget^.window = nil then 
@@ -281,18 +280,12 @@ end;
 procedure LoadGladevcp;
 var
   s: string;
-  id: longint;
 begin
   if Vars.Gladevcp <> '' then
     begin
-      id:= getxid(Mainform);
       s:= 'halcmd loadusr -Wn gladevcp gladevcp -c gladevcp ' + vars.Gladevcp;
-      s:= s + ' -x' + IntToStr(id); 
-      if Verbose > 0 then
-        writeln('loading gladevcp: ', s);
       ExecProcess(s);
     end;
-
 end;  
 
 {$IFDEF LCLGTK2}
