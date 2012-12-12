@@ -204,7 +204,7 @@ begin
   if ScriptRunning then
     begin
       if Verbose > 0 then
-        writeln('Scrip is running: ignore taskmode');
+        writeln('Script is running: ignore taskmode');
       Exit;
     end;
   clJog.Visible:= (State.Mode = TaskModeManual);
@@ -670,8 +670,13 @@ begin
   FormResize(nil);
 
   Sleep(100);
+
+  // test GladeVCP
+  LoadGladeVCP;
+
   // Load Postgui halfile
   LoadPostGuiHal;
+
 
   Timer.Interval:= Vars.CycleDelay;
   Timer.OnTimer:= @Self.OnTimer;
@@ -690,7 +695,6 @@ end;
 
 procedure TMainForm.FormDeactivate(Sender: TObject);
 begin
-  if Verbose > 0 then writeln('deactivating mainform');
   if State.Mode = TaskModeManual then
     if Assigned(Joints) then Joints.CheckJogExit;
 end;
@@ -824,7 +828,6 @@ var
   i: integer;
 begin
   if Sender = nil then ;
-  if Verbose > 0 then writeln('destroying mainform');
   UpdateLock:= True;  // prevent from updates during destroy
   Timer.Enabled:= False;  //turn off Timer
   // wait message queue
@@ -957,14 +960,9 @@ begin
     clSim.FormResize(nil);
   {$ifdef LCLGTK2}
   if InitialFullScreen then
-    begin
-      writeln('mocca is setup for fullscreen.');
-      FullScreen(Self);
-    end;
+    FullScreen(Self);
   {$endif}
   Self.Resize;
-  // test GladeVCP
-  LoadGladeVCP
 end;
 
 procedure TMainForm.LabelMsgClick(Sender: TObject);
