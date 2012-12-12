@@ -301,7 +301,6 @@ extern "C" int loadToolTable(const char *filename)
     return 0;
 }
 
-#ifndef VER_26
 extern "C" int saveToolTable(const char *filename)
 {
     int pocket;
@@ -311,7 +310,7 @@ extern "C" int saveToolTable(const char *filename)
 
     // check filename
     if (filename[0] == 0) {
-	name = TOOL_TABLE_FILE;
+	name = tool_table_file;
     } else {
 	// point to name provided
 	name = filename;
@@ -351,5 +350,4 @@ extern "C" int saveToolTable(const char *filename)
     fclose(fp);
     return 0;
 }
-#endif
 
