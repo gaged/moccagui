@@ -67,6 +67,7 @@ procedure TMocLed.Paint;
 var
   R: TRect;
 begin
+  inherited Paint;
   R:= ClientRect;
   //Canvas.Frame(R);
   Canvas.Frame3d(R,2,bvRaised);
@@ -76,7 +77,6 @@ begin
   else
      Canvas.Brush.Color:= Color;
   Canvas.FillRect(R);
-  inherited Paint;
 end;
 
 procedure Register;

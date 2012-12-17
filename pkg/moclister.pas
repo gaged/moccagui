@@ -72,6 +72,7 @@ var
   R: TRect;
   cm,i,idx,h: integer;
 begin
+  inherited Paint;
   R:= ClientRect;
   Canvas.Clipping:= True;
   Canvas.ClipRect:= R;
@@ -103,7 +104,6 @@ begin
       inc(R.Top,h);
       inc(R.Bottom,h);
     end;
-  inherited Paint;
 end;
 
 procedure Register;
