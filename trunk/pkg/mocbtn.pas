@@ -148,6 +148,9 @@ var
   Offset: TPoint;
   OldColor: TColor;
 begin
+   
+  inherited Paint;
+
   if FGlyph = nil then Exit;
   R:= ClientRect;
   Canvas.Brush.Color:= Color;
@@ -210,7 +213,6 @@ begin
       Canvas.TextRect(R,0,0,Caption);
       Canvas.Font.Color:= OldColor;
     end;
-  inherited Paint;
 end;
 
 procedure TMocButton.MouseLeave;

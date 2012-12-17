@@ -185,6 +185,7 @@ var
   i: integer;
   v: integer;
 begin
+  inherited Paint;
   R := GetClientRect;
   {$ifdef USE_SLIDERBM}
   FBitmap.Width:= Width;
@@ -244,7 +245,6 @@ begin
   Canvas.CopyMode := cmNotSrcCopy; //cmSrcCopy;
   Canvas.Draw(0, 0,FBitmap);
   {$endif}
-  inherited Paint;
 end;
 
 procedure TSlider.CMEnabledChanged(var Message: TLMEssage);
