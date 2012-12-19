@@ -18,15 +18,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "emcglb.h"
-
-#ifdef VER_24
-#include "emctool.h"
-#endif
-
-#ifdef VER_26
-#include "emcglb.h"
 #include "tool_parse.h"
-#endif
+
 
 char *ttcomments[CANON_POCKETS_MAX+1];
 CANON_TOOL_TABLE toolTable[CANON_POCKETS_MAX+1];
@@ -310,7 +303,7 @@ extern "C" int saveToolTable(const char *filename)
 
     // check filename
     if (filename[0] == 0) {
-	name = tool_table_file;
+	name = TOOL_TABLE_FILE;
     } else {
 	// point to name provided
 	name = filename;
