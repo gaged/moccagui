@@ -350,7 +350,7 @@ extern "C" int emcTaskNmlGet()
     if (emcCommandBuffer == 0) {
 	emcCommandBuffer =
 	    new RCS_CMD_CHANNEL(emcFormat, "emcCommand", "xemc",
-				emc_nmlfile);
+				EMC_NMLFILE);
 	if (!emcCommandBuffer->valid()) {
 	    delete emcCommandBuffer;
 	    emcCommandBuffer = 0;
@@ -361,7 +361,7 @@ extern "C" int emcTaskNmlGet()
     if (emcStatusBuffer == 0) {
 	emcStatusBuffer =
 	    new RCS_STAT_CHANNEL(emcFormat, "emcStatus", "xemc",
-				 emc_nmlfile);
+				 EMC_NMLFILE);
 	if (!emcStatusBuffer->valid()
 	    || EMC_STAT_TYPE != emcStatusBuffer->peek()) {
 	    delete emcStatusBuffer;
@@ -380,7 +380,7 @@ extern "C" int emcErrorNmlGet()
     int retval = 0;
     if (emcErrorBuffer == 0) {
 	emcErrorBuffer =
-	    new NML(nmlErrorFormat, "emcError", "xemc", emc_nmlfile);
+	    new NML(nmlErrorFormat, "emcError", "xemc", EMC_NMLFILE);
 	if (!emcErrorBuffer->valid()) {
 	    delete emcErrorBuffer;
 	    emcErrorBuffer = 0;
@@ -397,7 +397,7 @@ extern "C" int emcNmlInit()
 #define RETRY_TIME 10.0		// seconds to wait for subsystems to come up
 #define RETRY_INTERVAL 1.0	// seconds between wait tries for a subsystem
 
-    if ((emc_debug & EMC_DEBUG_NML) == 0) {
+    if ((EMC_DEBUG & EMC_DEBUG_NML) == 0) {
 	set_rcs_print_destination(RCS_PRINT_TO_NULL);	// inhibit diag messages
     }
     end = RETRY_TIME;
@@ -410,13 +410,13 @@ extern "C" int emcNmlInit()
 	esleep(RETRY_INTERVAL);
 	end -= RETRY_INTERVAL;
     } while (end > 0.0);
-    if ((emc_debug & EMC_DEBUG_NML) == 0) {
+    if ((EMC_DEBUG & EMC_DEBUG_NML) == 0) {
 	set_rcs_print_destination(RCS_PRINT_TO_STDOUT);	// inhibit diag messages
     }
     if (!good) {
 	return -1;
     }
-    if ((emc_debug & EMC_DEBUG_NML) == 0) {
+    if ((EMC_DEBUG & EMC_DEBUG_NML) == 0) {
 	set_rcs_print_destination(RCS_PRINT_TO_NULL);	// inhibit diag messages
     }
     end = RETRY_TIME;
@@ -429,7 +429,7 @@ extern "C" int emcNmlInit()
 	esleep(RETRY_INTERVAL);
 	end -= RETRY_INTERVAL;
     } while (end > 0.0);
-    if ((emc_debug & EMC_DEBUG_NML) == 0) {
+    if ((EMC_DEBUG & EMC_DEBUG_NML) == 0) {
 	set_rcs_print_destination(RCS_PRINT_TO_STDOUT);	// inhibit diag messages
     }
     if (!good) {

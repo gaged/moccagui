@@ -36,16 +36,16 @@
 
 int _task = 0; // control preview behaviour when remapping
 
-extern "C" struct _inittab builtin_modules[];
-extern "C" void initinterpreter();
-extern "C" void initemccanon();
+//extern "C" struct _inittab builtin_modules[];
+//extern "C" void initinterpreter();
+//extern "C" void initemccanon();
 
-struct _inittab builtin_modules[] = {
-    { (char *) "interpreter", initinterpreter },
-    { (char *) "emccanon", initemccanon },
-    // any others...
-    { NULL, NULL }
-};
+//struct _inittab builtin_modules[] = {
+//    { (char *) "interpreter", initinterpreter },
+//    { (char *) "emccanon", initemccanon },
+//    // any others...
+//    { NULL, NULL }
+//};
 
 Interp interp_new;
 
