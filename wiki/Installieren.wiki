@@ -9,6 +9,7 @@ Unter dem Register "Downloads" befinden sich verschiedene Pakete:
  # mocca23: Für alte EMC Installationen (Version max. 2.3.5)
  # mocca24: Für die neueren EMC Installationen (Version 2.4.x)
  # mocca25: Für neue Installationen nach dem Wechsel auf den *Namen LinuxCNC* (Version 2.5.x)
+ # mocca26: Für die kommenden Versionen LinuxCNC 2.6.x
 
 
 == Ubuntu Version ==
