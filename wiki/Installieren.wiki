@@ -29,6 +29,11 @@ Laden Sie also das, für Sie, richtige Paket herunter.
 
 Danach einfach ein Klick auf Installieren, und kurz warten.
 
+Alternativ können Sie Mocca auch über die Paketquelle installieren.
+Dadurch werden Sie automatisch mit den neuesten Updates versorgt.
+Die notwendigen Schritte können Sie hier nachlesen:
+[https://code.google.com/p/moccagui/wiki/MoccaUpdate LINK]
+
 =Konfiguration=
 
 Jetzt muss EMC nur noch mitgeteilt werden, das Sie ab jetzt auf Axis verzichten wollen ;)
