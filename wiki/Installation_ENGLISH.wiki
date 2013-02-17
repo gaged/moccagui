@@ -7,7 +7,8 @@ In the download-section, there are different mocca packages:
 
  # mocca23: This is designed for Ubuntu 8.04 with EMC, version <= 2.3.5
  # mocca24: For the newer EMC (2.4.x)
- # mocca25: Will be for the new LinuxCNC (2.5.x)
+ # mocca25: For the new LinuxCNC (2.5.x)
+ # mocca26: For the upcoming LinuxCNC (2.6.x)
 
 If you installed EMC via the recent LiveCD (oct. 2012), then you will choose mocca25.
 If your installation is older, then you go with mocca23 or -24.
@@ -20,7 +21,8 @@ You will have to update Ubuntu first, before using mocca.
  * Ubuntu 8.04 is Hardy Heron
  * Ubuntu 10.04 is Lucid Lynx
 
-You can find the operatin system in the description of each download-element
+You can find the operatin system in the description of each download-element,
+and also the filename starts with the version of the target-ubuntu (e.g. 8.04_)
 
 
 =Installation=
