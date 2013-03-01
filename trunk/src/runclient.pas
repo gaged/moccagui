@@ -30,7 +30,6 @@ type
     OldIsOpen: Boolean;
     OldExecState: integer;
     IsOpen: Boolean;
-    function  HandleCommand(Cmd: integer): Boolean;
     procedure UpdateScrollBar;
   public
     procedure ActivateSelf;
@@ -44,6 +43,7 @@ type
     procedure SetCodes;
     procedure GotoLine;
     procedure FindLine(Key: Char);
+    function  HandleCommand(Cmd: integer): Boolean;
   end;
   
 var
