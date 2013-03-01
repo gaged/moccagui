@@ -454,6 +454,12 @@ begin
               if TaskMode = TASKMODEMANUAL then
                 clJog.HandleCommand(MocBtns[i].Tag)
               else
+              if TaskMode = TASKMODEMDI then
+                 clMDI.HandleCommand(MocBtns[i].Tag)
+              else
+              if TaskMode = TASKMODEAUTO then
+                 clRun.HandleCommand(MocBtns[i].Tag)
+              else
                 Emc.HandleCommand(MocBtns[i].Tag);
             end;
     end;
