@@ -229,7 +229,7 @@ procedure TMainForm.UpdateState;
 var
   i: integer;
   d,l: double;
-  s: string;
+  s,s2: string;
 begin
 
   if not UpdateLock then
@@ -394,11 +394,32 @@ begin
    if (FSpVel <> State.SpSpeed) then
     begin
       if State.SpDir <> 0 then
-        d:= State.SpSpeed * (State.ActSpORide / 100)
+         begin
+             d:= State.SpSpeed * (State.ActSpORide / 100);
+             LabelSpVel.Caption:= FloatToStrF(d,ffFixed,8,SpindleSpeedDecimals) + Vars.UnitRotStr;
+         end
       else
-        d:= emcSpindleDefaultSpeed * (State.ActSpORide / 100);
+        begin
+           case DisplaySpindleSpeed of
+             0: d:= emcSpindleDefaultSpeed * (State.ActSpORide / 100); //Show default speed
+             1: d:= 0; //Show actual speed
+             2: //Show programmed (S-Word) speed, at which spindle will start
+             begin
+                  s2:= TrimLeft(TrimRight(PChar(ACTIVESWORDS))); //Remove spaces before and after text
+                  Delete(s2,1,1); //remove the first character (the S)
+                  LabelSpVel.Caption:= s2 + Vars.UnitRotStr; //write the programmed speed to the label
+             end;
+           end;
+           if DisplaySpindleSpeed <> 2 then //if Label hasn't already been updated:
+              LabelSpVel.Caption:= FloatToStrF(d,ffFixed,8,SpindleSpeedDecimals) + Vars.UnitRotStr;
+        end;
       FSpVel:= State.SpSpeed;
-      LabelSpVel.Caption:= FloatToStrF(d,ffFixed,8,3) + Vars.UnitRotStr;
+    end;
+
+  if (TrimLeft(TrimRight(PChar(ACTIVESWORDS)))) <> s2 then
+    //new spindle speed programmed? then update the spindle-speed-label
+    begin
+         FSpVel:= -1;
     end;
 
   if (FSpORide <> State.ActSpORide) then

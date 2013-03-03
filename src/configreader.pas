@@ -109,6 +109,25 @@ begin
       if nn = 'USE_HAL_FEED' then
         begin
           UseHalFeed:= (UpperCase(nv) = 'TRUE') or (nv = '1')
+        end
+    else
+      if nn = 'SPINDLE_SPEED_UNITS' then
+        begin
+          Vars.UnitRotStr:=' ' + nv;
+          {case StrToInt(nv) of
+          1: Vars.UnitRotStr:= ' U/min';
+          //everything else will mean the default ' rpm'
+          end;}
+        end
+    else
+      if nn = 'SPINDLE_SPEED_DECIMALS' then
+        SpindleSpeedDecimals:= StrToInt(nv) //Number of decimals display with spindlespeed
+    else
+      if nn = 'SPINDLE_SPEED_DISPLAYMODE' then
+        begin
+          DisplaySpindleSpeed := StrToInt(nv);
+          if DisplaySpindleSpeed < 0 then DisplaySpindleSpeed := 0;
+          if DisplaySpindleSpeed > 2 then DisplaySpindleSpeed := 0;
         end;
   except
     on E: Exception do
@@ -121,6 +140,7 @@ var
   N: TDomNode;
   nn,nv: string;
 begin
+  Vars.UnitRotStr:= ' rpm'; //Initialise the SpindleSpeedUnits
   if Node = nil then
     begin
       writeln(ERR_NOGLOBALCONFIG);
