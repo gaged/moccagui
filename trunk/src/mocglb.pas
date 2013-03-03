@@ -57,6 +57,8 @@ const
 const
   Verbose: integer = 1;
   UseHalFeed: boolean = True;
+  DisplaySpindleSpeed: integer = 0;
+  SpindleSpeedDecimals: integer = 0;
 
 const
   SaveZCommand: string = '';
