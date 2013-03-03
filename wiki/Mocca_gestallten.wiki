@@ -9,7 +9,7 @@ config=/home/dein_name/fraese
 
 in der 
 
-== config.xml ==
+= config.xml =
 können die Buttons der unteren Buttonleiste FREI gestaltet werden, diese werden dann zur Laufzeit von Mocca geladen: Auch die Jog Increments Button werden hier definiert.
 
 Beispiel:
@@ -116,9 +116,53 @@ durch einfügen von
 </jogincrements>
 }}}
 
-im Stamm der Datei (Unterhalb <CONFIG>), werden die Knöpfe zur Auswahl der Schrittweite festgelegt.  
+im Stamm der Datei (Unterhalb `<CONFIG>`), werden die Knöpfe zur Auswahl der Schrittweite festgelegt.
 
-== jog.xml ==
+==`<GLOBAL>` in der config.xml==
+Außerdem existiert ein Abschnitt `<global>`, in diesem können einige Einstellungen vorgenommen werden.
+Falls er noch nicht existiert, kann er einfach ein Child von `<CONFIG>` eingefügt werden.
+
+===Display-Mode der Spindeldrehzahl===
+{{{
+<global>
+(...)
+    <integer name="SPINDLE_SPEED_DISPLAYMODE" value="1" />
+</global>
+}}}
+ * 0 bedeutet, dass, falls die Spindel steht, die Default_Spindle_Speed angezeigt wird.
+ * 1 bedeutet, dass immer die aktuelle Drehzahl angezeigt wird.
+ * 2 bedeutet, dass im Falle der stehenden Spindel die Drehzahl gezeigt wird, mit der die Spindel loslaufen wird
+
+===Einheit der Spindeldrehzahl===
+Standardmäßig wird rpm als Einheit verwendet. So lässt sich das ändern:
+{{{
+<global>
+(...)
+    <string name="SPINDLE_SPEED_UNITS" value="U/min" />
+</global>
+}}}
+
+===Dezimalstellen der Drehzahl===
+Möchte man sich die Spindeldrehzahl mit Dezimalstellen anzeigen lassen, kann man deren Anzahl so einstellen:
+{{{
+<global>
+(...)
+    <integer name="SPINDLE_SPEED_DECIMALS" value="1" />
+</global>
+}}}
+
+===Durchmesser des Kantentasters===
+Falls man einen Kantentaster verwendet, und der Durchmesser automatisch verrechnet werden soll, muss dieser hier eingestellt werden:
+
+{{{
+<global>
+(...)
+    <float name="EDGEFINDERDIA" value="5" />
+</global>
+}}}
+
+
+= jog.xml =
 Definiert die Lager der Jog Button, wie X+ / X- / Y+ / Y- usw.
 Der Hintergrund der eiunzelnen Fenster kann mit der Color Eigenschaft verändert werden.
 {{{
@@ -135,10 +179,10 @@ ergibt strahlendes Grün.
 Eine Farbauswahl findet man z.B. unter:
 [http://www.uni-magdeburg.de/counter/rgb.txt.shtml]
 
-== mdi.xml ==
+= mdi.xml =
 Beschreibung des Fensters, welches im MDI Modus sichtbar ist.
 
-== mocca.xml ==
+= mocca.xml =
 In dieser Datei werden z.B. die Button der rechten Seitenleiste und der unten angeordneten Knöpfe, die nicht in der Knopfleiste sind definiert.
 
 Der Startmodus und die Rahmenart kann wie folgt festgelegt werden
@@ -175,23 +219,23 @@ die Lage wird durch Top und Left bestimmt.
 }}}
 eingefügt wird.
 
-== mocmain.xml ==
+= mocmain.xml =
 *** Achtung ***
 *** Hier bin ich mir nicht sicher!!  ***
 Hauptbildschirm, legt die Größe und Lager der unterschiedlichen Client Forms fest, mocca.xml überschreibt die Einstellungen der mocmain.xml
 
-== offsetdialog.xml ==
+= offsetdialog.xml =
 Beschreibung des Dialogfensters zum Bearbieten der Koordinatensysteme
 
-== run.xml ==
+= run.xml =
 Definiert das Aussehen der Clientform, die angezeigt wird, wenn Modus Programm gewählt wurde.
 
-== tooledit.xml ==
+= tooledit.xml =
 Definiert das Aussehen, des Dialoges zum Verwalten der Werkzeugdatenbank.
 
-== touchoffdialog.xml ==
+= touchoffdialog.xml =
 Diese Datei definiert das Aussehen des PopUp Fensters des Antastdialoges.
 Das ist das Fenster, wo immer nur eine Kante angetastet wird und kein Kantentaster verrechnet wird.
 
-== touchoffwiz.xml ==
+= touchoffwiz.xml =
 Diese Datei definiert das Aussehen des PopUp Fensters des Antastdialoges, bei dem der Durchmesser eines Kantentasters berücksichtigt werden kann.
